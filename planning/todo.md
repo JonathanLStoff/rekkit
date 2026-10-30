@@ -1,0 +1,1 @@
+- add harness to test a real launch of the game.

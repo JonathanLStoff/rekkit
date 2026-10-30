@@ -1,0 +1,11 @@
+# Horizon Mod Manifest (API 0.2 / 0.3)
+# Conforms to horizon-mods crate specification (horizon/crates/horizon-mods/src/manifest.rs)
+
+id = "example_mod"
+name = "Example Mod"
+version = "0.1.0"
+description = "Reference template demonstrating the Rekkit-to-Horizon conversion workflow."
+authors = ["Rekkit Contributors"]
+api = "0.2"
+side = "server"
+namespaces = ["example_mod"]
