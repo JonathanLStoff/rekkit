@@ -1,0 +1,14 @@
+# Horizon Mod Registry Page Metadata (docs/api/mod-index.md)
+# Used by horizon-rust/horizon-mods CI when indexing GitHub releases.
+
+name = "Example Mod (Ender Frequency Storage)"
+summary = "Reference Rekkit mod demonstrating frequency-linked containers, content declarations (.hmod), and native hooks (.hnmod)."
+description = """
+# Example Mod
+
+Reference Rust implementation for **Rekkit** demonstrating the dual-artifact architecture for the Horizon engine:
+- **Content Mod (`.hmod`, API 0.2)**: Declares `example_mod:ender_chest` and `example_mod:ender_pouch` blocks, items, models, recipes, and localizations.
+- **Native Mod (`.hnmod`, `NATIVE_HOOKS_API` 22)**: Hooks block entities (`native_block_entity`), 27-slot containers (`native_block_entity_container`), server ticks (`native_block_entity_tick`), and custom screen layouts (`native_screen`).
+"""
+authors = ["Rekkit Contributors"]
+license = "MIT"

@@ -1,0 +1,450 @@
+#!/usr/bin/env python3
+"""
+Validate and package Rekkit mods into Horizon's Dual-Artifact formats:
+  1. Content Mod (.hmod): data/ and assets/ with horizon-mod.toml (API 0.2, registries).
+  2. Native Mod (.hnmod): horizon-native.json + mixins/<id>/ source bundle (NATIVE_HOOKS_API).
+
+Implements the exact validation rules of:
+  - horizon/crates/horizon-mods/src/manifest.rs
+  - horizon/crates/horizon-mods/src/content.rs
+  - horizon/crates/horizon-mods/src/index/native.rs
+  - horizon/crates/horizon-mods/src/index/registry.rs
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+import sys
+import tomllib
+import zipfile
+from pathlib import Path
+
+ID_RE = re.compile(r"^[a-z0-9_]{1,64}$")
+NS_RE = re.compile(r"^[a-z0-9_.-]{1,64}$")
+PATH_PART_RE = re.compile(r"^[a-z0-9_.-]+$")
+VANILLA_ID_RE = re.compile(r"^minecraft:[a-z0-9_./-]+$")
+HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
+RESERVED_NAMESPACES = {"minecraft", "c", "horizon"}
+
+MANIFEST_KEYS = {
+    "id",
+    "name",
+    "version",
+    "description",
+    "authors",
+    "api",
+    "side",
+    "capabilities",
+    "namespaces",
+    "experimental",
+}
+NATIVE_JSON_KEYS = {"schema", "id", "version", "game", "horizon", "mixins", "hooks"}
+REGISTRY_TOML_KEYS = {"name", "summary", "description", "authors", "license"}
+BLOCK_FILE_KEYS = {"template", "properties", "shapes", "default_state", "item", "components"}
+BLOCK_PROP_KEYS = {
+    "hardness",
+    "explosion_resistance",
+    "light",
+    "requires_tool",
+    "friction",
+    "map_color",
+    "sounds",
+}
+ITEM_FILE_KEYS = {"template", "max_stack_size", "rarity", "crafting_remainder", "components"}
+MOB_EFFECT_KEYS = {"category", "color"}
+EFFECT_CATEGORIES = {"beneficial", "harmful", "neutral"}
+RARITIES = {"common", "uncommon", "rare", "epic"}
+ITEM_ID_RE = re.compile(r"^[a-z0-9_.-]+:[a-z0-9_./-]+$")
+
+
+# Keys horizon-mixins accepts in horizon-mixin.toml (horizon-mixins-core/src/manifest.rs, rev 3f99a5c).
+MIXIN_TOP_KEYS = {"mod", "compatibility", "injection", "bridge", "module", "state"}
+MIXIN_MOD_KEYS = {"id", "version", "priority"}
+
+
+class ValidationError(Exception):
+    pass
+
+
+def check_content_path(rel_path: str) -> None:
+    parts = rel_path.split("/")
+    if len(parts) < 3 or parts[0] not in ("assets", "data"):
+        raise ValidationError(f"{rel_path!r} is not a plain assets/ or data/ path")
+    for part in parts[1:]:
+        if not part or part in (".", "..") or not PATH_PART_RE.match(part):
+            raise ValidationError(f"{rel_path!r} contains invalid resource path segment {part!r}")
+
+
+def validate_components(rel_path: str, components: object, allow_stack_and_rarity: bool) -> None:
+    if not isinstance(components, dict):
+        raise ValidationError(f"{rel_path}: components must be a JSON object")
+    for k, v in components.items():
+        removed = k.startswith("!")
+        kind = k[1:] if removed else k
+        if not VANILLA_ID_RE.match(kind):
+            raise ValidationError(f"{rel_path}: component {k!r} is not a vanilla type (minecraft:...)")
+        short = kind.removeprefix("minecraft:")
+        if not allow_stack_and_rarity and short in ("max_stack_size", "rarity"):
+            raise ValidationError(f"{rel_path}: component {k!r}: set {short} on the item directly")
+        if removed:
+            if v != {}:
+                raise ValidationError(f"{rel_path}: removal component {k!r} must have value {{}}")
+            continue
+        if short == "max_stack_size":
+            if not isinstance(v, int) or isinstance(v, bool) or not (1 <= v <= 99):
+                raise ValidationError(f"{rel_path}: component {k!r} must be 1..99")
+        elif short == "rarity":
+            if not isinstance(v, str) or v not in RARITIES:
+                raise ValidationError(f"{rel_path}: component {k!r} must be one of {sorted(RARITIES)}")
+
+
+def validate_block_json(rel_path: str, data: dict) -> bool:
+    unknown = set(data.keys()) - BLOCK_FILE_KEYS
+    if unknown:
+        raise ValidationError(f"{rel_path}: unknown keys {sorted(unknown)}")
+    template = data.get("template", "")
+    if not isinstance(template, str) or not VANILLA_ID_RE.match(template):
+        raise ValidationError(f"{rel_path}: template {template!r} is not a vanilla block (minecraft:...)")
+    props = data.get("properties", {})
+    if not isinstance(props, dict):
+        raise ValidationError(f"{rel_path}: properties must be a JSON object")
+    unknown_props = set(props.keys()) - BLOCK_PROP_KEYS
+    if unknown_props:
+        raise ValidationError(f"{rel_path}: unknown block properties {sorted(unknown_props)}")
+    if "hardness" in props and props["hardness"] < 0 and props["hardness"] != -1:
+        raise ValidationError(f"{rel_path}: hardness must be >= 0 or -1")
+    if "light" in props and not (0 <= int(props["light"]) <= 15):
+        raise ValidationError(f"{rel_path}: light must be 0..15")
+    if "sounds" in props and not VANILLA_ID_RE.match(str(props["sounds"])):
+        raise ValidationError(f"{rel_path}: sounds must name a vanilla block (minecraft:...)")
+    has_item = bool(data.get("item", True))
+    components = data.get("components", {})
+    if components and not has_item:
+        raise ValidationError(f"{rel_path}: components requires item = true")
+    validate_components(rel_path, components, allow_stack_and_rarity=True)
+    return has_item
+
+
+def validate_item_json(rel_path: str, data: dict) -> str | None:
+    unknown = set(data.keys()) - ITEM_FILE_KEYS
+    if unknown:
+        raise ValidationError(f"{rel_path}: unknown keys {sorted(unknown)}")
+    template = data.get("template", "")
+    if not isinstance(template, str) or not VANILLA_ID_RE.match(template):
+        raise ValidationError(f"{rel_path}: template {template!r} is not a vanilla item (minecraft:...)")
+    if "max_stack_size" in data:
+        ms = data["max_stack_size"]
+        if not isinstance(ms, int) or isinstance(ms, bool) or not (1 <= ms <= 99):
+            raise ValidationError(f"{rel_path}: max_stack_size must be 1..99")
+    if "rarity" in data and data["rarity"] not in RARITIES:
+        raise ValidationError(f"{rel_path}: rarity must be one of {sorted(RARITIES)}")
+    remainder = data.get("crafting_remainder")
+    if remainder is not None:
+        if not isinstance(remainder, str) or not ITEM_ID_RE.match(remainder):
+            raise ValidationError(f"{rel_path}: crafting_remainder {remainder!r} is not a valid item id")
+        if remainder == "minecraft:air":
+            raise ValidationError(f"{rel_path}: crafting_remainder cannot be minecraft:air")
+    validate_components(rel_path, data.get("components", {}), allow_stack_and_rarity=False)
+    return remainder
+
+
+def validate_mob_effect_json(rel_path: str, data: dict) -> None:
+    unknown = set(data.keys()) - MOB_EFFECT_KEYS
+    if unknown:
+        raise ValidationError(f"{rel_path}: unknown keys {sorted(unknown)}")
+    category = data.get("category")
+    if category not in EFFECT_CATEGORIES:
+        raise ValidationError(f"{rel_path}: category must be one of {sorted(EFFECT_CATEGORIES)}")
+    color = data.get("color")
+    if not isinstance(color, int) or isinstance(color, bool) or not (0 <= color <= 0xFF_FFFF):
+        raise ValidationError(f"{rel_path}: color must be 0..=16777215 (0xFFFFFF)")
+
+
+def validate_content_dir(mod_id: str, content_dir: Path) -> tuple[str, dict, list[tuple[str, bytes]]]:
+    if (content_dir / "Cargo.toml").exists():
+        raise ValidationError(
+            f"{content_dir}/Cargo.toml exists: cargo-horizon-mod refuses folders with Cargo.toml (code is native)"
+        )
+    if (content_dir / "mod.wasm").exists():
+        raise ValidationError(f"{content_dir}/mod.wasm exists: WebAssembly mod runtime is removed in Horizon")
+
+    manifest_path = content_dir / "horizon-mod.toml"
+    if not manifest_path.is_file():
+        raise ValidationError(f"missing {manifest_path}")
+    manifest_text = manifest_path.read_text(encoding="utf-8")
+    manifest = tomllib.loads(manifest_text)
+
+    unknown = set(manifest.keys()) - MANIFEST_KEYS
+    if unknown:
+        raise ValidationError(f"{manifest_path}: unknown keys {sorted(unknown)}")
+    if manifest.get("id") != mod_id or not ID_RE.match(mod_id):
+        raise ValidationError(f"{manifest_path}: id {manifest.get('id')!r} must match mod directory {mod_id!r}")
+    if manifest.get("api") != "0.2":
+        raise ValidationError(f"{manifest_path}: content mods must set api = '0.2'")
+    if manifest.get("side", "client") not in ("both", "client"):
+        raise ValidationError(f"{manifest_path}: content mod side must be 'both' or 'client'")
+    caps = manifest.get("capabilities", [])
+    if "registries" not in caps:
+        raise ValidationError(f"{manifest_path}: content mod must include 'registries' in capabilities")
+
+    extra_ns = manifest.get("namespaces", [])
+    seen_ns: set[str] = set()
+    for ns in extra_ns:
+        if not NS_RE.match(ns):
+            raise ValidationError(f"{manifest_path}: invalid namespace {ns!r}")
+        if ns in RESERVED_NAMESPACES:
+            raise ValidationError(f"{manifest_path}: reserved namespace {ns!r} cannot be claimed")
+        if ns == mod_id or ns in seen_ns:
+            raise ValidationError(f"{manifest_path}: duplicate namespace {ns!r}")
+        seen_ns.add(ns)
+
+    owned_ns = {mod_id, *extra_ns}
+    files: list[tuple[str, bytes]] = []
+    for top in ("assets", "data"):
+        top_dir = content_dir / top
+        if not top_dir.exists():
+            continue
+        for p in sorted(top_dir.rglob("*")):
+            if p.is_symlink():
+                raise ValidationError(f"{p}: symlinks are not allowed in content mods")
+            if p.is_file():
+                rel = p.relative_to(content_dir).as_posix()
+                check_content_path(rel)
+                files.append((rel, p.read_bytes()))
+
+    files.sort(key=lambda item: item[0])
+    declared_ids: set[str] = set()
+    declared_effects: set[str] = set()
+    remainders: list[tuple[str, str]] = []
+
+    for rel, raw in files:
+        parts = rel.split("/", 2)
+        top, ns, rest = parts[0], parts[1], parts[2]
+        allowed = (ns in owned_ns) or (top == "data" and ns in ("minecraft", "c") and rest.startswith("tags/"))
+        if not allowed:
+            raise ValidationError(f"{rel}: file outside owned namespaces {sorted(owned_ns)} and shared tags")
+        if ns != mod_id and top == "data" and rest.startswith("horizon/"):
+            raise ValidationError(f"{rel}: blocks/items/mob_effects must be declared under data/{mod_id}/horizon/")
+        if ns == mod_id and top == "data" and rest.startswith("horizon/"):
+            sub = rest.removeprefix("horizon/")
+            if sub.startswith("block/") and sub.endswith(".json"):
+                name = sub.removeprefix("block/").removesuffix(".json")
+                if "/" in name:
+                    raise ValidationError(f"{rel}: nested block declarations are not allowed")
+                block_id = f"{mod_id}:{name}"
+                has_item = validate_block_json(rel, json.loads(raw.decode("utf-8")))
+                if has_item:
+                    declared_ids.add(block_id)
+            elif sub.startswith("item/") and sub.endswith(".json"):
+                name = sub.removeprefix("item/").removesuffix(".json")
+                if "/" in name:
+                    raise ValidationError(f"{rel}: nested item declarations are not allowed")
+                item_id = f"{mod_id}:{name}"
+                remainder = validate_item_json(rel, json.loads(raw.decode("utf-8")))
+                if item_id in declared_ids:
+                    raise ValidationError(f"{rel}: {item_id} collides with a block item")
+                declared_ids.add(item_id)
+                if remainder is not None:
+                    remainders.append((rel, remainder))
+            elif sub.startswith("mob_effect/") and sub.endswith(".json"):
+                name = sub.removeprefix("mob_effect/").removesuffix(".json")
+                if "/" in name:
+                    raise ValidationError(f"{rel}: nested mob_effect declarations are not allowed")
+                effect_id = f"{mod_id}:{name}"
+                validate_mob_effect_json(rel, json.loads(raw.decode("utf-8")))
+                declared_effects.add(effect_id)
+            else:
+                raise ValidationError(
+                    f"{rel}: data/{mod_id}/horizon/ holds block/*.json, item/*.json, and mob_effect/*.json only"
+                )
+
+    for rel, rem in remainders:
+        if not VANILLA_ID_RE.match(rem) and rem not in declared_ids:
+            raise ValidationError(
+                f"{rel}: crafting_remainder {rem!r} is neither a vanilla item nor declared by {mod_id}"
+            )
+
+    return manifest_text, manifest, files
+
+
+def validate_native_dir(
+    mod_id: str, native_dir: Path, src_dir: Path
+) -> tuple[bytes, dict, list[tuple[str, bytes]]]:
+    manifest_path = native_dir / "horizon-native.json"
+    if not manifest_path.is_file():
+        raise ValidationError(f"missing {manifest_path}")
+    manifest_bytes = manifest_path.read_bytes()
+    manifest = json.loads(manifest_bytes.decode("utf-8"))
+
+    unknown = set(manifest.keys()) - NATIVE_JSON_KEYS
+    if unknown:
+        raise ValidationError(f"{manifest_path}: unknown keys {sorted(unknown)}")
+    if manifest.get("schema") != 1:
+        raise ValidationError(f"{manifest_path}: schema must be 1")
+    if manifest.get("id") != mod_id or not ID_RE.match(mod_id):
+        raise ValidationError(f"{manifest_path}: id must be {mod_id!r}")
+    if not manifest.get("version") or not manifest.get("game"):
+        raise ValidationError(f"{manifest_path}: version and game are required")
+    if not HEX40_RE.match(str(manifest.get("horizon", ""))):
+        raise ValidationError(f"{manifest_path}: horizon must be a 40-digit lowercase hex commit SHA")
+    if not HEX40_RE.match(str(manifest.get("mixins", ""))):
+        raise ValidationError(f"{manifest_path}: mixins must be a 40-digit lowercase hex commit SHA")
+    hooks = manifest.get("hooks")
+    if hooks is not None and (not isinstance(hooks, int) or hooks < 1):
+        raise ValidationError(f"{manifest_path}: hooks must be a positive integer")
+
+    mixin_dir = native_dir / "mixins" / mod_id
+    mixin_toml_path = mixin_dir / "horizon-mixin.toml"
+    if not mixin_toml_path.is_file():
+        raise ValidationError(f"missing {mixin_toml_path}")
+    mixin_toml = tomllib.loads(mixin_toml_path.read_text(encoding="utf-8"))
+
+    mod_sec = mixin_toml.get("mod", {})
+    compat_sec = mixin_toml.get("compatibility", {})
+    # horizon-mixins reads this file with deny_unknown_fields (horizon-mixins-core manifest.rs).
+    unknown_top = set(mixin_toml) - MIXIN_TOP_KEYS
+    if unknown_top:
+        raise ValidationError(f"{mixin_toml_path}: unknown table(s) {sorted(unknown_top)}; horizon-mixins allows {sorted(MIXIN_TOP_KEYS)}")
+    unknown_mod = set(mod_sec) - MIXIN_MOD_KEYS
+    if unknown_mod:
+        raise ValidationError(f"{mixin_toml_path}: [mod] has {sorted(unknown_mod)}; horizon-mixins allows only {sorted(MIXIN_MOD_KEYS)}")
+    if not any(mixin_toml.get(k) for k in ("injection", "bridge", "module", "state")):
+        raise ValidationError(f"{mixin_toml_path}: declares no [[injection]], [[bridge]], [[module]] or [[state]]; horizon-mixins refuses an empty bundle")
+    unknown_compat = set(compat_sec) - {"horizon_revision"}
+    if unknown_compat:
+        raise ValidationError(f"{mixin_toml_path}: [compatibility] has {sorted(unknown_compat)}; horizon-mixins allows only ['horizon_revision']")
+    if mod_sec.get("id") != mod_id:
+        raise ValidationError(f"{mixin_toml_path}: [mod].id must be {mod_id!r}")
+    if mod_sec.get("version") != manifest["version"]:
+        raise ValidationError(
+            f"{mixin_toml_path}: [mod].version ({mod_sec.get('version')!r}) != horizon-native.json ({manifest['version']!r})"
+        )
+    if compat_sec.get("horizon_revision") != manifest["horizon"]:
+        raise ValidationError(
+            f"{mixin_toml_path}: [compatibility].horizon_revision != horizon-native.json horizon"
+        )
+
+    bundle_files: list[tuple[str, bytes]] = []
+    for p in sorted(mixin_dir.rglob("*")):
+        if p.is_symlink():
+            raise ValidationError(f"{p}: symlinks are not allowed in native bundles")
+        if p.is_file():
+            rel = p.relative_to(mixin_dir).as_posix()
+            if not (rel.endswith(".rs") or rel.endswith(".toml") or rel.startswith("data/")):
+                raise ValidationError(
+                    f"{p}: native bundle only allows .rs, .toml, or data/* inside mixins/{mod_id}/"
+                )
+            bundle_files.append((f"mixins/{mod_id}/{rel}", p.read_bytes()))
+
+    # Also bundle pure domain Rust sources from src/ under mixins/<id>/src/ if not already present
+    existing_names = {name for name, _ in bundle_files}
+    if src_dir.is_dir():
+        for p in sorted(src_dir.rglob("*.rs")):
+            rel = p.relative_to(src_dir).as_posix()
+            entry_name = f"mixins/{mod_id}/src/{rel}"
+            if entry_name not in existing_names:
+                bundle_files.append((entry_name, p.read_bytes()))
+
+    bundle_files.sort(key=lambda item: item[0])
+    return manifest_bytes, manifest, bundle_files
+
+
+def validate_registry_toml(mod_dir: Path) -> None:
+    reg_path = mod_dir / "horizon-registry.toml"
+    if not reg_path.is_file():
+        raise ValidationError(f"missing {reg_path}")
+    reg = tomllib.loads(reg_path.read_text(encoding="utf-8"))
+    unknown = set(reg.keys()) - REGISTRY_TOML_KEYS
+    if unknown:
+        raise ValidationError(f"{reg_path}: unknown keys {sorted(unknown)}")
+    summary = reg.get("summary", "")
+    if not summary or len(summary) > 160 or "\n" in summary:
+        raise ValidationError(f"{reg_path}: summary must be 1..160 chars on a single line")
+    for req in ("name", "description", "authors", "license"):
+        if not reg.get(req):
+            raise ValidationError(f"{reg_path}: missing required key {req!r}")
+
+
+def write_deterministic_zip(out_path: Path, entries: list[tuple[str, bytes]]) -> str:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    partial = out_path.with_suffix(out_path.suffix + ".partial")
+    with zipfile.ZipFile(partial, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+        for name, data in entries:
+            info = zipfile.ZipInfo(filename=name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            zf.writestr(info, data)
+    partial.replace(out_path)
+    return hashlib.sha256(out_path.read_bytes()).hexdigest()
+
+
+def process_mod(mod_dir: Path, pack: bool) -> None:
+    mod_id = mod_dir.name
+    cargo_path = mod_dir / "Cargo.toml"
+    if not cargo_path.is_file():
+        raise ValidationError(f"missing {cargo_path}")
+    cargo_toml = tomllib.loads(cargo_path.read_text(encoding="utf-8"))
+    cargo_version = cargo_toml.get("package", {}).get("version")
+
+    validate_registry_toml(mod_dir)
+    manifest_text, content_manifest, content_files = validate_content_dir(mod_id, mod_dir / "content")
+    native_bytes, native_manifest, native_files = validate_native_dir(
+        mod_id, mod_dir / "native", mod_dir / "src"
+    )
+
+    if not (cargo_version == content_manifest["version"] == native_manifest["version"]):
+        raise ValidationError(
+            f"{mod_id}: version mismatch across Cargo.toml ({cargo_version}), "
+            f"content/horizon-mod.toml ({content_manifest['version']}), "
+            f"and native/horizon-native.json ({native_manifest['version']})"
+        )
+
+    print(
+        f"[OK] Validated {mod_id} v{cargo_version} "
+        f"(content files: {len(content_files)}, native sources: {len(native_files)}, "
+        f"hooks API: {native_manifest.get('hooks')})"
+    )
+
+    if pack:
+        out_dir = mod_dir / "target" / "horizon-mod"
+        hmod_path = out_dir / f"{mod_id}.hmod"
+        hmod_entries = [("horizon-mod.toml", manifest_text.encode("utf-8")), *content_files]
+        hmod_sha = write_deterministic_zip(hmod_path, hmod_entries)
+        print(f"     -> Built {hmod_path} ({hmod_path.stat().st_size} bytes, sha256={hmod_sha[:16]}...)")
+
+        hnmod_path = out_dir / f"{mod_id}.hnmod"
+        hnmod_entries = [("horizon-native.json", native_bytes), *native_files]
+        hnmod_sha = write_deterministic_zip(hnmod_path, hnmod_entries)
+        print(f"     -> Built {hnmod_path} ({hnmod_path.stat().st_size} bytes, sha256={hnmod_sha[:16]}...)")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate and package Rekkit mods (.hmod + .hnmod).")
+    parser.add_argument("--mod", help="Specific mod ID under ./mods/ to process (default: all)")
+    parser.add_argument("--check-only", action="store_true", help="Only validate manifests and files")
+    args = parser.parse_args()
+
+    mods_root = Path("mods")
+    if args.mod:
+        mod_dirs = [mods_root / args.mod]
+    else:
+        mod_dirs = sorted(p for p in mods_root.iterdir() if p.is_dir() and (p / "Cargo.toml").is_file())
+
+    if not mod_dirs:
+        print("No mods found under ./mods/", file=sys.stderr)
+        return 1
+
+    try:
+        for mod_dir in mod_dirs:
+            process_mod(mod_dir, pack=not args.check_only)
+    except ValidationError as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

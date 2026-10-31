@@ -1,0 +1,12 @@
+# Horizon Content Mod Manifest (API 0.2)
+# Conforms to horizon_mods::manifest::Manifest (horizon/crates/horizon-mods/src/manifest.rs).
+# Content mods package data/ and assets/ only (no Cargo.toml in this directory).
+
+id = "example_mod"
+name = "Example Mod"
+version = "0.1.0"
+description = "Reference content pack declaring blocks, items, models, recipes, and assets for Example Mod."
+authors = ["Rekkit Contributors"]
+api = "0.2"
+side = "both"
+capabilities = ["registries"]

@@ -1,0 +1,9 @@
+{
+  "type": "example_mod:frequency_tune",
+  "ingredient": "minecraft:ender_pearl",
+  "catalyst": "minecraft:blaze_powder",
+  "result": {
+    "id": "example_mod:ender_pouch",
+    "count": 1
+  }
+}

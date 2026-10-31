@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:bundle",
+  "max_stack_size": 1,
+  "rarity": "rare",
+  "crafting_remainder": "example_mod:ender_pouch",
+  "components": {
+    "!minecraft:bundle_contents": {}
+  }
+}

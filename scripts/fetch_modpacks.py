@@ -55,6 +55,13 @@ PACKS = {
         "file_id": 3045516,
         "archive": "Agrarian-Skies-2-2.0.6a.zip",
         "api_url": "https://api.curseforge.com/v1",
+        # Used when CURSEFORGE_API_KEY is missing or rejected. The website API
+        # serves the same files as the download page without a key:
+        # https://www.curseforge.com/minecraft/modpacks/agrarian-skies-2/download/3016703
+        "fallback_version": "2.0.6",
+        "fallback_file_id": 3016703,
+        "fallback_archive": "Agrarian-Skies-2-2.0.6.zip",
+        "site_api_url": "https://www.curseforge.com/api/v1",
     },
 }
 
@@ -346,86 +353,130 @@ def download_curseforge_file(api_base: str, project_id: int, file_id: int,
     return download(url, destination, headers=headers, force=force)
 
 
-def fetch_agrarian(pack_root: Path, cache_root: Path, force: bool) -> list[dict[str, Any]]:
+def curseforge_site_file_name(site_base: str, project_id: int, file_id: int) -> str:
+    response = json_request(f"{site_base}/mods/{project_id}/files/{file_id}")
+    data = response.get("data")
+    name = data.get("fileName") if isinstance(data, dict) else None
+    if not isinstance(name, str) or not name:
+        raise RuntimeError(f"CurseForge site API returned no file name for {project_id}/{file_id}")
+    return name
+
+
+def harvest_curseforge_pack(archive: Path, pack_root: Path, force: bool, resolve) -> list[dict[str, Any]]:
+    """Extract pack asset overrides and download every required manifest mod.
+
+    resolve(project_id, file_id) returns (url, filename, headers) for one file.
+    """
+    with zipfile.ZipFile(archive) as zf:
+        try:
+            manifest = json.loads(zf.read("manifest.json"))
+        except KeyError as exc:
+            raise RuntimeError("Agrarian Skies archive did not contain manifest.json") from exc
+
+        files = manifest.get("files")
+        if not isinstance(files, list):
+            raise RuntimeError("Agrarian Skies manifest did not contain a files array")
+
+        # Extract only pack asset overrides, not configs, worlds, scripts, or other files.
+        overrides = str(manifest.get("overrides", "overrides"))
+        for member in zf.infolist():
+            if member.is_dir():
+                continue
+            parts = PurePosixPath(member.filename.replace("\\", "/")).parts
+            try:
+                index = next(i for i, part in enumerate(parts) if part == overrides)
+            except StopIteration:
+                continue
+            relative_parts = parts[index + 1:]
+            if not relative_parts or relative_parts[0].lower() != "assets":
+                continue
+            relative = safe_relative_path("/".join(relative_parts))
+            target = pack_root / "pack-assets" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if not target.exists() or force:
+                with zf.open(member) as src, target.open("wb") as dst:
+                    shutil.copyfileobj(src, dst)
+
+    mods_root = pack_root / "mods"
+    mods_root.mkdir(parents=True, exist_ok=True)
+    records: list[dict[str, Any]] = []
+    total = len(files)
+    for index, item in enumerate(files, start=1):
+        if not isinstance(item, dict):
+            continue
+        if item.get("required", True) is False:
+            continue
+        project_id = item.get("projectID")
+        file_id = item.get("fileID")
+        if not isinstance(project_id, int) or not isinstance(file_id, int):
+            log(f"  WARNING: malformed CurseForge manifest item: {item}")
+            continue
+        url, filename, headers = resolve(project_id, file_id)
+        if not filename or "." not in filename:
+            filename = f"curseforge-{project_id}-{file_id}.jar"
+        target = mods_root / safe_relative_path(filename).name
+        log(f"  [{index}/{total}] {target.name}")
+        download(url, target, headers=headers, force=force)
+        # CurseForge manifests may include non-JAR files, but modpack mod files are JARs.
+        if target.suffix.lower() in {".jar", ".zip"}:
+            register_jar(target, pack_root, records)
+    return records
+
+
+def fetch_agrarian_with_key(pack_root: Path, cache_root: Path, force: bool,
+                            api_key: str) -> list[dict[str, Any]]:
+    spec = PACKS["agrarian"]
+    archive = cache_root / spec["archive"]
+    download_curseforge_file(
+        spec["api_url"], spec["project_id"], spec["file_id"], archive, api_key, force
+    )
+
+    def resolve(project_id: int, file_id: int):
+        url = curseforge_download_url(spec["api_url"], project_id, file_id, api_key)
+        filename = urllib.parse.unquote(PurePosixPath(urllib.parse.urlparse(url).path).name)
+        return url, filename, {"x-api-key": api_key}
+
+    return harvest_curseforge_pack(archive, pack_root, force, resolve)
+
+
+def fetch_agrarian_without_key(pack_root: Path, cache_root: Path, force: bool) -> list[dict[str, Any]]:
+    spec = PACKS["agrarian"]
+    site = spec["site_api_url"]
+    archive = cache_root / spec["fallback_archive"]
+    pack_url = f"{site}/mods/{spec['project_id']}/files/{spec['fallback_file_id']}/download"
+    download(pack_url, archive, force=force)
+
+    def resolve(project_id: int, file_id: int):
+        url = f"{site}/mods/{project_id}/files/{file_id}/download"
+        return url, curseforge_site_file_name(site, project_id, file_id), None
+
+    return harvest_curseforge_pack(archive, pack_root, force, resolve)
+
+
+def fetch_agrarian(pack_root: Path, cache_root: Path, force: bool) -> tuple[list[dict[str, Any]], str]:
+    """Return the collected mod records and the pack version actually fetched."""
     spec = PACKS["agrarian"]
     api_key = os.environ.get("CURSEFORGE_API_KEY", "").strip()
-    if not api_key:
-        log("  NOTE: CURSEFORGE_API_KEY not configured or ignored. Skipping Agrarian Skies 2.")
-        return []
+    if api_key:
+        try:
+            return fetch_agrarian_with_key(pack_root, cache_root, force, api_key), spec["version"]
+        except Exception as exc:
+            log(f"  WARNING: CurseForge API key not working ({exc}).")
+    else:
+        log("  NOTE: CURSEFORGE_API_KEY not configured.")
 
-    try:
-        archive = cache_root / spec["archive"]
-        download_curseforge_file(
-            spec["api_url"], spec["project_id"], spec["file_id"], archive, api_key, force
-        )
-
-        with zipfile.ZipFile(archive) as zf:
-            try:
-                manifest = json.loads(zf.read("manifest.json"))
-            except KeyError as exc:
-                raise RuntimeError("Agrarian Skies archive did not contain manifest.json") from exc
-
-            files = manifest.get("files")
-            if not isinstance(files, list):
-                raise RuntimeError("Agrarian Skies manifest did not contain a files array")
-
-            # Extract only pack asset overrides, not configs, worlds, scripts, or other files.
-            overrides = str(manifest.get("overrides", "overrides"))
-            for member in zf.infolist():
-                if member.is_dir():
-                    continue
-                parts = PurePosixPath(member.filename.replace("\\", "/")).parts
-                try:
-                    index = next(i for i, part in enumerate(parts) if part == overrides)
-                except StopIteration:
-                    continue
-                relative_parts = parts[index + 1:]
-                if not relative_parts or relative_parts[0].lower() != "assets":
-                    continue
-                relative = safe_relative_path("/".join(relative_parts))
-                target = pack_root / "pack-assets" / relative
-                target.parent.mkdir(parents=True, exist_ok=True)
-                if not target.exists() or force:
-                    with zf.open(member) as src, target.open("wb") as dst:
-                        shutil.copyfileobj(src, dst)
-
-        mods_root = pack_root / "mods"
-        mods_root.mkdir(parents=True, exist_ok=True)
-        records: list[dict[str, Any]] = []
-        total = len(files)
-        for index, item in enumerate(files, start=1):
-            if not isinstance(item, dict):
-                continue
-            if item.get("required", True) is False:
-                continue
-            project_id = item.get("projectID")
-            file_id = item.get("fileID")
-            if not isinstance(project_id, int) or not isinstance(file_id, int):
-                log(f"  WARNING: malformed CurseForge manifest item: {item}")
-                continue
-            url = curseforge_download_url(spec["api_url"], project_id, file_id, api_key)
-            filename = urllib.parse.unquote(PurePosixPath(urllib.parse.urlparse(url).path).name)
-            if not filename or "." not in filename:
-                filename = f"curseforge-{project_id}-{file_id}.jar"
-            target = mods_root / filename
-            log(f"  [{index}/{total}] {filename}")
-            download(url, target, headers={"x-api-key": api_key}, force=force)
-            # CurseForge manifests may include non-JAR files, but modpack mod files are JARs.
-            if target.suffix.lower() in {".jar", ".zip"}:
-                register_jar(target, pack_root, records)
-
-        return records
-    except Exception as exc:
-        log(f"  WARNING: CurseForge API key not working ({exc}). Ignoring Agrarian Skies 2.")
-        return []
+    log(f"  Falling back to the public CurseForge download for {spec['display']} "
+        f"{spec['fallback_version']} (file {spec['fallback_file_id']}).")
+    return fetch_agrarian_without_key(pack_root, cache_root, force), spec["fallback_version"]
 
 
-def write_metadata(pack_key: str, pack_root: Path, records: list[dict[str, Any]]) -> None:
+def write_metadata(pack_key: str, pack_root: Path, records: list[dict[str, Any]],
+                   pack_version: str | None = None) -> None:
     spec = PACKS[pack_key]
     payload = {
         "pack": spec["display"],
         "minecraft_version": spec["minecraft"],
-        "pack_version": spec["version"],
+        "pack_version": pack_version or spec["version"],
         "mod_jars": len(records),
         "embedded_asset_files": sum(r["embedded_asset_files"] for r in records),
         "mods": records,
@@ -445,16 +496,17 @@ def run_pack(pack_key: str, output: Path, cache: Path, force: bool) -> None:
     pack_root.mkdir(parents=True, exist_ok=True)
     log(f"\n== {PACKS[pack_key]['display']} ({PACKS[pack_key]['minecraft']}, {PACKS[pack_key]['version']}) ==")
 
+    pack_version = None
     if pack_key == "tekkit":
         records = fetch_tekkit(pack_root, cache, force)
     elif pack_key == "direwolf20":
         records = fetch_direwolf20(pack_root, cache, force)
     elif pack_key == "agrarian":
-        records = fetch_agrarian(pack_root, cache, force)
+        records, pack_version = fetch_agrarian(pack_root, cache, force)
     else:
         raise ValueError(pack_key)
 
-    write_metadata(pack_key, pack_root, records)
+    write_metadata(pack_key, pack_root, records, pack_version)
     log(
         f"Done: {len(records)} JARs; "
         f"{sum(r['embedded_asset_files'] for r in records)} embedded asset files -> {pack_root}"

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "minecraft:blaze_powder",
+    "L": "minecraft:leather",
+    "P": "minecraft:ender_pearl",
+    "W": "minecraft:white_wool"
+  },
+  "pattern": [
+    "BLB",
+    "LPL",
+    "BWB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "example_mod:ender_pouch"
+  }
+}

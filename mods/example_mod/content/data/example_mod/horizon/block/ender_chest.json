@@ -1,0 +1,14 @@
+{
+  "template": "minecraft:chest",
+  "properties": {
+    "hardness": 22.5,
+    "explosion_resistance": 600.0,
+    "light": 7,
+    "requires_tool": true,
+    "sounds": "minecraft:obsidian"
+  },
+  "item": true,
+  "components": {
+    "minecraft:rarity": "uncommon"
+  }
+}
