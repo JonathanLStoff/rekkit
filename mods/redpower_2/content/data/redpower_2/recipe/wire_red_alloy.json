@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "redpower_2:red_alloy_ingot"
+  },
+  "pattern": [
+    "RRR"
+  ],
+  "result": {
+    "count": 12,
+    "id": "redpower_2:wire_red_alloy"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:bricks"
+  },
+  "pattern": [
+    "BBB",
+    "B B",
+    "BBB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "redpower_2:alloy_furnace"
+  }
+}

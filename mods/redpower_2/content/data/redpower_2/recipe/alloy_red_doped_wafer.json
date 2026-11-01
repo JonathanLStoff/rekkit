@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:redstone",
+      "count": 4
+    },
+    {
+      "item": "redpower_2:silicon_wafer",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "redpower_2:red_doped_wafer",
+    "item": "redpower_2:red_doped_wafer",
+    "count": 1
+  }
+}

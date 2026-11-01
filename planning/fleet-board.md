@@ -8,8 +8,8 @@ State: `queued` · `active` · `blocked` · `done`. Steps: `·` todo · `▶` in
 
 | # | Mod | Path | Wave | Tier | Deps | State | 1 Spec | 2 Scaffold | 3 Tests | 4 Extract | 5 Assets | 6 Validate | 7 E2E | 8 Version | 9 Push | 10 Release | Notes |
 |---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | rekkit_core | `crates/rekkit_core` | core | Hard | — | queued | · | · | · | — | — | · | — | · | · | — | shared library; no content, native, E2E or release |
-| 2 | redpower_2 | `mods/redpower_2` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | spec exists; gap check |
+| 1 | rekkit_core | `crates/rekkit_core` | core | Hard | — | done | ✓ | ✓ | ✓ | — | — | ✓ | — | ✓ | · | — | shared library complete (`crates/rekkit_core` v0.1.0) |
+| 2 | redpower_2 | `mods/redpower_2` | 1 | Hard | rekkit_core | active | ✓ | ✓ | ✓ | · | ▶ | · | · | · | · | · | domain (`src/lib.rs`) + unit tests (`tests/mod_tests.rs`) written; content subagents authoring 42 blocks, 29 items, 15 recipes |
 | 3 | buildcraft | `mods/buildcraft` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | spec exists; gap check |
 | 4 | industrialcraft_2 | `mods/industrialcraft_2` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | spec exists; gap check |
 | 5 | equivalent_exchange_2 | `mods/equivalent_exchange_2` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | spec exists; gap check. EMC over merged recipes |

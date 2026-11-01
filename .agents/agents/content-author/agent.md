@@ -1,6 +1,6 @@
 ---
 name: content-author
-description: Writes a mod's content data: block, item and mob_effect JSON, recipes (vanilla and custom machine recipe types), loot tables, tags, lang, models, blockstates and item model files.
+description: "Writes a mod's content data: block, item and mob_effect JSON, recipes (vanilla and custom machine recipe types), loot tables, tags, lang, models, blockstates and item model files."
 mainAgent: false
 subagent: true
 model: flash

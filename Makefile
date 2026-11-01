@@ -23,7 +23,7 @@ ARGS ?=
 
 export CURSEFORGE_API_KEY
 
-.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test
+.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-start fleet-stop
 
 all: tekkit direwolf20 agrarian
 
@@ -54,8 +54,8 @@ extract-jar:
 extract-assets:
 	$(PYTHON) scripts/extract_jar_assets.py $(if $(JAR),--jar "$(JAR)",) $(if $(DIR),--dir "$(DIR)",) $(if $(EXTRACT_OUT),--output "$(EXTRACT_OUT)",) $(ARGS)
 
-# One target per crate (test-mod/mods/<id>/Cargo.toml), so no shell loop is needed.
-test-mods: $(addprefix test-mod/,$(wildcard mods/*/Cargo.toml))
+# One target per crate (test-mod/crates/<id>/Cargo.toml and test-mod/mods/<id>/Cargo.toml), so no shell loop is needed.
+test-mods: $(addprefix test-mod/,$(wildcard crates/*/Cargo.toml) $(wildcard mods/*/Cargo.toml))
 
 test-mod/%:
 	$(info ==> Testing $*)
@@ -80,6 +80,25 @@ e2e-all-mods:
 
 integration-test:
 	$(PYTHON) scripts/e2e_harness.py --phase both $(E2E_FLAGS)
+
+# Agents: .agents/ is the source; each tool's copy is generated from it.
+agents:
+	$(PYTHON) scripts/fleet/sync_agents.py
+
+agents-check:
+	$(PYTHON) scripts/fleet/sync_agents.py --check
+
+agent-gate:
+	$(PYTHON) scripts/fleet/guard.py gate $(if $(MOD),--mod "$(MOD)",)
+
+fleet-next:
+	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(MOD)
+
+fleet-start:
+	$(PYTHON) scripts/fleet/guard.py claim $(MOD)
+
+fleet-stop:
+	$(PYTHON) scripts/fleet/guard.py stop
 
 # Printed by make itself: cmd.exe would treat the | and < in it as pipes and redirects.
 define HELP
@@ -110,6 +129,15 @@ make e2e-all-mods [MOD=a,b] [REV=...] [DRY_RUN=1]
                       Phase 2: boot Horizon with the selected mods (default: all) loaded together
 make integration-test [MOD=a,b] [REV=...] [DRY_RUN=1]
                       Phase 1 + Phase 2; fails on any command error, game-log ERROR/panic or crash
+make agents           Regenerate each agent tool's copy of .agents/ (Claude Code: .claude/); agents-check reports drift
+make agent-gate [MOD=a,b]
+                      Tests, check-mods and harness dry run for the mods/crates you changed (what the stop hooks run)
+make fleet-next [AGENT=agy|claude|codex] [MOD=<id>]
+                      One headless conductor run on one board row (AGENT_CMD="<cli flags>" for any other agent);
+                      it relaunches the agent until the row is finished
+make fleet-start MOD=<id>
+                      The conductor runs this first: from then on its session keeps working until the row is finished
+make fleet-stop       Tell every fleet agent to stop at the end of its current turn
 CURSEFORGE_API_KEY is optional for Agrarian Skies 2: without a working key it falls back
                       to the public CurseForge download of pack 2.0.6 (file 3016703).
 endef

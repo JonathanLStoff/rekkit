@@ -1,0 +1,138 @@
+# Releases every mod under mods/ (but example_mod) whose version is new: tests and packs it, signs
+# its .hmod and .hnmod with minisign, and publishes the GitHub release <id>-<version> with the four
+# files. That release is the submission: Horizon's registry reads the releases of a listed project's
+# repository within the hour and publishes the version (horizon/docs/mods.md, "Publish your mod").
+#
+# A mod whose shipped files (content/, native/, src/) changed since its last release without a
+# version bump fails the run, on pull requests too (scripts/release_plan.py).
+#
+# Needs, once:
+#   secrets MINISIGN_SECRET_KEY  the contents of ~/.minisign/minisign.key (from `minisign -G`)
+#           MINISIGN_PASSWORD    its password (leave unset for a key made with `minisign -G -W`)
+#   minisign.pub                 the public key, committed at the repository root
+# The release job runs in the `mod-release` environment: give it required reviewers in
+# Settings → Environments to approve each release before anything is signed.
+name: Release mods
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mods/**"
+      - "minisign.pub"
+      - "scripts/pack_mod.py"
+      - "scripts/release_plan.py"
+      - ".github/workflows/release-mods.yml"
+  pull_request:
+    paths: ["mods/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash # -eo pipefail: a failed command anywhere in a pipe fails the step
+
+concurrency:
+  group: release-mods-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      count: ${{ steps.plan.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # every tag, to compare each mod with its last release
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: plan
+        run: python scripts/release_plan.py --exclude example_mod
+
+  release:
+    needs: plan
+    if: github.event_name != 'pull_request' && needs.plan.outputs.count != '0'
+    runs-on: ubuntu-latest
+    environment: mod-release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    env:
+      ID: ${{ matrix.id }}
+      VERSION: ${{ matrix.version }}
+      TAG: ${{ matrix.tag }}
+      PREVIOUS_TAG: ${{ matrix.previous_tag }}
+      OUT: mods/${{ matrix.id }}/target/horizon-mod
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Test
+        run: cargo test --manifest-path "mods/$ID/Cargo.toml"
+
+      - name: Pack
+        run: python scripts/pack_mod.py --mod "$ID"
+
+      - name: Check the registry's key
+        # A listed project with a key refuses versions signed by any other: stop before releasing.
+        run: |
+          test -f minisign.pub || { echo "::error::Commit your minisign public key as minisign.pub (minisign -G writes it)"; exit 1; }
+          ours="$(sed -n 2p minisign.pub)"
+          entry="$(curl -fsSL https://horizon-rust.github.io/horizon-mods/index.json \
+            | jq -c --arg id "$ID" '.projects[] | select(.id == $id)')" || entry=""
+          listed_key="$(jq -r '.key // ""' <<<"$entry")"
+          if [ -n "$listed_key" ] && [ "$listed_key" != "$ours" ]; then
+            echo "::error::The registry lists $ID with key $listed_key, not minisign.pub's $ours"; exit 1
+          fi
+          echo "LISTED=${entry:+yes}" >> "$GITHUB_ENV"
+
+      - name: Sign
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+          MINISIGN_PASSWORD: ${{ secrets.MINISIGN_PASSWORD }}
+        run: |
+          test -n "$MINISIGN_SECRET_KEY" || { echo "::error::Set the MINISIGN_SECRET_KEY secret"; exit 1; }
+          sudo apt-get update -qq && sudo apt-get install -y -qq minisign >/dev/null
+          key="$RUNNER_TEMP/minisign.key"
+          (umask 077; printf '%s\n' "$MINISIGN_SECRET_KEY" > "$key")
+          trap 'rm -f "$key"' EXIT
+          for f in "$OUT/$ID.hmod" "$OUT/$ID.hnmod"; do
+            # minisign reads the password from stdin when it is not a terminal.
+            printf '%s\n' "$MINISIGN_PASSWORD" | minisign -S -s "$key" -m "$f" -t "$ID $VERSION $(basename "$f")"
+            minisign -V -p minisign.pub -m "$f"
+          done
+
+      - name: Publish the release
+        run: |
+          {
+            echo "$ID $VERSION"
+            echo
+            if [ -n "$PREVIOUS_TAG" ]; then range="$PREVIOUS_TAG..HEAD"; else range=HEAD; fi
+            git log --no-merges --format='- %s (%h)' "$range" -- "mods/$ID"
+          } > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "$ID $VERSION" \
+            --notes-file "$RUNNER_TEMP/notes.md" --latest=false \
+            "$OUT/$ID.hmod" "$OUT/$ID.hmod.minisig" "$OUT/$ID.hnmod" "$OUT/$ID.hnmod.minisig"
+          {
+            echo "### $ID $VERSION released"
+            echo "https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
+            if [ -z "$LISTED" ]; then
+              echo
+              echo "$ID is not in Horizon's registry yet, so it won't be published. List it once at"
+              echo "https://playhorizon.dev/mods/submit with this repository, its page and the key in minisign.pub."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

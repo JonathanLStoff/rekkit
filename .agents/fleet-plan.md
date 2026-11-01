@@ -1,8 +1,8 @@
-# Rekkit agy Fleet Plan
+# Rekkit Fleet Plan
 
-How a fleet of agy agents ports every Java mod in Tekkit Classic 1.2.5, Direwolf20 1.4.7 and Agrarian Skies 2 to Horizon's Rust dual-artifact format. The fleet works on **one mod at a time**, in the order of `planning/fleet-board.md`, starting with the shared `rekkit_core` crate. Each mod follows the 10-step lifecycle in [`planning/workflow.md`](../planning/workflow.md).
+How a fleet of agents (agy, Claude Code, or a single agent in any other tool) ports every Java mod in Tekkit Classic 1.2.5, Direwolf20 1.4.7 and Agrarian Skies 2 to Horizon's Rust dual-artifact format. The fleet works on **one mod at a time**, in the order of `planning/fleet-board.md`, starting with the shared `rekkit_core` crate. Each mod follows the 10-step lifecycle in [`planning/workflow.md`](../planning/workflow.md).
 
-Source of truth for the goal: `CLAUDE.md`, `planning/workflow.md`, `planning/harness.md`, `planning/priority.md`, `planning/{tekkit,dw20,agrarianskies2}_mods.md`, `planning/mods/*.md`.
+Source of truth for the goal: `AGENTS.md`, `planning/workflow.md`, `planning/harness.md`, `planning/priority.md`, `planning/{tekkit,dw20,agrarianskies2}_mods.md`, `planning/mods/*.md`.
 
 **Start of every session:** follow `AGENTS.md` → *Start of every session*: check the setup (`./setup.sh --check`), tell the user word for word what they must download if a `!` line says so, then take the next board row and keep working.
 
@@ -26,7 +26,7 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 ## 2. Fleet shape
 
 ```
- trigger ── agy TUI (/agents → conductor) · scripts/fleet/run-next.sh · /schedule
+ trigger ── agy (/agents → conductor) · Claude Code (/conductor) · "Follow AGENTS.md" · make fleet-next · /schedule
     │
  Conductor (pro, high) ── reads planning/fleet-board.md, takes the ONE active or next queued row
     │
@@ -41,7 +41,7 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
  next row
 ```
 
-**One mod at a time.** The conductor never opens a second mod while one is `active`. Parallelism happens only inside the current mod, where the five builders own disjoint paths. This keeps Argon quota spending predictable, keeps `main` always green, and means every later mod builds on a released, reviewed predecessor. `scripts/fleet/run-next.sh` takes a lock so two headless runs cannot overlap.
+**One mod at a time.** The conductor never opens a second mod while one is `active`. Parallelism happens only inside the current mod, where the five builders own disjoint paths. This keeps model quota spending predictable, keeps `main` always green, and means every later mod builds on a released, reviewed predecessor. `make fleet-next` takes a lock so two headless runs cannot overlap.
 
 ---
 
@@ -63,17 +63,17 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 | **compat-auditor** | 7 (gate) | `flash` | main, after merge | nothing (runs the harness, reports) |
 | **release-clerk** | 8–10 | `flash` | `branch` | version fields in the 4 lockstep files; local commit; `make pack-mods` |
 | **scribe** | docs | `flash` | `share` | `mods/<id>/README.md`, mod table in `README.md` |
-| **Stop hook** | gate | none | — | `scripts/fleet/tests-gate.sh` |
+| **Stop hook** | gate | none | — | `scripts/fleet/guard.py gate` (`make agent-gate` by hand) |
 
-Effort: run the conductor at `/effort high`. Frontmatter has no effort field, so `pro` subagents run Argon's default (High) and `flash` subagents run 3.8 Flash's default (Medium).
+Models: `pro` is the tool's strongest model, `flash` its fast one. agy: Gemini 4 Argon and 3.8 Flash (run the conductor at `/effort high`; frontmatter has no effort field, so subagents run their model's default). Claude Code: Opus and Sonnet (`make agents` writes them into `.claude/agents/`). Other tools: whatever you pick for each role.
 
-Free/Plus plans have no Argon: set every `pro` to `flash`.
+agy Free/Plus plans have no Argon: set every `pro` to `flash`, then `make agents`.
 
 ---
 
 ## 4. The pipeline for the current mod
 
-The conductor creates branch `port/<id>` and sets the board row to `active`. A single agent without agy plays every role below in the same order.
+The conductor creates branch `port/<id>` and sets the board row to `active`. An agent whose tool has no subagents plays every role below itself, in the same order.
 
 1. **Spec** (step 1). If `planning/mods/<id>.md` exists, spec-writer gap-checks it against the JAR and adds `Hooks needed`, `Uses from rekkit_core` and `Open questions` sections. Otherwise it writes the full spec in the structure of the existing specs.
 2. **Scaffold** (step 2). Same shape as `mods/example_mod`; version `0.1.0` in all four lockstep files; same pinned `horizon`/`mixins` revisions; path dependency `rekkit_core = { path = "../../crates/rekkit_core" }`.
@@ -157,7 +157,7 @@ Minecraft Forge, CodeChickenCore, Immibis Core (libraries: port only what a cons
 
 - Agents write only the paths they own (§3). Anything else is reported to the conductor.
 - Shared files (`Makefile`, `scripts/*.py`, root `README.md`, planning ledgers, the board) change only on main, by the conductor or scribe. One exception: the `rekkit_core` scaffolder edits the `test-mods` target.
-- `horizon/` is a read-only git submodule. `scripts/fleet/guard-paths.sh` denies writes there.
+- `horizon/` is a read-only git submodule. The paths guard (`scripts/fleet/guard.py paths`, agy and Claude Code hooks) denies writes there.
 - Mods depend on `rekkit_core` and on earlier mods by path; a mod never edits another mod's crate.
 
 ---
@@ -166,7 +166,7 @@ Minecraft Forge, CodeChickenCore, Immibis Core (libraries: port only what a cons
 
 `planning/fleet-board.md`, owned by the conductor. `State` is `queued`, `active`, `blocked` or `done`; there is at most one `active` row. Step cells are `·` todo, `▶` in progress, `✓`, `✗` failed, `—` n/a.
 
-`scripts/fleet/run-next.sh` resumes the `active` row, otherwise starts the first `queued` row whose deps are all `done`.
+`make fleet-next` resumes the `active` row, otherwise starts the first `queued` row whose deps are all `done`.
 
 ---
 
@@ -174,8 +174,8 @@ Minecraft Forge, CodeChickenCore, Immibis Core (libraries: port only what a cons
 
 ```
 rekkit/
-├── AGENTS.md
-├── .agents/
+├── AGENTS.md                # every tool's instructions; CLAUDE.md and GEMINI.md import it
+├── .agents/                 # the source: edit here, then `make agents`
 │   ├── fleet-plan.md
 │   ├── agents/<14 agents>/agent.md
 │   ├── skills/
@@ -185,31 +185,47 @@ rekkit/
 │   │   ├── mod-spec/SKILL.md
 │   │   ├── legacy-asset-mapping/SKILL.md
 │   │   └── parity-checklist/SKILL.md
-│   └── hooks.json
+│   └── hooks.json           # agy hooks
+├── .claude/                 # generated by `make agents`: agents/, skills/, settings.json hooks
 ├── planning/fleet-board.md
 ├── planning/horizon-gaps.md
 └── scripts/fleet/
-    ├── tests-gate.sh      # Stop hook: cargo test + check-mods + e2e dry run for touched mods/crates
-    ├── guard.sh           # PreToolUse: no push/release/sign/submodule/force/rm -rf
-    ├── guard-paths.sh     # PreToolUse: no writes under horizon/, no code under content/
-    ├── python.sh          # prints a Python ≥ 3.11 (scripts need tomllib)
-    └── run-next.sh        # headless: one conductor run on one mod, with a lock
+    ├── guard.py           # the guards (shell, paths), the stop gate, fleet-start/fleet-stop; agy, Claude or plain format
+    ├── hook.sh            # what the hooks run: finds Python, calls guard.py
+    ├── sync_agents.py     # writes each tool's copy of .agents/ (make agents / agents-check)
+    ├── run_next.py        # headless: one conductor run on one mod with any agent CLI, with a lock
+    ├── run-next.sh        # the same with AGENT=agy by default (older schedules)
+    └── python.sh          # prints a Python ≥ 3.11 (scripts need tomllib)
 ```
 
 ---
 
 ## 9. Running it
 
-**Interactive**
+**Interactive, agy**
 1. `agy` in the repo → `/agents` → **conductor**.
 2. `/model` → Gemini 4 Argon, `/effort high`.
 3. "Continue the board." The conductor resumes the active row or starts the next one.
 4. `Alt+J` jumps to the next approval, `Ctrl+K` approves inline, `K` kills a runaway.
 5. Talk to one worker: `@hook-engineer also guard native_update_shape on redpower_2:wire`.
 
-**Headless**
-- `scripts/fleet/run-next.sh` (next row) or `scripts/fleet/run-next.sh rekkit_core` (a specific row).
-- `/schedule` a nightly `scripts/fleet/run-next.sh`. It exits early if a run is already going or the active row is waiting on you.
+**Interactive, Claude Code**
+1. `claude` in the repo; `CLAUDE.md` loads `AGENTS.md`, `.claude/` holds the roles, skills and hooks.
+2. `/conductor` (or "Continue the board."). The main session conducts and starts the roles as subagents.
+
+**Interactive, any other tool** (Codex, Cursor, Copilot, Gemini CLI…)
+1. Open the repo and say **"Follow AGENTS.md."** The agent conducts and plays each role itself (or through its tool's subagents, given the role file as the prompt).
+2. Nothing blocks a forbidden command in these tools: the *Rules* in `AGENTS.md` and `make agent-gate` before stopping are the guard.
+
+**A run does not stop until its mod is finished**
+- The conductor runs `make fleet-start MOD=<id>` when it takes the row. The hooks tie that session to the row, and from then on the Stop hook (agy and Claude Code) sends it back to work at every turn end until the row is finished: release prep done (steps 9–10 `▶`), `done`, or `blocked` with the reason in Notes. It also holds the agent while its subagents are still running, and while tests fail for what it wrote.
+- It lets the agent stop when you cancel it (agy `USER_CANCELED`; Claude Code never runs the hook on an interrupt), after `make fleet-stop` (any tool, any terminal), or after 10 turn ends in a row with no change to the board (stuck: it says why in its last message).
+- Headless runs (`make fleet-next`) relaunch the agent with "continue from step N" whenever it exits early, for any tool, until the row is finished, `make fleet-stop`, or 3 runs in a row change nothing.
+- Tools without hooks only have the instruction in `AGENTS.md`; run them headless to get the relaunching.
+
+**Headless, any tool**
+- `make fleet-next AGENT=agy|claude|codex` (next row), `make fleet-next AGENT=claude MOD=rekkit_core` (a specific row), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
+- `/schedule` a nightly `make fleet-next AGENT=…`. It exits early if a run is already going or the active row is waiting on you.
 
 ---
 
@@ -233,3 +249,5 @@ Resolved: the shared crate exists and goes first, at `crates/rekkit_core`.
 ---
 
 *agy specifics (agent frontmatter fields, tool names, `hooks.json` shape, `/boost`, model names) follow the Antigravity docs as of 31 Oct 2026 and have not been tested against a live agy install. Tool names in `tools:` must match exactly; an unknown name can hang a subagent.*
+
+*Claude Code's copy (`.claude/`) is generated by `scripts/fleet/sync_agents.py`; its skills and hooks were checked in a live Claude Code session on 1 Nov 2026. Other tools get no generated copy: they read `AGENTS.md` and the files in `.agents/` directly.*

@@ -1,0 +1,45 @@
+{
+  "mod": "redpower_2",
+  "status": "UNVERIFIED",
+  "notes": "RedPower 2 legacy sprite sheets from Eloraam (RedPowerCore, RedPowerWiring, RedPowerMachine, RedPowerControl, RedPowerWorld). Awaiting JAR asset extraction via `make extract-jar`.",
+  "sheets": [
+    {
+      "sheet": "eloraam/core/items.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower Core item sprite sheet (ingots, gems, wafers, tools)"
+    },
+    {
+      "sheet": "eloraam/core/blocks.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower Core block sprite sheet (ores, marble, basalt)"
+    },
+    {
+      "sheet": "eloraam/wiring/wiring.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower Wiring sprite sheet (red alloy wire, insulated colors, bundled cables)"
+    },
+    {
+      "sheet": "eloraam/machine/machine.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower Machine block and tube sprite sheet (pneumatic tubes, alloy furnace, deployer, breaker)"
+    },
+    {
+      "sheet": "eloraam/control/control.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower Control sprite sheet (CPU, monitor, disk drive, keyboard, ribbon cable)"
+    },
+    {
+      "sheet": "eloraam/world/world.png",
+      "size": 16,
+      "status": "UNVERIFIED",
+      "description": "RedPower World sprite sheet (rubber tree, flax, plants)"
+    }
+  ],
+  "slices": [],
+  "copies": []
+}

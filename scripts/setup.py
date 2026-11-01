@@ -71,8 +71,8 @@ class Report:
         if TODO in states:
             print(f"\nNot finished: run {RERUN} to do the · lines.")
             return 3
-        print("\nAll set. Next: read CONTRIBUTING.md, then `scripts/fleet/run-next.sh` or pick a row "
-              "in planning/fleet-board.md.")
+        print("\nAll set. Next: read CONTRIBUTING.md, then tell your agent \"Follow AGENTS.md\" (or run "
+              "`make fleet-next AGENT=agy|claude|codex`).")
         return 0
 
 
@@ -237,6 +237,18 @@ def step_env(r: Report, check: bool) -> None:
         r.add(".env", OK, "created from .env.example (the CurseForge key is optional)")
 
 
+def step_agents(r: Report, check: bool) -> None:
+    """Each agent tool's copy of .agents/ (Claude Code's .claude/), as `make agents` writes it."""
+    cmd = [sys.executable, ROOT / "scripts" / "fleet" / "sync_agents.py"] + (["--check"] if check else [])
+    res = sh(cmd, capture_output=True)
+    if res.returncode == 0:
+        r.add("agent copies", OK, "up to date" if check else "written from .agents/")
+    elif check:
+        r.add("agent copies", TODO, "out of date: make agents")
+    else:
+        r.add("agent copies", FAILED, f"`make agents` failed:\n{tail_of(res, 5)}")
+
+
 def step_mods(r: Report, check: bool) -> bool:
     if check:
         built = list(ROOT.glob("mods/*/target/horizon-mod/*.hmod"))
@@ -371,6 +383,7 @@ def main() -> int:
         return r.print()
     if step_submodule(r, args.check):
         step_env(r, args.check)
+        step_agents(r, args.check)
         mods_ok = step_mods(r, args.check)
         step_packs(r, args.check, args.skip_packs)
         built = mods_ok and step_build(r, args.check, args.skip_build)

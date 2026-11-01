@@ -63,7 +63,7 @@ Live test results, game logs, crash reports and screenshots land in `target/e2e-
 
 ## Working with an AI agent
 
-Tell it: **"Follow AGENTS.md."** [`AGENTS.md`](AGENTS.md) makes it check the setup, tell you word for word what to download if something needs you, then take the next board row and keep going. The agy multi-agent fleet is described in [`.agents/fleet-plan.md`](.agents/fleet-plan.md). Agents never push, sign or publish; you do.
+Any agent works: agy, Claude Code, Codex, Cursor, Copilot, Gemini CLI. Tell it: **"Follow AGENTS.md."** [`AGENTS.md`](AGENTS.md) makes it check the setup, tell you word for word what to download if something needs you, then take the next board row and keep going. In agy (`/agents` → conductor) and Claude Code (`/conductor`) it runs as a fleet of role subagents with hooks that block pushing and signing; other tools play the roles one by one. Unattended: `make fleet-next AGENT=agy|claude|codex`. The fleet is described in [`.agents/fleet-plan.md`](.agents/fleet-plan.md). To change a role or skill, edit `.agents/` and run `make agents`. Agents never push, sign or publish; you do.
 
 ## When something goes wrong
 

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:cobblestone",
+    "P": "minecraft:piston",
+    "R": "minecraft:redstone",
+    "T": "minecraft:oak_trapdoor"
+  },
+  "pattern": [
+    "CTC",
+    "CRC",
+    "CPC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "redpower_2:transposer"
+  }
+}

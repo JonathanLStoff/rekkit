@@ -1,0 +1,14 @@
+[package]
+name = "redpower_2"
+version = "0.1.0"
+edition = "2021"
+description = "RedPower 2 port for Horizon (microblocks, red alloy & bundled wiring, logic gates, pneumatic tubes, frames, blutricity, and 6502 computer)"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rekkit_core = { path = "../../crates/rekkit_core" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"

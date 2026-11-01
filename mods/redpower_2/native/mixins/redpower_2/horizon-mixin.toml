@@ -1,0 +1,17 @@
+# Horizon Native Mixin Bundle Manifest (docs/native-mods.md)
+# Read by horizon-mixins (horizon-mixins-core/src/manifest.rs) with deny_unknown_fields:
+# [mod] takes only id, version and priority.
+
+[mod]
+id = "redpower_2"
+version = "0.1.0"
+
+[compatibility]
+horizon_revision = "38a97ea64e816e1f897d1fbc7c7ded3b0ce87f56"
+
+[[injection]]
+id = "list-in-options"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+kind = "HEAD"
+helper = "list_mod.rs"
+bindings = [{ name = "mods", ty = "&mut Vec<NativeMod>", value = "&mut *mods" }]

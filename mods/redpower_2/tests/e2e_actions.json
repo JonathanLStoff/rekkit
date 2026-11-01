@@ -1,0 +1,11 @@
+{
+  "mod": "redpower_2",
+  "trigger_items": [
+    "redpower_2:screwdriver",
+    "redpower_2:paint_brush",
+    "minecraft:red_dye"
+  ],
+  "custom_recipe_types": [
+    "redpower_2:alloy_furnace"
+  ]
+}

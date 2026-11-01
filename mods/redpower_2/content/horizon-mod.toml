@@ -1,0 +1,12 @@
+# Horizon Content Mod Manifest (API 0.2)
+# Conforms to horizon_mods::manifest::Manifest (horizon/crates/horizon-mods/src/manifest.rs).
+# Content mods package data/ and assets/ only (no Cargo.toml in this directory).
+
+id = "redpower_2"
+name = "RedPower 2"
+version = "0.1.0"
+description = "RedPower 2 content pack declaring ores, machines, pneumatic tubes, wires, logic gates, microblocks, tools, and Alloy Furnace recipes."
+authors = ["Rekkit Contributors"]
+api = "0.2"
+side = "both"
+capabilities = ["registries"]

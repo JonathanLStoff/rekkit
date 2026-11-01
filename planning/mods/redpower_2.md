@@ -157,108 +157,151 @@ All logic tiles are 1/8-block flat tiles placeable on any face, rotatable in 4 d
 
 ---
 
-## 5. Complete Item & Block Registry
+## 5. Complete Item & Block Registry (`redpower_2`)
 
-### Blocks
-1. `redpower:ore_ruby`
-2. `redpower:ore_sapphire`
-3. `redpower:ore_green_sapphire`
-4. `redpower:ore_nikolite`
-5. `redpower:ore_copper`
-6. `redpower:ore_tin`
-7. `redpower:ore_silver`
-8. `redpower:ore_tungsten`
-9. `redpower:block_marble` (and brick variants)
-10. `redpower:block_basalt` (cobble, brick, paver variants)
-11. `redpower:alloy_furnace`
-12. `redpower:blulectric_alloy_furnace`
-13. `redpower:blulectric_furnace`
-14. `redpower:deployer`
-15. `redpower:block_breaker`
-16. `redpower:transposer`
-17. `redpower:filter`
-18. `redpower:sorting_machine`
-19. `redpower:retriever`
-20. `redpower:regulator`
-21. `redpower:item_detector`
-22. `redpower:buffer`
-23. `redpower:relay`
-24. `redpower:frame` (Support Frame)
-25. `redpower:frame_motor`
-26. `redpower:pneumatic_tube`
-27. `redpower:restrictor_tube`
-28. `redpower:magtube`
-29. `redpower:accelerator`
-30. `redpower:battery_box`
-31. `redpower:solar_panel`
-32. `redpower:thermopile`
-33. `redpower:wind_turbine`
-34. `redpower:pump`
-35. `redpower:lamp` (16 dyed colors + plain)
-36. `redpower:inverted_lamp` (16 dyed colors + plain)
-37. `redpower:cpu`
-38. `redpower:monitor`
-39. `redpower:keyboard`
-40. `redpower:disk_drive`
-41. `redpower:io_expander`
-42. `redpower:microblock` (Multi-part container block for all covers/panels/strips/corners)
+### Blocks (`data/redpower_2/horizon/block/*.json`)
+1. `redpower_2:ore_ruby`
+2. `redpower_2:ore_sapphire`
+3. `redpower_2:ore_green_sapphire`
+4. `redpower_2:ore_nikolite`
+5. `redpower_2:ore_copper`
+6. `redpower_2:ore_tin`
+7. `redpower_2:ore_silver`
+8. `redpower_2:ore_tungsten`
+9. `redpower_2:block_marble`
+10. `redpower_2:block_basalt`
+11. `redpower_2:alloy_furnace`
+12. `redpower_2:blulectric_alloy_furnace`
+13. `redpower_2:blulectric_furnace`
+14. `redpower_2:deployer`
+15. `redpower_2:block_breaker`
+16. `redpower_2:transposer`
+17. `redpower_2:filter`
+18. `redpower_2:sorting_machine`
+19. `redpower_2:retriever`
+20. `redpower_2:regulator`
+21. `redpower_2:item_detector`
+22. `redpower_2:buffer`
+23. `redpower_2:relay`
+24. `redpower_2:frame`
+25. `redpower_2:frame_motor`
+26. `redpower_2:pneumatic_tube`
+27. `redpower_2:restrictor_tube`
+28. `redpower_2:magtube`
+29. `redpower_2:accelerator`
+30. `redpower_2:battery_box`
+31. `redpower_2:solar_panel`
+32. `redpower_2:thermopile`
+33. `redpower_2:wind_turbine`
+34. `redpower_2:pump`
+35. `redpower_2:lamp`
+36. `redpower_2:inverted_lamp`
+37. `redpower_2:cpu`
+38. `redpower_2:monitor`
+39. `redpower_2:keyboard`
+40. `redpower_2:disk_drive`
+41. `redpower_2:io_expander`
+42. `redpower_2:microblock`
 
-### Items
-1. `redpower:handsaw` (Wood, Stone, Iron, Gold, Diamond, Ruby, Green Sapphire, Sapphire)
-2. `redpower:screwdriver` (Rotates logic gates and configures machines/tubes)
-3. `redpower:paint_brush` (16 dye colors; colors tubes and bags)
-4. `redpower:canvas_bag` (16 dyed colors, 27-slot handheld portable inventory)
-5. `redpower:sickle` (Wood, Stone, Iron, Gold, Diamond, Ruby, Green Sapphire, Sapphire)
-6. `redpower:wool_card`
-7. `redpower:ruby`
-8. `redpower:sapphire`
-9. `redpower:green_sapphire`
-10. `redpower:nikolite`
-11. `redpower:red_alloy_ingot`
-12. `redpower:blue_alloy_ingot`
-13. `redpower:brass_ingot`
-14. `redpower:copper_ingot`
-15. `redpower:tin_ingot`
-16. `redpower:silver_ingot`
-17. `redpower:tungsten_ingot`
-18. `redpower:silicon_wafer`
-19. `redpower:red_doped_wafer`
-20. `redpower:blue_doped_wafer`
-21. `redpower:floppy_disk`
-22. `redpower:canvas`
-23. `redpower:battery` (BT rechargeable)
-24. `redpower:logic_tile` (Subtypes: Inverter, AND, OR, NAND, NOR, XOR, XNOR, Buffer, Mux, Repeater, Timer, Counter, Sequencer, Pulse Former, Toggle Latch, RS Latch, Transparent Latch, State Cell, Synchronizer, Light Sensor)
-25. `redpower:wire_red_alloy`
-26. `redpower:wire_insulated` (16 colors)
-27. `redpower:wire_bundled`
-28. `redpower:wire_jacketed`
-29. `redpower:ribbon_cable`
-
----
-
-## 6. Key Crafting & Smelting Recipes
-
-### 6.1 Alloy Furnace (Brick-like 2x2 internal recipe grid)
-* **Red Alloy Ingot:** 4x Redstone Dust + 1x Copper Ingot (or Iron Ingot).
-* **Blue Alloy Ingot:** 4x Nikolite Dust + 1x Silver Ingot.
-* **Brass Ingot:** 3x Copper Ingot + 1x Tin Ingot $\rightarrow$ 4x Brass Ingot.
-* **Silicon Boule:** 8x Sand + 8x Coal $\rightarrow$ Silicon Boule.
-* **Silicon Wafer:** Sliced from Silicon Boule using Handsaw.
-* **Red-Doped Wafer:** 4x Redstone + 1x Silicon Wafer in Alloy Furnace.
-* **Blue-Doped Wafer:** 4x Nikolite + 1x Silicon Wafer in Alloy Furnace.
-
-### 6.2 Logic & Wiring
-* **Red Alloy Wire (x12):** 1x Red Alloy Ingot + 1x Paper / Stone strip.
-* **Insulated Wire:** 1x Red Alloy Wire + 1x Wool (matching color).
-* **Bundled Cable:** 1x Insulated Wire of multiple colors + String.
-* **Handsaw:** 2x Sticks + 1x Ingot/Gem + 2x Iron Ingots.
-* **Screwdriver:** 1x Iron Ingot + 1x Stick.
-* **Logic Gates:** Red-doped wafers, stone base plates, red alloy wires, and redstone torches laid out in geometric patterns matching their logic function.
+### Items (`data/redpower_2/horizon/item/*.json`)
+1. `redpower_2:handsaw` (`crafting_remainder = "redpower_2:handsaw"`)
+2. `redpower_2:screwdriver` (`crafting_remainder = "redpower_2:screwdriver"`)
+3. `redpower_2:paint_brush`
+4. `redpower_2:canvas_bag`
+5. `redpower_2:sickle`
+6. `redpower_2:wool_card`
+7. `redpower_2:ruby`
+8. `redpower_2:sapphire`
+9. `redpower_2:green_sapphire`
+10. `redpower_2:nikolite`
+11. `redpower_2:red_alloy_ingot`
+12. `redpower_2:blue_alloy_ingot`
+13. `redpower_2:brass_ingot`
+14. `redpower_2:copper_ingot`
+15. `redpower_2:tin_ingot`
+16. `redpower_2:silver_ingot`
+17. `redpower_2:tungsten_ingot`
+18. `redpower_2:silicon_wafer`
+19. `redpower_2:red_doped_wafer`
+20. `redpower_2:blue_doped_wafer`
+21. `redpower_2:floppy_disk`
+22. `redpower_2:canvas`
+23. `redpower_2:battery`
+24. `redpower_2:logic_tile`
+25. `redpower_2:wire_red_alloy`
+26. `redpower_2:wire_insulated`
+27. `redpower_2:wire_bundled`
+28. `redpower_2:wire_jacketed`
+29. `redpower_2:ribbon_cable`
 
 ---
 
-## 7. Recreation Implementation Notes for Rekkit (Rust)
-1. **Multi-Part / Voxel Model:** Use a sub-voxel octree or bitmask (8 octants, 12 edges, 6 faces) inside block entities to support multi-part microblocks, wires, and tiles in a single coordinate.
-2. **Tube Pathfinding:** Implement an asynchronous breadth-first search (BFS) on tube connection graphs with caching. Tube queries must simulate destination slot reservation so two items don't route to the same single open slot simultaneously.
-3. **Frame Movement Physics:** When a Frame Motor triggers, collect all rigidly connected blocks via DFS. Validate destination bounding volume: if any target block is blocked, cancel movement with zero loss. If clear, atomically update chunk block entities and broadcast translation packets.
-4. **6502 Emulator:** Integrate an embedded 6502 CPU core crate (e.g. `oxur` or a lightweight instruction interpreter) with memory-mapped MMIO bounded execution (e.g. max 50,000 cycles per tick) to prevent server hangs.
+## 6. Key Crafting, Smelting & Alloy Furnace Recipes
+
+### 6.1 Custom Machine Recipes (`"type": "redpower_2:alloy_furnace"`)
+* **Red Alloy Ingot (`redpower_2:alloy_red_alloy`):** 4x `minecraft:redstone` + 1x `redpower_2:copper_ingot` $\rightarrow$ 1x `redpower_2:red_alloy_ingot`.
+* **Blue Alloy Ingot (`redpower_2:alloy_blue_alloy`):** 4x `redpower_2:nikolite` + 1x `redpower_2:silver_ingot` $\rightarrow$ 1x `redpower_2:blue_alloy_ingot`.
+* **Brass Ingot (`redpower_2:alloy_brass`):** 3x `redpower_2:copper_ingot` + 1x `redpower_2:tin_ingot` $\rightarrow$ 4x `redpower_2:brass_ingot`.
+* **Red-Doped Wafer (`redpower_2:alloy_red_doped_wafer`):** 4x `minecraft:redstone` + 1x `redpower_2:silicon_wafer` $\rightarrow$ 1x `redpower_2:red_doped_wafer`.
+* **Blue-Doped Wafer (`redpower_2:alloy_blue_doped_wafer`):** 4x `redpower_2:nikolite` + 1x `redpower_2:silicon_wafer` $\rightarrow$ 1x `redpower_2:blue_doped_wafer`.
+
+### 6.2 Standard Crafting (`"type": "minecraft:crafting_shaped"` / `"minecraft:crafting_shapeless"`)
+* **Red Alloy Wire (`redpower_2:wire_red_alloy`, x12):** 3x `redpower_2:red_alloy_ingot` in a horizontal row.
+* **Insulated Wire (`redpower_2:wire_insulated`):** `redpower_2:wire_red_alloy` + `minecraft:white_wool`.
+* **Bundled Cable (`redpower_2:wire_bundled`):** 5x `redpower_2:wire_insulated` + 4x `minecraft:string`.
+* **Handsaw (`redpower_2:handsaw`):** 3x `minecraft:stick` + 2x `minecraft:iron_ingot` + 2x `minecraft:diamond`.
+* **Screwdriver (`redpower_2:screwdriver`):** 1x `minecraft:iron_ingot` + 1x `minecraft:stick`.
+* **Alloy Furnace (`redpower_2:alloy_furnace`):** 8x `minecraft:bricks` in a furnace ring.
+* **Block Breaker (`redpower_2:block_breaker`):** 6x `minecraft:cobblestone` + 1x `minecraft:iron_pickaxe` + 1x `minecraft:piston` + 1x `minecraft:redstone`.
+* **Deployer (`redpower_2:deployer`):** 6x `minecraft:cobblestone` + 1x `minecraft:chest` + 1x `minecraft:piston` + 1x `minecraft:redstone`.
+* **Transposer (`redpower_2:transposer`):** 6x `minecraft:cobblestone` + 1x `minecraft:OAK_TRAPDOOR` + 1x `minecraft:piston` + 1x `minecraft:redstone`.
+* **Pneumatic Tube (`redpower_2:pneumatic_tube`, x8):** `redpower_2:brass_ingot` + `minecraft:glass` + `redpower_2:brass_ingot`.
+
+---
+
+## 7. Hazards & Safety Limits
+* **6502 CPU Cycle Runaway:** Unbounded Forth / 6502 loops could stall server ticks; bounded to `MAX_CYCLES_PER_TICK = 4,096` instructions per world tick per CPU.
+* **Frame Motor Mass Limit & Unmovable Blocks:** Frame Motors refuse to move Bedrock (`minecraft:bedrock`), Obsidian (unless configured), or assemblies exceeding `MAX_FRAME_BLOCKS = 1,024` blocks.
+* **Pneumatic Tube Backpressure:** Items never spill onto the ground when destinations are full; extraction halts or items bounce back to an overflow buffer.
+
+---
+
+## 8. Recreation Implementation Notes for Rekkit (Rust)
+1. **Multi-Part / Voxel Model:** Use a sub-voxel bitmask (8 octants, 12 edges, 6 faces) inside block entities to support multi-part microblocks, wires, and tiles in a single coordinate.
+2. **Tube Pathfinding:** Delegate tube graph connectivity and Dijkstra routing (with color filtering and Restrictor +500 weight) to `rekkit_core::grid::GridGraph`.
+3. **Frame Movement Physics:** Collect all rigidly connected blocks via BFS (`FrameAssembly`), validate destination bounding volume, and move atomically via `Game::native_set_block` (`API 24`).
+4. **6502 Emulator:** Pure Rust 6502 CPU state machine (`Cpu6502`) with 64 KB RAM, memory-mapped I/O Expander (`BundledSignal`), and bounded cycle execution.
+
+---
+
+## 9. Hooks Needed (`NATIVE_HOOKS_API = 40`)
+
+| Horizon Hook API | Entrypoint in `native_hooks.rs` | RedPower 2 Feature |
+| :--- | :--- | :--- |
+| **API 13** | `Game::native_use_item_on` | Screwdriver gate rotation/mode cycling, Paintbrush tube coloring, Handsaw microblock slicing. |
+| **API 15** | `Game::native_block_entity`, `Game::native_block_entity_ticks` | Attach and tick block entities for Alloy Furnace, Blulectric machines, Logic Gates, Tubes, Frame Motor, and 6502 CPU. |
+| **API 16–17** | `Game::native_block_entity_container`, `Game::native_block_entity_tick` | Alloy Furnace (9-slot 3×3 grid + fuel + output), Buffer (9 slots), Filter (9 slots), Sorting Machine, Battery Box. |
+| **API 18** | `Game::native_with_mod_block_entity`, `Game::native_set_block_property` | Blutricity charge transfer ($V = I \cdot R$), Pneumatic Tube item delivery, Lamp `lit` state updates. |
+| **API 19–20** | `Game::native_screen`, `Game::native_screen_click`, `Game::native_screen_tooltip`, `Game::native_menu_button`, `Game::native_insert_item` | Alloy Furnace GUI, Timer interval buttons, Filter/Buffer screens, Monitor terminal, tube item insertion. |
+| **API 24** | `Game::native_set_block` | Block Breaker mining adjacent blocks, Deployer placing blocks, Frame Motor translating structures. |
+| **API 32** | `Game::native_update_shape`, `Game::native_schedule_block_tick` | Dynamic wire/cable/tube 6-face neighbor shape connections and logic gate delay scheduling. |
+| **API 33–34** | `Game::native_random_tick`, `Game::native_tick_block` | Flax/Rubber tree growth and Logic Gate scheduled tick evaluation (Timer, Repeater, Pulse Former, State Cell, Sequencer). |
+| **API 36** | `Game::native_recipes_of_type` | Custom `"type": "redpower_2:alloy_furnace"` recipes loaded from `content/data/redpower_2/recipe/*.json`. |
+| **API 38** | `Game::native_block_signal`, `Game::native_is_signal_source`, `Game::native_update_signal_neighbors` | Red Alloy Wire (`0..=255` mapped to `0..=15`), Logic Gate outputs, Item Detector pulses. |
+| **API 40** | `Game::native_net_from_client`, `Game::native_net_send_to_player` | 6502 Monitor/Keyboard keystrokes and 80×25 screen buffer synchronization on `horizon:mod_net`. |
+
+---
+
+## 10. Uses from `rekkit_core`
+* `rekkit_core::energy::BlutricityNode` ($100\text{V}$ nominal, $60\text{V}$ minimum operating threshold, Ohm's law $I = (V_a - V_b)/R$).
+* `rekkit_core::frequency::{DyeColor, BundledSignal}` (16-color Insulated Wires, 16-channel Bundled Cables, painted Pneumatic Tubes, and 6502 I/O Expander).
+* `rekkit_core::grid::{BlockPos, GridGraph, GridNode}` (Pneumatic Tube & Restrictor Tube `+500` Dijkstra shortest-path routing and wire cluster union-find).
+* `rekkit_core::side::{Direction, ConnectionMask}` (6-face wire/tube connection masks and machine orientation).
+* `rekkit_core::inventory::{Inventory, ItemStack}` (Alloy Furnace, Buffer, Filter, Sorting Machine, and Canvas Bag inventories).
+* `rekkit_core::hooks::{HorizonNativeMod, ModBlockEntity, ModContainer, NativeModInfo, NativeScreen}`.
+* `rekkit_core::util::TickTimer` (Logic Gate Timer / State Cell / Sequencer intervals and Alloy Furnace smelting progress).
+
+---
+
+## 11. Open Questions
+* Legacy sprite sheet indices (`eloraam/*` in `RedPowerCore`/`RedPowerWiring`/`RedPowerMachine`/`RedPowerControl`/`RedPowerWorld`) are recorded in `mods/redpower_2/asset-map.json` and marked `UNVERIFIED` until extracted from the Tekkit/DW20 archive via `make extract-jar`.

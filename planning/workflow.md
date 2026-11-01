@@ -151,7 +151,9 @@ flowchart TD
 * Produces:
   * `mods/<modname>/target/horizon-mod/<modname>.hmod` (Content Mod)
   * `mods/<modname>/target/horizon-mod/<modname>.hnmod` (Native Mod)
-* Sign release artifacts with `minisign` and attach `<modname>.hmod`, `<modname>.hnmod`, and their `.minisig` signatures to a tagged GitHub Release (`v*`). Horizon's registry (`horizon-rust/horizon-mods`) automatically indexes new releases from linked GitHub repositories.
+* Releasing is automatic once the push reaches `main`: [`.github/workflows/release-mods.yml`](../.github/workflows/release-mods.yml) finds every mod (but `example_mod`) whose version has no release yet, runs its tests, packs it, signs both files with the `MINISIGN_SECRET_KEY` secret (checked against `minisign.pub`), and publishes the GitHub Release `<modname>-<version>` with `<modname>.hmod`, `<modname>.hnmod` and their `.minisig` files. Horizon's registry (`horizon-rust/horizon-mods`) reads new releases of a listed project's repository within the hour.
+* The same workflow fails (on pull requests too) when a mod's `content/`, `native/` or `src/` changed since its last release but the version did not (Step 8). Check locally with `python3 scripts/release_plan.py --exclude example_mod`.
+* Once per mod, a person lists it at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) (repository, page, the key in `minisign.pub`); a Horizon reviewer reads it before it is published.
 
 ---
 

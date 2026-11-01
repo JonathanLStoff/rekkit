@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "redpower_2:nikolite",
+      "count": 4
+    },
+    {
+      "item": "redpower_2:silver_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "redpower_2:blue_alloy_ingot",
+    "item": "redpower_2:blue_alloy_ingot",
+    "count": 1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "template": "minecraft:iron_pickaxe",
+  "max_stack_size": 1,
+  "rarity": "common",
+  "crafting_remainder": "redpower_2:screwdriver"
+}

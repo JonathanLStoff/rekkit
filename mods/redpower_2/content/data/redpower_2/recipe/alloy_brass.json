@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "redpower_2:copper_ingot",
+      "count": 3
+    },
+    {
+      "item": "redpower_2:tin_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "redpower_2:brass_ingot",
+    "item": "redpower_2:brass_ingot",
+    "count": 4
+  }
+}

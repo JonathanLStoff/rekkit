@@ -3,21 +3,21 @@
     "PreToolUse": [
       {
         "matcher": "run_command",
-        "hooks": [{ "command": "./scripts/fleet/guard.sh", "timeout": 10 }]
+        "hooks": [{ "type": "command", "command": "../scripts/fleet/hook.sh shell agy", "timeout": 10 }]
       }
     ]
   },
   "guard-paths": {
     "PreToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content",
-        "hooks": [{ "command": "./scripts/fleet/guard-paths.sh", "timeout": 10 }]
+        "matcher": "write_file|edit_file|write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [{ "type": "command", "command": "../scripts/fleet/hook.sh paths agy", "timeout": 10 }]
       }
     ]
   },
   "port-gate": {
     "Stop": [
-      { "command": "./scripts/fleet/tests-gate.sh", "timeout": 900 }
+      { "type": "command", "command": "../scripts/fleet/hook.sh gate agy", "timeout": 900 }
     ]
   }
 }

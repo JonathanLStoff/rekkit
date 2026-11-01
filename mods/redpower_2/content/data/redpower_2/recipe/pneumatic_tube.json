@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "redpower_2:brass_ingot",
+    "G": "minecraft:glass"
+  },
+  "pattern": [
+    "BGB"
+  ],
+  "result": {
+    "count": 8,
+    "id": "redpower_2:pneumatic_tube"
+  }
+}
