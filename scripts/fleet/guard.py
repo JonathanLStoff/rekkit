@@ -52,6 +52,9 @@ from pathlib import Path
 
 import beads
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import version_sync  # noqa: E402 (scripts/, beside this folder)
+
 ROOT = Path(__file__).resolve().parents[2]  # this checkout (a worktree's own files)
 MAIN = beads.MAIN  # the main checkout: shared state, inbox, stop request
 STATE = MAIN / "target" / "agent-gate"
@@ -373,6 +376,7 @@ def run_checks(units: set[str]) -> tuple[list[str], str]:
     syntax checks (rustfmt, clippy -D warnings, tests) and check-mods."""
     py = sys.executable
     steps: list[tuple[str, list]] = []
+    version_sync.sync_units(sorted(u.split("/", 1)[1] for u in units))
     if "crates/rekkit_core" in units:
         # A core change must keep every mod that uses it building and passing.
         units = set(units) | {f"mods/{m.parent.name}" for m in (ROOT / "mods").glob("*/Cargo.toml")
@@ -443,6 +447,8 @@ def wait_for_reports(fully_idle: object) -> list[str]:
 def gate(payload: dict, units: set[str] | None) -> str | None:
     """Why the agent must keep working, or None when it may stop."""
     session = Session(payload)
+    if session.touched:  # whatever ends this turn, what it changed is one version ahead of the last commit
+        version_sync.sync_units(sorted(u.split("/", 1)[1] for u in session.touched))
     if payload.get("terminationReason", "") in AGY_FINAL or STOP_FILE.is_file():
         if session.fleet:
             session.fleet = None

@@ -25,7 +25,7 @@ A mod reaches a full release only through its **11 Own art** story (deferred unt
 
 1. Every original texture and sound is replaced: drawn in `mods/<id>/art/` and built with `make art MOD=<id>` (same size and palette rules as new art), or recorded/edited sound. Each replaced entry in `asset-map.json` becomes `generated` (or `derived`), and the original files are deleted.
 2. `python3 scripts/release_plan.py --mod <id>` shows 0 original assets; `make check-mods MOD=<id>` (with `--complete`) and the live harness still pass.
-3. Bump the version (lockstep, 4 files) and commit. The person pushes; the workflow publishes a full release.
+3. Commit (`make version-sync` has already moved the version past the last commit). The person pushes; the workflow publishes a full release.
 4. Once per mod, a person lists it at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) with this repository, its page and the key in `minisign.pub`. A Horizon reviewer reads it before it is published.
 
 Until then, test builds live on the repository's GitHub releases page as pre-releases.

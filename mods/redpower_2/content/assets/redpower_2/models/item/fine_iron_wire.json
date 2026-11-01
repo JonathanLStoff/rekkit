@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "redpower_2:item/fine_iron_wire"
+  }
+}

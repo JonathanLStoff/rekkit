@@ -1,0 +1,8 @@
+{
+  "block.example_mod.ender_chest": "Ender Frequency Chest",
+  "item.example_mod.ender_pouch": "Ender Frequency Pouch",
+  "effect.example_mod.ender_lock": "Ender Frequency Lock",
+  "gui.example_mod.frequency_chest": "Ender Frequency Storage",
+  "tooltip.example_mod.frequency": "Frequency: %s / %s / %s",
+  "tooltip.example_mod.private": "Locked (Private Channel)"
+}

@@ -312,6 +312,11 @@ def inbox() -> str:
         path.rename(done_dir / f"{path.stem}-{time.strftime('%Y%m%dT%H%M%S')}.json")
         filed.append(f"{bead} ({status}, {len(report.get('follow_ups', []))} follow-up(s))")
     sync = core_sync() if filed else ""
+    if filed:  # the reported work is one version ahead of the last commit (bundled until committed)
+        sys.path.insert(0, str(MAIN / "scripts"))
+        import version_sync
+        bumped = version_sync.sync_units()
+        sync = "\n".join(x for x in [sync, *bumped] if x)
     return ("Filed: " + ", ".join(filed) + (f"\n{sync}" if sync else "")) if filed else "Inbox empty."
 
 

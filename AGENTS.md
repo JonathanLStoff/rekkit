@@ -23,7 +23,7 @@ Rekkit ports Java Minecraft mods (Tekkit Classic 1.2.5, Direwolf20 1.4.7, Agrari
 - New art only for what the original never had (`make fleet-gaps`): SVG or `.pixels` in `mods/<id>/art/`, built by `make art MOD=<id>` at the original's size and palette.
 - The Makefile picks Python 3.11+ itself; outside make use `$(scripts/fleet/python.sh)`.
 - Never `git push`, `gh release`, `minisign`, change the submodule, `git reset --hard`, `--force` or `rm -rf`. A human does those (the hooks in agy and Claude Code block them; elsewhere it is on you). Releases are signed and published by `.github/workflows/release-mods.yml` after a human pushes.
-- Versions move in lockstep across `Cargo.toml`, `content/horizon-mod.toml`, `native/horizon-native.json` and `native/mixins/<id>/horizon-mixin.toml`. A mod whose `content/`, `native/` or `src/` changed since its last release needs a new version (`python3 scripts/release_plan.py --exclude example_mod`).
+- **Versions bump themselves.** When a mod or `rekkit_core` changes, `make version-sync` (run by the stop gate, `make fleet-inbox` and `make agent-gate`) moves it one patch version past its last commit, in lockstep across `Cargo.toml`, `content/horizon-mod.toml`, `native/horizon-native.json` and `native/mixins/<id>/horizon-mixin.toml` (the core: its `Cargo.toml`). Work done before the next commit is bundled into that same version. Never edit a version by hand.
 
 ## Context budget
 

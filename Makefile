@@ -27,7 +27,7 @@ COMPLETE ?= 0
 export CURSEFORGE_API_KEY
 
 .PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
-	fleet-task fleet-inbox fleet-features fleet-gaps core-need fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status
+	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status
 
 all: tekkit direwolf20 agrarian
 
@@ -135,6 +135,11 @@ fleet-features:
 
 fleet-gaps:
 	$(PYTHON) scripts/fleet/beads.py gaps $(MOD)
+
+# Every changed mod (and rekkit_core) one patch version ahead of its last commit, in lockstep; more work
+# before a commit stays on that version. The stop gate, fleet-inbox and agent-gate run it too.
+version-sync:
+	$(PYTHON) scripts/version_sync.py $(if $(MOD),--mod $(MOD),) $(ARGS)
 
 # Shared code a mod needs: a bead under rekkit_core (reopened if closed), done within this mod's run.
 core-need:
@@ -251,6 +256,8 @@ make java-outline DIR=<decompiled> [GREP=<regex>] [ARGS=--classes|--consts]
                       Classes and members with line ranges (read this, not whole files)
 make java-show DIR=<decompiled> MEMBER=<Class#method|Class:120-180> / java-find DIR=<d> TEXT=<name>
                       One member's source / where a name occurs
+make version-sync [MOD=<id>] [ARGS=--check]
+                      Changed mods/core one patch version ahead of their last commit (once; later work bundles in)
 make core-need MOD=<id> TITLE="<what>" [WHY="<why it is shared>"]
                       Shared code the mod needs, filed under rekkit_core (conductor; done in this mod's run)
 make tasks [MOD=<id>] / make watch [MOD=<id>]

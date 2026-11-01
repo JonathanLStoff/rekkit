@@ -1,0 +1,26 @@
+palette:
+  . #00000000
+  w #281e0bff
+  d #684e1eff
+  l #896727ff
+  c #beb49bff
+  k #dcd4c0ff
+  m #888888ff
+  i #555555ff
+grid:
+  .....iimmii.....
+  ...iimmmmmmii...
+  ..wddlllldddw...
+  ..wddlllldddw...
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  .ldw...mi...wdl.
+  ..wddlllldddw...
+  ..wddlllldddw...
+  ...iimmmmmmii...
+  .....iimmii.....

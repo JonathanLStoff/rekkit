@@ -913,7 +913,7 @@
     {
       "sheet": "eloraam/base/items1.png",
       "archive": "redpowercore",
-      "index": 0,
+      "index": 67,
       "size": 16,
       "out": "content/assets/redpower_2/textures/item/silicon_boule.png",
       "for": "redpower_2:silicon_boule",
@@ -1269,6 +1269,132 @@
       "out": "content/assets/redpower_2/textures/item/sapphire_hoe.png",
       "for": "redpower_2:sapphire_hoe",
       "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 0,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/stone_wafer.png",
+      "for": "redpower_2:stone_wafer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 1,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wire_part.png",
+      "for": "redpower_2:wire_part",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 2,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/anode.png",
+      "for": "redpower_2:anode",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 3,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/cathode.png",
+      "for": "redpower_2:cathode",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 4,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/pointer.png",
+      "for": "redpower_2:pointer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 5,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/redwire_part.png",
+      "for": "redpower_2:redwire_part",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 6,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/plate.png",
+      "for": "redpower_2:plate",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 7,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/silicon_chip.png",
+      "for": "redpower_2:silicon_chip",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 8,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/tainted_chip.png",
+      "for": "redpower_2:tainted_chip",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 9,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/bundled_wafer.png",
+      "for": "redpower_2:bundled_wafer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 23,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/voltmeter.png",
+      "for": "redpower_2:voltmeter",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 26,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/paint_can.png",
+      "for": "redpower_2:paint_can",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 112,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/lumar.png",
+      "for": "redpower_2:lumar",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/compat/compat1.png",
+      "archive": "redpowercompat",
+      "index": 1,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/brass_gear.png",
+      "for": "redpower_2:brass_gear",
+      "origin": "original"
     }
   ],
   "copies": [
@@ -1503,11 +1629,39 @@
   ],
   "generated": [
     {
+      "source": "art/textures/item/sonic_screwdriver.pixels",
+      "out": "content/assets/redpower_2/textures/item/sonic_screwdriver.png",
+      "origin": "generated",
+      "size": 16,
+      "palette": "6389 colours from the originals"
+    },
+    {
       "source": "art/textures/item/tungsten_ingot.pixels",
       "out": "content/assets/redpower_2/textures/item/tungsten_ingot.png",
       "origin": "generated",
       "size": 16,
-      "palette": "6127 colours from the originals"
+      "palette": "6389 colours from the originals"
+    },
+    {
+      "source": "art/textures/item/wood_sail.pixels",
+      "out": "content/assets/redpower_2/textures/item/wood_sail.png",
+      "origin": "generated",
+      "size": 16,
+      "palette": "6389 colours from the originals"
+    },
+    {
+      "source": "art/textures/item/wood_turbine.pixels",
+      "out": "content/assets/redpower_2/textures/item/wood_turbine.png",
+      "origin": "generated",
+      "size": 16,
+      "palette": "6389 colours from the originals"
+    },
+    {
+      "source": "art/textures/item/wood_windmill.pixels",
+      "out": "content/assets/redpower_2/textures/item/wood_windmill.png",
+      "origin": "generated",
+      "size": 16,
+      "palette": "6389 colours from the originals"
     }
   ]
 }

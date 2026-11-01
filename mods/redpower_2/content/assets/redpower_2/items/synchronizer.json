@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "redpower_2:block/synchronizer"
+  }
+}

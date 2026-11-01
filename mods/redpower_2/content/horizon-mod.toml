@@ -4,7 +4,7 @@
 
 id = "redpower_2"
 name = "RedPower 2"
-version = "0.1.0"
+version = "0.1.1"
 description = "RedPower 2 content pack declaring ores, machines, pneumatic tubes, wires, logic gates, microblocks, tools, and Alloy Furnace recipes."
 authors = ["Rekkit Contributors"]
 api = "0.2"

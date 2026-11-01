@@ -59,7 +59,8 @@ in pieces (`make java-outline`, `make java-show`).
    Horizon's own problems: see `make horizon-status`), close the story with a
    comment "Horizon <rev> broken: <what>", file a bug labelled horizon, and go
    on: a broken Horizon never holds up the mod.
-9. Step 9 Package. `release-clerk` bumps the version, commits (with
+9. Step 9 Package. `release-clerk` checks the version (`make version-sync`
+   bumps it as work lands), commits (with any rekkit_core change, and
    planning/fleet-board.md and .beads/issues.jsonl from `make board`) and packs.
    Merge port/<id> into main locally. Close the story.
 10. Finish. Your last message starts with exactly
