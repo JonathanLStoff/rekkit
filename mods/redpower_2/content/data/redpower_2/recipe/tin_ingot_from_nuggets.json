@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NNN",
+    "NNN"
+  ],
+  "key": {
+    "N": "redpower_2:tin_nugget"
+  },
+  "result": {
+    "id": "redpower_2:tin_ingot",
+    "count": 1
+  }
+}

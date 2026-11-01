@@ -5,7 +5,7 @@ description: Checklist for porting one Java mod (or the shared rekkit_core crate
 
 # port-mod
 
-The 11-step process is defined in `planning/workflow.md` and `.agents/fleet-plan.md` §4; progress lives in Beads (`make fleet-status MOD=<id>`). This skill is the short version every builder works from. Builders work from the spec only (clean-room): never from `assets/decompiled/`.
+What a builder (scaffolder, domain-builder, content-author, test-smith) needs. You work from the spec only (clean-room): never from `assets/decompiled/`. Read only the spec sections your prompt names: `make spec-show MOD=<id> SECTION="<heading>"`.
 
 ## Layout of a mod
 
@@ -42,31 +42,16 @@ Use core types (energy units, stacks, tanks, grids, side config, multiblock patt
 
 ## Commands
 
-The scripts need Python 3.11+ (`tomllib`). If `python3` is older, pass `PYTHON=$(scripts/fleet/python.sh)` to make.
-
 | What | Command |
 |---|---|
+| The spec sections you need | `make spec-toc MOD=<id>`, `make spec-show MOD=<id> SECTION="<heading>"` |
 | Unit tests for one crate | `cargo test --manifest-path mods/<id>/Cargo.toml` |
-| All crates | `make test-mods` |
-| Manifest + content validation | `make check-mods MOD=<id>` (`COMPLETE=1`: also every asset 26.3 needs) |
-| Syntax and checks of what you changed | `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings, tests, check-mods, dry run) |
-| New art | `make art MOD=<id>` |
-| Look at it in the game | `make play MOD=<id>` |
-| Harness pre-flight | `make e2e-mod MOD=<id> DRY_RUN=1` |
-| Live isolated run | `make e2e-mod MOD=<id>` |
-| Both phases | `make integration-test` |
-| Package | `make pack-mods MOD=<id>` |
-| Extract legacy assets | `make extract-jar JAR=assets/<pack>/mods/<jar> EXTRACT_OUT=assets/extracted/<id>` |
+| Manifest + content validation | `make check-mods MOD=<id>` |
+| Everything the stop gate checks | `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings, tests, check-mods, harness dry run) |
+| Harness pre-flight (test-smith) | `make e2e-mod MOD=<id> DRY_RUN=1` |
 
 ## Rules
 
-- Block loot tables use Horizon's form, copied from `mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json`: a pool `"condition": { "type": ... }`, not vanilla's `"conditions": [...]` array, which drops nothing at the pinned Horizon (`planning/horizon-gaps.md`). The live E2E stage 7 catches a table that drops nothing.
-- Versions move in lockstep across `Cargo.toml`, `content/horizon-mod.toml`, `native/horizon-native.json` and `native/mixins/<id>/horizon-mixin.toml`.
-- Never edit `horizon/`. A missing engine feature is a follow_up in your report titled `horizon: ...`; the conductor files it as a Beads bug labelled `horizon`.
-- Never `git push`, `gh release` or `minisign`. A human pushes; `.github/workflows/release-mods.yml` releases (`.agents/release.md`).
-- Start with `make fleet-task BEAD=<id> ROLE=<role>`, end with your report in `target/fleet/inbox/<bead>.json`. Only the conductor writes to Beads.
-- Only write paths you own (fleet-plan §3).
-
-## Done
-
-A mod is complete (ready for the human) when steps 1–9 are closed in Beads: `make agent-gate MOD=<id>` and `make check-mods MOD=<id> COMPLETE=1` pass, parity-critic's Check and Recheck say `VERDICT: pass`, and the live `make e2e-mod MOD=<id>` and `make e2e-all-mods` pass with every block placed (by /setblock and by a player, every variant) and no WARN/ERROR in the log, unless Horizon itself is broken at the pinned revision (`make horizon-status`).
+- Block loot tables use Horizon's form, copied from `mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json`: a pool `"condition": { "type": ... }`, not vanilla's `"conditions": [...]` array, which drops nothing at the pinned Horizon (Beads bug `rk-yls`).
+- A missing engine feature is a follow_up in your report titled `horizon: ...`.
+- Start with `make fleet-task BEAD=<id> ROLE=<role>`, end with your report in `target/fleet/inbox/<bead>.json`.

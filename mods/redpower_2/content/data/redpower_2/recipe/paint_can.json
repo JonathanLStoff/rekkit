@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:empty_paint_can",
+    "minecraft:bone_meal",
+    "redpower_2:flax_seeds",
+    "redpower_2:flax_seeds"
+  ],
+  "result": {
+    "id": "redpower_2:paint_can",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:coal",
+      "count": 8
+    },
+    {
+      "item": "minecraft:sand",
+      "count": 8
+    }
+  ],
+  "result": {
+    "id": "redpower_2:silicon_boule",
+    "item": "redpower_2:silicon_boule",
+    "count": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "MM",
+    "MM"
+  ],
+  "key": {
+    "M": "redpower_2:marble"
+  },
+  "result": {
+    "id": "redpower_2:marble_brick",
+    "count": 4
+  }
+}

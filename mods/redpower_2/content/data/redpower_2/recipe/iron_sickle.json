@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " M ",
+    "  M",
+    "SM "
+  ],
+  "key": {
+    "M": "minecraft:iron_ingot",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "redpower_2:iron_sickle",
+    "count": 1
+  }
+}

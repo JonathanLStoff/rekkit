@@ -11,7 +11,8 @@ You own assets/extracted/<id>/ (gitignored), mods/<id>/asset-map.json,
 mods/<id>/art/** and mods/<id>/content/assets/<id>/{textures,sounds}/**.
 
 Step 5 Extract assets: take the original art and sound from the client build
-of the mod in the pack its epic names: assets/tekkit/client/mods/ for Tekkit
+of the version the spec uses for each feature (the newest that has it; see the
+legacy-asset-mapping skill): assets/tekkit/client/mods/ for Tekkit
 (not assets/tekkit/mods/, the server ports, which have none),
 assets/direwolf20/mods/ for Direwolf20. `art_files` in the pack's
 pack-info.json counts each archive's textures and sounds. Extract with

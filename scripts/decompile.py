@@ -19,6 +19,8 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import os
+import re
 import shutil
 import subprocess
 import sys
@@ -54,6 +56,31 @@ def vineflower() -> Path:
     return TOOL
 
 
+def java_works(java: str) -> bool:
+    try:
+        return subprocess.run([java, "-version"], capture_output=True, timeout=60).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def find_java() -> str | None:
+    """A working java: JAVA_HOME's, PATH's, else the newest installed JDK. The JDK's own binary is used
+    because macOS's /usr/bin/java stub cannot find a JDK inside agy's terminal sandbox."""
+    exe = "java.exe" if os.name == "nt" else "java"
+    found = [Path(os.environ["JAVA_HOME"]) / "bin" / exe] if os.environ.get("JAVA_HOME") else []
+    if on_path := shutil.which("java"):
+        found.append(Path(on_path))
+    installed = [*Path("/Library/Java/JavaVirtualMachines").glob(f"*/Contents/Home/bin/{exe}"),
+                 *Path("/opt/homebrew/opt").glob(f"openjdk*/bin/{exe}"), *Path("/usr/local/opt").glob(f"openjdk*/bin/{exe}"),
+                 *Path("/usr/lib/jvm").glob(f"*/bin/{exe}")]
+    # Newest first: the version is the numbers in the JDK's folder name (temurin-25.jdk, openjdk@21).
+    installed.sort(key=lambda p: tuple(int(n) for n in re.findall(r"\d+", p.as_posix())), reverse=True)
+    for java in found + installed:
+        if java.is_file() and java_works(str(java)):
+            return str(java)
+    return None
+
+
 def shown(path: Path) -> str:
     return path.relative_to(ROOT).as_posix() if path.is_relative_to(ROOT) else str(path)
 
@@ -63,12 +90,13 @@ def decompile(archive: Path, out_root: Path, force: bool) -> Path:
     if dest.is_dir() and any(dest.rglob("*.java")) and not force:
         print(f"Already decompiled: {shown(dest)} (--force to redo)")
         return dest
-    if not shutil.which("java"):
-        sys.exit("Java is not on PATH; ./setup.sh says how to install JDK 25.")
+    java = find_java()
+    if not java:
+        sys.exit("No Java 17+ found (JAVA_HOME, PATH or the usual JDK folders); ./setup.sh says how to install JDK 25.")
     shutil.rmtree(dest, ignore_errors=True)
     dest.mkdir(parents=True)
     print(f"Decompiling {archive.name} into {shown(dest)}", flush=True)
-    r = subprocess.run(["java", "-jar", str(vineflower()), "--silent", "--folder", str(archive), str(dest)],
+    r = subprocess.run([java, "-jar", str(vineflower()), "--silent", "--folder", str(archive), str(dest)],
                        capture_output=True, text=True)
     sources = list(dest.rglob("*.java"))
     if r.returncode or not sources:

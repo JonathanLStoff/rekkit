@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  S",
+    " SI",
+    "SRR"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "I": "minecraft:iron_ingot",
+    "R": "redpower_2:ruby"
+  },
+  "result": {
+    "id": "redpower_2:ruby_handsaw",
+    "count": 1
+  }
+}

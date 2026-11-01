@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "GPG",
+    "CWC"
+  ],
+  "key": {
+    "C": "minecraft:cobblestone",
+    "G": "minecraft:gold_ingot",
+    "P": "minecraft:piston",
+    "W": "redpower_2:red_doped_wafer"
+  },
+  "result": {
+    "id": "redpower_2:filter",
+    "count": 1
+  }
+}

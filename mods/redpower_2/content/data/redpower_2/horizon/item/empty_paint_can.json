@@ -1,0 +1,5 @@
+{
+  "template": "minecraft:bucket",
+  "max_stack_size": 16,
+  "rarity": "common"
+}

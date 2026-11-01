@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:redstone",
+      "count": 4
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "redpower_2:red_alloy_ingot",
+    "item": "redpower_2:red_alloy_ingot",
+    "count": 1
+  }
+}

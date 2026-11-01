@@ -10,7 +10,7 @@ Existing specs (`planning/mods/redpower_2.md`, `equivalent_exchange_2.md`, …) 
 
 ## Sections
 
-1. **Overview & Version Target**: mod version, pack(s) it ships in, Minecraft version, JAR filename under `assets/<pack>/mods/`, the decompiled folder you read (`assets/decompiled/<archive>/`), and the original's **authors and licence**.
+1. **Overview & Version Target**: every version of the mod in our packs (version, pack, Minecraft version, archive under `assets/<pack>/`), the decompiled folder of each (`assets/decompiled/<archive>/`), and the original's **authors and licence**.
 2. **Core systems & mechanics**: one subsection per system, with exact formulas, units (EU/t, MJ/t, mB, ticks), thresholds and state machines.
 3. **Machines / devices**: per block: purpose, inputs/outputs, energy use, GUI layout (slot indexes and positions), redstone behavior.
 4. **Tools, armor, items**: per item: behavior, durability or charge, special effects.
@@ -26,11 +26,12 @@ Existing specs (`planning/mods/redpower_2.md`, `equivalent_exchange_2.md`, …) 
 ## Rules
 
 - Work from the decompiled code (`make decompile JAR=<archive>`, the client build when there is one), its configs and its lang files first; mark anything else as **UNVERIFIED**.
+- Read the Java in pieces: `make java-outline DIR=assets/decompiled/<archive> ARGS=--classes` for the map, `GREP=<name>` for one class's members, `make java-show ... MEMBER=<Class#method>` for the code a section needs, `make java-find ... TEXT=<name>` to trace a value. Write each section as soon as you have read for it.
 - **Clean-room.** The builders implement from this spec alone and never see the Java. Describe behaviour in your own words, tables and formulas, and cite where it comes from (`TileAlloyFurnace.updateEntity`, `RedPowerMachine.java:212`), but never paste Java code, comments or method bodies.
 - Every formula, constant, threshold, tick rate and table cites its class and method.
 - 1.2.5 and 1.4.7 mods use numeric block/item ids and damage values. Record the original id:meta next to each registry row so assets and recipes can be traced.
-- When a mod appears in more than one pack, the earliest pack's version is canonical. Put later-version differences in an appendix.
-- For `rekkit_core`, list each shared concept with the mods that need it. A concept needs at least two.
+- **Several versions: merge, newer wins.** When a mod ships in more than one pack (RedPower 2.0pr5b2 in Tekkit 1.2.5 and 2.0pr6 in Direwolf20 1.4.7), the port is the union of every version: each block, item, recipe and system any version has. Where versions share a feature, the newest version's behaviour, numbers and art win (both have the alarm: the 1.4.7 alarm). A feature only an older version has stays, as that version made it (1.2.5's microblocks stay even if 1.4.7 dropped them). Decompile every version. Tag each registry row, system and recipe with the version it comes from (`[2.0pr6]`), and add a **Versions** table: feature → versions that have it → version used. Builders port one merged mod, never one per version.
+- **Uses from rekkit_core**: what the mod takes from the core, and what the core lacks. Something belongs in the core when another ported or queued mod needs it too (name those mods); the conductor files each lack with `make core-need`. What only this mod uses stays in the mod.
 
 ## Feature list
 

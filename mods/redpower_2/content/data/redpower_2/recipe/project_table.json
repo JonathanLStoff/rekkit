@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "PTP",
+    "PCP"
+  ],
+  "key": {
+    "S": "minecraft:stone",
+    "P": "minecraft:oak_planks",
+    "T": "minecraft:crafting_table",
+    "C": "minecraft:chest"
+  },
+  "result": {
+    "id": "redpower_2:project_table",
+    "count": 1
+  }
+}

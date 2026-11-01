@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:repeater",
+  "properties": {
+    "hardness": 0.5,
+    "explosion_resistance": 1.0,
+    "sounds": "minecraft:stone"
+  },
+  "item": true
+}

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """The fleet's progress in Beads (bd), the source of truth for the port.
 
-  epic     one per mod (labels mod, mod:<id>, wave:<w>, tier:<t>), blocked by the epics it needs
+  epic     one per mod (labels mod, mod:<id>, wave:<w>, tier:<t>, needs:<epic>), blocked by the epics it
+           needs, except rekkit_core: the shared crate grows with the mods. Its epic holds core work as
+           beads labelled for:<mod>; it opens while any is pending and closes when none is
+           (core_sync), and a mod's step 3 Code is not done until its for:<mod> core beads are closed.
   story    one per step of the pipeline (label step:<n>), created when the mod starts
   feature  one per block, item, subsystem or missing asset, under the story it belongs to
   bug      a review finding or harness failure, under the story it blocks
@@ -16,6 +19,8 @@ Commands (make targets in brackets):
   gaps <mod>                New-assets features from the completeness check            [fleet-gaps]
   inbox                     file every subagent report in Beads                         [fleet-inbox]
   board                     planning/fleet-board.md and .beads/issues.jsonl from Beads  [board]
+  core-need <mod> --title T [--why W]  core work the mod needs, under rekkit_core     [core-need]
+  core-sync                 open rekkit_core while core work is pending, close it when none is
   seed                      one-time: an epic per row of the old markdown board
 """
 
@@ -42,7 +47,8 @@ def main_checkout() -> Path:
 
 MAIN = main_checkout()
 BEADS_DIR = MAIN / ".beads"
-INBOX = MAIN / "target" / "fleet" / "inbox"
+STATE_DIR = MAIN / "target" / "fleet"  # the fleet's local state: inbox, journal, prompts, progress notes
+INBOX = STATE_DIR / "inbox"
 BOARD = MAIN / "planning" / "fleet-board.md"
 STEPS = {1: "Spec", 2: "Scaffold", 3: "Code", 4: "Check", 5: "Extract assets", 6: "New assets",
          7: "Recheck", 8: "Harness", 9: "Package", 10: "Human", 11: "Own art"}
@@ -122,24 +128,75 @@ def mod_status(mod: str) -> dict:
         if i["issue_type"] == "story" and step and step.isdigit():
             stories[int(step)] = i
     counts = {n: [0, 0] for n in stories}
+    unsettled = {n: 0 for n in stories}  # children neither closed nor deferred
     by_id = {s["id"]: n for n, s in stories.items()}
     for i in family:
-        n = by_id.get(i.get("parent", ""))
+        n = by_id.get(i.get("parent") or i["id"].rsplit(".", 1)[0])
         if n is not None and i["issue_type"] in ("feature", "bug", "task"):
             counts[n][1] += 1
             counts[n][0] += i["status"] == "closed"
-    pending = [n for n in AGENT_STEPS if stories.get(n, {}).get("status") != "closed"]
+            unsettled[n] += i["status"] not in ("closed", "deferred")
+    # Core work this mod needs (or, for rekkit_core itself, all pending core work) is part of step 3 Code.
+    core = core_work(None if mod == CORE else mod)
+    if 3 in stories and core:
+        unsettled[3] += len(core)
+        counts[3][1] += len(core)
+    # A step is done when its story is closed and nothing under it is still open (closing a story early
+    # does not make the work under it done).
+    pending = [n for n in AGENT_STEPS if stories.get(n, {}).get("status") != "closed" or unsettled.get(n)]
+    if mod == CORE:  # the core is not ported through the steps any more: its work is its pending core beads
+        pending = [3] if core else []
     finished = e["status"] in ("closed", "blocked", "deferred") or (bool(stories) and not pending)
     return {"mod": mod, "epic": e, "stories": stories, "counts": counts, "finished": finished,
+            "unsettled": unsettled, "core": core,
             "next": f"step {pending[0]} {STEPS[pending[0]]}" if pending else "the human's review"}
 
 
+CORE = "rekkit_core"
+SETTLED = ("closed", "deferred")
+
+
+def core_work(mod: str | None) -> list[dict]:
+    """Open core beads (direct children of the rekkit_core epic) for one mod, or all of them."""
+    try:
+        e = epic(CORE)
+    except BeadsError:
+        return []
+    kids = [i for i in issues("--parent", e["id"]) if i["issue_type"] != "story" and i["status"] not in SETTLED]
+    return [i for i in kids if mod is None or f"for:{mod}" in i.get("labels", [])]
+
+
+def core_sync() -> str:
+    """rekkit_core's epic is open while core work is pending and closed when none is; never in progress
+    unless someone runs a fleet on it, so it never stands in for the mod being ported."""
+    e = epic(CORE)
+    pending = core_work(None)
+    if pending and e["status"] == "closed":
+        bd("reopen", e["id"])
+        bd("comment", e["id"], f"Reopened: {len(pending)} core bead(s) pending ({', '.join(i['id'] for i in pending[:8])}).")
+        return f"rekkit_core reopened: {len(pending)} core bead(s) pending."
+    if not pending and e["status"] == "open":
+        bd("close", e["id"], "--reason", "No core work pending; reopens when a mod needs more.")
+        return "rekkit_core closed: no core work pending."
+    return f"rekkit_core {e['status']}: {len(pending)} core bead(s) pending."
+
+
+def core_need(mod: str, title: str, why: str = "") -> str:
+    """Core work a mod needs: a feature under rekkit_core labelled for:<mod>, done in this mod's run."""
+    e = epic(CORE)
+    made = create(title if title.startswith("rekkit_core") else f"rekkit_core: {title}", "feature",
+                  parent=e["id"], labels=["core", f"for:{mod}"], description=why)
+    return f"{made} filed under rekkit_core for {mod}. {core_sync()}"
+
+
 def active_mod() -> str | None:
-    return next((m for m, e in epics().items() if e["status"] == "in_progress"), None)
+    active = [m for m, e in epics().items() if e["status"] == "in_progress"]
+    return next((m for m in active if m != CORE), active[0] if active else None)
 
 
 def next_mod() -> str | None:
     """The first ready epic: open, every epic it needs closed (bd ready order: priority, then age)."""
+    core_sync()  # rekkit_core is ready only while core work is pending
     ready = bd("ready", "--limit", "0")
     return next((label_value(i, "mod") for i in ready if i["issue_type"] == "epic" and label_value(i, "mod")), None)
 
@@ -149,6 +206,9 @@ def next_mod() -> str | None:
 def start(mod: str) -> dict:
     """Create the mod's stories if missing and set its epic in progress."""
     e = epic(mod)
+    if mod == CORE:  # no steps: the core's work is its pending core beads (core_work)
+        bd("update", e["id"], "--status", "in_progress")
+        return mod_status(mod)
     have = mod_status(mod)["stories"]
     ids = {n: s["id"] for n, s in have.items()}
     for n, name in STEPS.items():
@@ -169,12 +229,19 @@ def add_children(mod: str, step: int, entries: list[tuple[str, str, list[str]]])
     if not story:
         raise BeadsError(f"{mod} has no step {step} story: run make fleet-start MOD={mod}")
     existing = {i["title"] for i in issues("--parent", story["id"])}
-    made = 0
-    for title, kind, labels in entries:
-        if title not in existing:
-            create(title, kind, parent=story["id"], labels=labels)
-            made += 1
-    return made
+    todo = [(t, k, ls) for t, k, ls in entries if t not in existing]
+    # One graph plan per 200 beads: a single bd call and transaction each, instead of one per bead, so a
+    # run cut short (quota, network) loses at most one chunk and a rerun adds only what is missing.
+    for start in range(0, len(todo), 200):
+        chunk = todo[start:start + 200]
+        plan = {"nodes": [{"key": f"n{n}", "title": t, "type": k, "parent_id": story["id"], "labels": ls}
+                          for n, (t, k, ls) in enumerate(chunk)]}
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        plan_file = STATE_DIR / f"plan-{story['id']}.json"
+        plan_file.write_text(json.dumps(plan), encoding="utf-8")
+        bd("create", "--graph", str(plan_file))
+        plan_file.unlink(missing_ok=True)
+    return len(todo)
 
 
 def features(mod: str) -> str:
@@ -228,9 +295,14 @@ def inbox() -> str:
             lines.append(report["notes"])
         bd("comment", bead, "\n".join(lines), parse=False)
         parent = issue.get("parent") if issue["issue_type"] not in ("story", "epic") else bead
+        mod = label_value(issue, "mod")
         for f in report.get("follow_ups", []):
             kind = f.get("type", "bug") if f.get("type") in ("bug", "feature", "task") else "bug"
-            create(f.get("title", "follow-up"), kind, parent=parent, description=f.get("why", ""))
+            title = f.get("title", "follow-up")
+            if title.lower().startswith(("rekkit_core", "core:", "core-needs")) and mod and mod != CORE:
+                core_need(mod, title.split(":", 1)[1].strip() if ":" in title else title, f.get("why", ""))
+            else:
+                create(title, kind, parent=parent, description=f.get("why", ""))
         if status == "done":
             bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
         elif status == "blocked":
@@ -239,7 +311,8 @@ def inbox() -> str:
             bd("update", bead, "--status", "open")
         path.rename(done_dir / f"{path.stem}-{time.strftime('%Y%m%dT%H%M%S')}.json")
         filed.append(f"{bead} ({status}, {len(report.get('follow_ups', []))} follow-up(s))")
-    return "Filed: " + ", ".join(filed) if filed else "Inbox empty."
+    sync = core_sync() if filed else ""
+    return ("Filed: " + ", ".join(filed) + (f"\n{sync}" if sync else "")) if filed else "Inbox empty."
 
 
 # ---------------------------------------------------------------- board
@@ -271,6 +344,10 @@ def board() -> str:
             cells.append(MARK.get(s["status"], "·") + (f" {done}/{len(kids)}" if kids else ""))
         deps = [l.split(":", 1)[1] for l in e.get("labels", []) if l.startswith("needs:")]
         state = {"in_progress": "active", "closed": "done", "open": "queued"}.get(e["status"], e["status"])
+        if mod == CORE:  # grows with the mods: open only while some mod's core work is pending
+            pending = core_work(None)
+            fors = sorted({l[4:] for i in pending for l in i.get("labels", []) if l.startswith("for:")})
+            state = f"growing: {len(pending)} for {', '.join(fors)}" if pending else "done (grows as mods need it)"
         desc = (e.get("description") or "").strip().splitlines()
         rows.append([str(n), mod, f"`{label_value(e, 'path') or 'mods/' + mod}`", label_value(e, "wave") or "",
                      label_value(e, "tier") or "", ",".join(deps) or "—", state, *cells,
@@ -312,7 +389,7 @@ def seed(board_md: Path) -> str:
         needs = [d for d in deps.replace(" ", "").split(",") if d in ids]
         ids[mod] = create(mod, "epic", labels=["mod", f"mod:{mod}", f"wave:{wave}", f"tier:{tier}", f"path:{path}",
                                                *(f"needs:{d}" for d in needs)],
-                          deps=[ids[d] for d in needs], priority=priority.get(wave, 4), description=cells[-2] if len(cells) > 18 else "")
+                          deps=[ids[d] for d in needs if d != CORE], priority=priority.get(wave, 4), description=cells[-2] if len(cells) > 18 else "")
         if state == "done":
             bd("close", ids[mod], "--reason", "done before the move to Beads")
     return f"{len(ids) - len(have)} epic(s) created, {len(have)} already there."
@@ -320,14 +397,17 @@ def seed(board_md: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["status", "start", "features", "gaps", "inbox", "board", "seed"])
+    parser.add_argument("command", choices=["status", "start", "features", "gaps", "inbox", "board", "seed",
+                                            "core-need", "core-sync"])
     parser.add_argument("mod", nargs="?")
+    parser.add_argument("--title", help="core-need: what core needs")
+    parser.add_argument("--why", default="", help="core-need: which mod feature needs it, and why it is shared")
     args = parser.parse_args()
     if not available():
         print("Beads is not set up: run ./setup.sh (it installs bd and runs bd init).", file=sys.stderr)
         return 1
     try:
-        if args.command in ("start", "features", "gaps") and not args.mod:
+        if args.command in ("start", "features", "gaps", "core-need") and not args.mod:
             raise BeadsError(f"{args.command} needs a mod id (MOD=<id>)")
         if args.command == "status":
             if not args.mod:
@@ -351,6 +431,12 @@ def main() -> int:
             print(inbox())
         elif args.command == "board":
             print(board())
+        elif args.command == "core-need":
+            if not args.title:
+                raise BeadsError("core-need needs TITLE=\"<what core needs>\"")
+            print(core_need(args.mod, args.title, args.why))
+        elif args.command == "core-sync":
+            print(core_sync())
         elif args.command == "seed":
             print(seed(Path(args.mod) if args.mod else BOARD))
     except BeadsError as exc:

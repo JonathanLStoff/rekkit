@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "redpower_2:iron_nugget",
+    "count": 9
+  }
+}

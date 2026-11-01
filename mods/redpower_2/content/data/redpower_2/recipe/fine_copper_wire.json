@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:copper_ingot",
+    "redpower_2:diamond_drawplate"
+  ],
+  "result": {
+    "id": "redpower_2:fine_copper_wire",
+    "count": 1
+  }
+}

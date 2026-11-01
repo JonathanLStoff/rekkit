@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "SBS",
+    "SSS"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "B": "redpower_2:brass_ingot"
+  },
+  "result": {
+    "id": "redpower_2:frame",
+    "count": 1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:redstone_wire",
+  "properties": {
+    "hardness": 0.5,
+    "explosion_resistance": 0.5,
+    "sounds": "minecraft:stone"
+  },
+  "item": false
+}

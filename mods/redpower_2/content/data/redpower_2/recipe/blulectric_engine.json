@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BGB",
+    "GAG",
+    "BMB"
+  ],
+  "key": {
+    "B": "redpower_2:brass_ingot",
+    "G": "minecraft:glass",
+    "A": "redpower_2:brass_gear",
+    "M": "redpower_2:bl_motor"
+  },
+  "result": {
+    "id": "redpower_2:blulectric_engine",
+    "count": 1
+  }
+}

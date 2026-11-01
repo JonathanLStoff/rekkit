@@ -1,45 +1,1513 @@
 {
   "mod": "redpower_2",
-  "status": "UNVERIFIED",
-  "notes": "RedPower 2 legacy sprite sheets from Eloraam (RedPowerCore, RedPowerWiring, RedPowerMachine, RedPowerControl, RedPowerWorld). Awaiting JAR asset extraction via `make extract-jar`.",
-  "sheets": [
+  "credits": "RedPower 2 by Eloraam",
+  "resolution": 16,
+  "source_archives": [
+    "assets/direwolf20/mods/redpowercore.zip",
+    "assets/direwolf20/mods/redpowerdigital.zip",
+    "assets/direwolf20/mods/redpowermechanical.zip",
+    "assets/direwolf20/mods/redpowercompat.zip"
+  ],
+  "vanilla_ok": [],
+  "slices": [
     {
-      "sheet": "eloraam/core/items.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 16,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower Core item sprite sheet (ingots, gems, wafers, tools)"
+      "out": "content/assets/redpower_2/textures/block/alloy_furnace_side.png",
+      "for": "redpower_2:alloy_furnace",
+      "face": "side",
+      "origin": "original"
     },
     {
-      "sheet": "eloraam/core/blocks.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 16,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower Core block sprite sheet (ores, marble, basalt)"
+      "out": "content/assets/redpower_2/textures/block/alloy_furnace_bottom.png",
+      "for": "redpower_2:alloy_furnace",
+      "face": "bottom",
+      "origin": "original"
     },
     {
-      "sheet": "eloraam/wiring/wiring.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 19,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower Wiring sprite sheet (red alloy wire, insulated colors, bundled cables)"
+      "out": "content/assets/redpower_2/textures/block/alloy_furnace_top.png",
+      "for": "redpower_2:alloy_furnace",
+      "face": "top",
+      "origin": "original"
     },
     {
-      "sheet": "eloraam/machine/machine.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 17,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower Machine block and tube sprite sheet (pneumatic tubes, alloy furnace, deployer, breaker)"
+      "out": "content/assets/redpower_2/textures/block/alloy_furnace_front.png",
+      "for": "redpower_2:alloy_furnace",
+      "face": "front",
+      "origin": "original"
     },
     {
-      "sheet": "eloraam/control/control.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 18,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower Control sprite sheet (CPU, monitor, disk drive, keyboard, ribbon cable)"
+      "out": "content/assets/redpower_2/textures/block/alloy_furnace_front_lit.png",
+      "for": "redpower_2:alloy_furnace",
+      "face": "front",
+      "origin": "original"
     },
     {
-      "sheet": "eloraam/world/world.png",
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 32,
       "size": 16,
-      "status": "UNVERIFIED",
-      "description": "RedPower World sprite sheet (rubber tree, flax, plants)"
+      "out": "content/assets/redpower_2/textures/block/project_table_top.png",
+      "for": "redpower_2:project_table",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 33,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/project_table_front.png",
+      "for": "redpower_2:project_table",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 34,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/project_table_side.png",
+      "for": "redpower_2:project_table",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/base1.png",
+      "archive": "redpowercore",
+      "index": 35,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/project_table_bottom.png",
+      "for": "redpower_2:project_table",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 16,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/marble.png",
+      "for": "redpower_2:marble",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 17,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/basalt.png",
+      "for": "redpower_2:basalt",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 18,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/marble_brick.png",
+      "for": "redpower_2:marble_brick",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 19,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/basalt_cobblestone.png",
+      "for": "redpower_2:basalt_cobblestone",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 20,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/basalt_brick.png",
+      "for": "redpower_2:basalt_brick",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 21,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/basalt_chiseled.png",
+      "for": "redpower_2:basalt_chiseled",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 22,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/basalt_paver.png",
+      "for": "redpower_2:basalt_paver",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 32,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_ruby.png",
+      "for": "redpower_2:ore_ruby",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 33,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_green_sapphire.png",
+      "for": "redpower_2:ore_green_sapphire",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 34,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_sapphire.png",
+      "for": "redpower_2:ore_sapphire",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 35,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_silver.png",
+      "for": "redpower_2:ore_silver",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 36,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_tin.png",
+      "for": "redpower_2:ore_tin",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 37,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_copper.png",
+      "for": "redpower_2:ore_copper",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 38,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_tungsten.png",
+      "for": "redpower_2:ore_tungsten",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 39,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ore_nikolite.png",
+      "for": "redpower_2:ore_nikolite",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/rubber_leaves.png",
+      "for": "redpower_2:rubber_leaves",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 50,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/rubber_log.png",
+      "for": "redpower_2:rubber_log",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/rubber_log_top.png",
+      "for": "redpower_2:rubber_log",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 64,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_0.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 65,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_1.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 66,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_2.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 67,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_3.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 68,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_4.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 69,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/flax_crop_5.png",
+      "for": "redpower_2:flax_crop",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 80,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_ruby.png",
+      "for": "redpower_2:block_ruby",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 81,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_green_sapphire.png",
+      "for": "redpower_2:block_green_sapphire",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 82,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_sapphire.png",
+      "for": "redpower_2:block_sapphire",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 83,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_silver.png",
+      "for": "redpower_2:block_silver",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 84,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_tin.png",
+      "for": "redpower_2:block_tin",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/world1.png",
+      "archive": "redpowermechanical",
+      "index": 85,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_copper.png",
+      "for": "redpower_2:block_copper",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/deployer_front.png",
+      "for": "redpower_2:deployer",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 49,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_breaker_front.png",
+      "for": "redpower_2:block_breaker",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 50,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/transposer_front.png",
+      "for": "redpower_2:transposer",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/filter_front.png",
+      "for": "redpower_2:filter",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 52,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/item_detector_front.png",
+      "for": "redpower_2:item_detector",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 53,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/sorting_machine_front.png",
+      "for": "redpower_2:sorting_machine",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 54,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/battery_box_side.png",
+      "for": "redpower_2:battery_box",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 55,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/retriever_front.png",
+      "for": "redpower_2:retriever",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 56,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/regulator_front.png",
+      "for": "redpower_2:regulator",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/logic/logic1.png",
+      "archive": "redpowerdigital",
+      "index": 0,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/logic_tile.png",
+      "for": "redpower_2:logic_tile",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 97,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/wire_red_alloy.png",
+      "for": "redpower_2:wire_red_alloy",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 2,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/wire_bundled.png",
+      "for": "redpower_2:wire_bundled",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 16,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/wire_insulated.png",
+      "for": "redpower_2:wire_insulated",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 5,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/wire_jacketed.png",
+      "for": "redpower_2:wire_jacketed",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 3,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/ribbon_cable.png",
+      "for": "redpower_2:ribbon_cable",
+      "face": "all",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 25,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/battery.png",
+      "for": "redpower_2:battery",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 25,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/battery_empty.png",
+      "for": "redpower_2:battery_empty",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 25,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/battery_powered.png",
+      "for": "redpower_2:battery_powered",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 65,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/blue_alloy_ingot.png",
+      "for": "redpower_2:blue_alloy_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 69,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/blue_doped_wafer.png",
+      "for": "redpower_2:blue_doped_wafer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 66,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/brass_ingot.png",
+      "for": "redpower_2:brass_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 76,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/canvas.png",
+      "for": "redpower_2:canvas",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 192,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/canvas_bag.png",
+      "for": "redpower_2:canvas_bag",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 53,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/copper_ingot.png",
+      "for": "redpower_2:copper_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 3,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/floppy_disk.png",
+      "for": "redpower_2:floppy_disk",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 3,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/blank_disk.png",
+      "for": "redpower_2:blank_disk",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 4,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/forth_boot_disk.png",
+      "for": "redpower_2:forth_boot_disk",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 5,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/forth_extra_disk.png",
+      "for": "redpower_2:forth_extra_disk",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 49,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire.png",
+      "for": "redpower_2:green_sapphire",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 17,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/handsaw.png",
+      "for": "redpower_2:handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 17,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/iron_handsaw.png",
+      "for": "redpower_2:iron_handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 18,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/diamond_handsaw.png",
+      "for": "redpower_2:diamond_handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 19,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_handsaw.png",
+      "for": "redpower_2:ruby_handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 20,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_handsaw.png",
+      "for": "redpower_2:green_sapphire_handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 21,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_handsaw.png",
+      "for": "redpower_2:sapphire_handsaw",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/logic/logic1.png",
+      "archive": "redpowerdigital",
+      "index": 0,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/logic_tile.png",
+      "for": "redpower_2:logic_tile",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 54,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/nikolite.png",
+      "for": "redpower_2:nikolite",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 28,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/paint_brush.png",
+      "for": "redpower_2:paint_brush",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 28,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/dry_paint_brush.png",
+      "for": "redpower_2:dry_paint_brush",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 64,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/red_alloy_ingot.png",
+      "for": "redpower_2:red_alloy_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 70,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/red_doped_wafer.png",
+      "for": "redpower_2:red_doped_wafer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 3,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ribbon_cable.png",
+      "for": "redpower_2:ribbon_cable",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby.png",
+      "for": "redpower_2:ruby",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 50,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire.png",
+      "for": "redpower_2:sapphire",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 16,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/screwdriver.png",
+      "for": "redpower_2:screwdriver",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 18,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sickle.png",
+      "for": "redpower_2:sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 16,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wood_sickle.png",
+      "for": "redpower_2:wood_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 17,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/stone_sickle.png",
+      "for": "redpower_2:stone_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 18,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/iron_sickle.png",
+      "for": "redpower_2:iron_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 19,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/diamond_sickle.png",
+      "for": "redpower_2:diamond_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 20,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/gold_sickle.png",
+      "for": "redpower_2:gold_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 21,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_sickle.png",
+      "for": "redpower_2:ruby_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 22,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_sickle.png",
+      "for": "redpower_2:green_sapphire_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 23,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_sickle.png",
+      "for": "redpower_2:sapphire_sickle",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 68,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/silicon_wafer.png",
+      "for": "redpower_2:silicon_wafer",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 0,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/silicon_boule.png",
+      "for": "redpower_2:silicon_boule",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/silver_ingot.png",
+      "for": "redpower_2:silver_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 52,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/tin_ingot.png",
+      "for": "redpower_2:tin_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 2,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wire_bundled.png",
+      "for": "redpower_2:wire_bundled",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 16,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wire_insulated.png",
+      "for": "redpower_2:wire_insulated",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 5,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wire_jacketed.png",
+      "for": "redpower_2:wire_jacketed",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/wiring/redpower1.png",
+      "archive": "redpowerdigital",
+      "index": 97,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wire_red_alloy.png",
+      "for": "redpower_2:wire_red_alloy",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 128,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wool_card.png",
+      "for": "redpower_2:wool_card",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 129,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/seed_bag.png",
+      "for": "redpower_2:seed_bag",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 1,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/flax_seeds.png",
+      "for": "redpower_2:flax_seeds",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 112,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/athame.png",
+      "for": "redpower_2:athame",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 22,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/diamond_drawplate.png",
+      "for": "redpower_2:diamond_drawplate",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 24,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/empty_paint_can.png",
+      "for": "redpower_2:empty_paint_can",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 71,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/tinplate.png",
+      "for": "redpower_2:tinplate",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 72,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/fine_copper_wire.png",
+      "for": "redpower_2:fine_copper_wire",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 73,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/fine_iron_wire.png",
+      "for": "redpower_2:fine_iron_wire",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 74,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/copper_coil.png",
+      "for": "redpower_2:copper_coil",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 75,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/bl_motor.png",
+      "for": "redpower_2:bl_motor",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 80,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/dye_indigo.png",
+      "for": "redpower_2:dye_indigo",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 81,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/blank_plan.png",
+      "for": "redpower_2:blank_plan",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 82,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/plan.png",
+      "for": "redpower_2:plan",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 160,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/iron_nugget.png",
+      "for": "redpower_2:iron_nugget",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 161,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/silver_nugget.png",
+      "for": "redpower_2:silver_nugget",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 162,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/tin_nugget.png",
+      "for": "redpower_2:tin_nugget",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 163,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/copper_nugget.png",
+      "for": "redpower_2:copper_nugget",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 32,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_sword.png",
+      "for": "redpower_2:ruby_sword",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 33,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_sword.png",
+      "for": "redpower_2:green_sapphire_sword",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 34,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_sword.png",
+      "for": "redpower_2:sapphire_sword",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_shovel.png",
+      "for": "redpower_2:ruby_shovel",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 49,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_shovel.png",
+      "for": "redpower_2:green_sapphire_shovel",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 50,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_shovel.png",
+      "for": "redpower_2:sapphire_shovel",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 64,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_pickaxe.png",
+      "for": "redpower_2:ruby_pickaxe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 65,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_pickaxe.png",
+      "for": "redpower_2:green_sapphire_pickaxe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 66,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_pickaxe.png",
+      "for": "redpower_2:sapphire_pickaxe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 80,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_axe.png",
+      "for": "redpower_2:ruby_axe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 81,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_axe.png",
+      "for": "redpower_2:green_sapphire_axe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 82,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_axe.png",
+      "for": "redpower_2:sapphire_axe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 96,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/ruby_hoe.png",
+      "for": "redpower_2:ruby_hoe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 97,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/green_sapphire_hoe.png",
+      "for": "redpower_2:green_sapphire_hoe",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/world/worlditems1.png",
+      "archive": "redpowermechanical",
+      "index": 98,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sapphire_hoe.png",
+      "for": "redpower_2:sapphire_hoe",
+      "origin": "original"
     }
   ],
-  "slices": [],
-  "copies": []
+  "copies": [
+    {
+      "from": "eloraam/base/afurnacegui.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/alloy_furnace.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/afurnacegui.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/afurnacegui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/advbench.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/project_table.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/advbench.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/advbench.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/baggui.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/canvas_bag.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/baggui.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/baggui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/base/idgui.png",
+      "archive": "redpowercore",
+      "out": "content/assets/redpower_2/textures/gui/idgui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/logic/countergui.png",
+      "archive": "redpowerdigital",
+      "out": "content/assets/redpower_2/textures/gui/counter.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/logic/countergui.png",
+      "archive": "redpowerdigital",
+      "out": "content/assets/redpower_2/textures/gui/countergui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/logic/timersgui.png",
+      "archive": "redpowerdigital",
+      "out": "content/assets/redpower_2/textures/gui/timer.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/logic/timersgui.png",
+      "archive": "redpowerdigital",
+      "out": "content/assets/redpower_2/textures/gui/timersgui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/control/cpugui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/cpu.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/control/cpugui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/cpugui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/control/displaygui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/display.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/control/displaygui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/displaygui.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/assembler.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/assembler.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/assembler2.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/assembler2.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/batbox.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/battery_box.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/batbox.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/batbox.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/btafurnace.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/blulectric_alloy_furnace.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/btafurnace.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/btafurnace.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/btfurnace.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/blulectric_furnace.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/btfurnace.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/btfurnace.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/buffer.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/buffer_chest.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/buffer.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/buffer.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/charging.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/charging_bench.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/charging.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/charging.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/filter.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/filter.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/filter9.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/filter9.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/itemdet.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/item_detector.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/itemdet.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/itemdet.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/manager.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/manager.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/regulator.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/regulator.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/retriever.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/retriever.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/sortmachine.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/sorting_machine.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/sortmachine.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/sortmachine.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/windgui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/wind_turbine.png",
+      "origin": "original"
+    },
+    {
+      "from": "eloraam/machine/windgui.png",
+      "archive": "redpowermechanical",
+      "out": "content/assets/redpower_2/textures/gui/windgui.png",
+      "origin": "original"
+    }
+  ],
+  "generated": [
+    {
+      "source": "art/textures/item/tungsten_ingot.pixels",
+      "out": "content/assets/redpower_2/textures/item/tungsten_ingot.png",
+      "origin": "generated",
+      "size": 16,
+      "palette": "6127 colours from the originals"
+    }
+  ]
 }

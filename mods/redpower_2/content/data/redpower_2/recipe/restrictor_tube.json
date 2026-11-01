@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:pneumatic_tube",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "redpower_2:restrictor_tube",
+    "count": 1
+  }
+}

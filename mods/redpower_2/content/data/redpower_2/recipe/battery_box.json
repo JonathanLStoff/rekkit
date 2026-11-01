@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EIE",
+    "EPE",
+    "IBI"
+  ],
+  "key": {
+    "E": "redpower_2:battery_empty",
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:oak_planks",
+    "B": "redpower_2:blue_alloy_ingot"
+  },
+  "result": {
+    "id": "redpower_2:battery_box",
+    "count": 1
+  }
+}

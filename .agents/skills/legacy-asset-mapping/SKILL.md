@@ -7,7 +7,9 @@ description: Map textures and sounds from pre-1.6 Minecraft mods (Tekkit 1.2.5, 
 
 Pre-1.6 mods did not use `assets/<modid>/textures/`. Run the `extract-jar-assets` skill first, then map what it produced.
 
-Use the **client** build of the mod from the pack its epic names: `assets/tekkit/client/mods/` for Tekkit (Technic's client build; `assets/tekkit/mods/` holds the server ports, classes only, no PNG or OGG), `assets/direwolf20/mods/` for Direwolf20. Each pack's `pack-info.json` gives `art_files` per archive. Some Tekkit mods ship unpacked as a folder (`client/mods/ComputerCraft/`). If no client build of the right mod is under `assets/`, report it as a follow_up instead of drawing replacements: new art is only for what the original never had (step 6).
+When the mod ships in several packs, take each texture and sound from the version the spec uses for that feature: the newest version that has it (a feature only an older version has keeps that version's art). Record the source archive in each `asset-map.json` entry.
+
+Use the **client** build of each version: `assets/tekkit/client/mods/` for Tekkit (Technic's client build; `assets/tekkit/mods/` holds the server ports, classes only, no PNG or OGG), `assets/direwolf20/mods/` for Direwolf20. Each pack's `pack-info.json` gives `art_files` per archive. Some Tekkit mods ship unpacked as a folder (`client/mods/ComputerCraft/`). If no client build of the right mod is under `assets/`, report it as a follow_up instead of drawing replacements: new art is only for what the original never had (step 6).
 
 ## What to expect
 

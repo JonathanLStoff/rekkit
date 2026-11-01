@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:daylight_detector",
+  "properties": {
+    "hardness": 0.5,
+    "explosion_resistance": 1.0,
+    "sounds": "minecraft:wood"
+  },
+  "item": true
+}

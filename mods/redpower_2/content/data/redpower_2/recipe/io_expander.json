@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PBP",
+    "PWP",
+    "PRP"
+  ],
+  "key": {
+    "P": "minecraft:oak_planks",
+    "B": "redpower_2:wire_bundled",
+    "W": "redpower_2:red_doped_wafer",
+    "R": "redpower_2:ribbon_cable"
+  },
+  "result": {
+    "id": "redpower_2:io_expander",
+    "count": 1
+  }
+}

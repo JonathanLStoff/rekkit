@@ -26,8 +26,8 @@ COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-start fleet-stop \
-	fleet-task fleet-inbox fleet-features fleet-gaps fleet-status board decompile art play horizon-baseline horizon-status
+.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
+	fleet-task fleet-inbox fleet-features fleet-gaps core-need fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status
 
 all: tekkit direwolf20 agrarian
 
@@ -99,12 +99,26 @@ agent-gate:
 fleet-next:
 	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(MOD)
 
+# agy on this repository with its terminal sandbox off (the port needs the network, Beads and the game).
+agy:
+	$(PYTHON) scripts/fleet/agy.py $(ARGS)
+
+# The model chain headless runs use (.agents/models.json) and which models are resting after a limit.
+fleet-models:
+	$(PYTHON) scripts/fleet/models.py $(if $(AGENT),--prefer $(AGENT),) $(ARGS)
+
 # The conductor's first command for a mod: claim it (the hooks hold the session until it is
 # finished), create its stories in Beads, and check Horizon itself at the pinned revision.
 fleet-start:
 	$(PYTHON) scripts/fleet/guard.py claim $(MOD)
 	$(PYTHON) scripts/fleet/beads.py start $(MOD)
 	-$(PYTHON) scripts/e2e_harness.py --baseline --no-fetch
+	$(PYTHON) scripts/fleet/resume.py $(MOD)
+
+# Where a mod's run stands after a crash, lost credits or a network drop: steps, interrupted subagents
+# and how to restart them, unfiled reports, the last conductor's actions.
+fleet-resume:
+	$(PYTHON) scripts/fleet/resume.py $(MOD)
 
 fleet-stop:
 	$(PYTHON) scripts/fleet/guard.py stop
@@ -122,14 +136,53 @@ fleet-features:
 fleet-gaps:
 	$(PYTHON) scripts/fleet/beads.py gaps $(MOD)
 
+# Shared code a mod needs: a bead under rekkit_core (reopened if closed), done within this mod's run.
+core-need:
+	$(PYTHON) scripts/fleet/beads.py core-need $(MOD) --title "$(TITLE)" --why "$(WHY)"
+
 fleet-status:
 	$(PYTHON) scripts/fleet/beads.py status $(MOD)
+
+# One short page per mod: Beads state, spec, every original archive in every pack, what is decompiled
+# and what the mod folder holds (instead of exploring with ls and find).
+fleet-context:
+	$(PYTHON) scripts/fleet/context.py $(MOD)
+
+# A spec a section at a time (builders read only what their bead needs).
+spec-toc:
+	$(PYTHON) scripts/fleet/spec.py toc $(MOD)
+
+spec-show:
+	$(PYTHON) scripts/fleet/spec.py show $(MOD) "$(SECTION)"
 
 board:
 	$(PYTHON) scripts/fleet/beads.py board
 
+# Looking at Beads: the mod in progress on one screen, redrawn every 30 s, or a browser page.
+tasks:
+	@$(PYTHON) scripts/fleet/view.py tasks $(MOD)
+
+watch:
+	@$(PYTHON) scripts/fleet/view.py watch $(MOD)
+
+board-html:
+	$(PYTHON) scripts/fleet/view.py html
+
+board-live:
+	$(PYTHON) scripts/fleet/view.py serve
+
 decompile:
 	$(PYTHON) scripts/decompile.py --jar "$(JAR)" $(ARGS)
+
+# Decompiled Java a piece at a time: the outline, then only the members needed.
+java-outline:
+	$(PYTHON) scripts/java_outline.py outline "$(DIR)" $(if $(GREP),--grep "$(GREP)",) $(ARGS)
+
+java-show:
+	$(PYTHON) scripts/java_outline.py show "$(DIR)" "$(MEMBER)" $(ARGS)
+
+java-find:
+	$(PYTHON) scripts/java_outline.py find "$(DIR)" "$(TEXT)" $(ARGS)
 
 art:
 	$(PYTHON) scripts/art.py --mod $(MOD) $(ARGS)
@@ -177,7 +230,12 @@ make agent-gate [MOD=a,b]
                       Tests, check-mods and harness dry run for the mods/crates you changed (what the stop hooks run)
 make fleet-next [AGENT=agy|claude|codex] [MOD=<id>]
                       One headless conductor run on one board row (AGENT_CMD="<cli flags>" for any other agent);
-                      it relaunches the agent until the row is finished
+                      it relaunches the agent until the row is finished, on the next model of
+                      .agents/models.json whenever one hits a quota or rate limit (AGENT= the tool to try first)
+make agy [ARGS="--agent conductor"]
+                      Start agy here with its terminal sandbox off (the fleet's hooks still guard it)
+make fleet-models [ARGS=--clear]
+                      The model chain and which models are resting after a limit (--clear: none)
 make fleet-start MOD=<id>
                       The conductor's first command: claims the mod, creates its Beads stories, checks Horizon
 make fleet-stop       Tell every fleet agent to stop at the end of its current turn
@@ -189,6 +247,24 @@ make fleet-features MOD=<id> / fleet-gaps MOD=<id> / fleet-status [MOD=<id>]
 make board            Regenerate planning/fleet-board.md and .beads/issues.jsonl from Beads
 make decompile JAR=<archive>
                       Original mod -> Java source in assets/decompiled/ (spec-writer and reviewer only)
+make java-outline DIR=<decompiled> [GREP=<regex>] [ARGS=--classes|--consts]
+                      Classes and members with line ranges (read this, not whole files)
+make java-show DIR=<decompiled> MEMBER=<Class#method|Class:120-180> / java-find DIR=<d> TEXT=<name>
+                      One member's source / where a name occurs
+make core-need MOD=<id> TITLE="<what>" [WHY="<why it is shared>"]
+                      Shared code the mod needs, filed under rekkit_core (conductor; done in this mod's run)
+make tasks [MOD=<id>] / make watch [MOD=<id>]
+                      The mod in progress on one screen: steps, what is worked, open items, bugs, subagents
+                      (watch: redrawn every 30 s)
+make board-live / make board-html
+                      The board in your browser: every mod, and the current mod as a column per step
+                      (live: http://127.0.0.1:8765, refreshes itself)
+make fleet-resume MOD=<id>
+                      Where the mod's run stands after a crash or lost credits: what to restart, what is waiting
+make fleet-context MOD=<id>
+                      One page: the mod's Beads state, spec, original archives in every pack, decompiled folders
+make spec-toc MOD=<id> / spec-show MOD=<id> SECTION="<heading text>"
+                      The spec's headings with line ranges / just the sections you need
 make art MOD=<id>     mods/<id>/art/*.svg|*.pixels -> PNGs at the original size and palette
 make check-mods MOD=<id> COMPLETE=1
                       Also fail on any asset Minecraft 26.3 needs that the mod lacks

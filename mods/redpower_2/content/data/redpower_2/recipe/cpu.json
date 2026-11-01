@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PDP",
+    "WRW",
+    "PDP"
+  ],
+  "key": {
+    "P": "minecraft:oak_planks",
+    "D": "minecraft:diamond_block",
+    "W": "redpower_2:red_doped_wafer",
+    "R": "redpower_2:ribbon_cable"
+  },
+  "result": {
+    "id": "redpower_2:cpu",
+    "count": 1
+  }
+}

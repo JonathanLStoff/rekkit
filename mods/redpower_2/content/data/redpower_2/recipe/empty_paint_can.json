@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    "T T",
+    "TTT"
+  ],
+  "key": {
+    "T": "redpower_2:tinplate"
+  },
+  "result": {
+    "id": "redpower_2:empty_paint_can",
+    "count": 3
+  }
+}

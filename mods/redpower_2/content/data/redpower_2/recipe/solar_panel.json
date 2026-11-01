@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WWW",
+    "WBW",
+    "WWW"
+  ],
+  "key": {
+    "W": "redpower_2:blue_doped_wafer",
+    "B": "redpower_2:blue_alloy_ingot"
+  },
+  "result": {
+    "id": "redpower_2:solar_panel",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CIC",
+    "WBW",
+    "CIC"
+  ],
+  "key": {
+    "C": "redpower_2:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "W": "redpower_2:blue_doped_wafer",
+    "B": "redpower_2:blue_alloy_ingot"
+  },
+  "result": {
+    "id": "redpower_2:thermopile",
+    "count": 1
+  }
+}

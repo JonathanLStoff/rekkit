@@ -1,0 +1,19 @@
+{
+  "type": "redpower_2:alloy_furnace",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 2
+    },
+    {
+      "item": "redpower_2:tin_ingot",
+      "count": 1
+    }
+  ],
+  "result": {
+    "id": "redpower_2:tinplate",
+    "item": "redpower_2:tinplate",
+    "count": 4
+  }
+}

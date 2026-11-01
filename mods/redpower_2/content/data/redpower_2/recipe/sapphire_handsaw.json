@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  S",
+    " SI",
+    "SSS"
+  ],
+  "key": {
+    "S": "redpower_2:sapphire",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "redpower_2:sapphire_handsaw",
+    "count": 1
+  }
+}

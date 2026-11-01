@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GG",
+    " S",
+    " S"
+  ],
+  "key": {
+    "G": "redpower_2:green_sapphire",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "redpower_2:green_sapphire_hoe",
+    "count": 1
+  }
+}

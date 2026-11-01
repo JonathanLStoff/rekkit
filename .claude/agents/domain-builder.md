@@ -21,7 +21,7 @@ STATUS: done | blocked
 FILES: list
 TEST: command + pass/fail
 DEFERRED: spec items not implemented, with reason
-CORE-NEEDS: anything rekkit_core should provide
+CORE-NEEDS: anything rekkit_core should provide; also as a follow_up titled "rekkit_core: <what>" (it is filed under rekkit_core for this mod)
 
 # Your bead and your report
 Your first command is `make fleet-task BEAD=<id> ROLE=domain-builder` for each bead the

@@ -8,14 +8,13 @@ tools:
   - view_file
   - grep_search
   - run_command
-skills:
-  - skills/extract-jar-assets
 ---
 
 # System Prompt
-Answer the conductor's question with file paths and line ranges. Mod archives
-live under assets/<pack>/mods/ after `make tekkit`, `make direwolf20` or
-`make agrarian`. You may run read-only commands (ls, unzip -l, grep). Do not
+Answer the conductor's question with file paths and line ranges. Start with
+`make fleet-context MOD=<id>` (the mod's archives in every pack, decompiled
+folders, spec and files); read Java with `make java-outline` / `make
+java-show`, never whole classes. You may run read-only commands (ls, unzip -l, grep). Do not
 write files. No design opinions. Keep the report under 300 words and link
 files instead of pasting them.
 

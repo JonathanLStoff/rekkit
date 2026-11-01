@@ -13,11 +13,15 @@
 //! 8. Dual-artifact manifest and content JSON structure.
 
 use redpower_2::{
-    internal_to_vanilla_redstone, plan_frame_translation, red_alloy_signal_at_distance,
-    AlloyFurnaceState, BlockPos, Cpu6502, Direction, DyeColor, HorizonNativeMod, ItemStack,
-    LogicGateKind, LogicGateState, MicroblockKind, MicroblockVoxel, ModBlockEntity, RedPower2Mod,
-    BLOCK_IDS, HORIZON_REVISION, ITEM_IDS, MIXINS_REVISION, MOD_ID, NATIVE_HOOKS_API,
+    athame_attack_damage, calculate_weapon_damage, check_vorpal_decapitation,
+    internal_to_vanilla_redstone, is_ender_mob, plan_frame_translation,
+    red_alloy_signal_at_distance, sickle_crop_positions, sickle_leaf_positions,
+    vorpal_proc_chance_percent, AlloyFurnaceState, BlockPos, Cpu6502, Direction, DyeColor,
+    HorizonNativeMod, ItemStack, LogicGateKind, LogicGateState, MicroblockKind, MicroblockVoxel,
+    ModBlockEntity, RedPower2Mod, SickleVariant, BLOCK_IDS, HORIZON_REVISION, ITEM_IDS,
+    MIXINS_REVISION, MOD_ID, NATIVE_HOOKS_API,
 };
+use std::collections::HashMap;
 use std::path::Path;
 
 #[test]
@@ -54,8 +58,11 @@ fn test_red_alloy_wire_distance_and_vanilla_signal() {
     assert_eq!(red_alloy_signal_at_distance(255, 254), 1);
     assert_eq!(red_alloy_signal_at_distance(255, 255), 0);
 
+    // Spec §2.2 formula: strength / 17
     assert_eq!(internal_to_vanilla_redstone(0), 0);
-    assert_eq!(internal_to_vanilla_redstone(1), 1);
+    assert_eq!(internal_to_vanilla_redstone(1), 0);
+    assert_eq!(internal_to_vanilla_redstone(17), 1);
+    assert_eq!(internal_to_vanilla_redstone(34), 2);
     assert_eq!(internal_to_vanilla_redstone(255), 15);
 }
 
@@ -104,13 +111,20 @@ fn test_all_twenty_logic_gate_subtypes() {
     assert_eq!(timer.step_tick([false, false, false]), 0);
     assert_eq!(timer.step_tick([false, false, false]), 0);
     assert_eq!(timer.step_tick([false, false, false]), 0);
-    assert_eq!(timer.step_tick([false, false, false]), 15);
+    assert_eq!(timer.step_tick([false, false, false]), 15); // tick 4: pulse tick 1
+    assert_eq!(timer.step_tick([false, false, false]), 15); // tick 5: pulse tick 2
+    assert_eq!(timer.step_tick([false, false, false]), 0); // tick 6: off
 
     let mut counter = LogicGateState::new(LogicGateKind::Counter);
     counter.max_count = 2;
-    assert_eq!(counter.step_tick([true, false, false]), 0);
+    assert_eq!(counter.output_level, 15); // minimum count 0 outputs high
+    assert_eq!(counter.step_tick([true, false, false]), 0); // rising left -> count 1 -> off
     assert_eq!(counter.step_tick([false, false, false]), 0);
-    assert_eq!(counter.step_tick([true, false, false]), 15);
+    assert_eq!(counter.step_tick([true, false, false]), 15); // rising left -> count 2 (max) -> on
+    assert_eq!(counter.step_tick([false, false, false]), 15); // steady at max count
+    assert_eq!(counter.step_tick([false, false, true]), 0); // rising right -> count 1 -> off
+    assert_eq!(counter.step_tick([false, false, false]), 0); // low input
+    assert_eq!(counter.step_tick([false, false, true]), 15); // rising right -> count 0 (min) -> on
 
     let mut seq = LogicGateState::new(LogicGateKind::Sequencer);
     seq.interval_ticks = 4;
@@ -210,7 +224,7 @@ fn test_cpu_6502_execution_and_io_expander_mmio() {
     assert_eq!(cpu.io_expander.level(DyeColor::Magenta), 255);
     assert_eq!(cpu.io_expander.level(DyeColor::Orange), 0);
 
-    // Infinite JMP loop is bounded by MAX_CYCLES_PER_TICK (4096)
+    // Infinite JMP loop is bounded by MAX_CYCLES_PER_TICK (1000)
     let mut loop_cpu = Cpu6502::new();
     loop_cpu.load_program(0x0400, &[0x4C, 0x00, 0x04]);
     assert_eq!(loop_cpu.step_tick(100_000), Cpu6502::MAX_CYCLES_PER_TICK);
@@ -218,8 +232,8 @@ fn test_cpu_6502_execution_and_io_expander_mmio() {
 
 #[test]
 fn test_native_hooks_namespace_guard_and_lifecycle() {
-    assert_eq!(BLOCK_IDS.len(), 42);
-    assert_eq!(ITEM_IDS.len(), 29);
+    assert_eq!(BLOCK_IDS.len(), 113);
+    assert_eq!(ITEM_IDS.len(), 88);
 
     let mut rp = RedPower2Mod::default();
     let mut mods = Vec::new();
@@ -254,6 +268,99 @@ fn test_native_hooks_namespace_guard_and_lifecycle() {
     );
     assert!(claimed);
     assert_eq!(ent.nbt.get("facing").map(String::as_str), Some("3"));
+
+    // Tooltip hook
+    let mut tt_lines = Vec::new();
+    rp.native_tooltip(&ItemStack::new("redpower_2:voltmeter", 1), &mut tt_lines);
+    assert!(tt_lines.iter().any(|l| l.contains("Voltmeter")));
+
+    let mut foreign_tt = Vec::new();
+    rp.native_tooltip(&ItemStack::new("minecraft:iron_sword", 1), &mut foreign_tt);
+    assert!(foreign_tt.is_empty());
+
+    // Screen click hook
+    let mut btn = None;
+    rp.native_screen_click("redpower_2:timer", &[], [25.0, 20.0], false, &mut btn);
+    assert_eq!(btn, Some(1));
+
+    let mut foreign_btn = None;
+    rp.native_screen_click(
+        "minecraft:chest",
+        &[],
+        [25.0, 20.0],
+        false,
+        &mut foreign_btn,
+    );
+    assert!(foreign_btn.is_none());
+
+    // Menu button hook
+    let mut timer_entity = ModBlockEntity {
+        id: "redpower_2:timer".into(),
+        nbt: HashMap::new(),
+        items: Vec::new(),
+        data: Vec::new(),
+    };
+    rp.native_menu_button([0, 64, 0], &mut timer_entity, 1);
+    assert_eq!(
+        timer_entity.nbt.get("interval").map(String::as_str),
+        Some("6")
+    );
+
+    let mut foreign_entity2 = ModBlockEntity {
+        id: "minecraft:furnace".into(),
+        nbt: HashMap::new(),
+        items: Vec::new(),
+        data: Vec::new(),
+    };
+    rp.native_menu_button([0, 64, 0], &mut foreign_entity2, 1);
+    assert!(foreign_entity2.nbt.is_empty());
+
+    // Client network packet hook (packet 212 keystrokes into terminal ring buffer)
+    rp.native_net_from_client("player-1", "horizon:mod_net", &[212, b'A', b'B']);
+    assert_eq!(rp.terminal.key_buffer.pop_front(), Some(b'A'));
+    assert_eq!(rp.terminal.key_buffer.pop_front(), Some(b'B'));
+
+    rp.native_net_from_client("player-1", "foreign:channel", &[212, b'C']);
+    assert!(rp.terminal.key_buffer.is_empty());
+}
+
+#[test]
+fn test_athame_disjunction_and_vorpal() {
+    assert_eq!(athame_attack_damage(false, 0), 1);
+    assert_eq!(athame_attack_damage(false, 5), 1);
+    assert_eq!(athame_attack_damage(true, 0), 25);
+    assert_eq!(athame_attack_damage(true, 1), 31);
+    assert_eq!(athame_attack_damage(true, 5), 55);
+
+    assert!(is_ender_mob("minecraft:enderman"));
+    assert!(is_ender_mob("minecraft:ender_dragon"));
+    assert!(!is_ender_mob("minecraft:zombie"));
+
+    assert_eq!(vorpal_proc_chance_percent(1), 2);
+    assert_eq!(vorpal_proc_chance_percent(2), 8);
+    assert_eq!(vorpal_proc_chance_percent(3), 18);
+    assert_eq!(vorpal_proc_chance_percent(4), 32);
+
+    assert_eq!(calculate_weapon_damage(3, 4, true), 103);
+    assert_eq!(calculate_weapon_damage(3, 4, false), 3);
+
+    assert!(check_vorpal_decapitation(20, 40));
+    assert!(!check_vorpal_decapitation(20, 39));
+}
+
+#[test]
+fn test_sickle_leaf_and_crop_radii() {
+    let center = BlockPos(0, 64, 0);
+    let leaves = sickle_leaf_positions(center);
+    assert_eq!(leaves.len(), 27); // 3x3x3 volume
+
+    let crops = sickle_crop_positions(center);
+    assert_eq!(crops.len(), 25); // 5x5 flat area
+    for pos in &crops {
+        assert_eq!(pos.1, 64);
+    }
+
+    assert_eq!(SickleVariant::Diamond.durability(), 1561);
 }
 
 #[test]

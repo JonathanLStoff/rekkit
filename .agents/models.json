@@ -1,0 +1,29 @@
+{
+  "_doc": [
+    "The models the fleet may run on, best first. Headless runs (make fleet-next) take the first one that is",
+    "installed, offered by its CLI and not out of quota; when a run hits a quota, usage or rate limit, that model",
+    "rests until its reset time (target/fleet/models.json) and the next one takes over, in any tool. A run waits",
+    "only when every model is resting. `make fleet-models` shows the chain and what is resting.",
+    "tools: the order tools are tried in (AGENT=<tool> puts that one first). chain: that tool's models, best",
+    "first; null = the tool's own default model. agy also uses any other model `agy models` lists, after these.",
+    "roles: what the roster's model tiers (pro, flash) become in Claude Code's subagents; inherit = the model",
+    "the session runs on, so the roles follow the runner to whichever model has quota left."
+  ],
+  "tools": ["agy", "claude", "codex"],
+  "agy": {
+    "chain": [
+      "gemini-4-argon-high",
+      "claude-opus-5-5-high",
+      "claude-sonnet-5-5-high",
+      "gemini-3.8-flash-high",
+      "gpt-oss-120b-medium"
+    ]
+  },
+  "claude": {
+    "chain": ["opus", "sonnet", "fable", "haiku"],
+    "roles": {"pro": "inherit", "flash": "sonnet"}
+  },
+  "codex": {
+    "chain": [null]
+  }
+}

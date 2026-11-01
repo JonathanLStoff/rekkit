@@ -11,12 +11,13 @@ Compare the diff on `port/<id>` against `planning/mods/<id>.md`, `AGENTS.md` and
 
 - [ ] Every block in the spec registry has `content/data/<id>/horizon/block/<name>.json`, a blockstate, a model, a lang key, a loot table, and a texture (or an `UNVERIFIED` entry in `asset-map.json`).
 - [ ] Every item has its item JSON, item model, lang key and texture.
+- [ ] A mod in several packs is merged: every feature of every version is in the spec and the port; a shared feature follows the newest version (behaviour, numbers, art); an older-only feature is kept.
 - [ ] Mineable tags exist for blocks that need a tool.
 
 ## Logic
 
 - [ ] Each formula in the spec appears in `src/` with the same constants and units (EU/t, MJ/t, mB, ticks). Cite both lines.
-- [ ] It behaves as the original did: check the cited Java (`assets/decompiled/`) where the spec is ambiguous, and flag a spec that misreads the Java (owner: spec-writer).
+- [ ] It behaves as the original did: check the cited Java (`make java-show DIR=assets/decompiled/<archive> MEMBER=<Class#method>`, never whole files) where the spec is ambiguous, and flag a spec that misreads the Java (owner: spec-writer).
 - [ ] Nothing in `src/`, `native/` or `tests/` is copied from the Java (clean-room): no Java method bodies, comments or obfuscated names.
 - [ ] Each state machine has every state and transition from the spec.
 - [ ] Each hazard is implemented or listed under DEFERRED with a reason.

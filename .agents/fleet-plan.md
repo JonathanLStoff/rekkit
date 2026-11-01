@@ -4,7 +4,7 @@ How a fleet of agents (agy, Claude Code, or a single agent in any other tool) po
 
 Source of truth for the goal: `AGENTS.md`, `planning/workflow.md`, `planning/harness.md`, `planning/priority.md`, `planning/{tekkit,dw20,agrarianskies2}_mods.md`, `planning/mods/*.md`.
 
-**Start of every session:** follow `AGENTS.md` → *Start of every session*: check the setup (`./setup.sh --check`), tell the user word for word what they must download if a `!` line says so, then take the next mod in Beads (`make fleet-status`, `bd ready --type epic`) and keep working.
+**Start of every session:** follow `.agents/start.md`: check the setup (`./setup.sh --check`), tell the user word for word what they must download if a `!` line says so, then take the next mod in Beads (`make fleet-status`, `bd ready --type epic`) and keep working.
 
 ---
 
@@ -223,7 +223,7 @@ rekkit/
 ## 9. Running it
 
 **Interactive, agy**
-1. `agy` in the repo → `/agents` → **conductor**.
+1. `make agy` in the repo (agy with its terminal sandbox off: the port needs the network, Beads and the Minecraft install; the hooks still guard every command) → `/agents` → **conductor**.
 2. `/model` → Gemini 4 Argon, `/effort high`.
 3. "Continue the board." The conductor resumes the mod in progress or starts the next ready one.
 4. `Alt+J` jumps to the next approval, `Ctrl+K` approves inline, `K` kills a runaway.
@@ -241,10 +241,12 @@ rekkit/
 - The conductor runs `make fleet-start MOD=<id>` when it takes the mod. The hooks tie that session to the mod, and from then on the Stop hook (agy and Claude Code) sends it back to work at every turn end until the mod is finished in Beads: stories 1–9 closed, or the epic `blocked` with the reason as a comment. It also holds the conductor while subagents are still running or their reports are unfiled, and holds each role subagent until it has written its report.
 - It lets the agent stop when you cancel it (agy `USER_CANCELED`; Claude Code never runs the hook on an interrupt), after `make fleet-stop` (any tool, any terminal), or after 10 turn ends in a row with no change in Beads or the inbox (stuck).
 - Headless runs (`make fleet-next`) relaunch the agent with "continue from step N" whenever it exits early, for any tool, until the mod is finished, `make fleet-stop`, or 3 runs in a row change nothing in Beads.
+- **Checkpoints.** The hooks keep everything a successor needs, whatever kills a session (crash, credits, network): each session's last tool call, a journal of commands, writes and subagent launches (`target/fleet/journal.jsonl`), every subagent's prompt under its bead (`target/fleet/prompts/`), and the subagents' progress notes (`target/fleet/progress/`). `make fleet-resume MOD=<id>` (printed by `make fleet-start`) turns it into what to do next: reports to file, interrupted subagents to restart (a silent session counts as dead after 15 minutes), the last conductor's actions. A restarted subagent's `make fleet-task` shows it its predecessor's notes and files. Feature beads are created 200 per `bd` call, so `make fleet-features` takes seconds and a rerun adds only what is missing. Headless runs wait out a network outage instead of counting it as stalled.
+- **Quotas.** Each headless run uses the first model in `.agents/models.json` that is installed, offered by its CLI (agy: `agy models`) and not resting. A run that ends on a quota, usage or rate limit (`RESOURCE_EXHAUSTED`, 429, "usage limit reached"…) rests that model until the reset its error names (else 30 min, doubling, at most 6 h; a rejected model a day) and the next run continues on the next model, switching tool if needed (agy → claude → codex). Only when every model rests does it wait, for the first reset. Such runs count neither as stalled nor against `--max-runs`. `make fleet-models` shows the chain and the rests; `make fleet-models ARGS=--clear` forgets them. Inside a session the conductor restarts a subagent that hit a limit on another model, or does its role itself.
 - Tools without hooks only have the instruction in `AGENTS.md`; run them headless to get the relaunching.
 
 **Headless, any tool**
-- `make fleet-next AGENT=agy|claude|codex` (the mod in progress, else the next ready), `make fleet-next AGENT=claude MOD=rekkit_core` (a specific mod), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
+- `make fleet-next` (the mod in progress, else the next ready, on whichever model has quota), `make fleet-next AGENT=claude MOD=rekkit_core` (claude first, a specific mod), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
 - `/schedule` a nightly `make fleet-next AGENT=…`. It exits early if a run is already going or the mod in progress is waiting on you.
 
 ---

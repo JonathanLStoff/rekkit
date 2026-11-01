@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "PMP",
+    "PRP"
+  ],
+  "key": {
+    "P": "minecraft:oak_planks",
+    "M": "redpower_2:bl_motor",
+    "R": "redpower_2:ribbon_cable"
+  },
+  "result": {
+    "id": "redpower_2:disk_drive",
+    "count": 1
+  }
+}

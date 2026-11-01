@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:block_sapphire"
+  ],
+  "result": {
+    "id": "redpower_2:sapphire",
+    "count": 9
+  }
+}

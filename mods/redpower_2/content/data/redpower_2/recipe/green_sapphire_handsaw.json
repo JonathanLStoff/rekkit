@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "  S",
+    " SI",
+    "SGG"
+  ],
+  "key": {
+    "S": "minecraft:stick",
+    "I": "minecraft:iron_ingot",
+    "G": "redpower_2:green_sapphire"
+  },
+  "result": {
+    "id": "redpower_2:green_sapphire_handsaw",
+    "count": 1
+  }
+}

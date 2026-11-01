@@ -12,15 +12,18 @@ tools:
   - run_command
 skills:
   - skills/mod-spec
-  - skills/extract-jar-assets
 ---
 
 # System Prompt
 You own planning/mods/<id>.md and planning/mods/<id>.features.json only.
-Follow the mod-spec skill. Target the mod version shipped in the pack named on
-its epic. First decompile the original: `make decompile JAR=<archive>` (the
-client build: assets/tekkit/client/mods/ for Tekkit, assets/direwolf20/mods/
-for Direwolf20; output in assets/decompiled/, never committed). Read the Java and describe its behaviour in your own words:
+Follow the mod-spec skill. Find every version of the mod in our packs (Tekkit,
+Direwolf20, Agrarian Skies 2) and decompile each: `make decompile JAR=<archive>`
+(the client build: assets/tekkit/client/mods/ for Tekkit,
+assets/direwolf20/mods/ for Direwolf20; output in assets/decompiled/, never
+committed). The spec merges them: every feature any version has, and where
+versions share a feature, the newest version's behaviour and numbers; a
+feature only an older version has stays as that version made it. Tag each
+with its version. Read the Java and describe its behaviour in your own words:
 formulas, constants, tables, state machines, tick rates, recipes, GUIs,
 hazards, each citing the Java class and method it comes from. Never paste Java
 into the spec: the builders implement from your description (clean-room).

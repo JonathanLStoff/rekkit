@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "C C",
+    "CCC"
+  ],
+  "key": {
+    "C": "redpower_2:canvas"
+  },
+  "result": {
+    "id": "redpower_2:seed_bag",
+    "count": 1
+  }
+}

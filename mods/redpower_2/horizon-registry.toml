@@ -10,7 +10,7 @@ Rust port of Eloraam's **RedPower 2** (v2.0pr6 / v2.0pr5b2) for the Horizon engi
 - **Core & Microblocks**: 1/8th fractional slabs, panels, covers, hollow covers, strips, corners, and Alloy Furnace metallurgy.
 - **Logic & Wiring**: Red Alloy Wire (255-step loss-free up to 256 blocks), 16-color Insulated Wire, 16-channel Bundled Cable, and 20 integrated Logic Gates.
 - **Pneumatic Tubes & Machines**: Strict Dijkstra destination pathfinding (`GridGraph`), Restrictor Tubes (+500 weight), Transposer, Filter, Sorting Machine, Block Breaker, and Deployer.
-- **Frames & Blutricity**: Contiguous rigid Frame Motor block translation and 100V DC Blutricity ($V = I \cdot R$) power grid.
+- **Frames & Blutricity**: Contiguous rigid Frame Motor block translation and 100V DC Blutricity (V = I * R) power grid.
 - **Control (6502)**: Emulated MOS 6502 microprocessor with 64 KB RAM, 80x25 Monitor, Disk Drive, and 16-bit Bundled Cable I/O Expander.
 """
 authors = ["Rekkit Contributors"]

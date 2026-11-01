@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GG",
+    "GS",
+    " S"
+  ],
+  "key": {
+    "G": "redpower_2:sapphire",
+    "S": "minecraft:stick"
+  },
+  "result": {
+    "id": "redpower_2:sapphire_axe",
+    "count": 1
+  }
+}

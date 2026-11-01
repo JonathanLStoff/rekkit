@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ICI",
+    "IBI",
+    "ICI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "C": "redpower_2:copper_coil",
+    "B": "redpower_2:blue_alloy_ingot"
+  },
+  "result": {
+    "id": "redpower_2:bl_motor",
+    "count": 1
+  }
+}

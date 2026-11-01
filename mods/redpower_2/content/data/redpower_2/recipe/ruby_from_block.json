@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:block_ruby"
+  ],
+  "result": {
+    "id": "redpower_2:ruby",
+    "count": 9
+  }
+}

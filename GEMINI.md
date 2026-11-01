@@ -1,6 +1,6 @@
 # Rekkit for Gemini CLI
 
-The rules, the start-of-session steps and the project reference are in AGENTS.md, shared by every agent tool:
+The rules every agent follows are in AGENTS.md (the main session's start-up steps: `.agents/start.md`):
 
 @AGENTS.md
 

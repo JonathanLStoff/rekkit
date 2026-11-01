@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:paint_can",
+    "redpower_2:dry_paint_brush"
+  ],
+  "result": {
+    "id": "redpower_2:paint_brush",
+    "count": 1
+  }
+}

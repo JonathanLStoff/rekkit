@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": "redpower_2:silver_ingot"
+  },
+  "result": {
+    "id": "redpower_2:block_silver",
+    "count": 1
+  }
+}

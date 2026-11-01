@@ -7,7 +7,8 @@ of their own (Codex, Cursor, Copilot, Gemini CLI, ...) read the role and skill f
 AGENTS.md says. This script writes the copies the other tools need:
 
   Claude Code
-    .claude/agents/<role>.md        every subagent role (tools and model tier translated)
+    .claude/agents/<role>.md        every subagent role (tools translated; model tier as
+                                    .agents/models.json "claude.roles" says)
     .claude/skills/<name>/          every skill, and the conductor as the `conductor` skill (in
                                     Claude Code the main session conducts: subagents can't start
                                     subagents)
@@ -44,8 +45,8 @@ CLAUDE_TOOLS = {
     "write_file": ["Write"],
     "run_command": ["Bash"],
 }
-# The roster's two model tiers (.agents/fleet-plan.md §3) -> Claude Code's models.
-CLAUDE_MODELS = {"pro": "opus", "flash": "sonnet"}
+# The roster's two model tiers (.agents/fleet-plan.md §3) -> Claude Code's models, from .agents/models.json.
+CLAUDE_MODELS = json.loads((SOURCE / "models.json").read_text(encoding="utf-8"))["claude"]["roles"]
 def _hook(check: str, timeout: int) -> dict:
     return {"type": "command", "command": f'"$CLAUDE_PROJECT_DIR"/scripts/fleet/hook.sh {check} claude', "timeout": timeout}
 
@@ -56,6 +57,7 @@ CLAUDE_HOOKS = {
         {"matcher": "Bash", "hooks": [_hook("shell", 10)]},
         {"matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [_hook("paths", 10)]},
         {"matcher": "Read|Grep|Glob", "hooks": [_hook("read", 10)]},
+        {"matcher": "Agent|Task", "hooks": [_hook("spawn", 10)]},
     ],
     "Stop": [{"hooks": [_hook("gate", 900)]}],
     "SubagentStop": [{"hooks": [_hook("gate", 900)]}],

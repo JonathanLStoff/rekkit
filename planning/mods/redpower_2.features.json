@@ -1,0 +1,1070 @@
+{
+  "mod": "redpower_2",
+  "version": "2.0pr6",
+  "blocks": [
+    {
+      "id": "alloy_furnace",
+      "name": "Alloy Furnace",
+      "java": "`BlockAppliance` meta 0"
+    },
+    {
+      "id": "project_table",
+      "name": "Project Table",
+      "java": "`BlockAppliance` meta 3"
+    },
+    {
+      "id": "blulectric_furnace",
+      "name": "Blulectric Furnace",
+      "java": "`BlockAppliance` meta 1"
+    },
+    {
+      "id": "buffer_chest",
+      "name": "Buffer Chest",
+      "java": "`BlockAppliance` meta 2"
+    },
+    {
+      "id": "blulectric_alloy_furnace",
+      "name": "Blulectric Alloy Furnace",
+      "java": "`BlockAppliance` meta 4"
+    },
+    {
+      "id": "charging_bench",
+      "name": "Charging Bench",
+      "java": "`BlockAppliance` meta 5"
+    },
+    {
+      "id": "microblock",
+      "name": "Microblock Plate",
+      "java": "`BlockMicro` (compound multi-part)"
+    },
+    {
+      "id": "wire_red_alloy",
+      "name": "Red Alloy Wire",
+      "java": "`BlockMicro` damage 256"
+    },
+    {
+      "id": "wire_insulated",
+      "name": "Insulated Wire (16 colors)",
+      "java": "`BlockMicro` damage 512..527"
+    },
+    {
+      "id": "wire_bundled",
+      "name": "Bundled Cable (Neutral + 16 colors)",
+      "java": "`BlockMicro` damage 768..784"
+    },
+    {
+      "id": "wire_blutricity",
+      "name": "Bluewire",
+      "java": "`BlockMicro` damage 1280"
+    },
+    {
+      "id": "wire_blutricity_insulated",
+      "name": "Insulated Bluewire",
+      "java": "`BlockMicro` damage 1281"
+    },
+    {
+      "id": "wire_jacketed",
+      "name": "Jacketed Wire",
+      "java": "`BlockMicro` damage 16384+"
+    },
+    {
+      "id": "cable_jacketed",
+      "name": "Jacketed Cable",
+      "java": "`BlockMicro` damage 16640+"
+    },
+    {
+      "id": "wire_jacketed_blutricity",
+      "name": "Jacketed Bluewire",
+      "java": "`BlockMicro` damage 16896+"
+    },
+    {
+      "id": "pipe",
+      "name": "Fluid Pipe",
+      "java": "`BlockMicro` damage 1792"
+    },
+    {
+      "id": "pneumatic_tube",
+      "name": "Pneumatic Tube",
+      "java": "`BlockMicro` damage 2048"
+    },
+    {
+      "id": "redstone_tube",
+      "name": "Redstone Tube",
+      "java": "`BlockMicro` damage 2304"
+    },
+    {
+      "id": "restrictor_tube",
+      "name": "Restrictor Tube",
+      "java": "`BlockMicro` damage 2560"
+    },
+    {
+      "id": "magtube",
+      "name": "Magtube",
+      "java": "`BlockMicro` damage 2816"
+    },
+    {
+      "id": "ribbon_cable",
+      "name": "Ribbon Cable",
+      "java": "`BlockMicro` damage 3072"
+    },
+    {
+      "id": "timer",
+      "name": "Timer",
+      "java": "`BlockLogic` meta 0"
+    },
+    {
+      "id": "sequencer",
+      "name": "Sequencer",
+      "java": "`BlockLogic` meta 1"
+    },
+    {
+      "id": "state_cell",
+      "name": "State Cell",
+      "java": "`BlockLogic` meta 2"
+    },
+    {
+      "id": "rs_latch",
+      "name": "RS Latch",
+      "java": "`BlockLogic` meta 256"
+    },
+    {
+      "id": "nor_gate",
+      "name": "NOR Gate",
+      "java": "`BlockLogic` meta 257"
+    },
+    {
+      "id": "or_gate",
+      "name": "OR Gate",
+      "java": "`BlockLogic` meta 258"
+    },
+    {
+      "id": "nand_gate",
+      "name": "NAND Gate",
+      "java": "`BlockLogic` meta 259"
+    },
+    {
+      "id": "and_gate",
+      "name": "AND Gate",
+      "java": "`BlockLogic` meta 260"
+    },
+    {
+      "id": "xnor_gate",
+      "name": "XNOR Gate",
+      "java": "`BlockLogic` meta 261"
+    },
+    {
+      "id": "xor_gate",
+      "name": "XOR Gate",
+      "java": "`BlockLogic` meta 262"
+    },
+    {
+      "id": "pulse_former",
+      "name": "Pulse Former",
+      "java": "`BlockLogic` meta 263"
+    },
+    {
+      "id": "toggle_latch",
+      "name": "Toggle Latch",
+      "java": "`BlockLogic` meta 264"
+    },
+    {
+      "id": "not_gate",
+      "name": "NOT Gate / Inverter",
+      "java": "`BlockLogic` meta 265"
+    },
+    {
+      "id": "buffer_gate",
+      "name": "Buffer Gate",
+      "java": "`BlockLogic` meta 266"
+    },
+    {
+      "id": "multiplexer",
+      "name": "Multiplexer",
+      "java": "`BlockLogic` meta 267"
+    },
+    {
+      "id": "repeater",
+      "name": "Repeater",
+      "java": "`BlockLogic` meta 268"
+    },
+    {
+      "id": "synchronizer",
+      "name": "Synchronizer",
+      "java": "`BlockLogic` meta 269"
+    },
+    {
+      "id": "randomizer",
+      "name": "Randomizer",
+      "java": "`BlockLogic` meta 270"
+    },
+    {
+      "id": "transparent_latch",
+      "name": "Transparent Latch",
+      "java": "`BlockLogic` meta 271"
+    },
+    {
+      "id": "light_sensor",
+      "name": "Light Sensor",
+      "java": "`BlockLogic` meta 272"
+    },
+    {
+      "id": "null_cell",
+      "name": "Null Cell",
+      "java": "`BlockLogic` meta 512"
+    },
+    {
+      "id": "invert_cell",
+      "name": "Invert Cell",
+      "java": "`BlockLogic` meta 513"
+    },
+    {
+      "id": "non_invert_cell",
+      "name": "Non-Invert Cell",
+      "java": "`BlockLogic` meta 514"
+    },
+    {
+      "id": "counter",
+      "name": "Counter",
+      "java": "`BlockLogic` meta 768"
+    },
+    {
+      "id": "bus_transceiver",
+      "name": "Bus Transceiver",
+      "java": "`BlockLogic` meta 1024"
+    },
+    {
+      "id": "lamp",
+      "name": "Lamp (16 colors)",
+      "java": "`BlockLamp` off"
+    },
+    {
+      "id": "lamp_lit",
+      "name": "Lamp Lit (16 colors)",
+      "java": "`BlockLamp` on"
+    },
+    {
+      "id": "lamp_inverted",
+      "name": "Inverted Lamp (16 colors)",
+      "java": "`BlockLamp` inv off"
+    },
+    {
+      "id": "lamp_inverted_lit",
+      "name": "Inverted Lamp Lit (16 colors)",
+      "java": "`BlockLamp` inv on"
+    },
+    {
+      "id": "lumar_fixture",
+      "name": "Lumar Fixture (16 colors)",
+      "java": "`BlockShapedLamp` meta 0..15"
+    },
+    {
+      "id": "lumar_fixture_inverted",
+      "name": "Inverted Fixture (16 colors)",
+      "java": "`BlockShapedLamp` meta 16..31"
+    },
+    {
+      "id": "cage_lamp",
+      "name": "Cage Lamp (16 colors)",
+      "java": "`BlockShapedLamp` meta 32..47"
+    },
+    {
+      "id": "cage_lamp_inverted",
+      "name": "Inverted Cage Lamp (16 colors)",
+      "java": "`BlockShapedLamp` meta 48..63"
+    },
+    {
+      "id": "ore_ruby",
+      "name": "Ruby Ore",
+      "java": "`BlockCustomOre` meta 0"
+    },
+    {
+      "id": "ore_green_sapphire",
+      "name": "Green Sapphire Ore",
+      "java": "`BlockCustomOre` meta 1"
+    },
+    {
+      "id": "ore_sapphire",
+      "name": "Sapphire Ore",
+      "java": "`BlockCustomOre` meta 2"
+    },
+    {
+      "id": "ore_silver",
+      "name": "Silver Ore",
+      "java": "`BlockCustomOre` meta 3"
+    },
+    {
+      "id": "ore_tin",
+      "name": "Tin Ore",
+      "java": "`BlockCustomOre` meta 4"
+    },
+    {
+      "id": "ore_copper",
+      "name": "Copper Ore",
+      "java": "`BlockCustomOre` meta 5"
+    },
+    {
+      "id": "ore_tungsten",
+      "name": "Tungsten Ore",
+      "java": "`BlockCustomOre` meta 6"
+    },
+    {
+      "id": "ore_nikolite",
+      "name": "Nikolite Ore",
+      "java": "`BlockCustomOre` meta 7"
+    },
+    {
+      "id": "block_ruby",
+      "name": "Ruby Block",
+      "java": "`BlockStorage` meta 0"
+    },
+    {
+      "id": "block_green_sapphire",
+      "name": "Green Sapphire Block",
+      "java": "`BlockStorage` meta 1"
+    },
+    {
+      "id": "block_sapphire",
+      "name": "Sapphire Block",
+      "java": "`BlockStorage` meta 2"
+    },
+    {
+      "id": "block_silver",
+      "name": "Silver Block",
+      "java": "`BlockStorage` meta 3"
+    },
+    {
+      "id": "block_tin",
+      "name": "Tin Block",
+      "java": "`BlockStorage` meta 4"
+    },
+    {
+      "id": "block_copper",
+      "name": "Copper Block",
+      "java": "`BlockStorage` meta 5"
+    },
+    {
+      "id": "marble",
+      "name": "Marble",
+      "java": "`BlockCustomStone` meta 0"
+    },
+    {
+      "id": "basalt",
+      "name": "Basalt",
+      "java": "`BlockCustomStone` meta 1"
+    },
+    {
+      "id": "marble_brick",
+      "name": "Marble Brick",
+      "java": "`BlockCustomStone` meta 2"
+    },
+    {
+      "id": "basalt_cobblestone",
+      "name": "Basalt Cobblestone",
+      "java": "`BlockCustomStone` meta 3"
+    },
+    {
+      "id": "basalt_brick",
+      "name": "Basalt Brick",
+      "java": "`BlockCustomStone` meta 4"
+    },
+    {
+      "id": "basalt_chiseled",
+      "name": "Chiseled Basalt Brick",
+      "java": "`BlockCustomStone` meta 5"
+    },
+    {
+      "id": "basalt_paver",
+      "name": "Basalt Paver",
+      "java": "`BlockCustomStone` meta 6"
+    },
+    {
+      "id": "flax_crop",
+      "name": "Flax Crop",
+      "java": "`BlockCustomCrops` meta 0..5"
+    },
+    {
+      "id": "indigo_flower",
+      "name": "Indigo Flower",
+      "java": "`BlockCustomFlower` meta 0"
+    },
+    {
+      "id": "rubber_sapling",
+      "name": "Rubber Sapling",
+      "java": "`BlockCustomFlower` meta 1"
+    },
+    {
+      "id": "rubber_leaves",
+      "name": "Rubber Leaves",
+      "java": "`BlockCustomLeaves`"
+    },
+    {
+      "id": "rubber_log",
+      "name": "Rubber Wood",
+      "java": "`BlockCustomLog`"
+    },
+    {
+      "id": "deployer",
+      "name": "Deployer",
+      "java": "`BlockMachine` meta 0"
+    },
+    {
+      "id": "block_breaker",
+      "name": "Block Breaker",
+      "java": "`BlockMachine` meta 1"
+    },
+    {
+      "id": "transposer",
+      "name": "Transposer",
+      "java": "`BlockMachine` meta 2"
+    },
+    {
+      "id": "filter",
+      "name": "Filter",
+      "java": "`BlockMachine` meta 3"
+    },
+    {
+      "id": "item_detector",
+      "name": "Item Detector",
+      "java": "`BlockMachine` meta 4"
+    },
+    {
+      "id": "sorting_machine",
+      "name": "Sorting Machine",
+      "java": "`BlockMachine` meta 5"
+    },
+    {
+      "id": "battery_box",
+      "name": "Battery Box",
+      "java": "`BlockMachine` meta 6"
+    },
+    {
+      "id": "frame_motor",
+      "name": "Frame Motor",
+      "java": "`BlockMachine` meta 7"
+    },
+    {
+      "id": "retriever",
+      "name": "Retriever",
+      "java": "`BlockMachine` meta 8"
+    },
+    {
+      "id": "wind_turbine",
+      "name": "Wind Turbine",
+      "java": "`BlockMachine` meta 9"
+    },
+    {
+      "id": "regulator",
+      "name": "Regulator",
+      "java": "`BlockMachine` meta 10"
+    },
+    {
+      "id": "thermopile",
+      "name": "Thermopile",
+      "java": "`BlockMachine` meta 11"
+    },
+    {
+      "id": "igniter",
+      "name": "Igniter",
+      "java": "`BlockMachine` meta 12"
+    },
+    {
+      "id": "assembler",
+      "name": "Assembler",
+      "java": "`BlockMachine` meta 13"
+    },
+    {
+      "id": "ejector",
+      "name": "Ejector",
+      "java": "`BlockMachine` meta 14"
+    },
+    {
+      "id": "relay",
+      "name": "Relay",
+      "java": "`BlockMachine` meta 15"
+    },
+    {
+      "id": "sortron",
+      "name": "Sortron",
+      "java": "`BlockMachine2` meta 0"
+    },
+    {
+      "id": "manager",
+      "name": "Manager",
+      "java": "`BlockMachine2` meta 1"
+    },
+    {
+      "id": "solar_panel",
+      "name": "Solar Panel",
+      "java": "`BlockMachinePanel` meta 0"
+    },
+    {
+      "id": "pump",
+      "name": "Pump",
+      "java": "`BlockMachinePanel` meta 1"
+    },
+    {
+      "id": "accelerator",
+      "name": "Accelerator",
+      "java": "`BlockMachinePanel` meta 2"
+    },
+    {
+      "id": "grate",
+      "name": "Grate",
+      "java": "`BlockMachinePanel` meta 3"
+    },
+    {
+      "id": "transformer",
+      "name": "Transformer",
+      "java": "`BlockMachinePanel` meta 4"
+    },
+    {
+      "id": "frame",
+      "name": "Support Frame",
+      "java": "`BlockFrame` meta 0"
+    },
+    {
+      "id": "frame_tube",
+      "name": "Tube Frame",
+      "java": "`BlockFrame` meta 2"
+    },
+    {
+      "id": "frame_redstone_tube",
+      "name": "Redstone Tube Frame",
+      "java": "`BlockFrame` meta 3"
+    },
+    {
+      "id": "backplane",
+      "name": "Backplane",
+      "java": "`BlockMultipart` meta 0"
+    },
+    {
+      "id": "ram_module",
+      "name": "8K RAM Module",
+      "java": "`BlockMultipart` meta 1"
+    },
+    {
+      "id": "display",
+      "name": "Monitor / Display",
+      "java": "`BlockPeripheral` meta 0"
+    },
+    {
+      "id": "cpu",
+      "name": "CPU",
+      "java": "`BlockPeripheral` meta 1"
+    },
+    {
+      "id": "disk_drive",
+      "name": "Disk Drive",
+      "java": "`BlockPeripheral` meta 2"
+    },
+    {
+      "id": "io_expander",
+      "name": "IO Expander",
+      "java": "`BlockMultipart` meta 0"
+    },
+    {
+      "id": "blulectric_engine",
+      "name": "Blulectric Engine",
+      "java": "`BlockMachineCompat` meta 0"
+    }
+  ],
+  "items": [
+    {
+      "id": "lumar",
+      "name": "Lumar (16 colors)",
+      "java": "`ItemParts` itemLumar meta 0..15"
+    },
+    {
+      "id": "ruby",
+      "name": "Ruby",
+      "java": "`ItemParts` itemResource meta 0"
+    },
+    {
+      "id": "green_sapphire",
+      "name": "Green Sapphire",
+      "java": "`ItemParts` itemResource meta 1"
+    },
+    {
+      "id": "sapphire",
+      "name": "Sapphire",
+      "java": "`ItemParts` itemResource meta 2"
+    },
+    {
+      "id": "silver_ingot",
+      "name": "Silver Ingot",
+      "java": "`ItemParts` itemResource meta 3"
+    },
+    {
+      "id": "tin_ingot",
+      "name": "Tin Ingot",
+      "java": "`ItemParts` itemResource meta 4"
+    },
+    {
+      "id": "copper_ingot",
+      "name": "Copper Ingot",
+      "java": "`ItemParts` itemResource meta 5"
+    },
+    {
+      "id": "nikolite",
+      "name": "Nikolite",
+      "java": "`ItemParts` itemResource meta 6"
+    },
+    {
+      "id": "red_alloy_ingot",
+      "name": "Red Alloy Ingot",
+      "java": "`ItemParts` itemAlloy meta 0"
+    },
+    {
+      "id": "blue_alloy_ingot",
+      "name": "Blue Alloy Ingot",
+      "java": "`ItemParts` itemAlloy meta 1"
+    },
+    {
+      "id": "brass_ingot",
+      "name": "Brass Ingot",
+      "java": "`ItemParts` itemAlloy meta 2"
+    },
+    {
+      "id": "silicon_boule",
+      "name": "Silicon Boule",
+      "java": "`ItemParts` itemAlloy meta 3"
+    },
+    {
+      "id": "silicon_wafer",
+      "name": "Silicon Wafer",
+      "java": "`ItemParts` itemAlloy meta 4"
+    },
+    {
+      "id": "blue_doped_wafer",
+      "name": "Blue-Doped Wafer",
+      "java": "`ItemParts` itemAlloy meta 5"
+    },
+    {
+      "id": "red_doped_wafer",
+      "name": "Red-Doped Wafer",
+      "java": "`ItemParts` itemAlloy meta 6"
+    },
+    {
+      "id": "tinplate",
+      "name": "Tinplate",
+      "java": "`ItemParts` itemAlloy meta 7"
+    },
+    {
+      "id": "fine_copper_wire",
+      "name": "Fine Copper Wire",
+      "java": "`ItemParts` itemAlloy meta 8"
+    },
+    {
+      "id": "fine_iron_wire",
+      "name": "Fine Iron Wire",
+      "java": "`ItemParts` itemAlloy meta 9"
+    },
+    {
+      "id": "copper_coil",
+      "name": "Copper Coil",
+      "java": "`ItemParts` itemAlloy meta 10"
+    },
+    {
+      "id": "bl_motor",
+      "name": "BL Motor",
+      "java": "`ItemParts` itemAlloy meta 11"
+    },
+    {
+      "id": "canvas",
+      "name": "Canvas",
+      "java": "`ItemParts` itemAlloy meta 12"
+    },
+    {
+      "id": "iron_nugget",
+      "name": "Iron Nugget",
+      "java": "`ItemParts` itemNugget meta 0"
+    },
+    {
+      "id": "silver_nugget",
+      "name": "Silver Nugget",
+      "java": "`ItemParts` itemNugget meta 1"
+    },
+    {
+      "id": "tin_nugget",
+      "name": "Tin Nugget",
+      "java": "`ItemParts` itemNugget meta 2"
+    },
+    {
+      "id": "copper_nugget",
+      "name": "Copper Nugget",
+      "java": "`ItemParts` itemNugget meta 3"
+    },
+    {
+      "id": "dye_indigo",
+      "name": "Indigo Dye",
+      "java": "`ItemDyeIndigo`"
+    },
+    {
+      "id": "iron_handsaw",
+      "name": "Iron Handsaw",
+      "java": "`ItemHandsaw` iron"
+    },
+    {
+      "id": "diamond_handsaw",
+      "name": "Diamond Handsaw",
+      "java": "`ItemHandsaw` diamond"
+    },
+    {
+      "id": "screwdriver",
+      "name": "Screwdriver",
+      "java": "`ItemScrewdriver`"
+    },
+    {
+      "id": "diamond_drawplate",
+      "name": "Diamond Drawplate",
+      "java": "`ItemDrawplate`"
+    },
+    {
+      "id": "blank_plan",
+      "name": "Blank Plan",
+      "java": "`ItemTextured` planBlank"
+    },
+    {
+      "id": "plan",
+      "name": "Plan",
+      "java": "`ItemPlan`"
+    },
+    {
+      "id": "canvas_bag",
+      "name": "Canvas Bag (16 colors)",
+      "java": "`ItemBag` meta 0..15"
+    },
+    {
+      "id": "stone_wafer",
+      "name": "Stone Wafer",
+      "java": "`ItemParts` itemParts meta 0"
+    },
+    {
+      "id": "wire_part",
+      "name": "Wire Component",
+      "java": "`ItemParts` itemParts meta 1"
+    },
+    {
+      "id": "anode",
+      "name": "Anode",
+      "java": "`ItemParts` itemParts meta 2"
+    },
+    {
+      "id": "cathode",
+      "name": "Cathode",
+      "java": "`ItemParts` itemParts meta 3"
+    },
+    {
+      "id": "pointer",
+      "name": "Pointer",
+      "java": "`ItemParts` itemParts meta 4"
+    },
+    {
+      "id": "redwire_part",
+      "name": "Redwire Part",
+      "java": "`ItemParts` itemParts meta 5"
+    },
+    {
+      "id": "plate",
+      "name": "Plate Part",
+      "java": "`ItemParts` itemParts meta 6"
+    },
+    {
+      "id": "silicon_chip",
+      "name": "Silicon Chip",
+      "java": "`ItemParts` itemParts meta 7"
+    },
+    {
+      "id": "tainted_chip",
+      "name": "Tainted Chip",
+      "java": "`ItemParts` itemParts meta 8"
+    },
+    {
+      "id": "bundled_wafer",
+      "name": "Bundled Wafer",
+      "java": "`ItemParts` itemParts meta 9"
+    },
+    {
+      "id": "ruby_pickaxe",
+      "name": "Ruby Pickaxe",
+      "java": "`ItemCustomPickaxe`"
+    },
+    {
+      "id": "green_sapphire_pickaxe",
+      "name": "Green Sapphire Pickaxe",
+      "java": "`ItemCustomPickaxe`"
+    },
+    {
+      "id": "sapphire_pickaxe",
+      "name": "Sapphire Pickaxe",
+      "java": "`ItemCustomPickaxe`"
+    },
+    {
+      "id": "ruby_shovel",
+      "name": "Ruby Shovel",
+      "java": "`ItemCustomShovel`"
+    },
+    {
+      "id": "green_sapphire_shovel",
+      "name": "Green Sapphire Shovel",
+      "java": "`ItemCustomShovel`"
+    },
+    {
+      "id": "sapphire_shovel",
+      "name": "Sapphire Shovel",
+      "java": "`ItemCustomShovel`"
+    },
+    {
+      "id": "ruby_axe",
+      "name": "Ruby Axe",
+      "java": "`ItemCustomAxe`"
+    },
+    {
+      "id": "green_sapphire_axe",
+      "name": "Green Sapphire Axe",
+      "java": "`ItemCustomAxe`"
+    },
+    {
+      "id": "sapphire_axe",
+      "name": "Sapphire Axe",
+      "java": "`ItemCustomAxe`"
+    },
+    {
+      "id": "ruby_sword",
+      "name": "Ruby Sword",
+      "java": "`ItemCustomSword`"
+    },
+    {
+      "id": "green_sapphire_sword",
+      "name": "Green Sapphire Sword",
+      "java": "`ItemCustomSword`"
+    },
+    {
+      "id": "sapphire_sword",
+      "name": "Sapphire Sword",
+      "java": "`ItemCustomSword`"
+    },
+    {
+      "id": "ruby_hoe",
+      "name": "Ruby Hoe",
+      "java": "`ItemCustomHoe`"
+    },
+    {
+      "id": "green_sapphire_hoe",
+      "name": "Green Sapphire Hoe",
+      "java": "`ItemCustomHoe`"
+    },
+    {
+      "id": "sapphire_hoe",
+      "name": "Sapphire Hoe",
+      "java": "`ItemCustomHoe`"
+    },
+    {
+      "id": "ruby_handsaw",
+      "name": "Ruby Handsaw",
+      "java": "`ItemHandsaw` ruby"
+    },
+    {
+      "id": "green_sapphire_handsaw",
+      "name": "Green Sapphire Handsaw",
+      "java": "`ItemHandsaw` green sapphire"
+    },
+    {
+      "id": "sapphire_handsaw",
+      "name": "Sapphire Handsaw",
+      "java": "`ItemHandsaw` sapphire"
+    },
+    {
+      "id": "wood_sickle",
+      "name": "Wood Sickle",
+      "java": "`ItemSickle` wood"
+    },
+    {
+      "id": "stone_sickle",
+      "name": "Stone Sickle",
+      "java": "`ItemSickle` stone"
+    },
+    {
+      "id": "iron_sickle",
+      "name": "Iron Sickle",
+      "java": "`ItemSickle` iron"
+    },
+    {
+      "id": "diamond_sickle",
+      "name": "Diamond Sickle",
+      "java": "`ItemSickle` diamond"
+    },
+    {
+      "id": "gold_sickle",
+      "name": "Gold Sickle",
+      "java": "`ItemSickle` gold"
+    },
+    {
+      "id": "ruby_sickle",
+      "name": "Ruby Sickle",
+      "java": "`ItemSickle` ruby"
+    },
+    {
+      "id": "green_sapphire_sickle",
+      "name": "Green Sapphire Sickle",
+      "java": "`ItemSickle` green sapphire"
+    },
+    {
+      "id": "sapphire_sickle",
+      "name": "Sapphire Sickle",
+      "java": "`ItemSickle` sapphire"
+    },
+    {
+      "id": "athame",
+      "name": "Athame",
+      "java": "`ItemAthame`"
+    },
+    {
+      "id": "flax_seeds",
+      "name": "Flax Seeds",
+      "java": "`ItemCustomSeeds`"
+    },
+    {
+      "id": "wool_card",
+      "name": "Wool Card",
+      "java": "`ItemWoolCard`"
+    },
+    {
+      "id": "dry_paint_brush",
+      "name": "Dry Paint Brush",
+      "java": "`ItemTextured` paintbrush.dry"
+    },
+    {
+      "id": "paint_brush",
+      "name": "Paint Brush (16 colors)",
+      "java": "`ItemPaintBrush` 16 colors"
+    },
+    {
+      "id": "empty_paint_can",
+      "name": "Empty Paint Can",
+      "java": "`ItemTextured` paintcan.empty"
+    },
+    {
+      "id": "paint_can",
+      "name": "Paint Can (16 colors)",
+      "java": "`ItemPaintCan` 16 colors"
+    },
+    {
+      "id": "seed_bag",
+      "name": "Seed Bag",
+      "java": "`ItemSeedBag`"
+    },
+    {
+      "id": "voltmeter",
+      "name": "Voltmeter",
+      "java": "`ItemVoltmeter`"
+    },
+    {
+      "id": "sonic_screwdriver",
+      "name": "Sonic Screwdriver",
+      "java": "`ItemSonicDriver`"
+    },
+    {
+      "id": "battery_empty",
+      "name": "BT Battery (Empty)",
+      "java": "`ItemTextured` btbattery"
+    },
+    {
+      "id": "battery_powered",
+      "name": "BT Battery (Powered)",
+      "java": "`ItemBattery`"
+    },
+    {
+      "id": "wood_sail",
+      "name": "Wooden Windmill Sail",
+      "java": "`ItemParts` itemMachineParts meta 0"
+    },
+    {
+      "id": "wood_turbine",
+      "name": "Wooden Wind Turbine",
+      "java": "`ItemWindmill` type 1"
+    },
+    {
+      "id": "wood_windmill",
+      "name": "Wooden Windmill",
+      "java": "`ItemWindmill` type 2"
+    },
+    {
+      "id": "blank_disk",
+      "name": "Blank Floppy Disk",
+      "java": "`ItemDisk` meta 0"
+    },
+    {
+      "id": "forth_boot_disk",
+      "name": "RedPower Forth Boot Disk",
+      "java": "`ItemDisk` meta 1"
+    },
+    {
+      "id": "forth_extra_disk",
+      "name": "RedPower Forth Extra Disk",
+      "java": "`ItemDisk` meta 2"
+    },
+    {
+      "id": "brass_gear",
+      "name": "Brass Gear",
+      "java": "`ItemParts` itemCompatParts meta 0"
+    }
+  ],
+  "features": [
+    {
+      "id": "microblocks",
+      "name": "Microblock Multi-Part System",
+      "spec": "Section 1.1"
+    },
+    {
+      "id": "red_alloy_wiring",
+      "name": "Red Alloy & Bundled Wiring",
+      "spec": "Section 1.2"
+    },
+    {
+      "id": "integrated_logic",
+      "name": "Integrated Logic Gates & Sensors",
+      "spec": "Section 1.3"
+    },
+    {
+      "id": "pneumatic_tubes",
+      "name": "Pneumatic Tube & Routing Network",
+      "spec": "Section 2"
+    },
+    {
+      "id": "item_logistics_machines",
+      "name": "Item Logistics & Automation Machines",
+      "spec": "Section 2.2"
+    },
+    {
+      "id": "frame_automation",
+      "name": "Frame Mechanics & World Movers",
+      "spec": "Section 2.4"
+    },
+    {
+      "id": "blutricity_grid",
+      "name": "Blulectric Power Network",
+      "spec": "Section 3"
+    },
+    {
+      "id": "control_computing",
+      "name": "Control 6502 Computing System",
+      "spec": "Section 4"
+    },
+    {
+      "id": "world_generation",
+      "name": "World Generation & Resources",
+      "spec": "Section 5"
+    },
+    {
+      "id": "tools_and_equipment",
+      "name": "Tools, Weapons & Utility Equipment",
+      "spec": "Section 4.2 & 4.3"
+    },
+    {
+      "id": "alloy_metallurgy",
+      "name": "Alloy Metallurgy & Smelting",
+      "spec": "Section 7.1"
+    }
+  ]
+}

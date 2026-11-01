@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BWB",
+    "PTP",
+    "PLP"
+  ],
+  "key": {
+    "B": "redpower_2:brass_ingot",
+    "W": "redpower_2:red_doped_wafer",
+    "P": "minecraft:oak_planks",
+    "T": "redpower_2:pneumatic_tube",
+    "L": "minecraft:stone_pressure_plate"
+  },
+  "result": {
+    "id": "redpower_2:item_detector",
+    "count": 1
+  }
+}

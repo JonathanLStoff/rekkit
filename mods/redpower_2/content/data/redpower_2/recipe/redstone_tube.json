@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "redpower_2:pneumatic_tube",
+    "minecraft:redstone"
+  ],
+  "result": {
+    "id": "redpower_2:redstone_tube",
+    "count": 1
+  }
+}

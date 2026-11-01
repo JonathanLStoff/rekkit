@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:chest",
+  "properties": {
+    "hardness": 2.5,
+    "explosion_resistance": 12.5,
+    "sounds": "minecraft:wood"
+  },
+  "item": true
+}

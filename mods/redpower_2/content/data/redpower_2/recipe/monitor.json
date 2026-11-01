@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PGP",
+    "GLG",
+    "PWP"
+  ],
+  "key": {
+    "P": "minecraft:oak_planks",
+    "G": "minecraft:glass",
+    "L": "redpower_2:lumar",
+    "W": "redpower_2:red_doped_wafer"
+  },
+  "result": {
+    "id": "redpower_2:monitor",
+    "count": 1
+  }
+}

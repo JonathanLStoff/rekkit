@@ -4,7 +4,6 @@ description: "Writes and runs a mod's tests: domain unit tests, native hook life
 mainAgent: false
 subagent: true
 model: flash
-commandExecutionPolicy: sandbox
 tools:
   - view_file
   - grep_search

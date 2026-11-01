@@ -1,0 +1,9 @@
+{
+  "template": "minecraft:iron_bars",
+  "properties": {
+    "hardness": 0.8,
+    "explosion_resistance": 1.0,
+    "sounds": "minecraft:wool"
+  },
+  "item": false
+}

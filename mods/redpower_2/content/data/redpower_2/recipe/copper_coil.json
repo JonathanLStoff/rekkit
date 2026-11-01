@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BIB",
+    "CIC",
+    "BIB"
+  ],
+  "key": {
+    "B": "minecraft:iron_bars",
+    "I": "minecraft:iron_ingot",
+    "C": "redpower_2:fine_copper_wire"
+  },
+  "result": {
+    "id": "redpower_2:copper_coil",
+    "count": 1
+  }
+}

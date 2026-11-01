@@ -41,6 +41,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/fleet/hook.sh spawn claude",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "Stop": [

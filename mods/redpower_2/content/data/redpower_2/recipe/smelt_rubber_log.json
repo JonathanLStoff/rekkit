@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": "redpower_2:rubber_log",
+  "result": {
+    "id": "minecraft:charcoal",
+    "count": 1
+  },
+  "experience": 0.15,
+  "cookingtime": 200
+}
