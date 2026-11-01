@@ -113,6 +113,7 @@ def install_hint(tool: str) -> str:
                   '"--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive"',
             "cargo": "winget install Rustlang.Rustup   (then open a new terminal)",
             "java": "winget install EclipseAdoptium.Temurin.25.JDK",
+            "bd": "npm install -g @beads/bd",
         }.get(tool, "")
     mac = sys.platform == "darwin"
     hints = {
@@ -122,6 +123,8 @@ def install_hint(tool: str) -> str:
         "cargo": "curl https://sh.rustup.rs -sSf | sh   (then open a new terminal)",
         "java": "brew install openjdk@25" if mac else "sudo apt install openjdk-25-jdk",
         "linux-libs": "sudo apt install pkg-config libasound2-dev libudev-dev",
+        "bd": "brew install beads" if mac else "brew install beads   (or: npm install -g @beads/bd)",
+        "rsvg": "brew install librsvg" if mac else "sudo apt install librsvg2-bin",
     }
     return hints.get(tool, "")
 
@@ -249,6 +252,55 @@ def step_agents(r: Report, check: bool) -> None:
         r.add("agent copies", FAILED, f"`make agents` failed:\n{tail_of(res, 5)}")
 
 
+def step_beads(r: Report, check: bool) -> None:
+    """Beads (bd), where the port's progress lives: installed, its database present, every mod an epic."""
+    if not shutil.which("bd"):
+        r.add("Beads (bd)", NEEDS_PERSON, f"not installed; it tracks the port's progress: {install_hint('bd')}")
+        return
+    sys.path.insert(0, str(ROOT / "scripts" / "fleet"))
+    import beads
+    beads_dir = ROOT / ".beads"
+    if not (beads_dir / "embeddeddolt").is_dir():
+        if check:
+            r.add("Beads (bd)", TODO, "no database yet: ./setup.sh runs bd bootstrap (or bd init on a new repo)")
+            return
+        cmd = ["bd", "bootstrap", "--non-interactive"] if (beads_dir / "metadata.json").is_file() else \
+            ["bd", "init", "--prefix", "rk", "--skip-agents", "--non-interactive", "--role", "maintainer"]
+        res = sh(cmd, capture_output=True)
+        if res.returncode:
+            r.add("Beads (bd)", FAILED, f"`{' '.join(cmd[:2])}` failed:\n{tail_of(res, 6)}")
+            return
+    try:
+        mods = beads.epics()
+        if not mods and not check:
+            sh([sys.executable, ROOT / "scripts" / "fleet" / "beads.py", "seed"], capture_output=True)
+            mods = beads.epics()
+    except beads.BeadsError as exc:
+        r.add("Beads (bd)", FAILED, str(exc))
+        return
+    active = next((m for m, e in mods.items() if e["status"] == "in_progress"), None)
+    r.add("Beads (bd)", OK if mods else TODO,
+          f"{len(mods)} mods tracked" + (f", {active} in progress" if active else "") if mods else "no mods yet: ./setup.sh seeds them")
+
+
+def step_port_tools(r: Report, check: bool) -> None:
+    """Vineflower (decompiles the originals for the spec) and rsvg-convert (SVG art)."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import decompile
+    have = decompile.TOOL.is_file() and decompile.sha256(decompile.TOOL) == decompile.VINEFLOWER_SHA256
+    if not have and not check:
+        try:
+            decompile.vineflower()
+            have = True
+        except (OSError, SystemExit) as exc:
+            r.add("tool: Vineflower", FAILED, f"download failed: {exc}")
+            return
+    r.add("tool: Vineflower", OK if have else TODO,
+          f"{decompile.VINEFLOWER_VERSION} (decompiles the original mods)" if have else "not fetched yet: ./setup.sh fetches it")
+    r.add("tool: rsvg-convert", OK if shutil.which("rsvg-convert") else SKIPPED,
+          "SVG art" if shutil.which("rsvg-convert") else f"optional (SVG art; .pixels art works without): {install_hint('rsvg')}")
+
+
 def step_mods(r: Report, check: bool) -> bool:
     if check:
         built = list(ROOT.glob("mods/*/target/horizon-mod/*.hmod"))
@@ -267,21 +319,30 @@ def step_mods(r: Report, check: bool) -> bool:
     return True
 
 
+def pack_jars(pack: str) -> int:
+    """Mod archives downloaded for a pack; 0 when missing or incomplete (Tekkit without its client build)."""
+    info = ROOT / "assets" / pack / "pack-info.json"
+    if not info.is_file():
+        return 0
+    data = json.loads(info.read_text(encoding="utf-8"))
+    if pack == "tekkit" and not data.get("client_mods"):
+        return 0
+    return data.get("mod_jars", 0)
+
+
 def step_packs(r: Report, check: bool, skip: bool) -> None:
     for pack in PACKS:
-        info = ROOT / "assets" / pack / "pack-info.json"
-        if info.is_file():
-            jars = json.loads(info.read_text(encoding="utf-8")).get("mod_jars", 0)
-            if jars:
-                r.add(f"modpack: {pack}", OK, f"{jars} mod archives in assets/{pack}")
-                continue
+        jars = pack_jars(pack)
+        if jars:
+            r.add(f"modpack: {pack}", OK, f"{jars} mod archives in assets/{pack}")
+            continue
         if skip or check:
             r.add(f"modpack: {pack}", SKIPPED if skip else TODO, "not downloaded (needed to port its mods): make " + pack)
             continue
         print(f"  … downloading {pack} (can take several minutes)", flush=True)
         res = sh([sys.executable, ROOT / "scripts" / "fetch_modpacks.py", pack, "--output", ROOT / "assets",
                   "--cache", ROOT / ".cache" / "modpacks"], capture_output=True, env=dotenv())
-        jars = res.returncode == 0 and info.is_file() and json.loads(info.read_text(encoding="utf-8")).get("mod_jars", 0)
+        jars = res.returncode == 0 and pack_jars(pack)
         if jars:
             r.add(f"modpack: {pack}", OK, f"{jars} mod archives")
         else:
@@ -384,6 +445,8 @@ def main() -> int:
     if step_submodule(r, args.check):
         step_env(r, args.check)
         step_agents(r, args.check)
+        step_beads(r, args.check)
+        step_port_tools(r, args.check)
         mods_ok = step_mods(r, args.check)
         step_packs(r, args.check, args.skip_packs)
         built = mods_ok and step_build(r, args.check, args.skip_build)

@@ -7,8 +7,9 @@
 //! 3. Dual-artifact directory structure (`content/` `.hmod` files and `native/` `.hnmod` files).
 
 use example_mod::{
-    ChannelOwner, DyeColor, ExampleMod, FrequencyKey, FrequencyStorage, HORIZON_REVISION,
-    HorizonMod, HorizonNativeMod, ItemStack, MIXINS_REVISION, ModBlockEntity, NATIVE_HOOKS_API,
+    ChannelOwner, DyeColor, ExampleMod, FrequencyKey, FrequencyStorage, HorizonMod,
+    HorizonNativeMod, ItemStack, ModBlockEntity, HORIZON_REVISION, MIXINS_REVISION,
+    NATIVE_HOOKS_API,
 };
 use std::path::Path;
 
@@ -53,18 +54,14 @@ fn test_channel_isolation_public_vs_private() {
 
     // Verify isolation
     assert_eq!(
-        app.network
-            .get_or_create(public_owner, freq)
-            .items[0]
+        app.network.get_or_create(public_owner, freq).items[0]
             .as_ref()
             .unwrap()
             .count,
         10
     );
     assert_eq!(
-        app.network
-            .get_or_create(player_a, freq)
-            .items[0]
+        app.network.get_or_create(player_a, freq).items[0]
             .as_ref()
             .unwrap()
             .item_id,

@@ -20,10 +20,14 @@ DRY_RUN ?= 0
 REV ?=
 EXTRACT_OUT ?= ./assets/extracted
 ARGS ?=
+BEAD ?=
+ROLE ?=
+COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-start fleet-stop
+.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-start fleet-stop \
+	fleet-task fleet-inbox fleet-features fleet-gaps fleet-status board decompile art play horizon-baseline horizon-status
 
 all: tekkit direwolf20 agrarian
 
@@ -61,8 +65,9 @@ test-mod/%:
 	$(info ==> Testing $*)
 	cargo test --manifest-path "$*"
 
+# COMPLETE=1 also fails on any asset 26.3 needs that the mod lacks (the New assets and Recheck steps).
 check-mods:
-	$(PYTHON) scripts/pack_mod.py --check-only $(if $(MOD),--mod "$(MOD)",)
+	$(PYTHON) scripts/pack_mod.py --check-only $(if $(filter 1,$(COMPLETE)),--complete,) $(if $(MOD),--mod "$(MOD)",)
 
 pack-mods:
 	$(PYTHON) scripts/pack_mod.py $(if $(MOD),--mod "$(MOD)",)
@@ -94,11 +99,49 @@ agent-gate:
 fleet-next:
 	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(MOD)
 
+# The conductor's first command for a mod: claim it (the hooks hold the session until it is
+# finished), create its stories in Beads, and check Horizon itself at the pinned revision.
 fleet-start:
 	$(PYTHON) scripts/fleet/guard.py claim $(MOD)
+	$(PYTHON) scripts/fleet/beads.py start $(MOD)
+	-$(PYTHON) scripts/e2e_harness.py --baseline --no-fetch
 
 fleet-stop:
 	$(PYTHON) scripts/fleet/guard.py stop
+
+# A role subagent's first command: it works BEAD as ROLE and reports to target/fleet/inbox/.
+fleet-task:
+	$(PYTHON) scripts/fleet/guard.py task $(BEAD) $(if $(ROLE),--role $(ROLE),)
+
+fleet-inbox:
+	$(PYTHON) scripts/fleet/beads.py inbox
+
+fleet-features:
+	$(PYTHON) scripts/fleet/beads.py features $(MOD)
+
+fleet-gaps:
+	$(PYTHON) scripts/fleet/beads.py gaps $(MOD)
+
+fleet-status:
+	$(PYTHON) scripts/fleet/beads.py status $(MOD)
+
+board:
+	$(PYTHON) scripts/fleet/beads.py board
+
+decompile:
+	$(PYTHON) scripts/decompile.py --jar "$(JAR)" $(ARGS)
+
+art:
+	$(PYTHON) scripts/art.py --mod $(MOD) $(ARGS)
+
+play:
+	$(PYTHON) scripts/play.py $(if $(MOD),--mod "$(MOD)",) $(ARGS)
+
+horizon-baseline:
+	$(PYTHON) scripts/e2e_harness.py --baseline $(ARGS)
+
+horizon-status:
+	$(PYTHON) scripts/e2e_harness.py --status
 
 # Printed by make itself: cmd.exe would treat the | and < in it as pipes and redirects.
 define HELP
@@ -106,7 +149,7 @@ make setup [ARGS="--skip-packs --skip-build"]
                       Set up everything a machine can (same as ./setup.sh or setup.cmd); names what needs a person
 make doctor           Report what is set up and what is missing; changes nothing
 make all              Download and collect all three modpacks
-make tekkit           Tekkit Classic 1.2.5 (Technic 3.1.2)
+make tekkit           Tekkit Classic 1.2.5 (Technic 3.1.2): server pack and client build (the art)
 make direwolf20       Direwolf20 1.4.7 (FTB 5.3.2)
 make agrarian         Agrarian Skies 2 1.7.10 (CurseForge 2.0.6a)
 make list             Show pinned sources and versions
@@ -136,8 +179,22 @@ make fleet-next [AGENT=agy|claude|codex] [MOD=<id>]
                       One headless conductor run on one board row (AGENT_CMD="<cli flags>" for any other agent);
                       it relaunches the agent until the row is finished
 make fleet-start MOD=<id>
-                      The conductor runs this first: from then on its session keeps working until the row is finished
+                      The conductor's first command: claims the mod, creates its Beads stories, checks Horizon
 make fleet-stop       Tell every fleet agent to stop at the end of its current turn
+make fleet-task BEAD=<id> ROLE=<role>
+                      A role subagent's first command; it reports to target/fleet/inbox/<id>.json
+make fleet-inbox      File every subagent report in Beads (the conductor)
+make fleet-features MOD=<id> / fleet-gaps MOD=<id> / fleet-status [MOD=<id>]
+                      Features from the spec's list / New-assets features from the completeness check / progress
+make board            Regenerate planning/fleet-board.md and .beads/issues.jsonl from Beads
+make decompile JAR=<archive>
+                      Original mod -> Java source in assets/decompiled/ (spec-writer and reviewer only)
+make art MOD=<id>     mods/<id>/art/*.svg|*.pixels -> PNGs at the original size and palette
+make check-mods MOD=<id> COMPLETE=1
+                      Also fail on any asset Minecraft 26.3 needs that the mod lacks
+make play [MOD=<id>]  Open Horizon in a window with the mod (default: all mods) and a showcase world
+make horizon-baseline / horizon-status
+                      Build and run Horizon with no mods at the pinned revision / show the result
 CURSEFORGE_API_KEY is optional for Agrarian Skies 2: without a working key it falls back
                       to the public CurseForge download of pack 2.0.6 (file 3016703).
 endef

@@ -47,7 +47,7 @@ Downloads the mod JARs for three pinned legacy packs and extracts `assets/` and 
 
 ### Packs
 
-- Tekkit Classic 1.2.5 — Technic server package 3.1.2
+- Tekkit Classic 1.2.5 — Technic 3.1.2: the server package (`assets/tekkit/mods/`) and the client build from Technic's Solder API, with the textures and sounds (`assets/tekkit/client/`)
 - Direwolf20 1.4.7 — FTB pack 5.3.2 (pack ID 70, version ID 185)
 - Agrarian Skies 2 1.7.10 — CurseForge 2.0.6a (project ID 225550, file ID 3045516)
 

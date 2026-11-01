@@ -6,7 +6,7 @@ description: "Checklist for porting one Java mod (or the shared rekkit_core crat
 
 # port-mod
 
-The 10-step lifecycle is defined in `planning/workflow.md`; the fleet's division of it is in `.agents/fleet-plan.md`. This skill is the short version every builder works from.
+The 11-step process is defined in `planning/workflow.md` and `.agents/fleet-plan.md` §4; progress lives in Beads (`make fleet-status MOD=<id>`). This skill is the short version every builder works from. Builders work from the spec only (clean-room): never from `assets/decompiled/`.
 
 ## Layout of a mod
 
@@ -14,7 +14,8 @@ The 10-step lifecycle is defined in `planning/workflow.md`; the fleet's division
 mods/<id>/
 ├── Cargo.toml                         # domain crate, version = lockstep
 ├── horizon-registry.toml              # name, summary (<=160 chars), description, authors, license
-├── asset-map.json                     # legacy sprite -> texture slices (asset-smith)
+├── asset-map.json                     # every texture/sound: slices and copies (origin original), generated (make art); credits; vanilla_ok
+├── art/                               # sources of new art (SVG, .pixels) -> make art -> content/assets/<id>/...
 ├── src/lib.rs                         # pure Rust domain logic + HorizonNativeMod impl
 ├── tests/mod_tests.rs                 # unit + hook lifecycle + manifest tests
 ├── tests/e2e_actions.json             # harness action descriptors
@@ -48,7 +49,10 @@ The scripts need Python 3.11+ (`tomllib`). If `python3` is older, pass `PYTHON=$
 |---|---|
 | Unit tests for one crate | `cargo test --manifest-path mods/<id>/Cargo.toml` |
 | All crates | `make test-mods` |
-| Manifest + content validation | `make check-mods MOD=<id>` |
+| Manifest + content validation | `make check-mods MOD=<id>` (`COMPLETE=1`: also every asset 26.3 needs) |
+| Syntax and checks of what you changed | `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings, tests, check-mods, dry run) |
+| New art | `make art MOD=<id>` |
+| Look at it in the game | `make play MOD=<id>` |
 | Harness pre-flight | `make e2e-mod MOD=<id> DRY_RUN=1` |
 | Live isolated run | `make e2e-mod MOD=<id>` |
 | Both phases | `make integration-test` |
@@ -59,10 +63,11 @@ The scripts need Python 3.11+ (`tomllib`). If `python3` is older, pass `PYTHON=$
 
 - Block loot tables use Horizon's form, copied from `mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json`: a pool `"condition": { "type": ... }`, not vanilla's `"conditions": [...]` array, which drops nothing at the pinned Horizon (`planning/horizon-gaps.md`). The live E2E stage 7 catches a table that drops nothing.
 - Versions move in lockstep across `Cargo.toml`, `content/horizon-mod.toml`, `native/horizon-native.json` and `native/mixins/<id>/horizon-mixin.toml`.
-- Never edit `horizon/`. Log missing engine features in `planning/horizon-gaps.md` (hook-engineer only).
-- Never `git push`, `gh release` or `minisign`. A human does steps 9–10.
+- Never edit `horizon/`. A missing engine feature is a follow_up in your report titled `horizon: ...`; the conductor files it as a Beads bug labelled `horizon`.
+- Never `git push`, `gh release` or `minisign`. A human pushes; `.github/workflows/release-mods.yml` releases (`.agents/release.md`).
+- Start with `make fleet-task BEAD=<id> ROLE=<role>`, end with your report in `target/fleet/inbox/<bead>.json`. Only the conductor writes to Beads.
 - Only write paths you own (fleet-plan §3).
 
 ## Done
 
-`cargo test` passes for the crate, `make check-mods MOD=<id>` passes, `make e2e-mod MOD=<id>` passes (dry-run until the live client works), parity-critic says `VERDICT: pass`.
+A mod is complete (ready for the human) when steps 1–9 are closed in Beads: `make agent-gate MOD=<id>` and `make check-mods MOD=<id> COMPLETE=1` pass, parity-critic's Check and Recheck say `VERDICT: pass`, and the live `make e2e-mod MOD=<id>` and `make e2e-all-mods` pass with every block placed (by /setblock and by a player, every variant) and no WARN/ERROR in the log, unless Horizon itself is broken at the pinned revision (`make horizon-status`).

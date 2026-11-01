@@ -9,7 +9,7 @@ Existing specs (`planning/mods/redpower_2.md`, `equivalent_exchange_2.md`, …) 
 
 ## Sections
 
-1. **Overview & Version Target**: mod version, pack(s) it ships in, Minecraft version, JAR filename under `assets/<pack>/mods/`.
+1. **Overview & Version Target**: mod version, pack(s) it ships in, Minecraft version, JAR filename under `assets/<pack>/mods/`, the decompiled folder you read (`assets/decompiled/<archive>/`), and the original's **authors and licence**.
 2. **Core systems & mechanics**: one subsection per system, with exact formulas, units (EU/t, MJ/t, mB, ticks), thresholds and state machines.
 3. **Machines / devices**: per block: purpose, inputs/outputs, energy use, GUI layout (slot indexes and positions), redstone behavior.
 4. **Tools, armor, items**: per item: behavior, durability or charge, special effects.
@@ -24,7 +24,21 @@ Existing specs (`planning/mods/redpower_2.md`, `equivalent_exchange_2.md`, …) 
 
 ## Rules
 
-- Work from the actual JAR, its configs and its lang files first; mark anything else as **UNVERIFIED**.
+- Work from the decompiled code (`make decompile JAR=<archive>`, the client build when there is one), its configs and its lang files first; mark anything else as **UNVERIFIED**.
+- **Clean-room.** The builders implement from this spec alone and never see the Java. Describe behaviour in your own words, tables and formulas, and cite where it comes from (`TileAlloyFurnace.updateEntity`, `RedPowerMachine.java:212`), but never paste Java code, comments or method bodies.
+- Every formula, constant, threshold, tick rate and table cites its class and method.
 - 1.2.5 and 1.4.7 mods use numeric block/item ids and damage values. Record the original id:meta next to each registry row so assets and recipes can be traced.
 - When a mod appears in more than one pack, the earliest pack's version is canonical. Put later-version differences in an appendix.
 - For `rekkit_core`, list each shared concept with the mods that need it. A concept needs at least two.
+
+## Feature list
+
+End step 1 with `planning/mods/<id>.features.json`, the conductor's source for the feature beads (`make fleet-features MOD=<id>`). One entry per registry row and per subsystem, ids as in section 6:
+
+```json
+{
+  "blocks":   [{"id": "alloy_furnace", "name": "Alloy Furnace", "java": "BlockAppliance meta 0"}],
+  "items":    [{"id": "ruby", "name": "Ruby", "java": "ItemParts meta 0"}],
+  "features": [{"id": "blutricity_grid", "name": "Blutricity power network", "spec": "3.5"}]
+}
+```

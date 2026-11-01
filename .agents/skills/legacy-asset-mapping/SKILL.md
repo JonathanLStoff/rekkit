@@ -7,6 +7,8 @@ description: Map textures and sounds from pre-1.6 Minecraft mods (Tekkit 1.2.5, 
 
 Pre-1.6 mods did not use `assets/<modid>/textures/`. Run the `extract-jar-assets` skill first, then map what it produced.
 
+Use the **client** build of the mod from the pack its epic names: `assets/tekkit/client/mods/` for Tekkit (Technic's client build; `assets/tekkit/mods/` holds the server ports, classes only, no PNG or OGG), `assets/direwolf20/mods/` for Direwolf20. Each pack's `pack-info.json` gives `art_files` per archive. Some Tekkit mods ship unpacked as a folder (`client/mods/ComputerCraft/`). If no client build of the right mod is under `assets/`, report it as a follow_up instead of drawing replacements: new art is only for what the original never had (step 6).
+
 ## What to expect
 
 - **1.2.5 (Tekkit)**: blocks and items mostly come from **sprite sheets**: 256×256 PNGs holding a 16×16 grid of 16 px icons. A block's texture index `i` sits at column `i % 16`, row `i / 16`. Sheets live at mod-specific paths such as `/ic2/sprites/block_0.png`, `/eloraam/...`, `/gfx/...`, `/terrain/...`. The index comes from the decompiled block class (`blockIndexInTexture` / `getBlockTextureFromSideAndMetadata`).
@@ -19,19 +21,22 @@ Indexes come from decompiled classes, not guesswork. If an index is unclear, mar
 
 ## asset-map.json
 
-Record every slice in `mods/<id>/asset-map.json` so the mapping can be re-run. The paths and index below are illustrative; use the real ones from the JAR:
+Record every slice and copy in `mods/<id>/asset-map.json` so the mapping can be re-run, each with `"origin": "original"` (the original mod's pixels; anything unrecorded also counts as original and keeps the mod on pre-releases, see `.agents/release.md`). Set `"credits"` to the original mod and its authors, `"resolution"` to the source pixel size, and list in `"vanilla_ok"` the blocks/items that borrow a vanilla look on purpose. The paths and index below are illustrative; use the real ones from the JAR:
 
 ```json
 {
-  "source_jar": "assets/tekkit/mods/<ic2 archive>.zip",
+  "source_jar": "assets/direwolf20/mods/IC2.jar",
+  "credits": "IndustrialCraft 2 by Alblaka and the IC2 team",
+  "resolution": 16,
+  "vanilla_ok": [],
   "slices": [
     { "sheet": "ic2/sprites/block_0.png", "index": 18, "size": 16,
       "out": "content/assets/industrialcraft_2/textures/block/macerator_front.png",
-      "for": "industrialcraft_2:macerator", "face": "front" }
+      "for": "industrialcraft_2:macerator", "face": "front", "origin": "original" }
   ],
   "copies": [
     { "from": "ic2/sprites/GUIMacerator.png",
-      "out": "content/assets/industrialcraft_2/textures/gui/macerator.png" }
+      "out": "content/assets/industrialcraft_2/textures/gui/macerator.png", "origin": "original" }
   ]
 }
 ```

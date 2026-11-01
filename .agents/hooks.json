@@ -1,4 +1,9 @@
 {
+  "beads-prime": {
+    "SessionStart": [
+      { "type": "command", "command": "../scripts/fleet/hook.sh prime agy", "timeout": 30 }
+    ]
+  },
   "guard-shell": {
     "PreToolUse": [
       {
@@ -12,6 +17,14 @@
       {
         "matcher": "write_file|edit_file|write_to_file|replace_file_content|multi_replace_file_content",
         "hooks": [{ "type": "command", "command": "../scripts/fleet/hook.sh paths agy", "timeout": 10 }]
+      }
+    ]
+  },
+  "guard-read": {
+    "PreToolUse": [
+      {
+        "matcher": "read_file|view_file|view_content_chunk|grep_search|search_in_file|find_by_name|list_dir",
+        "hooks": [{ "type": "command", "command": "../scripts/fleet/hook.sh read agy", "timeout": 10 }]
       }
     ]
   },

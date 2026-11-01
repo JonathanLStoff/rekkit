@@ -34,128 +34,42 @@ The goal of **Rekkit** is to port classic Java Minecraft mods (Tekkit Classic 1.
 
 ---
 
-## 2. Complete Mod Conversion Lifecycle
+## 2. The port process (one mod at a time)
+
+Every mod goes through these 11 steps, one Beads story each under the mod's epic (`make fleet-status MOD=<id>`; the board in `planning/fleet-board.md` is generated from Beads). Independent work runs in parallel; each step's sign-off waits for the ones before it.
 
 ```mermaid
-flowchart TD
-    A["Step 1: Gather Requirements<br/>(planning/mods/&lt;modname&gt;.md)"] --> B["Step 2: Scaffold Dual-Artifact Mod<br/>(./mods/&lt;modname&gt;/{src,content,native})"]
-    B --> C["Step 3: Domain & Hook Unit Tests<br/>(make test-mods)"]
-    C --> D["Step 4: Extract Legacy Assets<br/>(make extract-jar)"]
-    D --> E["Step 5: Add Assets to Content Mod<br/>(./mods/&lt;modname&gt;/content/assets/)"]
-    E --> F["Step 6: Validate Schemas & Logic<br/>(make check-mods & make test-mods)"]
-    F --> G["Step 7: [TODO/TBD] Integration Test<br/>(Headless Mod Harness)"]
-    G --> H["Step 8: Lockstep Version Bump<br/>(Cargo.toml, content/, native/)"]
-    H --> I["Step 9: Git Commit & Push<br/>(git commit & push)"]
-    I --> J["Step 10: Package & Release<br/>(make pack-mods -> GitHub Release .hmod & .hnmod)"]
+graph LR
+    S1[1 Spec from the Java] --> S2[2 Scaffold] --> S3[3 Code] --> S4[4 Check]
+    S1 --> S5[5 Extract assets]
+    S3 --> S6[6 New assets]
+    S5 --> S6
+    S4 --> S7[7 Recheck]
+    S6 --> S7 --> S8[8 Harness, live] --> S9[9 Package] --> S10[10 Human] -.-> S11[11 Own art, later]
 ```
 
----
+| # | Step | What happens | Who | Done when |
+|---|---|---|---|---|
+| 1 | **Spec from the Java** | `make decompile JAR=<archive>` (pinned Vineflower; `assets/decompiled/`, gitignored). The spec describes the original's behaviour in our own words, citing the Java class and method for every formula, constant, table and state machine, plus the original's authors and licence, and ends with `planning/mods/<id>.features.json`. `make fleet-features MOD=<id>` turns it into feature beads. | spec-writer | spec + feature list written, features filed |
+| 2 | **Scaffold** | The `mods/example_mod` layout, version 0.1.0, the same pinned revisions. | scaffolder | it builds; `make check-mods` passes |
+| 3 | **Code** | Domain crate, native hooks, content JSON and tests, **written from the spec only** (clean-room: builders never open `assets/decompiled/`; the hooks block it). One feature bead per block, item and subsystem. | domain-builder(-pro), hook-engineer, content-author, test-smith | every Code feature closed |
+| 4 | **Check** | Syntax and logic: `make agent-gate MOD=<id>` (rustfmt, clippy `-D warnings`, tests, `rustfmt` on the mixin helpers, check-mods, harness dry run) and a review of the Rust against the spec and the Java. Each finding is a bug for the owning role. | parity-critic | gate passes, `VERDICT: pass` |
+| 5 | **Extract assets** | The original's art and sound from the **client** build (`assets/tekkit/client/mods/`; Tekkit's server ports in `assets/tekkit/mods/` have none), sliced from sprite sheets, every file in `asset-map.json` with `origin: original` and the `credits`. Runs beside steps 2–4. | asset-smith | every block and item mapped |
+| 6 | **New assets** | `make fleet-gaps MOD=<id>` lists what 26.3 needs that the original never had (blockstates, models, item model definitions, particle textures, effect icons, split sprite sheets, placeholders). Only those get new art: SVG or `.pixels` in `mods/<id>/art/`, built by `make art MOD=<id>` at the originals' size (16 px; effect icons 18) and palette, tagged `origin: generated` for review. No modernising. | asset-smith | `make check-mods MOD=<id> COMPLETE=1` passes |
+| 7 | **Recheck** | Everything again on the whole mod: the gate, the completeness check, `make art ARGS=--check`, and a full review of code, content and `asset-map.json`. | parity-critic | clean |
+| 8 | **Harness (live)** | `make e2e-mod MOD=<id>` and `make e2e-all-mods`: every block placed by `/setblock` **and by a player**, in **every blockstate variant**, through all 7 stages, with **no WARN/ERROR/panic** in the game log beyond `planning/harness-allowed-warnings.txt` (a person's list). Horizon is built and run alone first (`make horizon-baseline`, at `make fleet-start`): what fails the same way without the mod is Horizon's (exit 3, `make horizon-status`), filed as a `horizon` bug, and does not hold the mod up. | compat-auditor | every block's harness feature closed |
+| 9 | **Package** | Version bump in lockstep, local commit (with the board and `.beads/issues.jsonl`), `make pack-mods`. | release-clerk | committed and packed |
+| 10 | **Human** | The conductor ends with `DONE, CHECK OUT THE PROGRESS: make play MOD=<id>`. A person plays it, reviews, and pushes; `.github/workflows/release-mods.yml` signs and publishes a **pre-release** while original assets remain (`.agents/release.md`). | you | pushed |
+| 11 | **Own art** | Later: replace every original asset with our own; then full releases reach Horizon's registry. Deferred until a person starts it. | asset-smith | 0 original assets |
 
-## 3. Step-by-Step Execution Guide
+**Complete, ready for a human** = steps 1–9 closed. The conductor's stop hook holds it to that (agy, Claude Code); `make fleet-next` relaunches any agent until it is (`.agents/fleet-plan.md` §9).
 
-### Step 1: Gather Requirements & Document Specification
-* **Target:** [`planning/mods/<modname>.md`](file:///Users/jonathanstoff/Desktop/scripts/rekkit/planning/mods)
-* Reverse-engineer the original Java mod (decompiled JAR, wiki documentation, configuration files).
-* Document:
-  * Complete block and item registries.
-  * Mechanics, formulas (e.g. EU/MJ rates, tick timers, EMC values).
-  * State machines, multiblock geometry, bounding boxes, network packets.
-  * Known hazards (explosions, meltdowns, timeouts).
-* *Reference existing specs:* See [`planning/mods/equivalent_exchange_2.md`](file:///Users/jonathanstoff/Desktop/scripts/rekkit/planning/mods/equivalent_exchange_2.md) or [`planning/mods/redpower_2.md`](file:///Users/jonathanstoff/Desktop/scripts/rekkit/planning/mods/redpower_2.md).
+## 3. Who writes what
 
-### Step 2: Scaffold Dual-Artifact Rust Mod in `./mods/<modname>`
-* **Target Directory:** `./mods/<modname>/`
-* Create the four components of a Rekkit mod:
-  1. **Domain Crate (`Cargo.toml` + `src/lib.rs`)**: Pure Rust domain models, state machines, and `HorizonNativeMod` trait implementation.
-  2. **Registry Page Metadata (`horizon-registry.toml`)**: Repository metadata (`name`, `summary` <= 160 chars, `description`, `authors`, `license`) consumed by `horizon-rust/horizon-mods`.
-  3. **Content Mod (`content/`)**:
-     * `content/horizon-mod.toml` (`id`, `name`, `version`, `api = "0.2"`, `side = "both"`, `capabilities = ["registries"]`).
-     * `content/data/<id>/horizon/block/*.json` (with optional item `components`), `content/data/<id>/horizon/item/*.json` (with optional `crafting_remainder`), and `content/data/<id>/horizon/mob_effect/*.json`.
-     * `content/data/<id>/recipe/*.json` (both vanilla crafting/smelting and custom machine recipe types queried via `native_recipes_of_type`).
-  4. **Native Mixin Bundle (`native/`)**:
-     * `native/horizon-native.json` (`schema = 1`, `id`, `version`, `game = "26.3"`, 40-hex `horizon` & `mixins` revisions, `hooks = 40`).
-     * `native/mixins/<id>/horizon-mixin.toml` & `native/mixins/<id>/hooks.rs`.
-
-### Step 3: Initial Unit & Native Hook Testing
-* Write tests in `tests/` covering:
-  * Domain state machines, math, and serialization.
-  * `HorizonNativeMod` lifecycle hooks (`native_block_entity`, `native_block_entity_container`, `native_block_entity_tick`, `native_screen`, `native_menu_button`).
-  * Dual-artifact manifest and JSON schema validation.
-* Run tests:
-  ```bash
-  make test-mods
-  ```
-
-### Step 4: Pull Assets from Original Java Mod Archive
-* Use the `extract-jar-assets` skill or Makefile targets to unpack the original legacy mod JAR or ZIP:
-  ```bash
-  make extract-jar JAR=assets/direwolf20/mods/<modname>.jar EXTRACT_OUT=assets/extracted/<modname>
-  ```
-
-### Step 5: Add & Organize Assets in `content/assets/<modname>/`
-* Place extracted textures, models, audio, and language files into `mods/<modname>/content/assets/<modname>/`:
-  ```text
-  mods/<modname>/content/assets/<modname>/
-    ├── blockstates/
-    ├── items/
-    ├── lang/
-    │   └── en_us.json
-    ├── models/
-    │   └── block/
-    ├── textures/
-    │   ├── block/
-    │   ├── item/
-    │   └── gui/
-    └── sounds/
-  ```
-
-### Step 6: Asset Validation & Schema Checks
-* Run the validation script and test suites:
-  ```bash
-  make check-mods MOD=<modname>
-  make test-mods
-  ```
-
-### Step 7: End-to-End Integration & Compatibility Testing via Mod Harness
-* **Specification & Architecture:** See [`planning/harness.md`](file:///Users/jonathanstoff/Desktop/scripts/rekkit/planning/harness.md) and [`scripts/e2e_harness.py`](file:///Users/jonathanstoff/Desktop/scripts/rekkit/scripts/e2e_harness.py).
-* Executes a two-phase verification matrix driving the live `horizon-client` binary via `horizon-ctl` (`--offscreen` + `HORIZON_NO_AUDIO=1`):
-  1. **Phase 1 — Isolated Mod Run (`make e2e-mod MOD=<modname>`)**: Boots Horizon with only `<modname>` loaded, spawns all of its blocks and items into a test world, and runs the **7-Stage Exhaustive Action Matrix** (give/tooltip check, world grid placement, item-on-block interactions, custom GUI open/button clicks/screenshots, server tick & hopper neighbor I/O, recipe verification, and survival block breaking/loot drop verification).
-  2. **Phase 2 — All-Mods Compatibility Run (`make e2e-all-mods`)**: Audits cross-mod namespace/tag/revision rules, then boots Horizon with **all Rekkit mods loaded simultaneously**, places every block from every mod across dedicated 32×32 world plots, and re-runs the full 7-stage action suite concurrently to verify compatibility.
-* Run both phases together (or use `DRY_RUN=1` for fast pre-flight action plan generation):
-  ```bash
-  make integration-test DRY_RUN=1
-  make integration-test
-  ```
-
-### Step 8: Update Versioning in Lockstep
-* Bump the semantic version identically across:
-  * `mods/<modname>/Cargo.toml`
-  * `mods/<modname>/content/horizon-mod.toml`
-  * `mods/<modname>/native/horizon-native.json`
-  * `mods/<modname>/native/mixins/<modname>/horizon-mixin.toml`
-* Verify lockstep alignment with `make check-mods MOD=<modname>`.
-
-### Step 9: Git Push
-* Stage and commit changes cleanly:
-  ```bash
-  git add mods/<modname> planning/mods/<modname>.md
-  git commit -m "feat(<modname>): implement rust logic, content, and native hooks v0.1.1"
-  git push origin main
-  ```
-
-### Step 10: Package & Publish to Horizon Mod Registry via GitHub Releases
-* Build deterministic `.hmod` and `.hnmod` release bundles:
-  ```bash
-  make pack-mods MOD=<modname>
-  ```
-* Produces:
-  * `mods/<modname>/target/horizon-mod/<modname>.hmod` (Content Mod)
-  * `mods/<modname>/target/horizon-mod/<modname>.hnmod` (Native Mod)
-* Releasing is automatic once the push reaches `main`: [`.github/workflows/release-mods.yml`](../.github/workflows/release-mods.yml) finds every mod (but `example_mod`) whose version has no release yet, runs its tests, packs it, signs both files with the `MINISIGN_SECRET_KEY` secret (checked against `minisign.pub`), and publishes the GitHub Release `<modname>-<version>` with `<modname>.hmod`, `<modname>.hnmod` and their `.minisig` files. Horizon's registry (`horizon-rust/horizon-mods`) reads new releases of a listed project's repository within the hour.
-* The same workflow fails (on pull requests too) when a mod's `content/`, `native/` or `src/` changed since its last release but the version did not (Step 8). Check locally with `python3 scripts/release_plan.py --exclude example_mod`.
-* Once per mod, a person lists it at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) (repository, page, the key in `minisign.pub`); a Horizon reviewer reads it before it is published.
-
----
+- **Beads**: only the conductor (`bd`, `make fleet-*`, `make board`). Every role subagent starts with `make fleet-task BEAD=<id> ROLE=<role>` and ends by writing `target/fleet/inbox/<bead>.json`; `make fleet-inbox` files those reports (comments, closed beads, follow-ups as new beads), so no subagent's work is lost.
+- **Engine gaps**: Beads bugs labelled `horizon` (`bd list --label horizon`), never edits under `horizon/`.
+- **The accepted-warnings list** (`planning/harness-allowed-warnings.txt`): a person only.
+- Paths per role: `.agents/fleet-plan.md` §3.
 
 ## 4. Concrete Reference Implementation: `example_mod`
 

@@ -1,0 +1,7 @@
+# Game-log lines the harness accepts: one regular expression a line, matched anywhere in the line.
+# Every other WARN, ERROR or FATAL line, panic or crash fails a run (scripts/e2e_harness.py).
+# Only a person edits this file: the agents' hooks refuse to write it. Add a line only for a warning
+# that is expected and harmless, with a comment saying why.
+
+# The harness runs with HORIZON_NO_AUDIO=1 (no sound device needed).
+Horizon: no sound: audio off: HORIZON_NO_AUDIO is set

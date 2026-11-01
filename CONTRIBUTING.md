@@ -17,6 +17,7 @@ cd rekkit
 | Tools | Checks git, a C linker (MSVC Build Tools on Windows), Rust 1.90+, Python 3.11+, JDK 25 (and make, which is optional) and prints the install command for anything missing |
 | Submodule | Initialises `horizon/` (the engine) |
 | Mods | What `make test-mods` and `make check-mods` run |
+| Beads and port tools | Installs nothing itself: asks you to `brew install beads` if missing, then sets up its database (`bd bootstrap`) and fetches the pinned Vineflower decompiler |
 | Modpacks | Downloads Tekkit Classic, Direwolf20 and Agrarian Skies 2 into `assets/` (the original mod JARs you port from). No CurseForge key needed |
 | Horizon | Builds the game with every mod's native hooks (`target/e2e/`) |
 | Minecraft 26.3 | Builds Horizon's game resources from **your own** Minecraft install and fetches the matching server jar |
@@ -51,7 +52,7 @@ Every mod follows the 10 steps in [`planning/workflow.md`](planning/workflow.md)
 | Live game test, mods together | `make e2e-all-mods MOD=a,b` (or all mods) |
 | Unpack an original mod JAR | `make extract-jar JAR=assets/<pack>/mods/<jar> EXTRACT_OUT=assets/extracted/<id>` |
 
-Live test results, game logs, crash reports and screenshots land in `target/e2e-report/<session>/`. Something the engine can't do yet goes in [`planning/horizon-gaps.md`](planning/horizon-gaps.md), never as a change to `horizon/`.
+Live test results, game logs, crash reports and screenshots land in `target/e2e-report/<session>/`. Something the engine can't do yet is a Beads bug labelled `horizon` (`bd list --label horizon`), never a change to `horizon/`.
 
 ## 4. Send it
 
@@ -63,7 +64,7 @@ Live test results, game logs, crash reports and screenshots land in `target/e2e-
 
 ## Working with an AI agent
 
-Any agent works: agy, Claude Code, Codex, Cursor, Copilot, Gemini CLI. Tell it: **"Follow AGENTS.md."** [`AGENTS.md`](AGENTS.md) makes it check the setup, tell you word for word what to download if something needs you, then take the next board row and keep going. In agy (`/agents` → conductor) and Claude Code (`/conductor`) it runs as a fleet of role subagents with hooks that block pushing and signing; other tools play the roles one by one. Unattended: `make fleet-next AGENT=agy|claude|codex`. The fleet is described in [`.agents/fleet-plan.md`](.agents/fleet-plan.md). To change a role or skill, edit `.agents/` and run `make agents`. Agents never push, sign or publish; you do.
+Any agent works: agy, Claude Code, Codex, Cursor, Copilot, Gemini CLI. Tell it: **"Follow AGENTS.md."** [`AGENTS.md`](AGENTS.md) makes it check the setup, tell you word for word what to download if something needs you, then take the next board row and keep going. In agy (`/agents` → conductor) and Claude Code (`/conductor`) it runs as a fleet of role subagents with hooks that block pushing and signing; other tools play the roles one by one. Each mod goes through 11 steps (spec from the decompiled Java, code written from the spec only, checks, the original's assets, new art only for what it lacks, a recheck, the live harness with every block placed and no warnings, packaging) and ends with `DONE, CHECK OUT THE PROGRESS: make play MOD=<id>`: then it is yours to play, review and push ([`planning/workflow.md`](planning/workflow.md) §2). Progress lives in Beads (`bd`, installed by `./setup.sh`): `make fleet-status`, `bd ready`, or the generated [board](planning/fleet-board.md). Unattended: `make fleet-next AGENT=agy|claude|codex`. The fleet is described in [`.agents/fleet-plan.md`](.agents/fleet-plan.md). To change a role or skill, edit `.agents/` and run `make agents`. Agents never push, sign or publish; you do.
 
 ## When something goes wrong
 
@@ -73,5 +74,5 @@ Any agent works: agy, Claude Code, Codex, Cursor, Copilot, Gemini CLI. Tell it: 
 | `✗ tool: Rust` | `rustup update` (or install rustup) |
 | `! Minecraft 26.3 … not found` | Play 26.3 once in the official launcher, then `./setup.sh` |
 | `E_MANIFEST` from horizon-mixins | `make check-mods MOD=<id>` explains it: `[mod]` takes only `id`, `version`, `priority`, and a bundle needs at least one `[[injection]]` |
-| A block drops nothing in the live test | Copy the loot table form from `mods/example_mod` (see `planning/horizon-gaps.md`) |
+| A block drops nothing in the live test | Copy the loot table form from `mods/example_mod` (`bd list --label horizon`: the loot-pool `conditions` gap) |
 | Anything else in the live test | `target/e2e-report/summary.json` lists every action and reply; the game log and crash reports are next to it |

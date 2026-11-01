@@ -46,19 +46,19 @@ CLAUDE_TOOLS = {
 }
 # The roster's two model tiers (.agents/fleet-plan.md §3) -> Claude Code's models.
 CLAUDE_MODELS = {"pro": "opus", "flash": "sonnet"}
+def _hook(check: str, timeout: int) -> dict:
+    return {"type": "command", "command": f'"$CLAUDE_PROJECT_DIR"/scripts/fleet/hook.sh {check} claude', "timeout": timeout}
+
+
 CLAUDE_HOOKS = {
+    "SessionStart": [{"hooks": [_hook("prime", 30)]}],
     "PreToolUse": [
-        {"matcher": "Bash",
-         "hooks": [{"type": "command", "command": '"$CLAUDE_PROJECT_DIR"/scripts/fleet/hook.sh shell claude',
-                    "timeout": 10}]},
-        {"matcher": "Edit|Write|MultiEdit|NotebookEdit",
-         "hooks": [{"type": "command", "command": '"$CLAUDE_PROJECT_DIR"/scripts/fleet/hook.sh paths claude',
-                    "timeout": 10}]},
+        {"matcher": "Bash", "hooks": [_hook("shell", 10)]},
+        {"matcher": "Edit|Write|MultiEdit|NotebookEdit", "hooks": [_hook("paths", 10)]},
+        {"matcher": "Read|Grep|Glob", "hooks": [_hook("read", 10)]},
     ],
-    "Stop": [
-        {"hooks": [{"type": "command", "command": '"$CLAUDE_PROJECT_DIR"/scripts/fleet/hook.sh gate claude',
-                    "timeout": 900}]},
-    ],
+    "Stop": [{"hooks": [_hook("gate", 900)]}],
+    "SubagentStop": [{"hooks": [_hook("gate", 900)]}],
 }
 
 

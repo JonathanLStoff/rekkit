@@ -16,6 +16,10 @@ A live run does every step itself:
      crash report fails the run. target/e2e-report/summary.json lists every step (--dry-run and
      --setup-only write setup.json instead).
 
+Exit status: 0 every session passed, 1 a mod failed, 3 only Horizon's own problems (it builds badly or
+logs the same lines with no mods: target/horizon-status.json, written by --baseline and by any live run
+at a revision it has not checked).
+
 Phases:
   1. isolated: one game per selected mod, only that mod loaded.
   2. all-mods: one game with every selected mod (default: all mods) loaded together.
@@ -58,12 +62,18 @@ GAME_VERSION = "26.3"
 EXE = ".exe" if os.name == "nt" else ""
 # Resources carry the data version of the horizon-prepare that made them and the client refuses
 # others, so each build revision gets its own, prepared inside target/e2e/source/<rev>.
-# Lines in the game log that fail a run: ERROR/FATAL log levels, panics, and warnings that say a
-# mod did not load. --allow-log adds patterns to ignore.
+# Lines in the game log that fail a run: WARN/ERROR/FATAL log levels, panics, and messages that say
+# a mod did not load. Only the patterns a person lists in ALLOWED_WARNINGS are accepted.
 LOG_ERROR = re.compile(
-    r"/ERROR\]|/FATAL\]|panicked at|stack backtrace"
+    r"/WARN\]|/ERROR\]|/FATAL\]|panicked at|stack backtrace"
     r"|(?i:mods? not loaded|content not loaded|failed to load (?:content |native )?mod|mod .*(?:rejected|refused|invalid))"
 )
+ALLOWED_WARNINGS = ROOT / "planning" / "harness-allowed-warnings.txt"
+# What Horizon itself does at a revision, with no mods (--baseline): decides whether a failure is
+# Horizon's or the mod's.
+HORIZON_STATUS = ROOT / "target" / "horizon-status.json"
+# Blockstate variants placed per block, at most (a multipart block can have thousands).
+MAX_VARIANTS = 32
 
 
 class HarnessError(Exception):
@@ -84,6 +94,7 @@ def discover_mod_spec(mod_dir: Path) -> dict:
     if block_dir.is_dir():
         for p in sorted(block_dir.glob("*.json")):
             bdata = json.loads(p.read_text(encoding="utf-8"))
+            states = content_dir / "assets" / mod_id / "blockstates" / f"{p.stem}.json"
             blocks.append(
                 {
                     "id": f"{mod_id}:{p.stem}",
@@ -91,6 +102,7 @@ def discover_mod_spec(mod_dir: Path) -> dict:
                     "template": bdata["template"],
                     "has_item": bdata.get("item", True),
                     "properties": bdata.get("properties", {}),
+                    "variants": blockstate_variants(states),
                 }
             )
 
@@ -157,6 +169,39 @@ def discover_mod_spec(mod_dir: Path) -> dict:
     }
 
 
+def blockstate_variants(path: Path) -> list[str]:
+    """Every state a blockstate file names, as "key=value,...": the variants' keys, or for a
+    multipart file the combinations of the values its conditions name (at most MAX_VARIANTS)."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if isinstance(data.get("variants"), dict):
+        return [k for k in data["variants"] if k][:MAX_VARIANTS]
+    values: dict[str, set[str]] = {}
+
+    def conditions(node: object) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key in ("OR", "AND") and isinstance(value, list):
+                    for item in value:
+                        conditions(item)
+                elif isinstance(value, (str, bool, int)):
+                    values.setdefault(key, set()).update(str(value).lower().split("|"))
+    for part in data.get("multipart", []):
+        conditions(part.get("when", {}))
+    combos = [""]
+    for key in sorted(values):
+        combos = [f"{c},{key}={v}".lstrip(",") for c in combos for v in sorted(values[key])][:MAX_VARIANTS]
+    return [c for c in combos if c]
+
+
+def tp_step(stage: str, x: float, y: float, z: float) -> dict:
+    """A teleport by the server's own /tp. horizon-ctl's tp moves the client, and the server then logs
+    "moved wrongly" when that path crosses a block (as in survival, from one row of the plot to another)."""
+    return {"stage": stage, "cmd": "command", "args": {"command": f"tp @s {x} {y} {z}"}}
+
+
 def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
     """Generate the 7-stage exhaustive action sequence for a mod at its assigned world plot."""
     mod_id = spec["id"]
@@ -192,19 +237,21 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
 
     # Stage 2: World Grid Placement
     # Commands land a few ticks after they reply, so every world change is followed by a wait.
+    # Row base_z: placed with /setblock. Row base_z + 4: placed by the player, then every variant.
     steps.append({"stage": "2_clear_plot", "cmd": "fill",
-                  "args": {"box": [base_x - 2, base_y, base_z - 4, plot_x2, base_y + 4, base_z + 2], "block": "minecraft:air"}})
+                  "args": {"box": [base_x - 2, base_y, base_z - 4, plot_x2, base_y + 4, base_z + 6], "block": "minecraft:air"}})
     steps.append({"stage": "2_floor_plot", "cmd": "fill",
-                  "args": {"box": [base_x - 2, base_y - 1, base_z - 4, plot_x2, base_y - 1, base_z + 2], "block": "minecraft:stone"}})
+                  "args": {"box": [base_x - 2, base_y - 1, base_z - 4, plot_x2, base_y - 1, base_z + 6], "block": "minecraft:stone"}})
     steps.append({"stage": "2_plot_ready", "cmd": "wait", "args": {"ticks": 10}})
     steps.append(
-        {"stage": "2_teleport_plot", "cmd": "tp", "args": {"x": base_x + 0.5, "y": base_y, "z": base_z - 2.5}}
+        tp_step("2_teleport_plot", base_x + 0.5, base_y, base_z - 2.5)
     )
     steps.append({"stage": "2_settle", "cmd": "wait", "args": {"ticks": 5}})
     for idx, b in enumerate(spec["blocks"]):
+        first = len(steps)
         bx = base_x + (idx * 2)
         bz = base_z
-        steps.append({"stage": "2_stand_by_block", "cmd": "tp", "args": {"x": bx + 0.5, "y": base_y, "z": bz - 1.5}})
+        steps.append(tp_step("2_stand_by_block", bx + 0.5, base_y, bz - 1.5))
         steps.append(
             {"stage": "2_place_mod_block", "cmd": "setblock", "args": {"x": bx, "y": base_y, "z": bz, "block": b["id"]}}
         )
@@ -217,6 +264,34 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "expect_block": b["id"],
             }
         )
+        pz = base_z + 4
+        if b["has_item"]:
+            # As a player places it: hold the item, look at the floor in front, right-click. From 1.5
+            # blocks back the ray meets the floor block's top face, so the block lands at (bx, base_y, pz).
+            steps += [
+                {"stage": "2_player_give", "cmd": "give", "args": {"item": b["id"], "count": 1}},
+                {"stage": "2_player_sync", "cmd": "wait", "args": {"ticks": 2}},
+                {"stage": "2_player_select", "cmd": "select", "args": {"slot": b["id"]}},
+                tp_step("2_player_stand", bx + 0.5, base_y, pz - 1.5),
+                {"stage": "2_player_settle", "cmd": "wait", "args": {"ticks": 5}},
+                {"stage": "2_player_aim", "cmd": "look_at_block", "args": {"x": bx, "y": base_y - 1, "z": pz}},
+                {"stage": "2_player_place", "cmd": "mouse", "args": {"button": "right", "action": "click"}},
+                {"stage": "2_player_lands", "cmd": "wait", "args": {"ticks": 5}},
+                {"stage": "2_player_verify", "cmd": "block", "args": {"x": bx, "y": base_y, "z": pz},
+                 "expect_block": b["id"], "what": "placed by a player"},
+            ]
+        for variant in b.get("variants", []):
+            steps += [
+                {"stage": "2_variant_place", "cmd": "setblock",
+                 "args": {"x": bx, "y": base_y, "z": pz, "block": f"{b['id']}[{variant}]"}},
+                {"stage": "2_variant_lands", "cmd": "wait", "args": {"ticks": 2}},
+                {"stage": "2_variant_verify", "cmd": "block", "args": {"x": bx, "y": base_y, "z": pz},
+                 "expect_block": b["id"], "what": f"variant [{variant}]"},
+            ]
+        steps.append({"stage": "2_player_row_clear", "cmd": "setblock",
+                      "args": {"x": bx, "y": base_y, "z": pz, "block": "minecraft:air"}})
+        steps.append(tp_step("2_player_return", bx + 0.5, base_y, bz - 1.5))
+        steps.append({"stage": "2_player_returns", "cmd": "wait", "args": {"ticks": 5}})
 
         # Stage 3: Item-on-Block & Right-Click Interactions
         for trigger_item in ("minecraft:orange_dye", "minecraft:diamond"):
@@ -259,6 +334,8 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "args": {"x": bx, "y": base_y + 1, "z": bz, "block": "minecraft:air"},
             }
         )
+        for step in steps[first:]:
+            step["block"] = b["id"]
 
     # Stage 6: Recipe Verification
     for r in spec["recipes"]:
@@ -275,7 +352,7 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
     for idx, b in enumerate(spec["blocks"]):
         bx = base_x + (idx * 2)
         bz = base_z
-        steps.append({"stage": "7_stand_by_block", "cmd": "tp", "args": {"x": bx + 0.5, "y": base_y, "z": bz - 1.5}})
+        steps.append(tp_step("7_stand_by_block", bx + 0.5, base_y, bz - 1.5))
         steps.append({"stage": "7_settle", "cmd": "wait", "args": {"ticks": 5}})
         # `break` reports what the block dropped (the player may pick it up a moment later).
         brk = {"stage": "7_break_block", "cmd": "break", "args": {"x": bx, "y": base_y, "z": bz}}
@@ -284,6 +361,8 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         steps.append(brk)
         steps.append({"stage": "7_drops_spawn", "cmd": "wait", "args": {"ticks": 10}})
         steps.append({"stage": "7_list_drops", "cmd": "entities", "args": {"radius": 8, "type": "item"}})
+        for step in steps[-5:]:
+            step["block"] = b["id"]
     steps.append({"stage": "7_restore_creative", "cmd": "command", "args": {"command": "gamemode creative"}})
 
     return steps
@@ -540,13 +619,13 @@ def have_bins(bins: Path) -> bool:
     return (bins / f"horizon-client{EXE}").is_file() and (bins / f"horizon-ctl{EXE}").is_file()
 
 
-def prepare_build(specs: list[dict], args, sub: dict) -> tuple[Path, str]:
-    """Steps 2-4 for one mod set: the folder holding its horizon-client and horizon-ctl."""
+def prepare_build(specs: list[dict], args, sub: dict, rev: str | None = None) -> tuple[Path, str]:
+    """Steps 2-4 for one mod set (none: Horizon alone): the folder holding its horizon-client and horizon-ctl."""
     if args.bin_dir:
         return args.bin_dir.resolve(), "prebuilt"
-    rev = build_revision(args.horizon_rev, specs, sub)
+    rev = rev or build_revision(args.horizon_rev, specs, sub)
     mixins_revs = sorted({s["mixins_revision"] for s in specs})
-    mixins_rev = mixins_revs[-1]
+    mixins_rev = mixins_revs[-1] if mixins_revs else ""
     if len(mixins_revs) > 1:
         print(f"[WARN] Mods pin {len(mixins_revs)} horizon-mixins revisions; using {mixins_rev[:12]}")
     key = f"{rev[:12]}-{bundle_digest(native_bundles(specs))}"
@@ -624,6 +703,17 @@ def server_jar(source: Path, mc: Path, explicit: str | None) -> Path | None:
     return jar
 
 
+def ensure_sounds(source: Path, res: Path, rev: str, mc: Path) -> None:
+    """Minecraft's sounds in the prepared resources (horizon-prepare sounds: copied from the player's
+    own launcher, nothing downloaded). Without them Horizon warns "no sounds in ...", which fails runs."""
+    if (res / "assets" / "minecraft" / "sounds.json").is_file() or not minecraft_installed(mc):
+        return
+    print(f"[setup] Copying Minecraft's sounds from {mc} into the prepared resources")
+    env = dict(os.environ, CARGO_TARGET_DIR=str((E2E_ROOT / "cargo-target" / rev[:12]).resolve()))
+    run(["cargo", "run", "--release", "--locked", "--manifest-path", source / "Cargo.toml", "-p", "horizon-prepare",
+         "--", "sounds", "--root", source, "--minecraft-dir", mc], env=env, log=E2E_ROOT / "prepare.log")
+
+
 def resources_for(rev: str, args, *, prepare_now: bool = False) -> Path:
     """Prepared resources for Horizon `rev`. With --prepare (or prepare_now), builds them from the
     player's own Minecraft 26.3 with that revision's horizon-prepare."""
@@ -634,9 +724,10 @@ def resources_for(rev: str, args, *, prepare_now: bool = False) -> Path:
         raise HarnessError(f"--resources {res} has no horizon-resources.json")
     source = unpack_source(rev)
     res = source / ".local" / "horizon-client" / GAME_VERSION
-    if (res / "horizon-resources.json").is_file():
-        return res
     mc = minecraft_dir(args.minecraft_dir)
+    if (res / "horizon-resources.json").is_file():
+        ensure_sounds(source, res, rev, mc)
+        return res
     if (args.prepare or prepare_now) and minecraft_installed(mc):
         jar = server_jar(source, mc, args.server_jar)
         cmd = ["cargo", "run", "--release", "--locked", "--manifest-path", source / "Cargo.toml",
@@ -648,6 +739,7 @@ def resources_for(rev: str, args, *, prepare_now: bool = False) -> Path:
               f"(Java {pinned_minecraft(source)['java_major']}); log: {E2E_ROOT / 'prepare.log'}")
         run(cmd, env=env, log=E2E_ROOT / "prepare.log")
         if (res / "horizon-resources.json").is_file():
+            ensure_sounds(source, res, rev, mc)
             return res
         raise HarnessError(f"horizon-prepare finished but {res} has no horizon-resources.json; see {E2E_ROOT / 'prepare.log'}")
     raise HarnessError(
@@ -712,6 +804,29 @@ def step_words(step: dict, shots: Path) -> list:
     if cmd == "entities":
         return ["entities", a["radius"], a["type"]]
     raise HarnessError(f"action plan uses a command the harness does not map: {cmd}")
+
+
+def allowed_warnings() -> list[re.Pattern]:
+    """The log lines a person accepted (planning/harness-allowed-warnings.txt: one regex a line)."""
+    if not ALLOWED_WARNINGS.is_file():
+        return []
+    return [re.compile(line.strip()) for line in ALLOWED_WARNINGS.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.lstrip().startswith("#")]
+
+
+def normalize_log_line(line: str) -> str:
+    """A log line without its time and scratch paths, to compare runs."""
+    # "[16:11:00] [Render thread/WARN]: text" -> "WARN: text", then scratch paths -> <path>.
+    m = re.match(r"^\[[^\]]*\]\s*\[[^\]]*?/(\w+)\]:?\s*(.*)$", line.strip())
+    line = f"{m.group(1)}: {m.group(2)}" if m else line.strip()
+    return re.sub(r"(?:/[\w.@+-]+){2,}/?", "<path>", line)
+
+
+def horizon_status() -> dict:
+    try:
+        return json.loads(HORIZON_STATUS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
 
 
 def log_errors(text: str, allow: list[re.Pattern]) -> list[str]:
@@ -788,11 +903,13 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
             words = step_words(step, shots)
             code, reply = ctl(*words, timeout=180)
             entry = {"i": i, "stage": step["stage"], "cmd": " ".join(map(str, words)), "reply": reply}
+            if step.get("block"):
+                entry["block"] = step["block"]
             problem = None
             if "error" in reply and reply.get("kind") not in step.get("allow_kinds", []):
                 problem = reply
             elif step.get("expect_block") and step["expect_block"] not in json.dumps(reply):
-                problem = f"expected block {step['expect_block']}"
+                problem = f"expected block {step['expect_block']}" + (f" ({step['what']})" if step.get("what") else "")
             elif step.get("expect_drop") and not (reply.get("drops") or {}).get(step["expect_drop"]):
                 problem = f"breaking it dropped {reply.get('drops') or 'nothing'}, expected {step['expect_drop']} (loot table)"
             if problem:
@@ -814,14 +931,18 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
             for crash in crashes:
                 shutil.copy2(crash, shots / crash.name)
                 errors.append({"stage": "8_crash_report", "error": f"crash report {crash.name} (copied to {shots})"})
-            allow = [re.compile(p) for p in args.allow_log]
+            allow = allowed_warnings()
+            baseline = set(horizon_status().get("log_lines", [])) if specs else set()
             for log_file in (work / "logs" / "latest.log", socket.with_suffix(".log")):
                 if not log_file.is_file():
                     continue
                 text = log_file.read_text(encoding="utf-8", errors="replace")
                 (shots / log_file.name).write_text(text, encoding="utf-8")
                 for line in log_errors(text, allow):
-                    errors.append({"stage": "8_game_log", "file": log_file.name, "error": line.strip()})
+                    entry = {"stage": "8_game_log", "file": log_file.name, "error": line.strip()}
+                    if normalize_log_line(line) in baseline:
+                        entry["horizon"] = True  # Horizon logs it with no mods loaded too
+                    errors.append(entry)
             bad_log = sum(1 for e in errors if e["stage"] == "8_game_log")
             if bad_log:
                 print(f"  FAIL game log: {bad_log} error line(s); logs copied to {shots}")
@@ -833,11 +954,60 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
 
     executed = sum(1 for r in results if "cmd" in r)
     skipped = sum(1 for r in results if "skipped" in r)
-    status = "ok" if not errors else "failed"
+    # ok; horizon: every error is one Horizon also has without mods; failed: the mod's.
+    status = "ok" if not errors else "horizon" if all(e.get("horizon") for e in errors) else "failed"
+    blocks = {b["id"]: "ok" for spec in specs for b in spec["blocks"]}
+    for e in errors:
+        if e.get("block") in blocks:
+            blocks[e["block"]] = "failed"
     print(f"[{session_name}] {status.upper()}: {executed} actions run, {skipped} skipped, {len(errors)} error(s), "
-          f"{time.time() - started:.0f} s")
-    return {"session": session_name, "mods": [s["id"] for s in specs], "status": status,
+          f"{sum(v == 'ok' for v in blocks.values())}/{len(blocks)} blocks ok, {time.time() - started:.0f} s")
+    return {"session": session_name, "mods": [s["id"] for s in specs], "status": status, "blocks": blocks,
             "steps_executed": executed, "steps_skipped": skipped, "errors": errors, "steps": results}
+
+
+def run_baseline(rev: str, args, sub: dict) -> dict:
+    """Horizon at `rev` with no mods: does it build, and what does a run with nothing loaded log? Written
+    to target/horizon-status.json, which decides whether a later failure is Horizon's or the mod's."""
+    status = {"rev": rev, "checked": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "built": False,
+              "build_error": "", "run": "skipped", "log_lines": [], "errors": []}
+    print(f"[baseline] Horizon {rev[:12]} with no mods")
+    try:
+        bins, _ = prepare_build([], args, sub, rev=rev)
+        status["built"] = True
+    except HarnessError as exc:
+        status["build_error"] = str(exc)[-3000:]
+    if status["built"]:
+        try:
+            resources = resources_for(rev, args)
+        except HarnessError as exc:
+            # Not Horizon's fault: this machine has no game resources for it yet (./setup.sh says why).
+            status["run"], status["errors"] = "no-resources", [str(exc)[-1000:]]
+            resources = None
+    if status["built"] and resources:
+        try:
+            entry = run_live_session("horizon_baseline", [], bins, resources, args)
+            status["run"] = entry["status"]
+            status["errors"] = entry["errors"][:50]
+            status["log_lines"] = sorted({normalize_log_line(e["error"]) for e in entry["errors"]
+                                          if e["stage"] == "8_game_log"})
+        except HarnessError as exc:
+            status["run"], status["errors"] = "failed", [str(exc)[-2000:]]
+    good = status["built"] and status["run"] in ("ok", "no-resources")
+    if not good and sub and sub.get("origin_main") and sub["origin_main"] != rev:
+        # Only to report whether a newer Horizon fixes it; mods are never repinned here.
+        try:
+            prepare_build([], args, sub, rev=sub["origin_main"])
+            status["latest"] = {"rev": sub["origin_main"], "built": True}
+        except HarnessError as exc:
+            status["latest"] = {"rev": sub["origin_main"], "built": False, "error": str(exc)[-500:]}
+    HORIZON_STATUS.parent.mkdir(parents=True, exist_ok=True)
+    HORIZON_STATUS.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
+    print(f"[baseline] Horizon {rev[:12]}: " + ("builds" if status["built"] else "DOES NOT BUILD")
+          + f", run {status['run']}, {len(status['log_lines'])} log line(s) of its own"
+          + (f"; origin/main {status['latest']['rev'][:12]} " + ("builds" if status['latest']['built'] else "does not build either")
+             if "latest" in status else "") + f". Status: {HORIZON_STATUS}")
+    return status
 
 
 def selected_mods(values: list[str] | None, all_dirs: list[Path]) -> list[Path]:
@@ -874,11 +1044,43 @@ def main() -> int:
                         help="Build missing resources from your Minecraft 26.3 install (fetches the pinned server jar)")
     parser.add_argument("--server-jar", help="Minecraft 26.3 server jar (default: HORIZON_SERVER_JAR, else fetched)")
     parser.add_argument("--minecraft-dir", help="Official launcher game directory (default: HORIZON_MINECRAFT_DIR, else the OS default)")
-    parser.add_argument("--allow-log", action="append", default=[], help="Regex of game-log lines that are not errors")
+    parser.add_argument("--baseline", action="store_true",
+                        help="Build and run Horizon with no mods at the build revision; write target/horizon-status.json")
+    parser.add_argument("--status", action="store_true", help="Print target/horizon-status.json; exit 3 if Horizon is broken")
     parser.add_argument("--keep-home", action="store_true", help="Keep each scratch game home for debugging")
     args = parser.parse_args()
 
     all_mod_dirs = sorted(p for p in MODS_ROOT.iterdir() if p.is_dir() and (p / "Cargo.toml").is_file())
+
+    if args.status:
+        st = horizon_status()
+        if not st:
+            print("No Horizon status yet: make horizon-baseline (make fleet-start runs it).")
+            return 0
+        good = st.get("built") and st.get("run") == "ok"
+        print(f"Horizon {st['rev'][:12]} (checked {st['checked']}): " + ("builds" if st["built"] else "DOES NOT BUILD")
+              + f", run with no mods: {st['run']}, {len(st.get('log_lines', []))} log line(s) of its own"
+              + (f"; origin/main {st['latest']['rev'][:12]} " + ("builds" if st["latest"]["built"] else "does not build")
+                 if "latest" in st else ""))
+        for line in st.get("log_lines", [])[:20]:
+            print(f"  {line}")
+        if st.get("build_error"):
+            print("  " + "\n  ".join(st["build_error"].splitlines()[-15:]))
+        return 0 if good else 3
+    if args.baseline:
+        # Horizon alone: at the newest revision the mods pin, without validating or packing any mod,
+        # so a broken mod never stops the check of Horizon itself.
+        try:
+            dirs = selected_mods(args.mod, all_mod_dirs)
+            pins = [{"horizon_revision": json.loads((d / "native" / "horizon-native.json").read_text(encoding="utf-8"))["horizon"]}
+                    for d in dirs if (d / "native" / "horizon-native.json").is_file()]
+            sub = ensure_submodule(fetch=not args.no_fetch)
+            rev = build_revision(args.horizon_rev, pins, sub)
+            st = run_baseline(rev, args, sub)
+            return 0 if st["built"] and st["run"] == "ok" else 3
+        except HarnessError as exc:
+            print(f"[ERROR] {exc}", file=sys.stderr)
+            return 1
 
     try:
         target_dirs = selected_mods(args.mod, all_mod_dirs)
@@ -918,14 +1120,29 @@ def main() -> int:
                 # Fail before a long build when the resources can never be made here.
                 rev = build_revision(args.horizon_rev, target_specs, sub)
                 resources_for(rev, args)
+                if horizon_status().get("rev") != rev or args.rebuild:
+                    run_baseline(rev, args, sub)
 
-        failed = False
+        failed = horizon_only = False
         for phase, name, specs in sessions:
             if not live:
                 entry = {"mods": [s["id"] for s in specs], "mode": "dry-run",
                          "steps_planned": sum(len(build_action_plan(s, plot_index=i)) for i, s in enumerate(specs))}
             else:
-                bins, rev = prepare_build(specs, args, sub)
+                try:
+                    bins, rev = prepare_build(specs, args, sub)
+                except HarnessError as exc:
+                    rev = build_revision(args.horizon_rev, specs, sub)
+                    broken = horizon_status().get("rev") == rev and not horizon_status().get("built")
+                    entry = {"session": name, "mods": [s["id"] for s in specs], "horizon": rev,
+                             "status": "horizon" if broken else "failed",
+                             "errors": [{"stage": "build", "error": str(exc)[-3000:], "horizon": broken}]}
+                    print(f"[{name}] " + (f"Horizon {rev[:12]} does not build even without mods: not the mod's fault"
+                                          if broken else "The build fails with this mod's mixins (Horizon builds without them)"))
+                    failed |= not broken
+                    horizon_only |= broken
+                    report["phases"].setdefault(phase, []).append(entry)
+                    continue
                 if args.setup_only:
                     entry = {"mods": [s["id"] for s in specs], "mode": "setup-only", "horizon": rev, "bins": str(bins)}
                     print(f"[{name}] Built on Horizon {rev[:12]}: {bins}")
@@ -936,16 +1153,19 @@ def main() -> int:
                     resources = args.resources.resolve() if args.bin_dir and args.resources else resources_for(rev, args)
                     entry = run_live_session(name, specs, bins, resources, args)
                     entry["horizon"] = rev
-                    failed |= entry["status"] != "ok"
+                    failed |= entry["status"] == "failed"
+                    horizon_only |= entry["status"] == "horizon"
             report["phases"].setdefault(phase, []).append(entry)
 
         # summary.json is the last game run's; a dry run or build alone must not replace it
         # (./setup.sh --check reads it to tell whether the live test has passed).
         report_file = REPORT_DIR / ("summary.json" if live and not args.setup_only else "setup.json")
         report_file.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-        print(f"[OK] Wrote E2E harness report to {report_file}" if not failed
-              else f"[FAIL] Errors found; see {report_file}")
-        return 1 if failed else 0
+        print(f"[FAIL] Errors found; see {report_file}" if failed else
+              f"[HORIZON] Only Horizon's own problems (it has them with no mods too); see {report_file} and "
+              f"{HORIZON_STATUS}" if horizon_only else f"[OK] Wrote E2E harness report to {report_file}")
+        # 0 ok, 1 the mods failed, 3 only Horizon's own problems (the mods are not held up by them).
+        return 1 if failed else 3 if horizon_only else 0
     except (HarnessError, pack_mod.ValidationError) as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1

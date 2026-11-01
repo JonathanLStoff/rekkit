@@ -1,0 +1,19 @@
+{
+  "mod": "example_mod",
+  "resolution": 16,
+  "notes": "The template's own art. Its chest borrows obsidian and its pouch the vanilla bundle on purpose.",
+  "vanilla_ok": [
+    "ender_pouch"
+  ],
+  "slices": [],
+  "copies": [],
+  "generated": [
+    {
+      "source": "art/textures/mob_effect/ender_lock.pixels",
+      "out": "content/assets/example_mod/textures/mob_effect/ender_lock.png",
+      "origin": "generated",
+      "size": 18,
+      "palette": "none yet (no original textures)"
+    }
+  ]
+}

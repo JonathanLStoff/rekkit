@@ -11,8 +11,16 @@ For every mod under mods/ (but --exclude):
     version must be bumped;
   - no tag for its version, but an earlier release has a newer or equal version: error.
 
+A mod is considered only once the port process has packaged it: its step 9 Package story is closed
+in Beads (read from the committed export, .beads/issues.jsonl). A mod still in progress is neither
+released nor held to the version check.
+
+A mod that still ships any of the original mod's art or sound (asset-map.json origin "original", or
+a PNG/OGG the map does not account for) is released as a GitHub pre-release, which Horizon's registry
+skips; only a mod whose every asset is its own gets a full release (.agents/release.md).
+
 Prints a summary; in GitHub Actions also writes `matrix` (JSON list of {id, version, tag,
-previous_tag}) and `count` to $GITHUB_OUTPUT. Exit 1 on any error.
+previous_tag, prerelease, originals}) and `count` to $GITHUB_OUTPUT. Exit 1 on any error.
 
 Usage:
   python3 scripts/release_plan.py --exclude example_mod
@@ -66,15 +74,48 @@ def released_versions(mod_id: str, tags: list[str]) -> dict[str, str]:
     return out
 
 
+def original_assets(mod_dir: Path) -> list[str]:
+    """The mod's PNG/OGG files that are still the original mod's (or of unknown origin)."""
+    try:
+        amap = json.loads((mod_dir / "asset-map.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        amap = {}
+    own = {e["out"] for key in ("slices", "copies", "generated") for e in amap.get(key, [])
+           if e.get("out") and e.get("origin", "original" if key != "generated" else "generated") != "original"}
+    assets = mod_dir / "content" / "assets"
+    files = sorted(p for p in assets.rglob("*") if p.suffix in (".png", ".ogg", ".wav")) if assets.is_dir() else []
+    return [p.relative_to(mod_dir).as_posix() for p in files if p.relative_to(mod_dir).as_posix() not in own]
+
+
 def shipped_changed(mod_id: str, tag: str) -> bool:
     paths = [f"mods/{mod_id}/{p}" for p in SHIPPED]
     return subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", tag, "HEAD", "--", *paths]).returncode != 0
 
 
-def plan(mod_dirs: list[Path], tags: list[str]) -> tuple[list[dict], list[str]]:
+def packaged_mods() -> set[str] | None:
+    """Mods whose step 9 Package story is closed in Beads; None without a Beads export."""
+    export = ROOT / ".beads" / "issues.jsonl"
+    if not export.is_file():
+        return None
+    done = set()
+    for line in export.read_text(encoding="utf-8").splitlines():
+        try:
+            issue = json.loads(line)
+        except ValueError:
+            continue
+        labels = issue.get("labels") or []
+        if issue.get("issue_type") == "story" and "step:9" in labels and issue.get("status") == "closed":
+            done |= {l.split(":", 1)[1] for l in labels if l.startswith("mod:")}
+    return done
+
+
+def plan(mod_dirs: list[Path], tags: list[str], packaged: set[str] | None = None) -> tuple[list[dict], list[str]]:
     releases, errors = [], []
     for mod_dir in mod_dirs:
         mod_id = mod_dir.name
+        if packaged is not None and mod_id not in packaged:
+            print(f"  ~ {mod_id}: in progress (step 9 Package not closed in Beads); not released")
+            continue
         manifest = mod_dir / "content" / "horizon-mod.toml"
         if not manifest.is_file():
             errors.append(f"{mod_id}: no content/horizon-mod.toml")
@@ -99,9 +140,12 @@ def plan(mod_dirs: list[Path], tags: list[str]) -> tuple[list[dict], list[str]]:
         if newest and version_key(newest) >= key:
             errors.append(f"{mod_id}: version {version} is not newer than the released {newest} ({done[newest]})")
             continue
-        print(f"  + {mod_id} {version}: to release" + (f" (after {newest})" if newest else " (first release)"))
-        releases.append({"id": mod_id, "version": version, "tag": tag,
-                         "previous_tag": done[newest] if newest else ""})
+        originals = original_assets(mod_dir)
+        print(f"  + {mod_id} {version}: to " + ("pre-release" if originals else "release")
+              + (f" (after {newest})" if newest else " (first release)")
+              + (f"; {len(originals)} original asset(s)" if originals else ""))
+        releases.append({"id": mod_id, "version": version, "tag": tag, "previous_tag": done[newest] if newest else "",
+                         "prerelease": bool(originals), "originals": len(originals)})
     return releases, errors
 
 
@@ -116,7 +160,7 @@ def main() -> int:
                       and (not args.mod or p.name in args.mod))
     tags = git("tag", "--list").split()
     print(f"Release plan for {len(mod_dirs)} mod(s):")
-    releases, errors = plan(mod_dirs, tags)
+    releases, errors = plan(mod_dirs, tags, packaged_mods())
     for e in errors:
         print(f"::error::{e}" if os.environ.get("GITHUB_ACTIONS") else f"  ✗ {e}")
     if out := os.environ.get("GITHUB_OUTPUT"):

@@ -319,7 +319,13 @@ pub trait HorizonNativeMod {
     );
 
     /// Provide custom screen tooltips at `at` (`Game::native_screen_tooltip`, API 20).
-    fn native_screen_tooltip(&self, block: &str, data: &[i32], at: [f32; 2], lines: &mut Vec<String>);
+    fn native_screen_tooltip(
+        &self,
+        block: &str,
+        data: &[i32],
+        at: [f32; 2],
+        lines: &mut Vec<String>,
+    );
 
     /// Handle a server-side menu button click on a mod block entity (`Game::native_menu_button`, API 20).
     fn native_menu_button(&mut self, pos: [i32; 3], entity: &mut ModBlockEntity, id: i32);

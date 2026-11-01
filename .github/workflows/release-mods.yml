@@ -1,10 +1,14 @@
-# Releases every mod under mods/ (but example_mod) whose version is new: tests and packs it, signs
-# its .hmod and .hnmod with minisign, and publishes the GitHub release <id>-<version> with the four
-# files. That release is the submission: Horizon's registry reads the releases of a listed project's
-# repository within the hour and publishes the version (horizon/docs/mods.md, "Publish your mod").
+# Releases every mod under mods/ (but example_mod) whose version is new, each as its own GitHub
+# release <id>-<version> (never bundled): tests and packs it, signs its .hmod and .hnmod with
+# minisign, and publishes the four files. A full release is the submission: Horizon's registry reads
+# the releases of a listed project's repository within the hour and publishes the version
+# (horizon/docs/mods.md, "Publish your mod"). A mod that still ships any of the original mod's art or
+# sound is published as a pre-release instead, which the registry skips (.agents/release.md).
 #
-# A mod whose shipped files (content/, native/, src/) changed since its last release without a
-# version bump fails the run, on pull requests too (scripts/release_plan.py).
+# Only a mod the port process has packaged (its step 9 Package story closed in Beads, read from the
+# committed .beads/issues.jsonl) is considered. Such a mod whose shipped files (content/, native/,
+# src/) changed since its last release without a version bump fails the run, on pull requests too
+# (scripts/release_plan.py).
 #
 # Needs, once:
 #   secrets MINISIGN_SECRET_KEY  the contents of ~/.minisign/minisign.key (from `minisign -G`)
@@ -19,6 +23,7 @@ on:
     branches: [main]
     paths:
       - "mods/**"
+      - ".beads/issues.jsonl"
       - "minisign.pub"
       - "scripts/pack_mod.py"
       - "scripts/release_plan.py"
@@ -70,6 +75,8 @@ jobs:
       VERSION: ${{ matrix.version }}
       TAG: ${{ matrix.tag }}
       PREVIOUS_TAG: ${{ matrix.previous_tag }}
+      PRERELEASE: ${{ matrix.prerelease }}
+      ORIGINALS: ${{ matrix.originals }}
       OUT: mods/${{ matrix.id }}/target/horizon-mod
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -118,17 +125,25 @@ jobs:
 
       - name: Publish the release
         run: |
+          credits="$(jq -r '.credits // empty' "mods/$ID/asset-map.json" 2>/dev/null || true)"
           {
             echo "$ID $VERSION"
             echo
+            if [ "$PRERELEASE" = "true" ]; then
+              echo "**Test build.** It still contains $ORIGINALS texture/sound file(s) from the original mod, kept"
+              echo "for testing until Rekkit's own art replaces them, so it is a pre-release and Horizon's registry"
+              echo "does not list it.${credits:+ Original art: $credits.}"
+              echo
+            fi
             if [ -n "$PREVIOUS_TAG" ]; then range="$PREVIOUS_TAG..HEAD"; else range=HEAD; fi
             git log --no-merges --format='- %s (%h)' "$range" -- "mods/$ID"
           } > "$RUNNER_TEMP/notes.md"
-          gh release create "$TAG" --target "$GITHUB_SHA" --title "$ID $VERSION" \
+          pre=(); [ "$PRERELEASE" = "true" ] && pre=(--prerelease)
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "$ID $VERSION" "${pre[@]}" \
             --notes-file "$RUNNER_TEMP/notes.md" --latest=false \
             "$OUT/$ID.hmod" "$OUT/$ID.hmod.minisig" "$OUT/$ID.hnmod" "$OUT/$ID.hnmod.minisig"
           {
-            echo "### $ID $VERSION released"
+            echo "### $ID $VERSION released$([ "$PRERELEASE" = "true" ] && echo " as a pre-release ($ORIGINALS original asset(s))")"
             echo "https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
             if [ -z "$LISTED" ]; then
               echo

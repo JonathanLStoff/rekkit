@@ -55,13 +55,11 @@ Source: `planning/workflow.md` §1. If this table and `native_hooks.rs` disagree
 
 ## Logging an engine gap
 
-Never edit `horizon/`. Append to `planning/horizon-gaps.md`:
+Never edit `horizon/`. An engine gap is a Beads bug labelled `horizon` (`bd list --label horizon` lists them). A role subagent puts it in its report as a follow_up; the conductor files it:
 
-```markdown
-## <id>: <feature>
-- Needed for: spec section / registry entry
-- Missing: what the engine lacks (no hook, wrong signature, no dimension support…)
-- Proposed hook: fn native_<name>(&mut self, …)
-- Workaround: what the mod does meanwhile, or "deferred"
-- Status: open
+```json
+{"title": "horizon: <feature> for <id>", "type": "bug",
+ "why": "Needed for: spec section / registry entry. Missing: what the engine lacks (no hook, wrong signature...). Proposed hook: fn native_<name>(&mut self, ...). Workaround: what the mod does meanwhile, or deferred."}
 ```
+
+The conductor files it with `bd create "horizon: ..." -t bug -l horizon,mod:<id> -d "..."`.

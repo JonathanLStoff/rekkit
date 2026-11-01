@@ -1,10 +1,10 @@
 # Rekkit Fleet Plan
 
-How a fleet of agents (agy, Claude Code, or a single agent in any other tool) ports every Java mod in Tekkit Classic 1.2.5, Direwolf20 1.4.7 and Agrarian Skies 2 to Horizon's Rust dual-artifact format. The fleet works on **one mod at a time**, in the order of `planning/fleet-board.md`, starting with the shared `rekkit_core` crate. Each mod follows the 10-step lifecycle in [`planning/workflow.md`](../planning/workflow.md).
+How a fleet of agents (agy, Claude Code, or a single agent in any other tool) ports every Java mod in Tekkit Classic 1.2.5, Direwolf20 1.4.7 and Agrarian Skies 2 to Horizon's Rust dual-artifact format. The fleet works on **one mod at a time**, in the order of the epics in Beads (shown in `planning/fleet-board.md`), starting with the shared `rekkit_core` crate. Each mod follows the 11-step process in [`planning/workflow.md`](../planning/workflow.md) §2.
 
 Source of truth for the goal: `AGENTS.md`, `planning/workflow.md`, `planning/harness.md`, `planning/priority.md`, `planning/{tekkit,dw20,agrarianskies2}_mods.md`, `planning/mods/*.md`.
 
-**Start of every session:** follow `AGENTS.md` → *Start of every session*: check the setup (`./setup.sh --check`), tell the user word for word what they must download if a `!` line says so, then take the next board row and keep working.
+**Start of every session:** follow `AGENTS.md` → *Start of every session*: check the setup (`./setup.sh --check`), tell the user word for word what they must download if a `!` line says so, then take the next mod in Beads (`make fleet-status`, `bd ready --type epic`) and keep working.
 
 ---
 
@@ -28,42 +28,49 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 ```
  trigger ── agy (/agents → conductor) · Claude Code (/conductor) · "Follow AGENTS.md" · make fleet-next · /schedule
     │
- Conductor (pro, high) ── reads planning/fleet-board.md, takes the ONE active or next queued row
-    │
+ Conductor (pro, high) ── the ONE epic in progress in Beads, else the next ready one (bd ready)
+    │   make fleet-start MOD=<id>: claim · 11 stories · Horizon built and run alone (make horizon-status)
  branch port/<id>
-    │   Spec → Scaffold → [Domain | Content | Assets | Hooks | Tests] → Gate → Release Clerk
-    │                       (parallel inside the mod, each in its own subagent worktree)
+    │   1 Spec (from the decompiled Java) ──────────────┐
+    │   2 Scaffold → 3 Code [domain | hooks | content | tests] → 4 Check
+    │                                       5 Extract assets (beside 2-4)
+    │   6 New assets (only what the original never had) → 7 Recheck → 8 Harness (live) → 9 Package
+    │   every subagent: make fleet-task → work → report in target/fleet/inbox/ → conductor: make fleet-inbox
     │
- merge to main ── Compat Auditor: make integration-test (Phase 1 this mod + Phase 2 all mods)
+ DONE, CHECK OUT THE PROGRESS: make play MOD=<id>
     │
- YOU ── git push · minisign · GitHub Release
+ YOU ── play it · review · git push (the release workflow signs and publishes a pre-release)
     │
- next row
+ next epic
 ```
 
-**One mod at a time.** The conductor never opens a second mod while one is `active`. Parallelism happens only inside the current mod, where the five builders own disjoint paths. This keeps model quota spending predictable, keeps `main` always green, and means every later mod builds on a released, reviewed predecessor. `make fleet-next` takes a lock so two headless runs cannot overlap.
+**One mod at a time.** The conductor never starts a second epic while one is in progress. Parallelism happens only inside the current mod, where the builders own disjoint paths. This keeps model quota spending predictable, keeps `main` always green, and means every later mod builds on a reviewed predecessor. `make fleet-next` takes a lock so two headless runs cannot overlap.
+
+**Progress lives in Beads** (`bd`, `.beads/`): an epic per mod, a story per step, a feature per block, item, subsystem or missing asset, a bug per finding. Only the conductor writes to it; `make board` regenerates `planning/fleet-board.md` and `.beads/issues.jsonl` for GitHub, and `bd dolt push` (the git pre-push hook) syncs the database when a person pushes.
 
 ---
 
 ## 3. Roster
 
-| Agent | Lifecycle step | Model | Workspace | Owns (may write) |
+| Agent | Steps | Model | Reads the Java | Owns (may write) |
 |---|---|---|---|---|
-| **conductor** | orchestrates | `pro` | main checkout | `planning/fleet-board.md`, `planning/priority.md`, `planning/todo.md`, `planning/completed.md`, merges |
-| **scout** | context | `flash` | `inherit` | nothing (read-only report) |
-| **spec-writer** | 1 | `pro` | `branch` | `planning/mods/<id>.md` |
-| **scaffolder** | 2 | `flash` | `branch` | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
-| **domain-builder** | 2–3 | `flash` | `branch` | `mods/<id>/src/**` (Standard tier) |
-| **domain-builder-pro** | 2–3 | `pro` | `branch` | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
-| **content-author** | 2, 5 | `flash` | `branch` | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
-| **asset-smith** | 4–5 | `flash` | `branch` | `assets/extracted/<id>/` (gitignored), `mods/<id>/asset-map.json`, `content/assets/<id>/{textures,sounds}/**` |
-| **hook-engineer** | 2 | `pro` | `branch` | `mods/<id>/native/mixins/<id>/*.rs`; append-only `planning/horizon-gaps.md` |
-| **test-smith** | 3, 7 | `flash` | `branch` | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
-| **parity-critic** | 6 (gate) | `pro` | `inherit` | nothing (read-only verdict) |
-| **compat-auditor** | 7 (gate) | `flash` | main, after merge | nothing (runs the harness, reports) |
-| **release-clerk** | 8–10 | `flash` | `branch` | version fields in the 4 lockstep files; local commit; `make pack-mods` |
-| **scribe** | docs | `flash` | `share` | `mods/<id>/README.md`, mod table in `README.md` |
-| **Stop hook** | gate | none | — | `scripts/fleet/guard.py gate` (`make agent-gate` by hand) |
+| **conductor** | all | `pro` | yes | Beads (the only writer), `planning/fleet-board.md` (`make board`), `planning/priority.md`, `planning/todo.md`, merges |
+| **scout** | context | `flash` | yes | nothing (read-only report) |
+| **spec-writer** | 1 | `pro` | yes | `planning/mods/<id>.md`, `planning/mods/<id>.features.json` |
+| **scaffolder** | 2 | `flash` | **no** | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
+| **domain-builder** | 3 | `flash` | **no** | `mods/<id>/src/**` (Standard tier) |
+| **domain-builder-pro** | 3 | `pro` | **no** | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
+| **hook-engineer** | 3 | `pro` | **no** | `mods/<id>/native/mixins/<id>/*.rs` |
+| **content-author** | 3 | `flash` | **no** | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
+| **test-smith** | 3 | `flash` | **no** | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
+| **parity-critic** | 4, 7 | `pro` | yes | nothing (findings in its report) |
+| **asset-smith** | 5, 6 | `flash` | no need | `assets/extracted/<id>/` (gitignored), `mods/<id>/asset-map.json`, `mods/<id>/art/**`, `content/assets/<id>/{textures,sounds}/**` |
+| **compat-auditor** | 8 | `flash` | no need | nothing (runs the harness, reports) |
+| **release-clerk** | 9 | `flash` | no need | version fields in the 4 lockstep files; local commit; `make pack-mods` |
+| **scribe** | docs | `flash` | no need | `mods/<id>/README.md`, mod table in `README.md` |
+| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths, read (clean-room) guards; the stop gate; `bd prime` at session start |
+
+"Reads the Java" = may open `assets/decompiled/`. The builders marked **no** never see it (clean-room); the read guard blocks it in agy and Claude Code.
 
 Models: `pro` is the tool's strongest model, `flash` its fast one. agy: Gemini 4 Argon and 3.8 Flash (run the conductor at `/effort high`; frontmatter has no effort field, so subagents run their model's default). Claude Code: Opus and Sonnet (`make agents` writes them into `.claude/agents/`). Other tools: whatever you pick for each role.
 
@@ -71,28 +78,29 @@ agy Free/Plus plans have no Argon: set every `pro` to `flash`, then `make agents
 
 ---
 
-## 4. The pipeline for the current mod
+## 4. The process for the current mod
 
-The conductor creates branch `port/<id>` and sets the board row to `active`. An agent whose tool has no subagents plays every role below itself, in the same order.
+The 11 steps, what each needs and when it is done: [`planning/workflow.md`](../planning/workflow.md) §2. The conductor's procedure: `.agents/agents/conductor/agent.md`. In short:
 
-1. **Spec** (step 1). If `planning/mods/<id>.md` exists, spec-writer gap-checks it against the JAR and adds `Hooks needed`, `Uses from rekkit_core` and `Open questions` sections. Otherwise it writes the full spec in the structure of the existing specs.
-2. **Scaffold** (step 2). Same shape as `mods/example_mod`; version `0.1.0` in all four lockstep files; same pinned `horizon`/`mixins` revisions; path dependency `rekkit_core = { path = "../../crates/rekkit_core" }`.
-3. **Parallel build** (steps 2–5). Domain, content, assets, hooks and tests are invoked together. Their paths never overlap.
-4. **Gate** (step 6). The Stop hook runs on every finish attempt. Then parity-critic compares the diff to the spec. Findings go to the **idle owner of that file** by message.
-5. **Merge and compat** (step 7). Conductor merges `port/<id>` into main; compat-auditor runs `make integration-test DRY_RUN=1`, and the live `make integration-test` once the client works.
-6. **Release prep** (step 8). Release-clerk bumps the lockstep versions, commits `feat(<id>): …` locally, runs `make pack-mods MOD=<id>`, then stops.
-7. **Human** (steps 9–10). You push, sign with `minisign`, publish the GitHub Release.
-8. **Close out.** Scribe updates the README; conductor sets the row to `done`, moves it to `planning/completed.md`, and stops. The next mod starts on the next run.
+1. **Spec from the Java**: decompile, describe the behaviour with citations, list every block, item and subsystem (`<id>.features.json` → `make fleet-features`).
+2. **Scaffold**, then 3. **Code** in parallel (domain, hooks, content, tests), from the spec only.
+4. **Check**: `make agent-gate` + parity-critic (the Rust against the spec and the Java). Findings are bugs back to their owners until clean.
+5. **Extract assets** (beside 2–4): the original's art and sound from a client build, tagged `original`, credited.
+6. **New assets**: only what 26.3 needs and the original never had (`make fleet-gaps`), drawn in `mods/<id>/art/`, built by `make art` at the original size and palette.
+7. **Recheck**: everything again on the whole mod.
+8. **Harness (live)**: every block placed by `/setblock` and by a player, every variant, all 7 stages, no warnings. Horizon's own failures (it fails the same with no mods) are filed as `horizon` bugs and do not hold the mod up.
+9. **Package**: version, commit (with the board), pack. Then `DONE, CHECK OUT THE PROGRESS: make play MOD=<id>`.
+10. **Human**: play, review, push. 11. **Own art**: a later pass; full releases need it (`.agents/release.md`).
 
-A mod is **done** when `cargo test` passes for it, `make check-mods MOD=<id>` passes, `make e2e-mod MOD=<id>` passes (dry-run until the live client works), parity-critic says `VERDICT: pass`, and both `.hmod` and `.hnmod` are built.
+An agent whose tool has no subagents plays every role itself, in the same order, and still writes each role's report to the inbox and files it.
 
-If a needed engine feature is missing, hook-engineer logs it in `planning/horizon-gaps.md`, the feature is deferred in the spec, and the mod still finishes.
+If a needed engine feature is missing, it becomes a Beads bug labelled `horizon`, the feature is deferred in the spec, and the mod still finishes.
 
 ---
 
 ## 5. Queue
 
-`planning/fleet-board.md` holds the exact order. Summary:
+The epics' priorities and dependencies in Beads hold the exact order (`bd ready --type epic`, `planning/fleet-board.md`). Summary:
 
 ### Step 0 — Foundation (not a mod)
 
@@ -114,7 +122,7 @@ Lives at `crates/rekkit_core/`, **not** under `mods/`: `scripts/pack_mod.py` and
   - deterministic tick and RNG helpers, serde persistence helpers
 - Lifecycle steps that apply: 1, 2 (crate only), 3, 6 (`cargo test`, `cargo clippy`), 8, 9. Steps 4, 5, 7 and 10 are `—`: no content, native bundle, E2E or release artifacts.
 - Scaffolder extends `make test-mods` to also run `crates/*/Cargo.toml`.
-- Later mods that need something new in core get a small `rekkit_core` bump as its own board row, inserted before that mod.
+- Later mods that need something new in core get a `rekkit_core` story for it, done before that mod continues.
 
 ### 2–11 — Wave 1, in order
 
@@ -157,16 +165,25 @@ Minecraft Forge, CodeChickenCore, Immibis Core (libraries: port only what a cons
 
 - Agents write only the paths they own (§3). Anything else is reported to the conductor.
 - Shared files (`Makefile`, `scripts/*.py`, root `README.md`, planning ledgers, the board) change only on main, by the conductor or scribe. One exception: the `rekkit_core` scaffolder edits the `test-mods` target.
-- `horizon/` is a read-only git submodule. The paths guard (`scripts/fleet/guard.py paths`, agy and Claude Code hooks) denies writes there.
+- `horizon/` is a read-only git submodule. The paths guard (`scripts/fleet/guard.py paths`, agy and Claude Code hooks) denies writes there, and to `planning/harness-allowed-warnings.txt` (a person's list).
+- Builders never read `assets/decompiled/` (the read guard denies it); only the spec-writer, parity-critic, scout and conductor do.
+- Only the conductor writes to Beads; a role subagent that tries is told to put it in its report.
 - Mods depend on `rekkit_core` and on earlier mods by path; a mod never edits another mod's crate.
 
 ---
 
-## 7. Fleet board
+## 7. Progress: Beads and the board
 
-`planning/fleet-board.md`, owned by the conductor. `State` is `queued`, `active`, `blocked` or `done`; there is at most one `active` row. Step cells are `·` todo, `▶` in progress, `✓`, `✗` failed, `—` n/a.
+| In Beads | Is | Labels |
+|---|---|---|
+| epic | a mod (47, from the old board, in its order; blocked by the epics of the mods it needs) | `mod`, `mod:<id>`, `wave:<w>`, `tier:<t>`, `path:<path>`, `needs:<id>` |
+| story | a step of §4, under the epic, blocked by the steps before it; step 11 deferred | `step:<n>` |
+| feature | a block, item or subsystem (Code), the assets of one (Extract assets), a missing asset (New assets), a block's harness result (Harness) | `block`, `item`, `subsystem`, `asset`, `new-asset`, `harness` |
+| bug | a review finding or harness failure, under the step it blocks; an engine gap | `horizon` for engine gaps |
 
-`make fleet-next` resumes the `active` row, otherwise starts the first `queued` row whose deps are all `done`.
+- `make fleet-status [MOD=<id>]`: where a mod stands; `bd ready`: what can be worked now; `bd show <id>`: one bead and its comments.
+- `planning/fleet-board.md` is generated (`make board`): one row per mod, a column per step with its state and `done/total` of its features. Never edit it by hand.
+- A mod is in progress when its epic is `in_progress`; finished for the agents when stories 1–9 are closed (or the epic is `blocked`). `make fleet-next` resumes it, else starts the next ready epic.
 
 ---
 
@@ -175,8 +192,10 @@ Minecraft Forge, CodeChickenCore, Immibis Core (libraries: port only what a cons
 ```
 rekkit/
 ├── AGENTS.md                # every tool's instructions; CLAUDE.md and GEMINI.md import it
+├── .beads/                  # Beads (bd): the progress database; issues.jsonl is its export for GitHub
 ├── .agents/                 # the source: edit here, then `make agents`
 │   ├── fleet-plan.md
+│   ├── release.md           # pre-release while original assets remain; full release with our own
 │   ├── agents/<14 agents>/agent.md
 │   ├── skills/
 │   │   ├── extract-jar-assets/SKILL.md
@@ -187,10 +206,11 @@ rekkit/
 │   │   └── parity-checklist/SKILL.md
 │   └── hooks.json           # agy hooks
 ├── .claude/                 # generated by `make agents`: agents/, skills/, settings.json hooks
-├── planning/fleet-board.md
-├── planning/horizon-gaps.md
+├── planning/fleet-board.md          # generated from Beads (make board)
+├── planning/harness-allowed-warnings.txt   # the only accepted game-log warnings; a person edits it
 └── scripts/fleet/
-    ├── guard.py           # the guards (shell, paths), the stop gate, fleet-start/fleet-stop; agy, Claude or plain format
+    ├── guard.py           # guards (shell, paths, clean-room read), the stop gate, bd prime, fleet-start/task/stop
+    ├── beads.py           # the Beads layer: start, features, gaps, inbox, board, seed
     ├── hook.sh            # what the hooks run: finds Python, calls guard.py
     ├── sync_agents.py     # writes each tool's copy of .agents/ (make agents / agents-check)
     ├── run_next.py        # headless: one conductor run on one mod with any agent CLI, with a lock
@@ -205,7 +225,7 @@ rekkit/
 **Interactive, agy**
 1. `agy` in the repo → `/agents` → **conductor**.
 2. `/model` → Gemini 4 Argon, `/effort high`.
-3. "Continue the board." The conductor resumes the active row or starts the next one.
+3. "Continue the board." The conductor resumes the mod in progress or starts the next ready one.
 4. `Alt+J` jumps to the next approval, `Ctrl+K` approves inline, `K` kills a runaway.
 5. Talk to one worker: `@hook-engineer also guard native_update_shape on redpower_2:wire`.
 
@@ -218,14 +238,14 @@ rekkit/
 2. Nothing blocks a forbidden command in these tools: the *Rules* in `AGENTS.md` and `make agent-gate` before stopping are the guard.
 
 **A run does not stop until its mod is finished**
-- The conductor runs `make fleet-start MOD=<id>` when it takes the row. The hooks tie that session to the row, and from then on the Stop hook (agy and Claude Code) sends it back to work at every turn end until the row is finished: release prep done (steps 9–10 `▶`), `done`, or `blocked` with the reason in Notes. It also holds the agent while its subagents are still running, and while tests fail for what it wrote.
-- It lets the agent stop when you cancel it (agy `USER_CANCELED`; Claude Code never runs the hook on an interrupt), after `make fleet-stop` (any tool, any terminal), or after 10 turn ends in a row with no change to the board (stuck: it says why in its last message).
-- Headless runs (`make fleet-next`) relaunch the agent with "continue from step N" whenever it exits early, for any tool, until the row is finished, `make fleet-stop`, or 3 runs in a row change nothing.
+- The conductor runs `make fleet-start MOD=<id>` when it takes the mod. The hooks tie that session to the mod, and from then on the Stop hook (agy and Claude Code) sends it back to work at every turn end until the mod is finished in Beads: stories 1–9 closed, or the epic `blocked` with the reason as a comment. It also holds the conductor while subagents are still running or their reports are unfiled, and holds each role subagent until it has written its report.
+- It lets the agent stop when you cancel it (agy `USER_CANCELED`; Claude Code never runs the hook on an interrupt), after `make fleet-stop` (any tool, any terminal), or after 10 turn ends in a row with no change in Beads or the inbox (stuck).
+- Headless runs (`make fleet-next`) relaunch the agent with "continue from step N" whenever it exits early, for any tool, until the mod is finished, `make fleet-stop`, or 3 runs in a row change nothing in Beads.
 - Tools without hooks only have the instruction in `AGENTS.md`; run them headless to get the relaunching.
 
 **Headless, any tool**
-- `make fleet-next AGENT=agy|claude|codex` (next row), `make fleet-next AGENT=claude MOD=rekkit_core` (a specific row), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
-- `/schedule` a nightly `make fleet-next AGENT=…`. It exits early if a run is already going or the active row is waiting on you.
+- `make fleet-next AGENT=agy|claude|codex` (the mod in progress, else the next ready), `make fleet-next AGENT=claude MOD=rekkit_core` (a specific mod), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
+- `/schedule` a nightly `make fleet-next AGENT=…`. It exits early if a run is already going or the mod in progress is waiting on you.
 
 ---
 
@@ -235,7 +255,9 @@ rekkit/
 |---|---|
 | After `rekkit_core` spec | Approve what goes into core |
 | After each mod's release prep | Review diff, `git push`, `minisign -S`, publish the GitHub Release |
-| New `planning/horizon-gaps.md` entry | Upstream a Horizon PR, work around it, or defer |
+| New Beads bug labelled `horizon` (`bd list --label horizon`) | Upstream a Horizon PR, work around it, or defer |
+| `DONE, CHECK OUT THE PROGRESS` | `make play MOD=<id>`, review (generated art first), push |
+| A warning the harness should accept | Add it, with a reason, to `planning/harness-allowed-warnings.txt` |
 | Wave 4 triage done | Approve which Agrarian Skies mods get ported |
 
 Open decisions:

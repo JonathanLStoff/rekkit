@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Fetch legacy Minecraft modpack mods and extract each mod JAR's assets.
 
+Tekkit Classic comes from two places: its server pack (the MCPC/Bukkit server ports, classes only)
+into assets/tekkit/mods/, and its client build from Technic's Solder API (the original mods with
+their textures and sounds, plus the pack's configs) into assets/tekkit/client/.
+
 Only mod/coremod JARs and asset files are copied to the output tree. The
 original pack archives and download cache are kept separately under --cache.
 Uses only the Python standard library.
@@ -36,6 +40,14 @@ PACKS = {
         "kind": "zip",
         "url": "https://servers.technicpack.net/Technic/servers/tekkit/Tekkit_Server_3.1.2.zip",
         "archive": "Tekkit_Server_3.1.2.zip",
+        # The client build: every mod zip of this pack build, with Solder's MD5 for each.
+        "client_api_url": "https://solder.technicpack.net/api/modpack/tekkit/3.1.2",
+        "notes": [
+            "mods/ holds the server pack's archives: MCPC/Bukkit server ports, classes only (no art or sound).",
+            "client/ holds the client build from Technic's Solder API: client/mods/ are the original mods with "
+            "their textures and sounds at the archive root (1.2.5 layout, not assets/), client/config/ and "
+            "client/*/config/ the pack's configs, client/bin/modpack.jar the pack's base mods.",
+        ],
     },
     "direwolf20": {
         "display": "Direwolf20",
@@ -78,6 +90,14 @@ def sha1_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def md5_file(path: Path) -> str:
+    digest = hashlib.md5()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def sanitize_url(url: str) -> str:
     parts = urllib.parse.urlsplit(url)
     encoded_path = urllib.parse.quote(parts.path, safe="/:")
@@ -108,6 +128,7 @@ def download_file(
     force: bool = False,
     headers: dict[str, str] | None = None,
     expected_sha1: str | None = None,
+    expected_md5: str | None = None,
 ) -> Path:
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -115,6 +136,8 @@ def download_file(
     if destination.exists() and not force:
         if expected_sha1 and sha1_file(destination).lower() != expected_sha1.lower():
             print(f"  Cached file failed SHA-1; downloading again: {destination.name}")
+        elif expected_md5 and md5_file(destination).lower() != expected_md5.lower():
+            print(f"  Cached file failed MD5; downloading again: {destination.name}")
         else:
             print(f"  SKIP {destination} (already exists)")
             return destination
@@ -136,20 +159,22 @@ def download_file(
             context=SSL_CONTEXT,
             timeout=120,
         ) as response:
-            hasher = hashlib.sha1() if expected_sha1 else None
+            hasher = hashlib.sha1() if expected_sha1 else hashlib.md5() if expected_md5 else None
             with open(destination, "wb") as output:
                 while chunk := response.read(1024 * 1024):
                     output.write(chunk)
                     if hasher:
                         hasher.update(chunk)
 
-        if expected_sha1 and hasher:
+        expected = expected_sha1 or expected_md5
+        if expected and hasher:
             actual = hasher.hexdigest()
-            if actual.lower() != expected_sha1.lower():
+            if actual.lower() != expected.lower():
                 if destination.exists():
                     destination.unlink()
+                kind = "SHA-1" if expected_sha1 else "MD5"
                 raise RuntimeError(
-                    f"SHA-1 mismatch for {destination.name}: expected {expected_sha1}, got {actual}"
+                    f"{kind} mismatch for {destination.name}: expected {expected}, got {actual}"
                 )
 
         print(f"  OK {destination}")
@@ -224,12 +249,22 @@ def extract_mod_assets(jar_path: Path, assets_root: Path) -> int:
     return extracted
 
 
+def count_art(jar_path: Path) -> int:
+    """Textures and sounds anywhere in the archive (1.2.5 mods keep them at the root, not in assets/)."""
+    try:
+        with zipfile.ZipFile(jar_path) as jar:
+            return sum(n.lower().endswith((".png", ".ogg", ".wav")) for n in jar.namelist())
+    except zipfile.BadZipFile:
+        return 0
+
+
 def register_jar(jar_path: Path, assets_root: Path, records: list[dict[str, Any]]) -> None:
     count = extract_mod_assets(jar_path, assets_root)
     records.append({
         "archive": str(jar_path.relative_to(assets_root)),
         "sha1": sha1_file(jar_path),
         "embedded_asset_files": count,
+        "art_files": count_art(jar_path),
     })
 
 
@@ -283,7 +318,53 @@ def fetch_tekkit(pack_root: Path, cache_root: Path, force: bool) -> list[dict[st
     archive = cache_root / spec["archive"]
     download(spec["url"], archive, force=force)
     log(f"Extracting {spec['display']} {spec['version']} mod JARs/assets...")
-    return harvest_modpack_zip(archive, pack_root, force=force)
+    records = harvest_modpack_zip(archive, pack_root, force=force)
+    return records + fetch_tekkit_client(pack_root, cache_root, force)
+
+
+def fetch_tekkit_client(pack_root: Path, cache_root: Path, force: bool) -> list[dict[str, Any]]:
+    """The client build: each Solder mod zip, unpacked as the launcher would into client/."""
+    spec = PACKS["tekkit"]
+    build = json_request(spec["client_api_url"])
+    (cache_root / f"tekkit-{spec['version']}-solder.json").write_text(json.dumps(build, indent=2), encoding="utf-8")
+    mods = build.get("mods")
+    if not isinstance(mods, list) or not mods:
+        raise RuntimeError("Solder did not list any mods for the Tekkit client build")
+    log(f"Downloading the {spec['display']} {spec['version']} client build ({len(mods)} zips)...")
+    client_root = pack_root / "client"
+    records: list[dict[str, Any]] = []
+    for mod in mods:
+        url = mod.get("url")
+        if not isinstance(url, str) or not url.startswith("https://"):
+            log(f"  WARNING: no download URL for {mod.get('name')}; skipped")
+            continue
+        md5 = mod.get("md5") if isinstance(mod.get("md5"), str) else None
+        archive = download(url, cache_root / "tekkit-client" / Path(urllib.parse.urlsplit(url).path).name,
+                           force=force, expected_md5=md5)
+        with zipfile.ZipFile(archive) as zf:
+            for member in zf.infolist():
+                if member.is_dir():
+                    continue
+                target = client_root / safe_relative_path(member.filename)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                if not target.exists() or force:
+                    with zf.open(member) as src, target.open("wb") as dst:
+                        shutil.copyfileobj(src, dst)
+                if target.suffix.lower() in {".jar", ".zip"}:
+                    register_jar(target, pack_root, records)
+                    records[-1]["side"] = "client"
+    # Some mods (ComputerCraft, ccSensors, Weapon Mod...) ship unpacked as a folder under mods/.
+    for folder in sorted(p for p in (client_root / "mods").iterdir() if p.is_dir()):
+        files = [f for f in folder.rglob("*") if f.is_file()]
+        if any(f.suffix == ".class" for f in files):
+            records.append({
+                "archive": str(folder.relative_to(pack_root)),
+                "unpacked": True,
+                "embedded_asset_files": 0,
+                "art_files": sum(f.suffix.lower() in {".png", ".ogg", ".wav"} for f in files),
+                "side": "client",
+            })
+    return records
 
 
 def fetch_direwolf20(pack_root: Path, cache_root: Path, force: bool) -> list[dict[str, Any]]:
@@ -478,13 +559,16 @@ def write_metadata(pack_key: str, pack_root: Path, records: list[dict[str, Any]]
         "minecraft_version": spec["minecraft"],
         "pack_version": pack_version or spec["version"],
         "mod_jars": len(records),
+        "client_mods": sum(r.get("side") == "client" for r in records),
         "embedded_asset_files": sum(r["embedded_asset_files"] for r in records),
+        "art_files": sum(r["art_files"] for r in records),
         "mods": records,
         "notes": [
             "Only mod/coremod JARs and their embedded assets are collected.",
             "Mod archive assets are preserved per archive under mod-assets/<archive-name>/assets/ to avoid collisions.",
             "Pack-provided assets are stored under pack-assets/assets/.",
             "Minecraft's vanilla asset index/object files are not included.",
+            *spec.get("notes", []),
         ],
     }
     pack_root.mkdir(parents=True, exist_ok=True)
@@ -509,7 +593,8 @@ def run_pack(pack_key: str, output: Path, cache: Path, force: bool) -> None:
     write_metadata(pack_key, pack_root, records, pack_version)
     log(
         f"Done: {len(records)} JARs; "
-        f"{sum(r['embedded_asset_files'] for r in records)} embedded asset files -> {pack_root}"
+        f"{sum(r['embedded_asset_files'] for r in records)} embedded asset files, "
+        f"{sum(r['art_files'] for r in records)} textures/sounds in all -> {pack_root}"
     )
 
 

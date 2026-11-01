@@ -356,7 +356,10 @@ def validate_registry_toml(mod_dir: Path) -> None:
     reg_path = mod_dir / "horizon-registry.toml"
     if not reg_path.is_file():
         raise ValidationError(f"missing {reg_path}")
-    reg = tomllib.loads(reg_path.read_text(encoding="utf-8"))
+    try:
+        reg = tomllib.loads(reg_path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as exc:
+        raise ValidationError(f"{reg_path}: {exc}") from exc
     unknown = set(reg.keys()) - REGISTRY_TOML_KEYS
     if unknown:
         raise ValidationError(f"{reg_path}: unknown keys {sorted(unknown)}")
@@ -366,6 +369,121 @@ def validate_registry_toml(mod_dir: Path) -> None:
     for req in ("name", "description", "authors", "license"):
         if not reg.get(req):
             raise ValidationError(f"{reg_path}: missing required key {req!r}")
+
+
+def asset_gaps(mod_dir: Path) -> list[dict]:
+    """What Minecraft 26.3 needs for every registered block, item and effect to load and render, and
+    is missing: blockstate, block and item models, item model definition (items/*.json, new since
+    1.21.4), the textures those models name, a particle texture for models with their own elements,
+    mob effect icons, lang names and the sound files sounds.json names. A block or item drawn only
+    with vanilla models is a placeholder gap, unless asset-map.json lists it in "vanilla_ok" (it
+    borrows a vanilla look on purpose). Each gap is {path, for, why}; the New assets step makes one
+    feature per gap."""
+    mod_id = mod_dir.name
+    assets = mod_dir / "content" / "assets" / mod_id
+    data = mod_dir / "content" / "data" / mod_id / "horizon"
+    gaps: list[dict] = []
+    seen: set[str] = set()
+    try:
+        vanilla_ok = set(json.loads((mod_dir / "asset-map.json").read_text(encoding="utf-8")).get("vanilla_ok", []))
+    except (OSError, ValueError):
+        vanilla_ok = set()
+
+    def gap(path: str, owner: str, why: str) -> None:
+        if path not in seen:
+            seen.add(path)
+            gaps.append({"path": path, "for": owner, "why": why})
+
+    def load(path: Path) -> dict:
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+
+    def own(ref: str) -> str | None:
+        """The path inside this mod's namespace that `ref` (ns:path) names, or None for another namespace."""
+        ns, _, rest = ref.partition(":") if ":" in ref else ("minecraft", "", ref)
+        return rest if ns == mod_id else None
+
+    def check_model(ref: str, owner: str, depth: int = 0) -> None:
+        rel = own(ref)
+        if rel is None or depth > 8:
+            return
+        path = assets / "models" / f"{rel}.json"
+        if not path.is_file():
+            gap(f"assets/{mod_id}/models/{rel}.json", owner, "model named by a blockstate or item definition")
+            return
+        model = load(path)
+        textures = model.get("textures", {})
+        for value in textures.values():
+            if isinstance(value, str) and not value.startswith("#") and (tex := own(value)) is not None:
+                if not (assets / "textures" / f"{tex}.png").is_file():
+                    gap(f"assets/{mod_id}/textures/{tex}.png", owner, "texture named by a model")
+        if model.get("elements") and "particle" not in textures:
+            gap(f"assets/{mod_id}/models/{rel}.json#particle", owner, "a model with its own elements needs a particle texture")
+        if isinstance(model.get("parent"), str):
+            check_model(model["parent"], owner, depth + 1)
+
+    def models_in(node: object) -> list[str]:
+        found = []
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if key == "model" and isinstance(value, str):
+                    found.append(value)
+                else:
+                    found += models_in(value)
+        elif isinstance(node, list):
+            for item in node:
+                found += models_in(item)
+        return found
+
+    def check_refs(refs: list[str], name: str, kind: str, owner: str) -> None:
+        for ref in refs:
+            check_model(ref, owner)
+        if refs and all(own(r) is None for r in refs) and name not in vanilla_ok:
+            gap(f"assets/{mod_id}/textures/{kind}/{name}.png", owner,
+                "placeholder: drawn only with vanilla models (or list it in asset-map.json vanilla_ok)")
+
+    def check_item_definition(name: str, owner: str) -> None:
+        path = assets / "items" / f"{name}.json"
+        if not path.is_file():
+            gap(f"assets/{mod_id}/items/{name}.json", owner, "item model definition (required since 1.21.4)")
+            return
+        check_refs(models_in(load(path)), name, "item", owner)
+
+    lang = load(assets / "lang" / "en_us.json")
+    for block in sorted((data / "block").glob("*.json")) if (data / "block").is_dir() else []:
+        name, owner = block.stem, f"{mod_id}:{block.stem}"
+        states = assets / "blockstates" / f"{name}.json"
+        if not states.is_file():
+            gap(f"assets/{mod_id}/blockstates/{name}.json", owner, "blockstate definition")
+        else:
+            check_refs(models_in(load(states)), name, "block", owner)
+        if load(block).get("item", True) and (assets / "items" / f"{name}.json").is_file():
+            # A block's item usually shows the block model: no separate placeholder gap for it.
+            for ref in models_in(load(assets / "items" / f"{name}.json")):
+                check_model(ref, owner)
+        elif load(block).get("item", True):
+            check_item_definition(name, owner)
+        if f"block.{mod_id}.{name}" not in lang:
+            gap(f"assets/{mod_id}/lang/en_us.json#block.{mod_id}.{name}", owner, "display name")
+    for item in sorted((data / "item").glob("*.json")) if (data / "item").is_dir() else []:
+        name, owner = item.stem, f"{mod_id}:{item.stem}"
+        check_item_definition(name, owner)
+        if f"item.{mod_id}.{name}" not in lang:
+            gap(f"assets/{mod_id}/lang/en_us.json#item.{mod_id}.{name}", owner, "display name")
+    for effect in sorted((data / "mob_effect").glob("*.json")) if (data / "mob_effect").is_dir() else []:
+        name, owner = effect.stem, f"{mod_id}:{effect.stem}"
+        if not (assets / "textures" / "mob_effect" / f"{name}.png").is_file():
+            gap(f"assets/{mod_id}/textures/mob_effect/{name}.png", owner, "effect icon")
+        if f"effect.{mod_id}.{name}" not in lang:
+            gap(f"assets/{mod_id}/lang/en_us.json#effect.{mod_id}.{name}", owner, "display name")
+    for event, spec in load(assets / "sounds.json").items():
+        for sound in spec.get("sounds", []) if isinstance(spec, dict) else []:
+            ref = sound.get("name") if isinstance(sound, dict) else sound
+            if isinstance(ref, str) and (rel := own(ref)) is not None and not (assets / "sounds" / f"{rel}.ogg").is_file():
+                gap(f"assets/{mod_id}/sounds/{rel}.ogg", f"{mod_id}:{event}", "sound named by sounds.json")
+    return gaps
 
 
 def write_deterministic_zip(out_path: Path, entries: list[tuple[str, bytes]]) -> str:
@@ -425,6 +543,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate and package Rekkit mods (.hmod + .hnmod).")
     parser.add_argument("--mod", help="Specific mod ID under ./mods/ to process (default: all)")
     parser.add_argument("--check-only", action="store_true", help="Only validate manifests and files")
+    parser.add_argument("--complete", action="store_true",
+                        help="Also fail when an asset 26.3 needs is missing (the New assets step's check)")
+    parser.add_argument("--gaps", action="store_true",
+                        help="Print the missing assets as JSON (exit 1 if any) and nothing else")
     args = parser.parse_args()
 
     mods_root = Path("mods")
@@ -437,9 +559,17 @@ def main() -> int:
         print("No mods found under ./mods/", file=sys.stderr)
         return 1
 
+    if args.gaps:
+        found = [{"mod": d.name, **g} for d in mod_dirs for g in asset_gaps(d)]
+        print(json.dumps(found, indent=2))
+        return 1 if found else 0
+
     try:
         for mod_dir in mod_dirs:
             process_mod(mod_dir, pack=not args.check_only)
+            if args.complete and (found := asset_gaps(mod_dir)):
+                listed = "\n".join(f"  {g['path']} ({g['for']}: {g['why']})" for g in found)
+                raise ValidationError(f"{mod_dir.name}: {len(found)} asset(s) missing:\n{listed}")
     except ValidationError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1

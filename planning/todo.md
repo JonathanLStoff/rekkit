@@ -1,4 +1,4 @@
 - [x] Design and scaffold the 2-phase Horizon E2E Mod Integration & Compatibility Harness (`planning/harness.md`, `scripts/e2e_harness.py`, `make integration-test`).
 - [x] Prepare vanilla resources and run live `horizon-ctl` E2E world execution (`./setup.sh`; example_mod passes Phase 1 and Phase 2 live, 2026-10-31).
-- [ ] Report the loot-pool `conditions` gap upstream (`planning/horizon-gaps.md`).
+- [ ] Report the loot-pool `conditions` gap upstream (Beads: `bd list --label horizon`).
 - [ ] Stage 6 (recipes) has no `horizon-ctl` command yet; those harness steps are skipped.
