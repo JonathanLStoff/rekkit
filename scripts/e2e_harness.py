@@ -134,10 +134,21 @@ def discover_mod_spec(mod_dir: Path) -> dict:
             )
 
     loot_tables = []
+    loot_drops = {}
     loot_dir = content_dir / "data" / mod_id / "loot_table" / "blocks"
     if loot_dir.is_dir():
         for p in sorted(loot_dir.glob("*.json")):
             loot_tables.append(f"{mod_id}:blocks/{p.stem}")
+            try:
+                ldata = json.loads(p.read_text(encoding="utf-8"))
+                drops = []
+                for pool in ldata.get("pools", []):
+                    for entry in pool.get("entries", []):
+                        if entry.get("type") == "minecraft:item" and "name" in entry:
+                            drops.append(entry["name"])
+                loot_drops[f"{mod_id}:blocks/{p.stem}"] = drops
+            except Exception:
+                pass
 
     mob_effects = []
     effect_dir = content_dir / "data" / mod_id / "horizon" / "mob_effect"
@@ -153,6 +164,19 @@ def discover_mod_spec(mod_dir: Path) -> dict:
                 }
             )
 
+    creative_tabs = []
+    tab_dir = content_dir / "data" / mod_id / "horizon" / "creative_tab"
+    if tab_dir.is_dir():
+        for p in sorted(tab_dir.glob("*.json")):
+            tdata = json.loads(p.read_text(encoding="utf-8"))
+            creative_tabs.append({"id": f"{mod_id}:{p.stem}", "title": tdata.get("title", ""),
+                                  "icon": tdata.get("icon", ""), "items": tdata.get("items", [])})
+    lang_file = content_dir / "assets" / mod_id / "lang" / "en_us.json"
+    lang = json.loads(lang_file.read_text(encoding="utf-8")) if lang_file.is_file() else {}
+    for tab in creative_tabs:  # the title the tab's button shows
+        name = tab["id"].split(":", 1)[1]
+        tab["label"] = lang.get(f"itemGroup.{mod_id}.{name}") or lang.get(tab["title"]) or tab["title"]
+
     namespaces = [mod_id, *manifest.get("namespaces", [])]
     return {
         "id": mod_id,
@@ -163,9 +187,13 @@ def discover_mod_spec(mod_dir: Path) -> dict:
         "hooks_api": native_json.get("hooks"),
         "blocks": blocks,
         "items": items,
+        "creative_tabs": creative_tabs,
+        # Every item and block item, which must be in one of the mod's creative tabs.
+        "creative_expected": [b["id"] for b in blocks if b["has_item"]] + [i["id"] for i in items],
         "mob_effects": mob_effects,
         "recipes": recipes,
         "loot_tables": loot_tables,
+        "loot_drops": loot_drops,
     }
 
 
@@ -205,11 +233,13 @@ def tp_step(stage: str, x: float, y: float, z: float) -> dict:
 def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
     """Generate the 7-stage exhaustive action sequence for a mod at its assigned world plot."""
     mod_id = spec["id"]
-    base_x = plot_index * 32
+    # Each mod's plot is its own row, 16 blocks along z from the last: a plot runs 2 blocks per block
+    # along x (RedPower's ~240), so side by side on x they would overlap.
+    base_x = 0
     # A floating plot: high enough to clear terrain, cleared to air, on a stone floor the player
     # can stand on in survival.
     base_y = 100
-    base_z = 0
+    base_z = plot_index * 16
     plot_x2 = base_x + max(2 * len(spec["blocks"]), 4)
     steps: list[dict] = []
 
@@ -234,14 +264,26 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "args": {"command": f"effect clear @s {eff['id']}"},
             }
         )
+    steps.append({"stage": "1_clear_inventory", "cmd": "command", "args": {"command": "clear"}})
+    steps.append({"stage": "1_clear_sync", "cmd": "wait", "args": {"ticks": 2}})
 
     # Stage 2: World Grid Placement
     # Commands land a few ticks after they reply, so every world change is followed by a wait.
     # Row base_z: placed with /setblock. Row base_z + 4: placed by the player, then every variant.
+    # Keep the whole plot loaded: past the spawn chunks a fill or setblock lands nowhere, the floor is
+    # missing and the player falls (forceload takes at most 256 chunks a call).
+    for x0 in range(base_x - 2, plot_x2 + 1, 1024):
+        steps.append({"stage": "2_forceload_plot", "cmd": "command",
+                      "args": {"command": f"forceload add {x0} {base_z - 4} {min(x0 + 1023, plot_x2)} {base_z + 6}"}})
+    steps.append({"stage": "2_plot_loads", "cmd": "wait", "args": {"ticks": 100}})
     steps.append({"stage": "2_clear_plot", "cmd": "fill",
                   "args": {"box": [base_x - 2, base_y, base_z - 4, plot_x2, base_y + 4, base_z + 6], "block": "minecraft:air"}})
     steps.append({"stage": "2_floor_plot", "cmd": "fill",
                   "args": {"box": [base_x - 2, base_y - 1, base_z - 4, plot_x2, base_y - 1, base_z + 6], "block": "minecraft:stone"}})
+    steps.append({"stage": "2_peaceful", "cmd": "command", "args": {"command": "difficulty peaceful"}})
+    steps.append({"stage": "2_day", "cmd": "command", "args": {"command": "time set day"}})
+    steps.append({"stage": "2_no_daylight", "cmd": "command", "args": {"command": "gamerule doDaylightCycle false"}})
+    steps.append({"stage": "2_no_mob_spawning", "cmd": "command", "args": {"command": "gamerule doMobSpawning false"}})
     steps.append({"stage": "2_plot_ready", "cmd": "wait", "args": {"ticks": 10}})
     steps.append(
         tp_step("2_teleport_plot", base_x + 0.5, base_y, base_z - 2.5)
@@ -252,8 +294,19 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         bx = base_x + (idx * 2)
         bz = base_z
         steps.append(tp_step("2_stand_by_block", bx + 0.5, base_y, bz - 1.5))
+        # Ensure the local plot column has a solid stone floor even if the chunk was unloaded at world start
+        steps.append({"stage": "2_column_floor", "cmd": "fill",
+                      "args": {"box": [bx - 1, base_y - 1, base_z - 4, bx + 1, base_y - 1, base_z + 6], "block": "minecraft:stone"}})
+        steps.append({"stage": "2_column_clear", "cmd": "fill",
+                      "args": {"box": [bx - 1, base_y, base_z - 4, bx + 1, base_y + 4, base_z + 6], "block": "minecraft:air"}})
+        if b["template"] == "minecraft:wheat":
+            steps.append({"stage": "2_support_floor", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": bz, "block": "minecraft:farmland[moisture=7]"}})
+            steps.append({"stage": "2_support_water", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": bz - 1, "block": "minecraft:water"}})
+        elif "sapling" in b["template"] or b["template"] == "minecraft:poppy":
+            steps.append({"stage": "2_support_floor", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": bz, "block": "minecraft:grass_block"}})
+        block_to_place = f"{b['id']}[persistent=true]" if "leaves" in b["template"] else b["id"]
         steps.append(
-            {"stage": "2_place_mod_block", "cmd": "setblock", "args": {"x": bx, "y": base_y, "z": bz, "block": b["id"]}}
+            {"stage": "2_place_mod_block", "cmd": "setblock", "args": {"x": bx, "y": base_y, "z": bz, "block": block_to_place}}
         )
         steps.append({"stage": "2_block_lands", "cmd": "wait", "args": {"ticks": 5}})
         steps.append(
@@ -268,17 +321,23 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         if b["has_item"]:
             # As a player places it: hold the item, look at the floor in front, right-click. From 1.5
             # blocks back the ray meets the floor block's top face, so the block lands at (bx, base_y, pz).
+            floor_block = ("minecraft:farmland" if b["template"] == "minecraft:wheat"
+                           else "minecraft:grass_block" if "sapling" in b["template"] or b["template"] == "minecraft:poppy"
+                           else "minecraft:stone")
             steps += [
+                {"stage": "2_player_floor", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": pz, "block": floor_block}},
+                {"stage": "2_player_clear", "cmd": "command", "args": {"command": "clear"}},
                 {"stage": "2_player_give", "cmd": "give", "args": {"item": b["id"], "count": 1}},
-                {"stage": "2_player_sync", "cmd": "wait", "args": {"ticks": 2}},
+                {"stage": "2_player_sync", "cmd": "wait", "args": {"ticks": 6}},
                 {"stage": "2_player_select", "cmd": "select", "args": {"slot": b["id"]}},
-                tp_step("2_player_stand", bx + 0.5, base_y, pz - 1.5),
+                tp_step("2_player_stand", bx + 0.5, base_y, pz - 0.6),
                 {"stage": "2_player_settle", "cmd": "wait", "args": {"ticks": 5}},
                 {"stage": "2_player_aim", "cmd": "look_at_block", "args": {"x": bx, "y": base_y - 1, "z": pz}},
                 {"stage": "2_player_place", "cmd": "mouse", "args": {"button": "right", "action": "click"}},
                 {"stage": "2_player_lands", "cmd": "wait", "args": {"ticks": 5}},
                 {"stage": "2_player_verify", "cmd": "block", "args": {"x": bx, "y": base_y, "z": pz},
                  "expect_block": b["id"], "what": "placed by a player"},
+                {"stage": "2_player_restore_floor", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": pz, "block": "minecraft:stone"}},
             ]
         for variant in b.get("variants", []):
             steps += [
@@ -295,6 +354,9 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
 
         # Stage 3: Item-on-Block & Right-Click Interactions
         for trigger_item in ("minecraft:orange_dye", "minecraft:diamond"):
+            steps.append(tp_step("3_player_stand", bx + 0.5, base_y, bz - 1.5))
+            steps.append({"stage": "3_player_settle", "cmd": "wait", "args": {"ticks": 2}})
+            steps.append({"stage": "3_clear_trigger", "cmd": "command", "args": {"command": "clear"}})
             steps.append({"stage": "3_give_trigger", "cmd": "give", "args": {"item": trigger_item, "count": 1}})
             steps.append({"stage": "3_sync_inventory", "cmd": "wait", "args": {"ticks": 2}})
             steps.append({"stage": "3_select_trigger", "cmd": "select", "args": {"slot": trigger_item}})
@@ -302,13 +364,23 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 {"stage": "3_look_at_block", "cmd": "look_at_block", "args": {"x": bx, "y": base_y, "z": bz}}
             )
             steps.append({"stage": "3_use_item_on", "cmd": "mouse", "args": {"button": "right", "action": "click"}})
+            steps.append({"stage": "3_wait_use", "cmd": "wait", "args": {"ticks": 5}})
+            steps.append({"stage": "3_close_after_use", "cmd": "close", "args": {}})
 
         # Stage 4: Container & Custom GUI Screen Actions
+        steps.append(tp_step("4_player_stand", bx + 0.5, base_y, bz - 1.5))
+        steps.append({"stage": "4_player_settle", "cmd": "wait", "args": {"ticks": 2}})
+        steps.append({"stage": "4_clear_hand", "cmd": "command", "args": {"command": "clear"}})
         steps.append(
             {"stage": "4_open_container", "cmd": "look_at_block", "args": {"x": bx, "y": base_y, "z": bz}}
         )
         steps.append({"stage": "4_right_click_open", "cmd": "mouse", "args": {"button": "right", "action": "click"}})
         steps.append({"stage": "4_wait_ui", "cmd": "wait", "args": {"ticks": 5}})
+        if MENU_TEMPLATE.fullmatch(b["template"]):
+            # Its template opens a menu (interact.rs OpenMenu): without the mod's own menu the player
+            # gets "<block> is not available yet" and nothing opens.
+            steps.append({"stage": "4_menu_opens", "cmd": "state", "args": {}, "expect_screen": ["container", "station"],
+                          "what": f"right-clicked, a block on the {b['template']} template"})
         steps.append(
             {
                 "stage": "4_screenshot_gui",
@@ -342,11 +414,14 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         steps.append({"stage": "6_verify_recipe", "recipe_id": r["id"], "result": r["result"]})
 
     # Stage 7: Survival Block Break & Loot Drop Verification
+    steps.append({"stage": "7_clear_inventory", "cmd": "command", "args": {"command": "clear"}})
+    steps.append({"stage": "7_resistance", "cmd": "command", "args": {"command": "effect give @s resistance 99999 255 true"}})
+    steps.append({"stage": "7_saturation", "cmd": "command", "args": {"command": "effect give @s saturation 99999 255 true"}})
     steps.append({"stage": "7_gamemode_survival", "cmd": "command", "args": {"command": "gamemode survival"}})
     steps.append(
         {"stage": "7_give_pickaxe", "cmd": "give", "args": {"item": "minecraft:netherite_pickaxe", "count": 1}}
     )
-    steps.append({"stage": "7_sync_inventory", "cmd": "wait", "args": {"ticks": 2}})
+    steps.append({"stage": "7_sync_inventory", "cmd": "wait", "args": {"ticks": 10}})
     steps.append({"stage": "7_select_pickaxe", "cmd": "select", "args": {"slot": "minecraft:netherite_pickaxe"}})
     loot = set(spec["loot_tables"])
     for idx, b in enumerate(spec["blocks"]):
@@ -356,7 +431,11 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         steps.append({"stage": "7_settle", "cmd": "wait", "args": {"ticks": 5}})
         # `break` reports what the block dropped (the player may pick it up a moment later).
         brk = {"stage": "7_break_block", "cmd": "break", "args": {"x": bx, "y": base_y, "z": bz}}
-        if f"{mod_id}:blocks/{b['name']}" in loot and b["has_item"]:
+        loot_table_id = f"{mod_id}:blocks/{b['name']}"
+        expected_drops = spec.get("loot_drops", {}).get(loot_table_id, [])
+        if expected_drops:
+            brk["expect_drop"] = expected_drops[0]
+        elif loot_table_id in loot and b["has_item"]:
             brk["expect_drop"] = b["id"]
         steps.append(brk)
         steps.append({"stage": "7_drops_spawn", "cmd": "wait", "args": {"ticks": 10}})
@@ -597,8 +676,10 @@ def build_game(stage: Path, rev: str, key: str) -> Path:
     profile = "fast" if "fast" in cargo_toml.get("profile", {}) else "release"
     client_toml = tomllib.loads((stage / "crates" / "horizon-client" / "Cargo.toml").read_text(encoding="utf-8"))
     target = (E2E_ROOT / "cargo-target" / rev[:12]).resolve()
-    cmd = ["cargo", "build", "--manifest-path", stage / "Cargo.toml", "--locked", "--profile", profile,
-           "-p", "horizon-client", "--bin", "horizon-client", "--bin", "horizon-ctl"]
+    cmd = ["cargo", "build", "--manifest-path", stage / "Cargo.toml", "--locked", "--profile", profile]
+    # Each binary from the package that declares it (horizon-ctl moved to horizon-client-lib in late 2026).
+    for name in ("horizon-client", "horizon-ctl"):
+        cmd += ["-p", bin_package(stage, name), "--bin", name]
     if "mods" in client_toml.get("features", {}):
         cmd += ["--features", "horizon-client/mods"]
     env = dict(os.environ, CARGO_TARGET_DIR=str(target))
@@ -613,6 +694,21 @@ def build_game(stage: Path, rev: str, key: str) -> Path:
     for name in ("horizon-client", "horizon-ctl"):
         shutil.copy2(target / profile / f"{name}{EXE}", bins / f"{name}{EXE}")
     return bins
+
+
+def bin_package(stage: Path, name: str) -> str:
+    """The workspace package that builds binary `name` (a [[bin]] entry or src/bin/<name>)."""
+    manifests = [(m, tomllib.loads(m.read_text(encoding="utf-8"))) for m in sorted((stage / "crates").glob("*/Cargo.toml"))]
+    # A [[bin]] entry first: a package can keep a stale src/bin/<name> it no longer builds (autobins = false).
+    for manifest, data in manifests:
+        if any(b.get("name") == name for b in data.get("bin", [])):
+            return data.get("package", {}).get("name", manifest.parent.name)
+    for manifest, data in manifests:
+        package = data.get("package", {})
+        if package.get("autobins", True) and ((manifest.parent / "src" / "bin" / name).exists()
+                                              or (name == package.get("name") and (manifest.parent / "src" / "main.rs").is_file())):
+            return package.get("name", manifest.parent.name)
+    return "horizon-client"
 
 
 def have_bins(bins: Path) -> bool:
@@ -778,6 +874,87 @@ class Ctl:
         return result.returncode, reply
 
 
+# Templates whose block opens a menu on right-click (horizon-world level/interact.rs, PlayerEffect::OpenMenu);
+# signs and lecterns open theirs only in some states.
+MENU_TEMPLATE = re.compile(r"minecraft:(?:furnace|blast_furnace|smoker|(?:chipped_|damaged_)?anvil|barrel|beacon"
+                           r"|brewing_stand|cartography_table|(?:trapped_)?chest|(?:\w+_)?copper_chest|crafter"
+                           r"|crafting_table|dispenser|dropper|enchanting_table|ender_chest|grindstone|hopper|loom"
+                           r"|(?:\w+_)?shulker_box|smithing_table|stonecutter)")
+CREATIVE_DISPLAY = 900  # Horizon's first creative display slot (Creative::DISPLAY): slot-900 onward show a tab
+
+
+def stack_item(widget: dict) -> str | None:
+    stack = widget.get("stack")
+    return stack.get("item") if isinstance(stack, dict) else None
+
+
+def creative_check(ctl: "Ctl", spec: dict, shots: Path) -> tuple[list[dict], set[str]]:
+    """Open the creative inventory, go through every tab on every page after vanilla's (where mods' tabs
+    are, as NeoForge pages them) and every row of each, and return (errors, items seen). An item or
+    block item in no tab is only in the search. `ui` lists the grid's slots but not the tabs, so the
+    tabs and page buttons are clicked where Horizon draws them (creative.rs tab_position)."""
+    expected = spec["creative_expected"]
+    errors: list[dict] = []
+    seen: set[str] = set()
+    if not expected:
+        return errors, seen
+    ctl("close")
+    ctl("key", "e", "tap")
+    ctl("wait", 5)
+    _, ui = ctl("ui")
+    (shots / "creative-ui.json").write_text(json.dumps(ui, indent=1), encoding="utf-8")  # what the check saw
+
+    def grid() -> list[dict]:
+        _, ui = ctl("ui")
+        return sorted((w for w in ui.get("widgets", []) if w.get("kind") == "slot" and w.get("id", "")[5:].isdigit()
+                       and int(w["id"][5:]) >= CREATIVE_DISPLAY), key=lambda w: int(w["id"][5:]))
+
+    def read_tab() -> tuple[str, ...]:
+        """Every item of the selected tab, scrolling until no new ones show."""
+        found: list[str] = []
+        for scroll in range(200):
+            slots = grid()
+            new = [i for w in slots if (i := stack_item(w)) and i not in found]
+            if scroll and not new:
+                break
+            found += new
+            if not slots:
+                break
+            x, y, w, h = slots[len(slots) // 2]["bounds"]
+            ctl("scroll-at", x + w / 2, y + h / 2, -1)
+            ctl("wait", 1)
+        ctl("scroll-at", 0, 0, 0)
+        return tuple(found)
+
+    first = grid()
+    if ui.get("screen") != "creative" or not first:
+        errors.append({"stage": "9_creative_menu", "error": f"the inventory opened {ui.get('screen')!r} with no item grid"})
+        return errors, seen
+    # The screen's origin: the first grid slot is 9, 18 inside it (CreativeModeInventoryScreen).
+    ox, oy = first[0]["bounds"][0] - 9, first[0]["bounds"][1] - 18
+    tabs = [(ox + col * 27 + 13, oy - 28 + 16) for col in range(5)] + [(ox + col * 27 + 13, oy + 132 + 16) for col in range(5)]
+    previous = None
+    for page in range(1, 20):
+        ctl("click-at", ox + 175 + 10, oy - 50 + 10)  # the next-page button (selects the page's first tab)
+        ctl("wait", 2)
+        opened = read_tab()
+        if opened == previous:  # the last page: the button did nothing
+            break
+        previous = opened
+        seen |= set(opened)
+        for x, y in tabs[1:]:
+            ctl("click-at", x, y)
+            ctl("wait", 2)
+            seen |= set(read_tab())
+        ctl("screenshot", shots / f"creative-page-{page}.png")
+    ctl("close")
+    for item in expected:
+        if item not in seen:
+            errors.append({"stage": "9_creative_menu", "item": item,
+                           "error": f"{item} is not in any of the mods' creative tabs (only in the search)"})
+    return errors, seen
+
+
 def step_words(step: dict, shots: Path) -> list:
     a = step["args"]
     cmd = step["cmd"]
@@ -786,7 +963,10 @@ def step_words(step: dict, shots: Path) -> list:
     if cmd == "command":
         return ["command", a["command"]]
     if cmd in ("block", "look_at_block", "break", "tp"):
-        return [cmd.replace("_", "-"), a["x"], a["y"], a["z"]]
+        words = [cmd.replace("_", "-"), a["x"], a["y"], a["z"]]
+        if "face" in a:
+            words.append(a["face"])
+        return words
     if cmd == "fill":
         return ["fill", *a["box"], a["block"]]
     if cmd == "setblock":
@@ -801,6 +981,8 @@ def step_words(step: dict, shots: Path) -> list:
         return ["select", a["slot"]]
     if cmd == "close":
         return ["close"]
+    if cmd == "state":
+        return ["state"]
     if cmd == "entities":
         return ["entities", a["radius"], a["type"]]
     raise HarnessError(f"action plan uses a command the harness does not map: {cmd}")
@@ -910,13 +1092,50 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
                 problem = reply
             elif step.get("expect_block") and step["expect_block"] not in json.dumps(reply):
                 problem = f"expected block {step['expect_block']}" + (f" ({step['what']})" if step.get("what") else "")
-            elif step.get("expect_drop") and not (reply.get("drops") or {}).get(step["expect_drop"]):
-                problem = f"breaking it dropped {reply.get('drops') or 'nothing'}, expected {step['expect_drop']} (loot table)"
+            elif step.get("expect_screen") and reply.get("screen") not in step["expect_screen"]:
+                problem = (f"{step['what']}: it opened {reply.get('screen')!r}, not a menu (the player sees "
+                           "'... is not available yet'). If the original has a GUI (the spec's GUIs), give it "
+                           "that menu (native_block_entity_container); only if it has none, a template that "
+                           "opens none")
+            elif step.get("expect_drop"):
+                exp = step["expect_drop"]
+                got_drops = reply.get("drops") or {}
+                got_picked = reply.get("picked_up") or {}
+                if not (got_drops.get(exp) or got_picked.get(exp)):
+                    # Check if the drops spawn/appear in subsequent list_drops
+                    dropped_found = False
+                    for next_idx in range(i + 1, min(i + 4, len(plan))):
+                        next_step = plan[next_idx]
+                        if next_step.get("stage") == "7_list_drops":
+                            ctl("wait", 10)
+                            next_words = step_words(next_step, shots)
+                            _, next_reply = ctl(*next_words, timeout=30)
+                            ents = next_reply.get("entities") or []
+                            for ent in ents:
+                                item_id = ent.get("item", {}).get("item") if isinstance(ent.get("item"), dict) else ent.get("item")
+                                if item_id == exp:
+                                    dropped_found = True
+                                    break
+                            if not dropped_found:
+                                _, inv_reply = ctl("inventory")
+                                if (inv_reply.get("counts") or {}).get(exp):
+                                    dropped_found = True
+                            break
+                    if not dropped_found:
+                        problem = f"breaking it dropped {got_drops or got_picked or 'nothing'}, expected {exp} (loot table)"
             if problem:
                 entry["error"] = problem
                 errors.append(entry)
                 print(f"  FAIL {step['stage']}: {' '.join(map(str, words))} -> {problem}")
             results.append(entry)
+
+        for spec in specs:
+            bad, seen = creative_check(ctl, spec, shots)
+            results.append({"stage": "9_creative_menu", "mod": spec["id"], "seen": sorted(seen),
+                            "expected": len(spec["creative_expected"])})
+            for e in bad:
+                print(f"  FAIL 9_creative_menu: {e['error']}")
+            errors += bad
 
     except HarnessError as exc:
         if not errors:
@@ -957,12 +1176,18 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
     # ok; horizon: every error is one Horizon also has without mods; failed: the mod's.
     status = "ok" if not errors else "horizon" if all(e.get("horizon") for e in errors) else "failed"
     blocks = {b["id"]: "ok" for spec in specs for b in spec["blocks"]}
+    creative = {i: "ok" for spec in specs for i in spec["creative_expected"]}
     for e in errors:
         if e.get("block") in blocks:
             blocks[e["block"]] = "failed"
+        if e.get("item") in creative:
+            creative[e["item"]] = "failed"
     print(f"[{session_name}] {status.upper()}: {executed} actions run, {skipped} skipped, {len(errors)} error(s), "
           f"{sum(v == 'ok' for v in blocks.values())}/{len(blocks)} blocks ok, {time.time() - started:.0f} s")
+    if creative:
+        print(f"[{session_name}] creative menu: {sum(v == 'ok' for v in creative.values())}/{len(creative)} items found")
     return {"session": session_name, "mods": [s["id"] for s in specs], "status": status, "blocks": blocks,
+            "creative": creative,
             "steps_executed": executed, "steps_skipped": skipped, "errors": errors, "steps": results}
 
 

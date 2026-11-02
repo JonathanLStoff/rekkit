@@ -8,7 +8,7 @@ id = "example_mod"
 version = "0.1.0"
 
 [compatibility]
-horizon_revision = "38a97ea64e816e1f897d1fbc7c7ded3b0ce87f56"
+horizon_revision = "ed102e0592eded5585c610c205488f771f52ac40"
 
 # Lists the mod in Options > Mods. Hook point `mods` (native-hooks.json); the helper is compiled
 # as a local function inside Game::native_mods, so NativeMod is in scope.

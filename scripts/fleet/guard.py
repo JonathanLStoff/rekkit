@@ -61,7 +61,10 @@ STATE = MAIN / "target" / "agent-gate"
 STOP_FILE = MAIN / "target" / "fleet.stop"
 ALLOWED_WARNINGS = "planning/harness-allowed-warnings.txt"
 BLOCKED_SHELL = re.compile(
-    r"git push|gh release|minisign|git submodule|git -C horizon|git reset --hard|--force|rm -rf")
+    r"git push|gh release|minisign|git submodule|git reset --hard|--force|rm -rf"
+    # Git in the submodule only reads (grep, log, show...); anything else would change it.
+    r"|git -C \S*horizon/?\s+(?!(?:grep|log|show|diff|status|rev-parse|ls-files|ls-tree|blame|cat-file|merge-base"
+    r"|describe)\b)")
 BEADS_CMD = re.compile(r"(?<![\w./-])bd(?:\s|$)")
 HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$", re.S | re.M)
 FLEET_START = re.compile(r"(?:make\s+fleet-start\s+MOD=|guard\.py\s+claim\s+)['\"]?([a-z0-9_]+)")

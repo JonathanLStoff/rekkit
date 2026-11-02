@@ -19,7 +19,7 @@ Rekkit ports Java Minecraft mods (Tekkit Classic 1.2.5, Direwolf20 1.4.7, Agrari
 - Never edit `horizon/` (git submodule). An engine gap is a Beads bug labelled `horizon` (subagents: a follow_up in the report).
 - Every native hook checks its own namespace (`<id>:`) before acting.
 - Only edit paths you own (your role file says which). Report anything else to the conductor.
-- Complete = steps 1–9 closed: `make agent-gate MOD=<id>`, `make check-mods MOD=<id> COMPLETE=1`, parity-critic's Check and Recheck, and the live harness (`make e2e-mod MOD=<id>` and `make e2e-all-mods`: every block placed by `/setblock` and by a player in every variant, no WARN/ERROR beyond `planning/harness-allowed-warnings.txt`, which only a person edits).
+- Complete = steps 1–9 closed: `make agent-gate MOD=<id>`, `make check-mods MOD=<id> COMPLETE=1`, parity-critic's Check and Recheck, and the live harness (`make e2e-mod MOD=<id>` and `make e2e-all-mods`: every block placed by `/setblock` and by a player in every variant, every item found in the mod's creative tabs, no WARN/ERROR beyond `planning/harness-allowed-warnings.txt`, which only a person edits).
 - New art only for what the original never had (`make fleet-gaps`): SVG or `.pixels` in `mods/<id>/art/`, built by `make art MOD=<id>` at the original's size and palette.
 - The Makefile picks Python 3.11+ itself; outside make use `$(scripts/fleet/python.sh)`.
 - Never `git push`, `gh release`, `minisign`, change the submodule, `git reset --hard`, `--force` or `rm -rf`. A human does those (the hooks in agy and Claude Code block them; elsewhere it is on you). Releases are signed and published by `.github/workflows/release-mods.yml` after a human pushes.

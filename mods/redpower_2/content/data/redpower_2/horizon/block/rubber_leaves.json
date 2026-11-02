@@ -3,7 +3,7 @@
   "properties": {
     "hardness": 0.2,
     "explosion_resistance": 1.0,
-    "sounds": "minecraft:grass"
+    "sounds": "minecraft:oak_leaves"
   },
   "item": true
 }

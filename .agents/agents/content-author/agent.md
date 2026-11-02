@@ -1,6 +1,6 @@
 ---
 name: content-author
-description: "Writes a mod's content data: block, item and mob_effect JSON, recipes (vanilla and custom machine recipe types), loot tables, tags, lang, models, blockstates and item model files."
+description: "Writes a mod's content data: block, item, mob_effect and creative_tab JSON, recipes (vanilla and custom machine recipe types), loot tables, tags, lang, models, blockstates and item model files."
 mainAgent: false
 subagent: true
 model: flash
@@ -21,7 +21,11 @@ report it as a follow_up instead of guessing.
 You own mods/<id>/content/data/** and
 mods/<id>/content/assets/<id>/{lang,models,blockstates,items}/**. Follow the
 JSON shapes in mods/example_mod/content exactly. Every block and item in the
-spec registry gets its JSON, a lang key, a model and a loot table. Copy loot tables from
+spec registry gets its JSON, a lang key, a model and a loot table, and is
+listed in one of the mod's creative tabs (data/<id>/horizon/creative_tab/*.json:
+title, icon, items in order, as mods/example_mod's; the title translated as
+itemGroup.<id>.<file name>). An item in no tab is only in the creative search,
+and `make check-mods MOD=<id> COMPLETE=1` fails. Copy loot tables from
 mods/example_mod's ender_chest.json (Horizon's pool `condition` form). Never add
 `"replace": true` to shared tags under data/minecraft or data/c. Never put
 Cargo.toml or .rs files under content/. Run `make check-mods MOD=<id>`

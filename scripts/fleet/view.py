@@ -21,6 +21,7 @@ import html
 import http.server
 import os
 import sys
+import threading
 import time
 import webbrowser
 
@@ -28,7 +29,7 @@ import beads
 import resume
 
 OUT = beads.STATE_DIR / "board.html"
-PORT = 8765
+PORT = int(os.environ.get("BOARD_PORT", "8765"))  # BOARD_PORT=<n> make board-live for another port
 DONE = ("closed",)
 ORDER = {"in_progress": 0, "blocked": 1, "open": 2, "deferred": 3, "closed": 4}
 
@@ -212,29 +213,63 @@ def page(live: bool) -> str:
             f'{"".join(rows)}</table>{hz}</main></body></html>')
 
 
+REBUILD = 15  # seconds between rebuilds of the live page (one takes a few seconds of bd calls)
+
+
 def serve() -> None:
+    """The page live: a background thread rebuilds it from Beads every REBUILD seconds and requests get
+    the latest copy at once, so a slow rebuild never keeps the browser waiting (or hanging up)."""
+    latest = {"body": b"", "code": 200}
+    ready = threading.Event()
+
+    def rebuild() -> None:
+        while True:
+            try:
+                latest["body"], latest["code"] = page(live=True).encode(), 200
+            except beads.BeadsError as exc:
+                latest["body"], latest["code"] = f"<pre>[beads] {esc(exc)}</pre>".encode(), 500
+            except Exception as exc:  # keep serving the last good page; show what broke
+                latest["body"], latest["code"] = f"<pre>{esc(type(exc).__name__)}: {esc(exc)}</pre>".encode(), 500
+            ready.set()
+            time.sleep(REBUILD)
+
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_GET(self) -> None:  # noqa: N802 (http.server's name)
+            if self.path != "/" and not self.path.startswith("/?"):
+                self.send_response(204)  # favicon.ico and the like: nothing to build
+                self.end_headers()
+                return
+            ready.wait(timeout=60)
+            body = latest["body"] or b"<meta http-equiv='refresh' content='2'>Reading Beads..."
             try:
-                body, code = page(live=True).encode(), 200
-            except beads.BeadsError as exc:
-                body, code = f"<pre>{esc(exc)}</pre>".encode(), 500
-            self.send_response(code)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(body)
+                self.send_response(latest["code"])
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(body)
+            except (BrokenPipeError, ConnectionResetError):
+                pass  # the browser left (reload, closed tab) before the page arrived
 
         def log_message(self, *args) -> None:
             pass
 
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    try:
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    except OSError:
+        sys.exit(f"Port {PORT} is busy: another `make board-live` is running (open http://127.0.0.1:{PORT}), "
+                 "or stop whatever uses it.")
+    server.daemon_threads = True
+    threading.Thread(target=rebuild, daemon=True).start()
     url = f"http://127.0.0.1:{PORT}"
-    print(f"The board is live at {url} (Ctrl+C stops).", flush=True)
+    print(f"The board is live at {url}, rebuilt every {REBUILD} s (Ctrl+C stops).", flush=True)
     webbrowser.open(url)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
+    finally:
+        server.server_close()
 
 
 def main() -> int:

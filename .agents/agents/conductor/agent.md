@@ -109,7 +109,9 @@ The only commands you need (never run `bd ... --help`):
 - Prefer several short subagents (one per subsystem or group of beads) to one
   that runs a whole step: everything a subagent reads stays in its context.
 - While subagents work, end your turn: the stop hook waits for their reports.
-  Do not send status messages or read files to pass the time.
+  Do not send status messages, read files or set short timers to pass the
+  time: each check is a whole turn paid again. A long command (`make
+  e2e-mod` takes 20-40 min) runs in the background; wait for it to finish.
 - Clean-room: only `spec-writer`, `parity-critic` and `scout` read
   assets/decompiled/. Builders work from the spec; when it is unclear they
   report it and the spec-writer answers in the spec.

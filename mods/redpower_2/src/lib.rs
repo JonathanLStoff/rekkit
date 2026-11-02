@@ -2138,34 +2138,48 @@ impl HorizonNativeMod for RedPower2Mod {
         if container.is_some() || !Self::owns_id(block) {
             return;
         }
-        match block {
-            Self::BLOCK_ALLOY_FURNACE => {
-                let inputs: Vec<usize> = (0..9).collect();
-                let outputs = vec![10];
-                *container = Some(ModContainer {
-                    slots: AlloyFurnaceState::SLOT_COUNT,
-                    menu: Some("generic_9x3".into()),
-                    inputs: inputs.clone(),
-                    outputs: outputs.clone(),
-                    faces: [
-                        outputs,
-                        inputs.clone(),
-                        vec![9],
-                        vec![9],
-                        inputs.clone(),
-                        inputs,
-                    ],
-                });
+        let make_container = |slots: usize, menu: &'static str| {
+            let s: Vec<usize> = (0..slots).collect();
+            ModContainer {
+                slots,
+                menu: Some(menu.into()),
+                inputs: s.clone(),
+                outputs: s.clone(),
+                faces: std::array::from_fn(|_| s.clone()),
             }
-            Self::BLOCK_BUFFER | "redpower_2:filter" | "redpower_2:deployer" => {
-                let slots: Vec<usize> = (0..9).collect();
-                *container = Some(ModContainer {
-                    slots: 9,
-                    menu: Some("generic_3x3".into()),
-                    inputs: slots.clone(),
-                    outputs: slots.clone(),
-                    faces: std::array::from_fn(|_| slots.clone()),
-                });
+        };
+        match block {
+            Self::BLOCK_BUFFER
+            | "redpower_2:deployer"
+            | "redpower_2:ejector"
+            | "redpower_2:filter"
+            | "redpower_2:item_detector"
+            | "redpower_2:relay"
+            | "redpower_2:retriever"
+            | "redpower_2:sortron"
+            | "redpower_2:transposer"
+            | "redpower_2:battery_box" => {
+                *container = Some(make_container(9, "minecraft:generic_3x3"));
+            }
+            Self::BLOCK_ALLOY_FURNACE
+            | "redpower_2:blulectric_alloy_furnace"
+            | "redpower_2:buffer_chest"
+            | "redpower_2:manager"
+            | "redpower_2:project_table"
+            | "redpower_2:regulator" => {
+                *container = Some(make_container(27, "minecraft:generic_9x3"));
+            }
+            "redpower_2:blulectric_furnace" => {
+                *container = Some(make_container(3, "minecraft:furnace"));
+            }
+            "redpower_2:charging_bench" => {
+                *container = Some(make_container(18, "minecraft:generic_9x2"));
+            }
+            "redpower_2:assembler" => {
+                *container = Some(make_container(36, "minecraft:generic_9x4"));
+            }
+            "redpower_2:sorting_machine" => {
+                *container = Some(make_container(45, "minecraft:generic_9x5"));
             }
             _ => {}
         }
@@ -2177,11 +2191,18 @@ impl HorizonNativeMod for RedPower2Mod {
         }
         if entity.id == Self::BLOCK_ALLOY_FURNACE {
             let state = self.alloy_furnaces.entry(pos).or_default();
-            if entity.items.len() == AlloyFurnaceState::SLOT_COUNT {
-                state.inventory.slots = entity.items.clone();
+            if entity.items.len() >= AlloyFurnaceState::SLOT_COUNT {
+                for (i, slot) in state.inventory.slots.iter_mut().enumerate() {
+                    *slot = entity.items[i].clone();
+                }
             }
             state.tick(false);
-            entity.items = state.inventory.slots.clone();
+            if entity.items.len() < AlloyFurnaceState::SLOT_COUNT {
+                entity.items.resize(AlloyFurnaceState::SLOT_COUNT, None);
+            }
+            for (i, slot) in state.inventory.slots.iter().enumerate() {
+                entity.items[i] = slot.clone();
+            }
             entity.data = vec![
                 state.smelt_timer.elapsed as i32,
                 state.burn_ticks_remaining as i32,
@@ -2760,5 +2781,117 @@ mod tests {
             cpu.accumulate_tick();
         }
         assert_eq!(cpu.cycle_accumulator, Cpu6502::MAX_BURST_CYCLES); // Capped at 100,000
+    }
+
+    #[test]
+    fn test_native_block_entity_containers() {
+        let rp = RedPower2Mod::default();
+
+        let nine_slot_blocks = [
+            "redpower_2:buffer",
+            "redpower_2:deployer",
+            "redpower_2:ejector",
+            "redpower_2:filter",
+            "redpower_2:item_detector",
+            "redpower_2:relay",
+            "redpower_2:retriever",
+            "redpower_2:sortron",
+            "redpower_2:transposer",
+            "redpower_2:battery_box",
+        ];
+        for id in nine_slot_blocks {
+            let mut container = None;
+            rp.native_block_entity_container(id, &mut container);
+            let c = container.unwrap_or_else(|| panic!("expected container for {id}"));
+            assert_eq!(c.slots, 9, "wrong slot count for {id}");
+            assert_eq!(
+                c.menu.as_deref(),
+                Some("minecraft:generic_3x3"),
+                "wrong menu for {id}"
+            );
+            assert_eq!(c.inputs, (0..9).collect::<Vec<_>>());
+            assert_eq!(c.outputs, (0..9).collect::<Vec<_>>());
+            for face in &c.faces {
+                assert_eq!(face, &(0..9).collect::<Vec<_>>());
+            }
+        }
+
+        let twenty_seven_slot_blocks = [
+            "redpower_2:alloy_furnace",
+            "redpower_2:blulectric_alloy_furnace",
+            "redpower_2:buffer_chest",
+            "redpower_2:manager",
+            "redpower_2:project_table",
+            "redpower_2:regulator",
+        ];
+        for id in twenty_seven_slot_blocks {
+            let mut container = None;
+            rp.native_block_entity_container(id, &mut container);
+            let c = container.unwrap_or_else(|| panic!("expected container for {id}"));
+            assert_eq!(c.slots, 27, "wrong slot count for {id}");
+            assert_eq!(
+                c.menu.as_deref(),
+                Some("minecraft:generic_9x3"),
+                "wrong menu for {id}"
+            );
+            assert_eq!(c.inputs, (0..27).collect::<Vec<_>>());
+            assert_eq!(c.outputs, (0..27).collect::<Vec<_>>());
+            for face in &c.faces {
+                assert_eq!(face, &(0..27).collect::<Vec<_>>());
+            }
+        }
+
+        let mut furnace = None;
+        rp.native_block_entity_container("redpower_2:blulectric_furnace", &mut furnace);
+        let c = furnace.expect("blulectric_furnace container");
+        assert_eq!(c.slots, 3);
+        assert_eq!(c.menu.as_deref(), Some("minecraft:furnace"));
+        assert_eq!(c.inputs, (0..3).collect::<Vec<_>>());
+        assert_eq!(c.outputs, (0..3).collect::<Vec<_>>());
+
+        let mut charging = None;
+        rp.native_block_entity_container("redpower_2:charging_bench", &mut charging);
+        let c = charging.expect("charging_bench container");
+        assert_eq!(c.slots, 18);
+        assert_eq!(c.menu.as_deref(), Some("minecraft:generic_9x2"));
+        assert_eq!(c.inputs, (0..18).collect::<Vec<_>>());
+        assert_eq!(c.outputs, (0..18).collect::<Vec<_>>());
+
+        let mut assembler = None;
+        rp.native_block_entity_container("redpower_2:assembler", &mut assembler);
+        let c = assembler.expect("assembler container");
+        assert_eq!(c.slots, 36);
+        assert_eq!(c.menu.as_deref(), Some("minecraft:generic_9x4"));
+        assert_eq!(c.inputs, (0..36).collect::<Vec<_>>());
+        assert_eq!(c.outputs, (0..36).collect::<Vec<_>>());
+
+        let mut sorting = None;
+        rp.native_block_entity_container("redpower_2:sorting_machine", &mut sorting);
+        let c = sorting.expect("sorting_machine container");
+        assert_eq!(c.slots, 45);
+        assert_eq!(c.menu.as_deref(), Some("minecraft:generic_9x5"));
+        assert_eq!(c.inputs, (0..45).collect::<Vec<_>>());
+        assert_eq!(c.outputs, (0..45).collect::<Vec<_>>());
+
+        // Foreign block ID
+        let mut foreign = None;
+        rp.native_block_entity_container("minecraft:chest", &mut foreign);
+        assert!(foreign.is_none());
+
+        // Non-container RP2 block
+        let mut non_container = None;
+        rp.native_block_entity_container("redpower_2:cpu", &mut non_container);
+        assert!(non_container.is_none());
+
+        // Pre-existing container not overwritten
+        let mut pre_existing = Some(ModContainer {
+            slots: 42,
+            menu: Some("custom".into()),
+            inputs: Vec::new(),
+            outputs: Vec::new(),
+            faces: Default::default(),
+        });
+        rp.native_block_entity_container("redpower_2:buffer", &mut pre_existing);
+        assert_eq!(pre_existing.unwrap().slots, 42);
     }
 }

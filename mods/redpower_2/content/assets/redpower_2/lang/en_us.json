@@ -218,5 +218,6 @@
   "item.redpower_2.wood_sickle": "Wood Sickle",
   "item.redpower_2.wood_turbine": "Wooden Wind Turbine",
   "item.redpower_2.wood_windmill": "Wooden Windmill",
-  "item.redpower_2.wool_card": "Wool Card"
+  "item.redpower_2.wool_card": "Wool Card",
+  "itemGroup.redpower_2.redpower_2": "RedPower 2"
 }

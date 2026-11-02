@@ -12,6 +12,7 @@ Compare the diff on `port/<id>` against `planning/mods/<id>.md`, `AGENTS.md` and
 
 - [ ] Every block in the spec registry has `content/data/<id>/horizon/block/<name>.json`, a blockstate, a model, a lang key, a loot table, and a texture (or an `UNVERIFIED` entry in `asset-map.json`).
 - [ ] Every item has its item JSON, item model, lang key and texture.
+- [ ] Every item and block item is in one of the mod's creative tabs (`creative_tab/*.json`), and each tab's title is translated.
 - [ ] A mod in several packs is merged: every feature of every version is in the spec and the port; a shared feature follows the newest version (behaviour, numbers, art); an older-only feature is kept.
 - [ ] Mineable tags exist for blocks that need a tool.
 

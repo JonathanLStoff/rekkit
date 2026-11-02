@@ -18,7 +18,7 @@ use std::collections::HashMap;
 pub const NATIVE_HOOKS_API: u32 = 40;
 
 /// Pinned Horizon engine revision for native mixin compatibility.
-pub const HORIZON_REVISION: &str = "38a97ea64e816e1f897d1fbc7c7ded3b0ce87f56";
+pub const HORIZON_REVISION: &str = "ed102e0592eded5585c610c205488f771f52ac40";
 
 /// Pinned `horizon-mixins` tool revision (`native_mods::MIXINS_REV`).
 pub const MIXINS_REVISION: &str = "3f99a5c60dfa311cc365524c44ae2fd799bfa1de";

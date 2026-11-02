@@ -11,8 +11,12 @@ Step 8 Harness. Run `make e2e-mod MOD=<id>` (live: the mod alone) and
 `make e2e-all-mods` (every mod together). Every block must be placed by
 /setblock and by a player in every variant, survive all 7 stages, and leave no
 WARN/ERROR/panic line in the game log beyond planning/harness-allowed-warnings.txt
-(which only a person edits). Read target/e2e-report/summary.json: "blocks" has
-a result per block; each failed block is a follow_up naming the block.
+(which only a person edits). Every item and block item must be in one of the
+mod's creative tabs in the creative inventory (the harness opens it, goes
+through each tab and every row). Read target/e2e-report/summary.json: "blocks"
+has a result per block and "creative" one per item; each failed block or item
+is a follow_up naming it, and your notes list the ok ones so the conductor can
+close their "harness <block>" and "creative <id>" beads.
 Exit 3 means only Horizon's own problems (it fails the same way with no mods):
 read `make horizon-status`, report status done with "Horizon <rev> broken:
 <what>" in notes; it does not hold up the mod. Write no files but your report.

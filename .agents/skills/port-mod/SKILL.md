@@ -20,7 +20,7 @@ mods/<id>/
 ├── tests/e2e_actions.json             # harness action descriptors
 ├── content/                           # .hmod: data and assets only, never Cargo.toml or .rs
 │   ├── horizon-mod.toml               # api = "0.2", side = "both", capabilities = ["registries"]
-│   ├── data/<id>/horizon/{block,item,mob_effect}/*.json
+│   ├── data/<id>/horizon/{block,item,mob_effect,creative_tab}/*.json
 │   ├── data/<id>/{recipe,loot_table/blocks}/*.json
 │   └── assets/<id>/{blockstates,items,lang,models,textures,sounds}/
 └── native/                            # .hnmod

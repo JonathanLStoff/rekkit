@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
+    "redpower_2:buffer",
+    "redpower_2:buffer_chest",
+    "redpower_2:charging_bench",
+    "redpower_2:frame",
+    "redpower_2:frame_redstone_tube",
+    "redpower_2:frame_tube",
+    "redpower_2:project_table",
     "redpower_2:rubber_log"
   ]
 }

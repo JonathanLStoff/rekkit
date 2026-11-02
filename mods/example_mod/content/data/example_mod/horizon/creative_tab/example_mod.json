@@ -1,0 +1,5 @@
+{
+  "title": "itemGroup.example_mod.example_mod",
+  "icon": "example_mod:ender_chest",
+  "items": ["example_mod:ender_chest", "example_mod:ender_pouch"]
+}

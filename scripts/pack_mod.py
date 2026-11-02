@@ -17,6 +17,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import sys
 import tomllib
 import zipfile
@@ -55,6 +56,10 @@ BLOCK_PROP_KEYS = {
 }
 ITEM_FILE_KEYS = {"template", "max_stack_size", "rarity", "crafting_remainder", "components"}
 MOB_EFFECT_KEYS = {"category", "color"}
+CREATIVE_TAB_KEYS = {"title", "icon", "items"}
+# Content mods' own creative tabs (data/<id>/horizon/creative_tab/) arrived in this Horizon commit.
+CREATIVE_TABS_SINCE = "74ff545e60fbda2377255effa9c52fc0c346ec5d"
+HORIZON_GIT = Path(__file__).resolve().parents[1] / "horizon"
 EFFECT_CATEGORIES = {"beneficial", "harmful", "neutral"}
 RARITIES = {"common", "uncommon", "rare", "epic"}
 ITEM_ID_RE = re.compile(r"^[a-z0-9_.-]+:[a-z0-9_./-]+$")
@@ -151,6 +156,29 @@ def validate_item_json(rel_path: str, data: dict) -> str | None:
     return remainder
 
 
+def horizon_has(commit: str, pin: str | None) -> bool | None:
+    """Whether Horizon at `pin` includes `commit` (from the horizon submodule); None when it cannot tell."""
+    if not pin or not (HORIZON_GIT / ".git").exists():
+        return None
+    r = subprocess.run(["git", "merge-base", "--is-ancestor", commit, pin], cwd=HORIZON_GIT, capture_output=True)
+    return {0: True, 1: False}.get(r.returncode)
+
+
+def validate_creative_tab_json(rel_path: str, data: dict) -> list[str]:
+    """A creative tab as Horizon reads it: title, icon and items, nothing else. Returns its items."""
+    unknown = set(data.keys()) - CREATIVE_TAB_KEYS
+    if unknown:
+        raise ValidationError(f"{rel_path}: unknown keys {sorted(unknown)} (a tab has title, icon, items)")
+    if not isinstance(data.get("title"), str) or not data["title"]:
+        raise ValidationError(f"{rel_path}: title must be text or a lang key")
+    items = data.get("items")
+    if not isinstance(data.get("icon"), str) or not ITEM_ID_RE.match(data["icon"]):
+        raise ValidationError(f"{rel_path}: icon must be an item id (namespace:path)")
+    if not isinstance(items, list) or not items or not all(isinstance(i, str) and ITEM_ID_RE.match(i) for i in items):
+        raise ValidationError(f"{rel_path}: items must be a non-empty list of item ids (namespace:path)")
+    return items
+
+
 def validate_mob_effect_json(rel_path: str, data: dict) -> None:
     unknown = set(data.keys()) - MOB_EFFECT_KEYS
     if unknown:
@@ -163,7 +191,8 @@ def validate_mob_effect_json(rel_path: str, data: dict) -> None:
         raise ValidationError(f"{rel_path}: color must be 0..=16777215 (0xFFFFFF)")
 
 
-def validate_content_dir(mod_id: str, content_dir: Path) -> tuple[str, dict, list[tuple[str, bytes]]]:
+def validate_content_dir(mod_id: str, content_dir: Path,
+                         horizon_pin: str | None = None) -> tuple[str, dict, list[tuple[str, bytes]]]:
     if (content_dir / "Cargo.toml").exists():
         raise ValidationError(
             f"{content_dir}/Cargo.toml exists: cargo-horizon-mod refuses folders with Cargo.toml (code is native)"
@@ -219,6 +248,7 @@ def validate_content_dir(mod_id: str, content_dir: Path) -> tuple[str, dict, lis
     declared_ids: set[str] = set()
     declared_effects: set[str] = set()
     remainders: list[tuple[str, str]] = []
+    tab_items: list[tuple[str, str]] = []
 
     for rel, raw in files:
         parts = rel.split("/", 2)
@@ -256,11 +286,25 @@ def validate_content_dir(mod_id: str, content_dir: Path) -> tuple[str, dict, lis
                 effect_id = f"{mod_id}:{name}"
                 validate_mob_effect_json(rel, json.loads(raw.decode("utf-8")))
                 declared_effects.add(effect_id)
+            elif sub.startswith("creative_tab/") and sub.endswith(".json"):
+                if "/" in sub.removeprefix("creative_tab/"):
+                    raise ValidationError(f"{rel}: nested creative tabs are not allowed")
+                if horizon_has(CREATIVE_TABS_SINCE, horizon_pin) is False:
+                    raise ValidationError(
+                        f"{rel}: content mods' creative tabs need Horizon {CREATIVE_TABS_SINCE[:9]} (2026-10-30) or "
+                        f"later; this mod pins {horizon_pin[:12]}. Repin native/horizon-native.json and the mixin "
+                        "bundle's horizon_revision to a newer Horizon.")
+                for item in validate_creative_tab_json(rel, json.loads(raw.decode("utf-8"))):
+                    tab_items.append((rel, item))
             else:
                 raise ValidationError(
-                    f"{rel}: data/{mod_id}/horizon/ holds block/*.json, item/*.json, and mob_effect/*.json only"
+                    f"{rel}: data/{mod_id}/horizon/ holds block/, item/, mob_effect/ and creative_tab/*.json only"
                 )
 
+    for rel, item in tab_items:
+        # Horizon silently leaves out items nobody registers: a typo would just vanish from the tab.
+        if item.startswith(f"{mod_id}:") and item not in declared_ids:
+            raise ValidationError(f"{rel}: {item} is not one of this mod's items or block items")
     for rel, rem in remainders:
         if not VANILLA_ID_RE.match(rem) and rem not in declared_ids:
             raise ValidationError(
@@ -375,7 +419,8 @@ def asset_gaps(mod_dir: Path) -> list[dict]:
     """What Minecraft 26.3 needs for every registered block, item and effect to load and render, and
     is missing: blockstate, block and item models, item model definition (items/*.json, new since
     1.21.4), the textures those models name, a particle texture for models with their own elements,
-    mob effect icons, lang names and the sound files sounds.json names. A block or item drawn only
+    mob effect icons, lang names, the sound files sounds.json names, and every item and block item in one
+    of the mod's creative tabs (with its title translated). A block or item drawn only
     with vanilla models is a placeholder gap, unless asset-map.json lists it in "vanilla_ok" (it
     borrows a vanilla look on purpose). Each gap is {path, for, why}; the New assets step makes one
     feature per gap."""
@@ -472,6 +517,22 @@ def asset_gaps(mod_dir: Path) -> list[dict]:
         check_item_definition(name, owner)
         if f"item.{mod_id}.{name}" not in lang:
             gap(f"assets/{mod_id}/lang/en_us.json#item.{mod_id}.{name}", owner, "display name")
+    # Every item and block item in one of the mod's creative tabs (without one, an item is only in search).
+    in_tabs: set[str] = set()
+    for tab in sorted((data / "creative_tab").glob("*.json")) if (data / "creative_tab").is_dir() else []:
+        spec = load(tab)
+        in_tabs |= {i for i in spec.get("items", []) if isinstance(i, str)}
+        title = spec.get("title", "")
+        key = f"itemGroup.{mod_id}.{tab.stem}"
+        if key not in lang and (not isinstance(title, str) or "." in title and title not in lang):
+            gap(f"assets/{mod_id}/lang/en_us.json#{key}", f"{mod_id}:{tab.stem}", "creative tab title")
+    tab_file = f"data/{mod_id}/horizon/creative_tab/{mod_id}.json"
+    for kind in ("block", "item"):
+        for f in sorted((data / kind).glob("*.json")) if (data / kind).is_dir() else []:
+            if kind == "block" and not load(f).get("item", True):
+                continue
+            if f"{mod_id}:{f.stem}" not in in_tabs:
+                gap(f"{tab_file}#{mod_id}:{f.stem}", f"{mod_id}:{f.stem}", "not in any creative tab of the mod")
     for effect in sorted((data / "mob_effect").glob("*.json")) if (data / "mob_effect").is_dir() else []:
         name, owner = effect.stem, f"{mod_id}:{effect.stem}"
         if not (assets / "textures" / "mob_effect" / f"{name}.png").is_file():
@@ -508,7 +569,11 @@ def process_mod(mod_dir: Path, pack: bool) -> None:
     cargo_version = cargo_toml.get("package", {}).get("version")
 
     validate_registry_toml(mod_dir)
-    manifest_text, content_manifest, content_files = validate_content_dir(mod_id, mod_dir / "content")
+    try:
+        pin = json.loads((mod_dir / "native" / "horizon-native.json").read_text(encoding="utf-8")).get("horizon")
+    except (OSError, ValueError):
+        pin = None
+    manifest_text, content_manifest, content_files = validate_content_dir(mod_id, mod_dir / "content", pin)
     native_bytes, native_manifest, native_files = validate_native_dir(
         mod_id, mod_dir / "native", mod_dir / "src"
     )

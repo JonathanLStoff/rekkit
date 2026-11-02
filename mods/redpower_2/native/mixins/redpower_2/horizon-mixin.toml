@@ -4,10 +4,10 @@
 
 [mod]
 id = "redpower_2"
-version = "0.1.1"
+version = "0.1.2"
 
 [compatibility]
-horizon_revision = "38a97ea64e816e1f897d1fbc7c7ded3b0ce87f56"
+horizon_revision = "ed102e0592eded5585c610c205488f771f52ac40"
 
 [[injection]]
 id = "list-in-options"
@@ -15,3 +15,23 @@ target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
 kind = "HEAD"
 helper = "list_mod.rs"
 bindings = [{ name = "mods", ty = "&mut Vec<NativeMod>", value = "&mut *mods" }]
+
+[[injection]]
+id = "block-entity"
+target = "horizon_client::game::native_hooks::Game<'_>::native_block_entity"
+kind = "HEAD"
+helper = "block_entity.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "entity", ty = "&mut Option<(String, Compound)>", value = "&mut *entity" }
+]
+
+[[injection]]
+id = "container"
+target = "horizon_client::game::native_hooks::Game<'_>::native_block_entity_container"
+kind = "HEAD"
+helper = "container.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "container", ty = "&mut Option<ModContainer>", value = "&mut *container" }
+]

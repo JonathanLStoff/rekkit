@@ -260,6 +260,16 @@ def features(mod: str) -> str:
     made += add_children(mod, 5, [(f"{mod}: assets for {k} {n}", "feature", ["asset"])
                                   for k, names in (("block", blocks), ("item", items)) for n in names])
     made += add_children(mod, 8, [(f"{mod}: harness {b}", "feature", ["harness"]) for b in blocks])
+    # Every item and block item must be findable in the creative menu, in one of the mod's tabs.
+    block_dir = MAIN / "mods" / mod / "content" / "data" / mod / "horizon" / "block"
+
+    def has_item(name: str) -> bool:
+        try:
+            return json.loads((block_dir / f"{name}.json").read_text(encoding="utf-8")).get("item", True)
+        except (OSError, ValueError):
+            return True
+    made += add_children(mod, 8, [(f"{mod}: creative {n}", "feature", ["harness", "creative"])
+                                  for n in [b for b in blocks if has_item(b)] + items])
     return f"{made} features added for {mod} ({len(blocks)} blocks, {len(items)} items, {len(subsystems)} subsystems)."
 
 

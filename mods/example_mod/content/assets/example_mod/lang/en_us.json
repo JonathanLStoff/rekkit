@@ -4,5 +4,6 @@
   "effect.example_mod.ender_lock": "Ender Frequency Lock",
   "gui.example_mod.frequency_chest": "Ender Frequency Storage",
   "tooltip.example_mod.frequency": "Frequency: %s / %s / %s",
-  "tooltip.example_mod.private": "Locked (Private Channel)"
+  "tooltip.example_mod.private": "Locked (Private Channel)",
+  "itemGroup.example_mod.example_mod": "Ender Frequency"
 }
