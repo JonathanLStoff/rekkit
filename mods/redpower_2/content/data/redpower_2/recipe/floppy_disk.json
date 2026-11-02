@@ -3,8 +3,8 @@
   "category": "misc",
   "pattern": [
     "PPP",
-    "PIP",
-    "PPP"
+    "P P",
+    "PIP"
   ],
   "key": {
     "P": "minecraft:oak_planks",

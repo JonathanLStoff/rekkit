@@ -14,14 +14,14 @@ Compare the diff on `port/<id>` against `planning/mods/<id>.md`, `AGENTS.md` and
 - [ ] Every item and block item is in one of the mod's creative tabs (`creative_tab/*.json`), and each tab's title is translated.
 - [ ] A mod in several packs is merged: every feature of every version is in the spec and the port; a shared feature follows the newest version (behaviour, numbers, art); an older-only feature is kept.
 - [ ] Mineable tags exist for blocks that need a tool.
-- [ ] The contract (`planning/mods/<id>.features.json`) is complete and true to the Java: every block's shape, facing, faces and GUI slots, every item's sprite, stack size and durability, a scenario for every machine, generator and tool a player sees working. `make contract-check MOD=<id>` passes.
-- [ ] The last harness run has no `2_shape`, `4_gui` or `10_scenario` failure, and the renders (`target/e2e-report/isolated_<id>/<id>_<block>_world.png`) of every machine, gate and partial block look like the original: its own art on each face, its shape, its GUI.
+- [ ] The contract (the outline `planning/mods/<id>.features.json` with each `planning/mods/<id>.contract/<name>.json`) is complete and true to the Java, every outlined attribute tested by a scenario: every block's shape, facing, faces and GUI slots, every item's sprite, stack size and durability, a scenario for every machine, generator and tool a player sees working. `make contract-check MOD=<id>` passes.
+- [ ] The last harness run passes every test level (`levels` in summary.json: 1 placement & hitbox through 6 automation & sides; 7 is the all-mods run) and has no `2_shape`, `4_gui` or `10_scenario` failure, and the renders (`target/e2e-report/isolated_<id>/<id>_<block>_world.png`) of every machine, gate and partial block look like the original: its own art on each face, its shape, its GUI.
 
 ## Logic
 
 - [ ] Each formula in the spec appears in `src/` with the same constants and units (EU/t, MJ/t, mB, ticks). Cite both lines.
 - [ ] It behaves as the original did: check the cited Java (`make java-show DIR=assets/decompiled/<archive> MEMBER=<Class#method>`, never whole files) where the spec is ambiguous, and flag a spec that misreads the Java (owner: spec-writer).
-- [ ] Nothing in `src/`, `native/` or `tests/` is copied from the Java (clean-room): no Java method bodies, comments or obfuscated names.
+- [ ] `src/`, `native/` and `tests/` are our own Rust: no pasted Java method bodies, comments or obfuscated names.
 - [ ] Each state machine has every state and transition from the spec.
 - [ ] Each hazard is implemented or listed under DEFERRED with a reason.
 - [ ] Shared concepts use `rekkit_core` types rather than local copies.

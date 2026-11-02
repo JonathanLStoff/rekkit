@@ -1,0 +1,264 @@
+{
+  "tickets": [
+    {
+      "key": "part03-spatial-math",
+      "title": "Core spatial math: 3D vectors and WorldCoord directional stepping",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/spatial.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "2.2 Wiring System",
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "Vector3#crossProduct",
+        "Vector3#dotProduct",
+        "Vector3#normalize",
+        "WorldCoord#step",
+        "WorldCoord#indStep",
+        "WorldCoord#coordStep"
+      ],
+      "after": [],
+      "description": "Implement 3D vector arithmetic (Vector3) and block coordinate spatial navigation (WorldCoord). Includes vector transformations, cross/dot products, normalization, orientation-based coordinate steps (0..5: -Y, +Y, -Z, +Z, -X, +X), indirect corner stepping (indStep), and square distance calculations. Done: unit tests pass for Vector3 operations and WorldCoord directional stepping matching original RedPowerCore behavior."
+    },
+    {
+      "key": "part03-tag-model-loader",
+      "title": "Model loader, TagFile serialization and texture vertex primitives",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/model_loader.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "TagFile#readtag",
+        "TagFile#collapsedtag",
+        "TagFile#savetag",
+        "RenderModel#loadModel",
+        "RenderModel#scale",
+        "TexVertex#setUV"
+      ],
+      "after": [
+        "part03-spatial-math"
+      ],
+      "description": "Implement RedPower custom TagFile format parser/writer and 3D sub-voxel model reader (RenderModel). Parses stream tokens, nested tags, comments, vertex lists, UV coordinate maps, and model grouping hierarchies. Done: unit tests successfully parse TagFile structures and load sub-voxel mesh definitions from RenderModel data."
+    },
+    {
+      "key": "part03-multipart-tile",
+      "title": "Sub-voxel multipart tile entity and coverable block infrastructure",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "microblocks"
+      ],
+      "files": [
+        "mods/redpower_2/src/multipart/mod.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "TileExtended#scheduleTick",
+        "TileExtended#onBlockNeighborChange",
+        "TileMultipart#setPartBounds",
+        "TileCoverable#canAddCover",
+        "TileCoverable#tryAddCover",
+        "TileCoverable#tryRemoveCover",
+        "TileCoverable#getCoverMask",
+        "TileCovered#canAddCover",
+        "TileCovered#tryAddCover",
+        "TileCovered#tryRemoveCover",
+        "TileCovered#writeToNBT",
+        "TileCovered#getFramePacket"
+      ],
+      "after": [
+        "part03-spatial-math"
+      ],
+      "description": "Implement compound sub-voxel multipart tile infrastructure (TileExtended, TileMultipart, TileCoverable, TileCovered). Tracks up to 29 sub-voxel components (6 face covers, 12 edge strips, 8 corner pieces, 3 structural column axes) per block space using bitmasks and occupancy arrays. Enforces occlusion rules, part bounding boxes, harvest drop calculations, NBT persistence, and frame movement packet serialization. Done: unit tests pass for multi-part placement, collision bounding boxes, face occlusion masking, and NBT roundtrip."
+    },
+    {
+      "key": "part03-wire-pathfinder",
+      "title": "Red alloy and bundled wire network BFS pathfinder",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "red_alloy_wiring"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/pathfinder.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "WirePathfinder#init",
+        "WirePathfinder#addSearchBlock",
+        "WirePathfinder#addIndBl",
+        "WirePathfinder#addSearchBlocks",
+        "WirePathfinder#iterate",
+        "WirePathfinder#step"
+      ],
+      "after": [
+        "part03-spatial-math"
+      ],
+      "description": "Implement wire graph traversal and flood-fill pathfinding (WirePathfinder). Resolves wire connectivity across surface faces, planar 90-degree corners, wrapped edge corners, and jacketed cable conduits. Propagates signal search fronts across connected wire clusters. Done: unit tests verify connected component pathfinding over complex corner transitions and jacketed columns matching RedPower wiring rules."
+    },
+    {
+      "key": "part03-tube-routing",
+      "title": "Pneumatic tube Dijkstra shortest-path router and FIFO buffer",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "pneumatic_tubes"
+      ],
+      "files": [
+        "mods/redpower_2/src/tubes/routing.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "TubeLib#getConnections",
+        "TubeLib#isConSide",
+        "TubeLib#isCompatible",
+        "TubeLib#findRoute",
+        "RouteFinder#addPoint",
+        "RouteFinder#find",
+        "TubeBuffer#add",
+        "TubeBuffer#addNewColor",
+        "TubeBuffer#addBounce",
+        "TubeBuffer#writeToNBT"
+      ],
+      "after": [
+        "part03-spatial-math"
+      ],
+      "description": "Implement pneumatic tube network topology detection, Dijkstra shortest-path route finding (TubeLib, RouteFinder), and machine item FIFO buffering (TubeBuffer). Computes tube connections with cover occlusion, color compatibility filtering (16 dye colors), path cost calculation (+2 per hop, +1 per turn penalty, +1,000,000 for Restrictor Tubes), and zero-drop backpressure handling. Done: unit tests pass for route discovery, turn penalties, restrictor tube routing priorities, and TubeBuffer FIFO NBT serialization."
+    },
+    {
+      "key": "part03-tube-flow",
+      "title": "Pneumatic tube in-flight item simulation and flow dynamics",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/tubes/flow.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TubeItem#readFromNBT",
+        "TubeItem#writeToNBT",
+        "TubeFlow#update",
+        "TubeFlow#schedule",
+        "TubeFlow#handleItem",
+        "TubeFlow#add",
+        "TubeFlow#onRemove"
+      ],
+      "after": [
+        "part03-tube-routing"
+      ],
+      "description": "Implement in-flight pneumatic tube item simulation (TubeItem, TubeFlow). Advances item progress through tube sections (standard 3.0 blocks/sec, magtube 16.0 blocks/tick), handles junction route transitions, color tag preservation, blockage bounce-back into origin buffers, and full NBT persistence. Done: unit tests verify item movement tick advancement, arrival scheduling, bounce handling on closed endpoints, and NBT roundtrip."
+    },
+    {
+      "key": "part03-subvoxel-rendering",
+      "title": "Sub-voxel rendering context, microblock mesh generation and highlight preview",
+      "role": "hook-engineer",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/render/subvoxel.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "10. Hooks Needed"
+      ],
+      "java": [
+        "RenderContext#setupBox",
+        "RenderContext#renderBox",
+        "RenderContext#orientTextures",
+        "RenderContext#lightSmoothFace",
+        "RenderCovers#renderCovers",
+        "RenderHighlight#onBlockHighlight",
+        "RenderHighlight#drawPreview",
+        "RenderLib#renderPointer",
+        "TextureAnimFX#convertRGB"
+      ],
+      "after": [
+        "part03-multipart-tile",
+        "part03-tag-model-loader"
+      ],
+      "description": "Implement sub-voxel mesh rendering context (RenderContext), microblock cover rendering (RenderCovers), raycast selection box rendering, and placement preview highlights (RenderHighlight). Computes matrix rotations, face UV alignments, smooth lighting interpolation, and pointer rendering for analog dials. Done: rendering unit tests and mesh generation tests verify exact sub-voxel vertices and UV coordinates matching original RedPower box dimensions."
+    },
+    {
+      "key": "part03-core-lifecycle",
+      "title": "RedPowerCore module lifecycle, network handling and native hook wiring",
+      "role": "hook-engineer",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/native/mixins/redpower_2/core_init.rs"
+      ],
+      "spec": [
+        "1. Overview & Version Target",
+        "10. Hooks Needed"
+      ],
+      "java": [
+        "mod_RedPowerCore#initialize",
+        "mod_RedPowerCore#init_guihandler",
+        "mod_RedPowerCore#renderWorldBlock",
+        "mod_RedPowerCore#takenFromCrafting",
+        "mod_RedPowerCore#takenFromFurnace"
+      ],
+      "after": [
+        "part03-subvoxel-rendering",
+        "part03-wire-pathfinder",
+        "part03-tube-flow"
+      ],
+      "description": "Implement RedPowerCore lifecycle registration, subsystem initialization hooks, network packet dispatch, and GUI event routing. Binds native hooks for block entity tick loops, block entity descriptions, and crafting callbacks. Done: mixin compilation clean and native hooks initialize core subsystems on mod load."
+    },
+    {
+      "key": "part03-core-scenarios",
+      "title": "Core subsystem integration tests and verification scenarios",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/tests/core_systems.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "2.2 Wiring System",
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TileCovered#canAddCover",
+        "TubeLib#findRoute",
+        "WirePathfinder#iterate"
+      ],
+      "after": [
+        "part03-core-lifecycle"
+      ],
+      "description": "Automated scenario tests validating microblock compound placement, pneumatic tube Dijkstra routing with restrictor tubes (+1,000,000 weight) and color tags, and red alloy wire pathfinding across corner boundaries. Done: all scenarios pass at Level 3 and Level 4 verification."
+    }
+  ]
+}

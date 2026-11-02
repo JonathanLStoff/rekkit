@@ -23,6 +23,8 @@ Agents (--agent, or AGENT): the tool to try first (default: the order in .agents
           acceptEdits, with the build, test and git commands the fleet needs allowed (its hooks
           still block push, sign and release)
   codex   codex exec --full-auto [-m M] PROMPT (workspace-write sandbox)
+  opencode  opencode run [-m M] PROMPT, on opencode's selected model when the chain says null (local
+          models: the conductor sizes its subagents with `make fleet-local`)
 Any other CLI: --agent-cmd (or AGENT_CMD) "cli --flags"; the prompt is added as the last argument.
 It has no model chain: on a limit the run waits for the reset.
 
@@ -78,6 +80,8 @@ def agent_command(c: models.Candidate, chain: list[models.Candidate], prompt: st
                 "--permission-mode", "acceptEdits", "--allowedTools", *CLAUDE_ALLOWED]
     if c.tool == "codex":
         return ["codex", "exec", "--full-auto", *(["-m", c.model] if c.model else []), prompt]
+    if c.tool == "opencode":
+        return ["opencode", "run", *(["-m", c.model] if c.model else []), prompt]
     raise ValueError(c.tool)
 
 
@@ -111,7 +115,7 @@ def wait_for(until: float, what: str) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("mod", nargs="?", help="Board row to run (default: active, else next queued)")
-    parser.add_argument("--agent", default=os.environ.get("AGENT") or None, choices=["agy", "claude", "codex"],
+    parser.add_argument("--agent", default=os.environ.get("AGENT") or None, choices=["agy", "claude", "codex", "opencode"],
                         help="Tool to try first (default: the order in .agents/models.json)")
     parser.add_argument("--agent-cmd", default=os.environ.get("AGENT_CMD") or None,
                         help="Any other agent CLI and its flags; the prompt is appended")
@@ -131,7 +135,7 @@ def main() -> int:
     custom = models.Candidate(args.agent_cmd, None) if args.agent_cmd else None
     chain = [custom] if custom else models.candidates(args.agent)
     if not chain:
-        sys.exit("No agent CLI from .agents/models.json is installed (agy, claude, codex); "
+        sys.exit("No agent CLI from .agents/models.json is installed (agy, claude, codex, opencode); "
                  "install one or give --agent-cmd \"<cli and flags>\".")
 
     LOCK.parent.mkdir(parents=True, exist_ok=True)

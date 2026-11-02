@@ -1,0 +1,449 @@
+{
+  "tickets": [
+    {
+      "key": "part15-machine-base",
+      "title": "Machine base traits, network synchronization, and proxy registration",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/machine/base.rs",
+        "mods/redpower_2/src/machine/proxy.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.5 Blutricity Power Grid",
+        "3. Machines & Devices"
+      ],
+      "java": [
+        "TileMachine#onBlockPlaced",
+        "TileMachine#getFacing",
+        "TileMachine#handleFramePacket",
+        "TileMachinePanel#setPartBounds",
+        "RenderMachine#renderWorldBlock",
+        "RenderMachine2#renderWorldBlock",
+        "MachineProxy#getClientGuiElement",
+        "MachineProxyClient#registerRenderers"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implement base machine foundation for RedPower 2: TileMachine (rotation via IRotatable, active/powered/delay/charged flags, network packet sync via IHandlePackets, frame movement via IFrameSupport) and TileMachinePanel (multipart panel machine base, side rotation, harvest and bounds), base machine rendering dispatchers (RenderMachine, RenderMachine2), and proxy registration for machine tile entities, GUIs, and special renderers (MachineProxy, MachineProxyClient). Done: base machine traits and packet synchronization compile cleanly; machine proxy registers handlers."
+    },
+    {
+      "key": "part15-battery-box",
+      "title": "Battery Box tile entity, charge transfer, and storage rendering",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "battery_box"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/battery_box.rs",
+        "planning/mods/redpower_2.contract/battery_box.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileBatteryBox#g",
+        "TileBatteryBox#onBlockNeighborChange",
+        "TileBatteryBox#getBlueConductor",
+        "TileBatteryBox#getStorageScaled",
+        "RenderBatteryBox#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-battery-box"
+      ],
+      "description": "Implement TileBatteryBox and its renderer RenderBatteryBox. 6,000 storage units capacity (~1.2M W-t). Charges when line voltage > 90V (up to 10kW draw), discharges when line voltage < 80V and unpowered by redstone (up to 10kW output). Charges and discharges BT batteries placed in inventory slots 0 and 1 at up to 25 units/tick. Emits 8-stage visual charge indicator. Done: make contract-check MOD=redpower_2 clean for battery_box; scenarios for level 1 (placement/facing), level 3 (charge/discharge cycle and battery item recharge), and level 5 (NBT persistence) pass."
+    },
+    {
+      "key": "part15-appliances-blue",
+      "title": "Blulectric Furnace, Blulectric Alloy Furnace, and Charging Bench appliances",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "blulectric_furnace",
+        "blulectric_alloy_furnace",
+        "charging_bench"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/appliances_blue.rs",
+        "planning/mods/redpower_2.contract/blulectric_furnace.json",
+        "planning/mods/redpower_2.contract/blulectric_alloy_furnace.json",
+        "planning/mods/redpower_2.contract/charging_bench.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.1 Appliance Machines"
+      ],
+      "java": [
+        "TileBlueFurnace#g",
+        "TileBlueFurnace#canSmelt",
+        "TileBlueFurnace#smeltItem",
+        "TileBlueAlloyFurnace#g",
+        "TileBlueAlloyFurnace#canSmelt",
+        "TileBlueAlloyFurnace#smeltItem",
+        "TileChargingBench#g",
+        "RenderBlueFurnace#renderWorldBlock",
+        "RenderChargingBench#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-blulectric-furnace",
+        "part06-blulectric-alloy-furnace"
+      ],
+      "description": "Implement blulectric appliances powered by the Blutricity grid: Blulectric Furnace (smelts vanilla recipes at 2x speed, 100 ticks, draws 1,000 W-t at >= 60V), Blulectric Alloy Furnace (smelts 3x3 alloy recipes in 100 ticks drawing 1,000 W-t with no fuel needed), and Charging Bench (16-slot 4x4 grid recharging portable Blutricity items like BT Battery and Sonic Screwdriver from 3,000-unit internal buffer). Done: make contract-check MOD=redpower_2 clean for blulectric_furnace, blulectric_alloy_furnace, and charging_bench; level 1, 3 and 5 scenarios pass."
+    },
+    {
+      "key": "part15-buffer-chest",
+      "title": "Buffer Chest partitioned sided inventory",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "buffer_chest",
+        "buffer"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/buffer_chest.rs",
+        "planning/mods/redpower_2.contract/buffer_chest.json",
+        "planning/mods/redpower_2.contract/buffer.json"
+      ],
+      "spec": [
+        "3.1 Appliance Machines"
+      ],
+      "java": [
+        "TileBufferChest#onBlockActivated",
+        "TileBufferChest#getStartInventorySide",
+        "TileBufferChest#getSizeInventorySide",
+        "RenderBufferChest#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-buffer-chest"
+      ],
+      "description": "Implement TileBufferChest and RenderBufferChest for buffer_chest and buffer. 20-slot buffer decoupling high-speed extraction from processing. Rear face connects to all 20 inventory slots; each side face connects to a dedicated 4-slot partition (left, right, top, bottom). Rotatable with screwdriver. Done: make contract-check MOD=redpower_2 clean for buffer_chest and buffer; level 1, 3, 5 and 6 (partitioned sided access) scenarios pass."
+    },
+    {
+      "key": "part15-logistics-basic",
+      "title": "Deployer, Block Breaker, and Ejector redstone-pulsed mechanics",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 170,
+      "covers": [
+        "deployer",
+        "block_breaker",
+        "ejector"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/logistics_basic.rs",
+        "planning/mods/redpower_2.contract/deployer.json",
+        "planning/mods/redpower_2.contract/block_breaker.json",
+        "planning/mods/redpower_2.contract/ejector.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileDeploy#enableTowards",
+        "TileDeployBase#initPlayer",
+        "TileDeployBase#tryUseItemStack",
+        "TileBreaker#onBlockNeighborChange",
+        "TileBreaker#drainBuffer",
+        "TileEject#handleExtract",
+        "TileEjectBase#drainBuffer",
+        "RenderBreaker#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-deployer",
+        "part06-block-breaker",
+        "part06-ejector"
+      ],
+      "description": "Implement basic redstone-pulsed logistics machines: Deployer (simulates player right-click with items from 9-slot inventory using fake player, placing blocks, using buckets, planting seeds), Block Breaker (instantly breaks adjacent block in front unless hardness < 0, collects drops into internal buffer, and ejects into rear tube), and Ejector (TileEject, TileEjectBase: ejects 1 item per pulse from 9-slot inventory into attached tube). Done: make contract-check MOD=redpower_2 clean for deployer, block_breaker, and ejector; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-logistics-detection",
+      "title": "Filter, Item Detector, and Igniter logistics tiles",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "filter",
+        "item_detector",
+        "igniter"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/logistics_detection.rs",
+        "planning/mods/redpower_2.contract/filter.json",
+        "planning/mods/redpower_2.contract/item_detector.json",
+        "planning/mods/redpower_2.contract/igniter.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileFilter#handleExtract",
+        "TileFilter#suckFilter",
+        "TileItemDetect#tubeItemEnter",
+        "TileItemDetect#drainBuffer",
+        "TileIgniter#fireAction",
+        "TileIgniter#onBlockNeighborChange"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-filter",
+        "part06-item-detector",
+        "part06-igniter"
+      ],
+      "description": "Implement Filter (extracts 1 matching stack from adjacent inventory on redstone pulse according to 9-slot ghost filter, tags passing items with configured color dye tag 0..16), Item Detector (in-line tube detector matching 9-slot filter, emits redstone pulse when matching item passes), and Igniter (strikes fire on front block when powered, extinguishes fire when unpowered). Done: make contract-check MOD=redpower_2 clean for filter, item_detector, and igniter; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-logistics-advanced",
+      "title": "Advanced logistics: Bundled-cable Assembler and Blutricity Manager",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 180,
+      "covers": [
+        "assembler",
+        "manager"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/logistics_advanced.rs",
+        "planning/mods/redpower_2.contract/assembler.json",
+        "planning/mods/redpower_2.contract/manager.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileAssemble#enableTowardsActive",
+        "TileAssemble#updateCurrentStrength",
+        "TileManager#scanInventory",
+        "TileManager#doRequest",
+        "TileManager#handleTubeItem",
+        "TileManager#requestTubeItem"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-assembler"
+      ],
+      "description": "Implement Assembler (34 slots: 16 template selectors connected to 16 bundled cable channels, 18 internal inventory slots; deploys matching item on corresponding channel signal) and Manager (blutricity-powered inventory regulator: continuously balances and syncs connected inventory to match 24-slot template, requesting missing items across tube network and ejecting excess). Done: make contract-check MOD=redpower_2 clean for assembler and manager; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-frame-automation",
+      "title": "Frame system, Frame Motor, and Moving Frame translation",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 190,
+      "covers": [
+        "frame",
+        "frame_motor",
+        "frame_automation"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/frame.rs",
+        "planning/mods/redpower_2.contract/frame.json"
+      ],
+      "spec": [
+        "2.6 Frame Automation & Structural Movement",
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileFrame#rebuildSticky",
+        "TileFrame#tryAddCover",
+        "TileMotor#pickFrame",
+        "TileMotor#dropFrame",
+        "TileMotor#getDriveSide",
+        "TileFrameMoving#pushEntities",
+        "TileFrameMoving#dropBlock",
+        "TileFrameRenderer#a",
+        "RenderFrame#renderWorldBlock",
+        "RenderFrameMoving#renderWorldBlock",
+        "RenderMotor#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-frame-automation"
+      ],
+      "description": "Implement the Frame Automation system: TileFrame adhering to adjacent solid blocks and neighboring frames on unmasked faces (configurable with screwdriver/covers), TileMotor traversing linksets (up to 1,000 blocks) and executing 16-tick translation drawing 100 + 10*LinkSize W-t at >= 60V, TileFrameMoving placeholder preserving tile entity data and collision boxes, and smooth movement rendering (TileFrameRenderer, RenderFrameMoving). Done: make contract-check MOD=redpower_2 clean for frame and frame_motor; level 1, 3, 4 (moving 50-block frame structure with entities/chests) and 5 scenarios pass."
+    },
+    {
+      "key": "part15-frame-tubes",
+      "title": "Tube Frame and Redstone Tube Frame structural carriers",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "frame_tube",
+        "frame_redstone_tube"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/frame_tubes.rs",
+        "planning/mods/redpower_2.contract/frame_tube.json",
+        "planning/mods/redpower_2.contract/frame_redstone_tube.json"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics",
+        "2.6 Frame Automation & Structural Movement"
+      ],
+      "java": [
+        "TileFrameTube#rebuildSticky",
+        "TileFrameTube#tryAddCover",
+        "TileFrameRedstoneTube#rebuildSticky",
+        "TileFrameRedstoneTube#tryAddCover",
+        "RenderFrameTube#renderWorldBlock",
+        "RenderFrameRedstoneTube#renderWorldBlock"
+      ],
+      "after": [
+        "part15-frame-automation",
+        "part06-frame-automation"
+      ],
+      "description": "Implement Tube Frame (TileFrameTube) and Redstone Tube Frame (TileFrameRedstoneTube), combining support frame structure and adherence with embedded pneumatic routing and redstone signal transmission across moving assemblies. Done: make contract-check MOD=redpower_2 clean for frame_tube and frame_redstone_tube; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-magtube",
+      "title": "Magtube and Accelerator ultra-high-speed pneumatic logistics",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "magtube",
+        "accelerator"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/magtube.rs",
+        "planning/mods/redpower_2.contract/magtube.json",
+        "planning/mods/redpower_2.contract/accelerator.json"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TileMagTube#getSpeed",
+        "TileMagTube#getTubeConnectableSides",
+        "TileAccel#addTubeItem",
+        "TileAccel#g",
+        "MicroPlacementTube#onPlaceMicro",
+        "RenderAccel#renderWorldBlock",
+        "RenderTube#renderWorldBlock",
+        "RenderRedstoneTube#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-magtube-accelerator"
+      ],
+      "description": "Implement Magtubes (TileMagTube) and Accelerator (TileAccel): accelerates items entering from normal tubes into magnetic capsules traveling at 16.0 blocks/tick (320 blocks/sec) through Magtubes, consuming 100 W-t * stack count at >= 60V Blutricity. Also implements MicroPlacementTube tube microblock placement handler and custom tube renderers. Done: make contract-check MOD=redpower_2 clean for magtube and accelerator; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-fluids",
+      "title": "Fluid Pipe, Blulectric Pump, and Grate intake/drainage",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 190,
+      "covers": [
+        "pipe",
+        "pump",
+        "grate"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/fluids.rs",
+        "planning/mods/redpower_2.contract/pipe.json",
+        "planning/mods/redpower_2.contract/pump.json",
+        "planning/mods/redpower_2.contract/grate.json"
+      ],
+      "spec": [
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TilePipe#g",
+        "TilePipe#cacheCon",
+        "TilePump#g",
+        "TilePump#pumpFluid",
+        "TileGrate#g",
+        "TileGrate#onTileTick",
+        "GratePathfinder#trySuckFluid",
+        "GratePathfinder#tryDumpFluid",
+        "RenderPipe#renderWorldBlock",
+        "RenderPump#renderWorldBlock",
+        "RenderGrate#renderWorldBlock",
+        "TilePipeRenderer#a",
+        "TilePumpRenderer#a"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-grate",
+        "part07-fluid-pipe",
+        "part07-fluid-pump"
+      ],
+      "description": "Implement RedPower fluid transport mechanics: Fluid Pipe (TilePipe, pressure-driven flow, flanges, and covers), Blulectric Pump (TilePump, creates +1000 outlet and -1000 inlet pressure, pumping up to 1 bucket/tick at >= 60V Blutricity), and Grate (TileGrate with GratePathfinder: breadth-first flood search to suck liquid blocks from the world into pipes or dump piped liquid into open pools). Done: make contract-check MOD=redpower_2 clean for pipe, pump, and grate; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part15-mechanical-items",
+      "title": "Voltmeter, Sonic Screwdriver, and Wind Turbine / Windmill items",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "voltmeter",
+        "sonic_screwdriver",
+        "wood_turbine",
+        "wood_windmill"
+      ],
+      "files": [
+        "mods/redpower_2/src/item/mechanical_items.rs",
+        "planning/mods/redpower_2.contract/voltmeter.json",
+        "planning/mods/redpower_2.contract/sonic_screwdriver.json",
+        "planning/mods/redpower_2.contract/wood_turbine.json",
+        "planning/mods/redpower_2.contract/wood_windmill.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools",
+        "4.3 Utility & Storage Items"
+      ],
+      "java": [
+        "ItemVoltmeter#measureBlue",
+        "ItemVoltmeter#measurePressure",
+        "ItemSonicDriver#onItemUseFirst",
+        "ItemWindmill#canFaceDirection",
+        "ItemWindmill#getBrokenItem"
+      ],
+      "after": [
+        "part15-machine-base",
+        "part06-blutricity-tools"
+      ],
+      "description": "Implement mechanical items: Voltmeter (measures Blutricity voltage/current/power and pipe pressure on right-click), Sonic Screwdriver (rechargeable screwdriver powered by Blutricity for rotating machines and setting modes), and Wooden Wind Turbine / Windmill items (ItemWindmill types 1 & 2: placing vertical and horizontal wind rotors onto Wind Turbine base blocks). Done: make contract-check MOD=redpower_2 clean for voltmeter, sonic_screwdriver, wood_turbine, and wood_windmill; level 2 scenarios pass."
+    },
+    {
+      "key": "part15-machine-power-renders",
+      "title": "Custom TESR and block renderers for power generators and transformers",
+      "role": "asset-smith",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/render/machine_power_renders.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "RenderSolarPanel#renderWorldBlock",
+        "RenderThermopile#renderWorldBlock",
+        "RenderTransformer#renderWorldBlock",
+        "RenderWindTurbine#renderWorldBlock"
+      ],
+      "after": [
+        "part15-machine-base"
+      ],
+      "description": "Implement custom client block and TESR renderers from RenderSolarPanel.java, RenderThermopile.java, RenderTransformer.java, and RenderWindTurbine.java. Draws accurate quarter-block solar panel shapes, thermopile face gradients, high-voltage transformer coils, and animated wind turbine rotating blades. Done: models and texture coordinates match original decompiled render passes; contract-check model verification clean."
+    }
+  ]
+}

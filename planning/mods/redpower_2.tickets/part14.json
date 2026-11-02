@@ -1,0 +1,497 @@
+{
+  "tickets": [
+    {
+      "key": "part14-control-cpu",
+      "title": "6502 CPU: tile entity, execution slice, registers and backplane memory bus",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "cpu",
+        "control_computing"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/cpu.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileCPU#g",
+        "com.eloraam.redpower.control.TileCPU#readBackplane",
+        "com.eloraam.redpower.control.TileCPU#writeBackplane",
+        "com.eloraam.redpower.control.TileCPU#readFromPacket",
+        "com.eloraam.redpower.control.TileCPU#writeToPacket",
+        "com.eloraam.redpower.control.BlockPeripheral#ctor",
+        "com.eloraam.redpower.control.RenderCPU#renderWorldBlock"
+      ],
+      "after": [
+        "part01-cpu"
+      ],
+      "description": "Implement the 6502 Central Processing Unit (BlockPeripheral meta 1). Runs a cycle-budgeted MOS 6502/65C816 emulation core executing up to 1,000 cycles per tick (burst cap 100,000 cycles) across a 64 KB memory space. Handles backplane bus communication (readBackplane/writeBackplane), CPU halt/run states, reset vector loading, NMI/IRQ signals, and register synchronization. Write contract file for cpu. Done: make contract-check clean for cpu; scenarios test level 1 placement, level 3 execution slice and register access, level 5 persistence across chunk reload."
+    },
+    {
+      "key": "part14-control-cpu-gui",
+      "title": "CPU debugger console: Container and GUI",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/control/cpu_gui.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.ContainerCPU#b",
+        "com.eloraam.redpower.control.ContainerCPU#handleGuiEvent",
+        "com.eloraam.redpower.control.GuiCPU#sendEvent",
+        "com.eloraam.redpower.control.GuiCPU#sendSimple",
+        "com.eloraam.redpower.control.GuiCPU#a"
+      ],
+      "after": [
+        "part14-control-cpu"
+      ],
+      "description": "Implement ContainerCPU and GuiCPU for the CPU peripheral. Provides hardware debugger controls: display accumulator (A), index registers (X, Y), stack pointer (SP), program counter (PC), and status flags (NV-BDIZC). Handles run/stop toggle, single-step execution, and reset buttons via packet events (Packet212GuiEvent). Done: ContainerCPU and GuiCPU sync register states and handle step/run/reset events cleanly."
+    },
+    {
+      "key": "part14-control-display",
+      "title": "Display / Monitor: text matrix, blitter, and Redbus peripheral",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "display",
+        "monitor"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/display.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileDisplay#rbRead",
+        "com.eloraam.redpower.control.TileDisplay#rbWrite",
+        "com.eloraam.redpower.control.TileDisplay#runblitter",
+        "com.eloraam.redpower.control.TileDisplay#pushKey",
+        "com.eloraam.redpower.control.RenderDisplay#renderWorldBlock"
+      ],
+      "after": [
+        "part01-display-terminal",
+        "part14-control-cpu"
+      ],
+      "description": "Implement the Display / Monitor (BlockPeripheral meta 0). Features an 80x50 character buffer (4000 bytes memory), hardware blitter support (scrolling, area fill, block copy), cursor positioning and modes, 16-key keyboard buffer, and Redbus MMIO interface at address 1. Write contract files for display and monitor. Done: make contract-check clean for display and monitor; scenarios test level 1 placement, level 3 character buffer write and blitter scrolling, level 5 persistence."
+    },
+    {
+      "key": "part14-control-display-gui",
+      "title": "Display terminal GUI, RLE screen compression, and Keyboard",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "keyboard"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/display_gui.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.ContainerDisplay#getDisplayRLE",
+        "com.eloraam.redpower.control.ContainerDisplay#decompress",
+        "com.eloraam.redpower.control.GuiDisplay#sendKey",
+        "com.eloraam.redpower.control.GuiDisplay#a",
+        "com.eloraam.redpower.control.GuiDisplay#drawDoubledRect"
+      ],
+      "after": [
+        "part01-display-terminal",
+        "part14-control-display"
+      ],
+      "description": "Implement ContainerDisplay, GuiDisplay, and RLE screen compression (RLECompressor) for the terminal screen. Renders 80x50 monochrome character glyphs, double-sized rendering rects, handles blinking hardware cursor, and forwards user keystrokes into the keyboard buffer. Includes Keyboard block contract. Done: make contract-check clean for keyboard; GUI renders terminal text from tile display buffer and transmits keystrokes reliably."
+    },
+    {
+      "key": "part14-control-disk-drive",
+      "title": "Floppy Disk Drive and Floppy Disks: sector I/O and boot disks",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "disk_drive",
+        "blank_disk",
+        "floppy_disk",
+        "forth_boot_disk",
+        "forth_extra_disk"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/disk.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "4.3 Utility & Storage Items"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileDiskDrive#rbRead",
+        "com.eloraam.redpower.control.TileDiskDrive#rbWrite",
+        "com.eloraam.redpower.control.ItemDisk#onItemUseFirst",
+        "com.eloraam.redpower.control.ItemDisk#d",
+        "com.eloraam.redpower.control.RenderDiskDrive#renderWorldBlock"
+      ],
+      "after": [
+        "part01-disk-drive",
+        "part01-floppy-disks",
+        "part14-control-cpu"
+      ],
+      "description": "Implement the Disk Drive peripheral (BlockPeripheral meta 2) and Floppy Disk items (blank, Forth boot, Forth extra). Floppy disks hold 256 KB formatted into 2048 sectors of 128 bytes each. The Disk Drive maps to Redbus address 2 with sector select, buffer read/write, and status registers (disk present, motor running). Write contract files for disk_drive and disk items. Done: make contract-check clean for disk_drive and disks; level 1 placement, level 2 disk insertion and sector read/write, level 5 persistence."
+    },
+    {
+      "key": "part14-control-backplane-ram",
+      "title": "Backplane bus interconnect and 8K RAM expansion module",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "backplane",
+        "ram_module"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/backplane.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileBackplane#readBackplane",
+        "com.eloraam.redpower.control.TileBackplane#writeBackplane",
+        "com.eloraam.redpower.control.TileRAM#readBackplane",
+        "com.eloraam.redpower.control.TileRAM#writeBackplane",
+        "com.eloraam.redpower.control.ItemBackplane#itemUseShared",
+        "com.eloraam.redpower.control.RenderBackplane#renderWorldBlock"
+      ],
+      "after": [
+        "part01-backplane-ram",
+        "part14-control-cpu"
+      ],
+      "description": "Implement Backplane bus block and 8K RAM module (BlockMultipart meta 0 and 1). Connects directly to the rear of the CPU and chains across adjacent backplane blocks to form a 16-bit address and 8-bit data bus. RAM modules each supply 8 KB of volatile RAM at assigned base addresses (expandable to 64 KB total). Write contract files for backplane and ram_module. Done: make contract-check clean for backplane and ram_module; level 1 placement, level 3 memory expansion and memory read/write over backplane, level 5 persistence."
+    },
+    {
+      "key": "part14-control-io-expander",
+      "title": "IO Expander: Redbus memory-mapped I/O to bundled cable",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [
+        "io_expander"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/io_expander.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileIOExpander#rbRead",
+        "com.eloraam.redpower.control.TileIOExpander#rbWrite",
+        "com.eloraam.redpower.control.TileIOExpander#getPoweringMask",
+        "com.eloraam.redpower.control.TileIOExpander#onTileTick",
+        "com.eloraam.redpower.control.RenderIOExpander#renderWorldBlock"
+      ],
+      "after": [
+        "part01-io-expander",
+        "part14-control-cpu"
+      ],
+      "description": "Implement the IO Expander flat peripheral (BlockMultipart meta 0 in peripheralFlat). Connects to ribbon cable / Redbus at address 3, mapping read/write registers to 16 distinct bundled cable channels. Provides atomic 16-bit input latching and output driving for automation control from 6502 assembly. Write contract file for io_expander. Done: make contract-check clean for io_expander; level 1 placement, level 3 register read/write and bundled channel signal driving, level 4 wire interaction."
+    },
+    {
+      "key": "part14-control-ribbon-cable",
+      "title": "Ribbon Cable: microblock bus routing and placement",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 60,
+      "covers": [
+        "ribbon_cable"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/ribbon.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "com.eloraam.redpower.control.TileRibbon#getConnectClass",
+        "com.eloraam.redpower.control.TileRibbon#onBlockNeighborChange",
+        "com.eloraam.redpower.control.MicroPlacementRibbon#getMicroName",
+        "com.eloraam.redpower.control.MicroPlacementRibbon#addCreativeItems",
+        "com.eloraam.redpower.control.RenderRibbon#renderWorldBlock"
+      ],
+      "after": [
+        "part01-ribbon-cable",
+        "part14-control-cpu"
+      ],
+      "description": "Implement Ribbon Cable microblock (damage 3072 on BlockMicro). Propagates the 8-bit Redbus computer peripheral network between CPUs, disk drives, displays, and IO expanders across multi-block distances on block surfaces and around corners. Write contract file for ribbon_cable. Done: make contract-check clean for ribbon_cable; level 1 placement on surfaces, level 4 bus connectivity across blocks."
+    },
+    {
+      "key": "part14-machine-block-frames",
+      "title": "Support Frame, Tube Frame, and Redstone Tube Frame blocks",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "frame",
+        "frame_tube",
+        "frame_redstone_tube"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/frame_blocks.rs"
+      ],
+      "spec": [
+        "2.6 Frame Automation & Structural Movement"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.BlockFrame#getBlockTextureFromSideAndMetadata",
+        "com.eloraam.redpower.machine.BlockFrame#getCollisionBoundingBoxFromPool",
+        "com.eloraam.redpower.machine.BlockFrame#b"
+      ],
+      "after": [
+        "part06-frame-automation"
+      ],
+      "description": "Implement the structural Frame blocks: Support Frame (meta 0), Tube Frame (meta 2), and Redstone Tube Frame (meta 3) from BlockFrame. Handles frame bounding boxes, sticky face attachment masks, internal pneumatic tube pass-through, and redstone signal conduction. Write contract files for frame, frame_tube, and frame_redstone_tube. Done: make contract-check clean for frame, frame_tube, and frame_redstone_tube; level 1 placement and bounding boxes, level 4 attachment and conduit connectivity."
+    },
+    {
+      "key": "part14-machine-panels-blocks",
+      "title": "Machine Panel blocks: Solar Panel, Pump, Accelerator, Grate, Transformer",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "solar_panel",
+        "pump",
+        "accelerator",
+        "grate",
+        "transformer"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/machine_panels.rs"
+      ],
+      "spec": [
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.BlockMachinePanel#getBlockTextureFromSideAndMetadata",
+        "com.eloraam.redpower.machine.BlockMachinePanel#getCollisionBoundingBoxFromPool",
+        "com.eloraam.redpower.machine.ItemMachinePanel#getItemNameIS"
+      ],
+      "after": [
+        "part06-magtube-accelerator",
+        "part06-grate",
+        "part07-solar-panel",
+        "part07-fluid-pump"
+      ],
+      "description": "Implement machine panel block states and placement from BlockMachinePanel and ItemMachinePanel: Solar Panel (meta 0, 1/4 slab height), Fluid Pump (meta 1), Magtube Accelerator (meta 2), Fluid Grate (meta 3), and Blutricity Transformer (meta 4, 100x step-up/step-down). Sets up block shapes, orientations, and surface attachment bounds. Write contract files for all 5 machine panels. Done: make contract-check clean for solar_panel, pump, accelerator, grate, and transformer; level 1 placement, face sprites, and hitboxes."
+    },
+    {
+      "key": "part14-machine-item-battery",
+      "title": "BT Battery items: empty and powered portable Blutricity storage",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 60,
+      "covers": [
+        "battery_powered",
+        "battery",
+        "battery_empty"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/battery_item.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "4.3 Utility & Storage Items"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.ItemBattery#getItemNameIS",
+        "com.eloraam.redpower.machine.ItemBattery#onItemUseFirst",
+        "com.eloraam.redpower.RedPowerMachine#setupItems"
+      ],
+      "after": [
+        "part06-battery-box"
+      ],
+      "description": "Implement the portable BT Battery items: empty battery and charged/powered battery (ItemBattery). Stores up to 1,200 BT charge units, tracks voltage level, and integrates with Battery Box, Charging Bench, and portable electric tools. Write contract files for battery, battery_powered, and battery_empty. Done: make contract-check clean for battery, battery_powered, and battery_empty; level 2 item use, charge state tracking, and stack limits."
+    },
+    {
+      "key": "part14-machine-blocks-base",
+      "title": "Base Machine blocks registration: Deployer, Breaker, Transposer, Igniter, Relay",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "deployer",
+        "block_breaker",
+        "transposer",
+        "igniter",
+        "relay"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/machine_blocks.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.BlockMachine#getBlockTextureFromSideAndMetadata",
+        "com.eloraam.redpower.machine.BlockMachine#onBlockPlacedBy",
+        "com.eloraam.redpower.machine.EntityPlayerFake#canHarvestBlock",
+        "com.eloraam.redpower.machine.ItemRenderMachine#renderItem"
+      ],
+      "after": [
+        "part06-machine-base",
+        "part06-deployer",
+        "part06-block-breaker",
+        "part06-ejector",
+        "part06-igniter",
+        "part07-transposer",
+        "part07-relay"
+      ],
+      "description": "Implement base BlockMachine registration, facing orientations (6 directions), metadata dispatch, harvest properties, ItemRenderMachine rendering, and EntityPlayerFake simulation helper for automated actions. Configures blocks for Deployer (0), Block Breaker (1), Transposer (2), Igniter (12), and Relay (15). Write contract files for these 5 machines. Done: make contract-check clean for deployer, block_breaker, transposer, igniter, and relay; level 1 placement, facing, and drops."
+    },
+    {
+      "key": "part14-gui-containers-logistics",
+      "title": "Logistics GUIs & Containers: Deployer, Ejector, Buffer Chest, Item Detector",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "ejector",
+        "buffer_chest",
+        "buffer",
+        "item_detector"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/gui_logistics.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.ContainerDeploy#ctor",
+        "com.eloraam.redpower.machine.GuiDeploy#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerEject#ctor",
+        "com.eloraam.redpower.machine.GuiEject#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerBufferChest#ctor",
+        "com.eloraam.redpower.machine.ContainerItemDetect#ctor",
+        "com.eloraam.redpower.machine.GuiItemDetect#drawGuiContainerBackgroundLayer"
+      ],
+      "after": [
+        "part14-machine-blocks-base",
+        "part06-buffer-chest",
+        "part06-item-detector"
+      ],
+      "description": "Implement Containers and GUIs for logistics machines: Deployer (9-slot dispensing inventory), Ejector (inventory ejection buffer), Buffer Chest (sided dual-compartment inventory), and Item Detector (single ghost filter slot with matching mode). Write contract files for ejector, buffer_chest, buffer, and item_detector. Done: make contract-check clean for ejector, buffer_chest, buffer, and item_detector; level 3 GUI slots layout, shift-click handling, and inventory synchronization."
+    },
+    {
+      "key": "part14-gui-containers-routing",
+      "title": "Routing GUIs & Containers: Filter, Sorter, Retriever",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "filter",
+        "sorting_machine",
+        "retriever"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/gui_routing.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.ContainerFilter#ctor",
+        "com.eloraam.redpower.machine.GuiFilter#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerSorter#ctor",
+        "com.eloraam.redpower.machine.GuiSorter#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerRetriever#ctor",
+        "com.eloraam.redpower.machine.GuiRetriever#drawGuiContainerBackgroundLayer"
+      ],
+      "after": [
+        "part14-machine-blocks-base",
+        "part06-filter",
+        "part07-sorting-machine",
+        "part07-retriever"
+      ],
+      "description": "Implement Containers and GUIs for pneumatic routing machines: Filter (9 filter slots with tube color assignment), Sorter (8 color columns, sorting modes: autosort, random, round-robin), and Retriever (request filter template slots with routing color tag). Write contract files for filter, sorting_machine, and retriever. Done: make contract-check clean for filter, sorting_machine, and retriever; level 3 GUI slots layout, mode selection buttons, and color tag selection."
+    },
+    {
+      "key": "part14-gui-containers-management",
+      "title": "Management GUIs & Containers: Regulator, Manager, Assembler",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "regulator",
+        "manager",
+        "assembler"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/gui_management.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.ContainerRegulator#ctor",
+        "com.eloraam.redpower.machine.GuiRegulator#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerManager#ctor",
+        "com.eloraam.redpower.machine.GuiManager#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerAssemble#ctor",
+        "com.eloraam.redpower.machine.GuiAssemble#drawGuiContainerBackgroundLayer"
+      ],
+      "after": [
+        "part14-machine-blocks-base",
+        "part06-assembler",
+        "part07-regulator"
+      ],
+      "description": "Implement Containers and GUIs for inventory regulation and auto-assembly: Regulator (dual-side target and input buffer slots), Manager (stock maintenance grid with color channel config), and Assembler (3x3 crafting matrix, plan slot, internal component storage). Write contract files for regulator, manager, and assembler. Done: make contract-check clean for regulator, manager, and assembler; level 3 GUI slots layout, plan item interaction, and regulation threshold syncing."
+    },
+    {
+      "key": "part14-gui-containers-power",
+      "title": "Power & Furnaces GUIs & Containers: Battery Box, Charging Bench, Wind Turbine, Furnaces",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "battery_box",
+        "charging_bench",
+        "wind_turbine",
+        "blulectric_furnace",
+        "blulectric_alloy_furnace",
+        "wood_sail"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/gui_power.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.1 Appliance Machines",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "com.eloraam.redpower.machine.ContainerBatteryBox#ctor",
+        "com.eloraam.redpower.machine.GuiBatteryBox#drawGuiContainerBackgroundLayer",
+        "com.eloraam.redpower.machine.ContainerChargingBench#ctor",
+        "com.eloraam.redpower.machine.ContainerWindTurbine#ctor",
+        "com.eloraam.redpower.machine.ContainerBlueFurnace#ctor",
+        "com.eloraam.redpower.machine.ContainerBlueAlloyFurnace#ctor"
+      ],
+      "after": [
+        "part14-machine-blocks-base",
+        "part06-battery-box",
+        "part06-blulectric-furnace",
+        "part06-blulectric-alloy-furnace"
+      ],
+      "description": "Implement Containers and GUIs for power storage, wind generation, and electric furnaces: Battery Box (battery slot and charge bar), Charging Bench (16 tool/battery charging slots), Wind Turbine (rotor slot and efficiency gauge), Blulectric Furnace (smelting slots and power meter), and Blulectric Alloy Furnace (3x3 alloy input grid and power meter). Write contract files for all 5 blocks. Done: make contract-check clean for battery_box, charging_bench, wind_turbine, blulectric_furnace, and blulectric_alloy_furnace; level 3 GUI slots layout, energy meter sync, and progress gauges."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "sprite": "eloraam/control/control1.png#4",
+  "max_stack": 1,
+  "durability": null,
+  "use": "Operating system boot disk containing RedPower Forth for the 6502 CPU",
+  "scenarios": [
+    {
+      "name": "insert forth boot disk into disk drive",
+      "level": 2,
+      "covers": [
+        "boots RedPower Forth operating system when inserted in disk drive"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:disk_drive"]
+        },
+        {
+          "use": "redpower_2:forth_boot_disk",
+          "on": [0, 0, 0]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:disk_drive"]
+        }
+      ]
+    }
+  ]
+}

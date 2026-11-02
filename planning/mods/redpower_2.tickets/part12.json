@@ -1,0 +1,338 @@
+{
+  "tickets": [
+    {
+      "key": "part12-core-math-geom",
+      "title": "3D Geometry & Spatial Coordinates: Vector3, Quat, WorldCoord",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/geom.rs"
+      ],
+      "spec": [
+        "2. Core Systems & Mechanics",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "WorldCoord#coordStep",
+        "WorldCoord#indStep",
+        "WorldCoord#getIndStepDir",
+        "WorldCoord#squareDist",
+        "Vector3#crossProduct",
+        "Vector3#dotProduct",
+        "Vector3#normalize",
+        "Quat#aroundAxis",
+        "Quat#multiply",
+        "Quat#rotate"
+      ],
+      "after": [],
+      "description": "Port the fundamental 3D vector, quaternion rotation, and WorldCoord block coordinate primitives from RedPowerCore. WorldCoord handles 6-direction axis stepping, indirect diagonal/corner step mapping (indStep/indStepDir), Manhattan and Euclidean distance, and directional sorting comparators. Vector3 and Quat provide rigid-body transformations, pointer rotations, and sub-voxel bounding box vertices. Done: unit tests pass for coordinate stepping, distance, rotation composition, and vector math."
+    },
+    {
+      "key": "part12-core-data-vlc",
+      "title": "Variable-Length Packet Coding & Hierarchical TagFiles: PacketVLC, TagFile",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/tag_file.rs",
+        "mods/redpower_2/src/core/vlc.rs"
+      ],
+      "spec": [
+        "1. Overview & Version Target",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "PacketVLC#writeUVLC",
+        "PacketVLC#readUVLC",
+        "PacketVLC#writeVLC",
+        "PacketVLC#readVLC",
+        "TagFile#readtag",
+        "TagFile#savetag",
+        "TagFile#addTag",
+        "TagFile#query",
+        "ReflectLib#callClassMethod"
+      ],
+      "after": [],
+      "description": "Implement compact variable-length integer stream coding (PacketVLC) and RedPower's hierarchical structured config/tag format (TagFile). PacketVLC provides 7-bit VLC/UVLC zigzag and unsigned varint encoding for network packets and compact state serialization. TagFile provides nested dictionary/tree parsing with comments, type queries, and round-trip serialization. Also includes reflection/dyn interop helper patterns for mod hooks. Done: unit tests pass for VLC/UVLC roundtrip of boundary integers (0, -1, 1, max, min) and parsing/serialization of sample RedPower config and Forth disk tag files."
+    },
+    {
+      "key": "part12-tile-extended-multiblock",
+      "title": "Base Tile Entities & Multiblock Relay: TileExtended, TileMultiblock",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/tile_extended.rs",
+        "mods/redpower_2/src/core/tile_multiblock.rs"
+      ],
+      "spec": [
+        "2. Core Systems & Mechanics",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "TileExtended#scheduleTick",
+        "TileExtended#isTickRunnable",
+        "TileExtended#onBlockNeighborChange",
+        "TileExtended#onBlockActivated",
+        "TileExtended#breakBlock",
+        "TileMultiblock#handlePacket",
+        "TileMultiblock#readFromPacket",
+        "TileMultiblock#writeToPacket"
+      ],
+      "after": [
+        "part12-core-math-geom"
+      ],
+      "description": "Implement foundational block entity lifecycle behaviors in TileExtended and TileMultiblock. TileExtended provides scheduled deferred ticks (scheduleTick, runnable check), extended metadata storage, neighbor block change notification dispatch, break/harvest item drop handling, and bounding box queries. TileMultiblock acts as a slave/proxy block entity relaying neighbor updates, right-click activations, and packet events to its designated master controller block coordinate (relayX, relayY, relayZ). Done: unit tests pass for tick scheduling state transitions, neighbor propagation, and multiblock event delegation."
+    },
+    {
+      "key": "part12-multipart-tile-covered",
+      "title": "Sub-Voxel Multi-Part Container & Microblock Tile: TileMultipart, TileCoverable, TileCovered",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 170,
+      "covers": [
+        "microblocks",
+        "microblock"
+      ],
+      "files": [
+        "mods/redpower_2/src/microblock/tile_covered.rs",
+        "planning/mods/redpower_2.contract/microblock.json"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "11. Uses from `rekkit_core`"
+      ],
+      "java": [
+        "TileMultipart#onHarvestPart",
+        "TileMultipart#onPartActivateSide",
+        "TileMultipart#setPartBounds",
+        "TileCoverable#canAddCover",
+        "TileCoverable#tryAddCover",
+        "TileCoverable#tryRemoveCover",
+        "TileCoverable#isSideSolid",
+        "TileCoverable#isSideNormal",
+        "TileCovered#replaceWithCovers",
+        "TileCovered#getFramePacket",
+        "TileCovered#handleFramePacket"
+      ],
+      "after": [
+        "part12-tile-extended-multiblock"
+      ],
+      "description": "Implement the sub-voxel multi-part tile entity container holding up to 29 microblock sub-parts: 6 face plates, 12 edge strips, 8 vertex corners, 3 structural poles, and center wire/tube conduit. Manages placement checks (canAddCover preventing opposing thicknesses > 8/8ths), dynamic part addition/removal (tryAddCover, tryRemoveCover), individual part selection hitboxes, harvest drop calculation, hollow cover conduit pass-through vs solid cover face occlusion masking, and support frame movement serialization (getFramePacket/handleFramePacket). Writes the microblock contract file. Done: make contract-check clean for microblock; scenario tests pass verifying face plate addition, hollow conduit allowance, solid occlusion, and removal."
+    },
+    {
+      "key": "part12-wire-pathfinder-lib",
+      "title": "Wire Pathfinder & Redwire Signal Propagation Engine: WirePathfinder, RedPowerLib, PowerLib",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 180,
+      "covers": [
+        "red_alloy_wiring"
+      ],
+      "files": [
+        "mods/redpower_2/src/wire/propagation.rs",
+        "mods/redpower_2/src/wire/pathfinder.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.5 Blutricity Power Grid"
+      ],
+      "java": [
+        "RedPowerLib#updateCurrent",
+        "RedPowerLib#updateBlockCurrentStrength",
+        "RedPowerLib#getMaxCurrentStrength",
+        "RedPowerLib#getTileCurrentStrength",
+        "RedPowerLib#getConnections",
+        "RedPowerLib#getExtConSides",
+        "RedPowerLib#canSupportWire",
+        "RedPowerLib#mapConToLocal",
+        "RedPowerLib#mapLocalToRot",
+        "WirePathfinder#addSearchBlocks",
+        "WirePathfinder#addIndBl",
+        "WirePathfinder#iterate",
+        "PowerLib#cutBits"
+      ],
+      "after": [
+        "part12-core-math-geom"
+      ],
+      "description": "Implement the core RedPower 2 wiring logic and signal propagation algorithm. WirePathfinder traverses wire networks across block surfaces and around 90-degree corners using indirect coordinate steps (addIndBl). RedPowerLib handles 6-direction face connection masks, surface orientation mappings (mapConToLocal, mapLocalToRot), wire support checks (canSupportWire on solid/normal faces), strong and weak power queries, and lossless 0..=255 internal signal propagation up to 256 blocks, translating to vanilla redstone via strength / 17. PowerLib provides bitwise mask cutting for connection topologies. Done: unit tests pass for corner wire pathfinding, surface mapping, lossless 256-block propagation, and Red Alloy to vanilla signal scaling."
+    },
+    {
+      "key": "part12-tube-flow-buffer",
+      "title": "Pneumatic Tube Transport, Buffers & In-Flight Items: TubeItem, TubeBuffer, TubeFlow",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/tube/flow.rs",
+        "mods/redpower_2/src/tube/buffer.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TubeItem#readFromNBT",
+        "TubeItem#writeToNBT",
+        "TubeBuffer#add",
+        "TubeBuffer#addNewColor",
+        "TubeBuffer#addBounce",
+        "TubeBuffer#pop",
+        "TubeFlow#update",
+        "TubeFlow#handleItem",
+        "TubeFlow#schedule"
+      ],
+      "after": [
+        "part12-core-math-geom"
+      ],
+      "description": "Implement pneumatic tube in-flight item transport mechanics and machine buffer queues. TubeItem encapsulates an in-transit ItemStack with movement progress (0..100), travel direction, 16-color dye tag, speed, and scheduling priority. TubeBuffer provides FIFO queuing with backpressure, bounce-back handling when destination tubes or inventories become blocked, and drop-on-break persistence. TubeFlow simulates tick-by-tick payload motion along tube segments, handles branch collisions, and hands off items to adjacent tubes or recipient inventories with zero item drops. Done: unit tests pass for TubeItem NBT roundtrip, TubeBuffer FIFO/bounce operations, and TubeFlow progression ticks."
+    },
+    {
+      "key": "part12-tube-routing-lib",
+      "title": "Pneumatic Tube Routing & Dijkstra RouteFinder: TubeLib",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "pneumatic_tubes"
+      ],
+      "files": [
+        "mods/redpower_2/src/tube/routing.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TubeLib#findRoute",
+        "TubeLib#getConnections",
+        "TubeLib#isConSide",
+        "TubeLib#addToTubeRoute",
+        "TubeLib.RouteFinder#find",
+        "TubeLib.InRouteFinder#addPoint",
+        "TubeLib.OutRouteFinder#addPoint",
+        "TubeLib.RequestRouteFinder#addPoint"
+      ],
+      "after": [
+        "part12-tube-flow-buffer"
+      ],
+      "description": "Implement Dijkstra shortest-path pneumatic tube routing in TubeLib. RouteFinder traverses the pneumatic network to identify the nearest eligible recipient inventory. InRouteFinder evaluates destination inventory capacity via filter rules; OutRouteFinder and RequestRouteFinder search paths for items and pull requests. Enforces exact path weighting: +2 weight per standard tube hop, +1 penalty for turns deviating from entry direction, +1,000,000 weight for Restrictor Tubes, and strict 16-color dye tube filtering (unpainted or matching color only). Done: unit tests pass confirming shortest route selection, turn penalty, restrictor overflow avoidance, and color filtering."
+    },
+    {
+      "key": "part12-pipe-lib",
+      "title": "Fluid Pipe Network Mechanics & Pressure Balancing: PipeLib",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/pipe/lib.rs"
+      ],
+      "spec": [
+        "2. Core Systems & Mechanics",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "PipeLib#movePipeLiquid",
+        "PipeLib#getConnections",
+        "PipeLib#getFlanges",
+        "PipeLib#getPressure",
+        "PipeLib#registerFluids",
+        "PipeLib#getLiquidClass"
+      ],
+      "after": [
+        "part12-core-math-geom"
+      ],
+      "description": "Port the RedPower fluid pipe library for Machine liquid transport. Manages pipe connection bitmasks, visual flange connections, fluid type registry (water, lava, and Forge mod fluids), pressure queries from pumps and grates (getPressure), and the iterative fluid transfer algorithm (movePipeLiquid) that balances liquid volumes and pressures between adjacent IPipeConnectable block entities. Done: unit tests pass for pipe connection masking, flange identification, fluid ID mapping, and pressure-driven liquid balancing."
+    },
+    {
+      "key": "part12-redbus-lib",
+      "title": "Redbus 6502 Peripheral Bus Address Resolution: RedbusLib",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/control/redbus.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "RedbusLib#getAddr",
+        "RedbusLib.RedbusPathfinder#step"
+      ],
+      "after": [
+        "part12-wire-pathfinder-lib"
+      ],
+      "description": "Implement Redbus peripheral device discovery and bus address resolution for the RedPower Control 6502 subsystem. RedbusLib uses RedbusPathfinder (a specialized WirePathfinder operating over bundled cables and ribbon cables) to resolve target IRedbusConnectable peripheral devices by numeric 8-bit bus address (e.g. Disk Drive, Terminal Display, I/O Expander). Done: unit tests pass for device address lookup over bundled cable topologies and peripheral bus polling."
+    },
+    {
+      "key": "part12-render-engine",
+      "title": "Sub-Voxel Matrix Transformation & Model Rendering Engine: RenderContext, RenderModel, RenderLib",
+      "role": "asset-smith",
+      "step": 3,
+      "effort_k": 170,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/render/context.rs",
+        "mods/redpower_2/src/render/model.rs",
+        "mods/redpower_2/src/render/lib.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "RenderContext#setPos",
+        "RenderContext#setOrientation",
+        "RenderContext#calcLightLocal",
+        "RenderContext#renderBox",
+        "RenderModel#loadModel",
+        "RenderModel#scale",
+        "RenderLib#renderSpecialLever",
+        "RenderLib#renderPointer",
+        "RenderLib#getRenderer",
+        "TextureAnimFX#convertRGB"
+      ],
+      "after": [
+        "part12-core-math-geom"
+      ],
+      "description": "Implement the sub-voxel geometry rendering and transformation framework. RenderContext calculates 3D bounding box corners, face rotation index mappings (texRotTable), normal vectors, and smooth ambient occlusion / lighting levels across fractional sub-voxels. RenderModel parses custom 3D mesh definitions (vertex lists, UV mappings, face groups). RenderLib provides the custom block renderer registry and procedural rendering for dynamic indicators (compass/timer pointer, levers). TextureAnimFX provides frame animation conversions. Done: unit tests pass for vertex transformation, UV mapping, texture rotation table lookups, and model scaling."
+    },
+    {
+      "key": "part12-render-covers-highlight",
+      "title": "Microblock Selection Box & Sub-Part Cover Renderer: RenderHighlight, RenderCovers",
+      "role": "asset-smith",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/render/covers.rs",
+        "mods/redpower_2/src/render/highlight.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System"
+      ],
+      "java": [
+        "RenderHighlight#onBlockHighlight",
+        "RenderHighlight#drawCornerBox",
+        "RenderHighlight#drawSideBox",
+        "RenderHighlight#drawBreaking",
+        "RenderHighlight#drawPreview",
+        "RenderCovers#render",
+        "CoverRenderer#setSize",
+        "CoverRenderer#sizeHollow",
+        "CoverRenderer#setupCorners"
+      ],
+      "after": [
+        "part12-render-engine",
+        "part12-multipart-tile-covered"
+      ],
+      "description": "Implement client-side sub-voxel raytracing highlights and microblock model tessellation. RenderHighlight draws the precise selection outline when looking at individual face plates, edge strips, or corner vertices within a multipart block, as well as the breaking progress overlay and placement preview ghost. RenderCovers / CoverRenderer constructs visual geometries for 1/8th through 7/8th solid and hollow covers, edge strips, corners, and centered columns (rppole1/2/3). Done: unit tests pass verifying bounding box computation for all 29 microblock sub-parts, hollow cutouts, and highlight raytrace hit-detection."
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 
 [mod]
 id = "redpower_2"
-version = "0.1.2"
+version = "0.1.3"
 
 [compatibility]
 horizon_revision = "ed102e0592eded5585c610c205488f771f52ac40"
@@ -27,6 +27,16 @@ bindings = [
 ]
 
 [[injection]]
+id = "block-entity-ticks"
+target = "horizon_client::game::native_hooks::Game<'_>::native_block_entity_ticks"
+kind = "HEAD"
+helper = "block_entity_ticks.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "ticks", ty = "&mut bool", value = "&mut *ticks" }
+]
+
+[[injection]]
 id = "container"
 target = "horizon_client::game::native_hooks::Game<'_>::native_block_entity_container"
 kind = "HEAD"
@@ -34,4 +44,176 @@ helper = "container.rs"
 bindings = [
     { name = "block", ty = "&str", value = "block" },
     { name = "container", ty = "&mut Option<ModContainer>", value = "&mut *container" }
+]
+
+[[injection]]
+id = "block-entity-tick"
+target = "horizon_client::game::native_hooks::Game<'_>::native_block_entity_tick"
+kind = "HEAD"
+helper = "tick.rs"
+bindings = [
+    { name = "pos", ty = "[i32; 3]", value = "pos" },
+    { name = "entity", ty = "&mut ModBlockEntity", value = "&mut *entity" }
+]
+
+[[injection]]
+id = "screen"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen"
+kind = "HEAD"
+helper = "screen.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "screen", ty = "&mut Option<NativeScreen>", value = "&mut *screen" }
+]
+
+[[injection]]
+id = "screen-click"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_click"
+kind = "HEAD"
+helper = "screen_click.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "data", ty = "&[i32]", value = "data" },
+    { name = "at", ty = "[f32; 2]", value = "at" },
+    { name = "right", ty = "bool", value = "right" },
+    { name = "button", ty = "&mut Option<i32>", value = "&mut *button" }
+]
+
+[[injection]]
+id = "screen-tooltip"
+target = "horizon_client::game::native_hooks::Game<'_>::native_screen_tooltip"
+kind = "HEAD"
+helper = "screen_tooltip.rs"
+bindings = [
+    { name = "block", ty = "&str", value = "block" },
+    { name = "data", ty = "&[i32]", value = "data" },
+    { name = "at", ty = "[f32; 2]", value = "at" },
+    { name = "lines", ty = "&mut Vec<String>", value = "&mut *lines" }
+]
+
+[[injection]]
+id = "menu-button"
+target = "horizon_client::game::native_hooks::Game<'_>::native_menu_button"
+kind = "HEAD"
+helper = "menu_button.rs"
+bindings = [
+    { name = "pos", ty = "[i32; 3]", value = "pos" },
+    { name = "entity", ty = "&mut ModBlockEntity", value = "&mut *entity" },
+    { name = "id", ty = "i32", value = "id" }
+]
+
+[[injection]]
+id = "use-item-on"
+target = "horizon_client::game::native_hooks::Game<'_>::native_use_item_on"
+kind = "HEAD"
+helper = "use_item_on.rs"
+bindings = [
+    { name = "stack", ty = "&ItemStack", value = "stack" },
+    { name = "pos", ty = "[i32; 3]", value = "pos" },
+    { name = "face", ty = "[i32; 3]", value = "face" },
+    { name = "claimed", ty = "&mut bool", value = "&mut *claimed" }
+]
+
+[[injection]]
+id = "use-item"
+target = "horizon_client::game::native_hooks::Game<'_>::native_use_item"
+kind = "HEAD"
+helper = "use_item.rs"
+bindings = [
+    { name = "stack", ty = "&ItemStack", value = "stack" },
+    { name = "claimed", ty = "&mut bool", value = "&mut *claimed" }
+]
+
+[[injection]]
+id = "tooltip"
+target = "horizon_client::game::native_hooks::Game<'_>::native_tooltip"
+kind = "HEAD"
+helper = "tooltip.rs"
+bindings = [
+    { name = "stack", ty = "&ItemStack", value = "stack" },
+    { name = "lines", ty = "&mut Vec<(Text, u32)>", value = "&mut *lines" }
+]
+
+[[injection]]
+id = "update-shape"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_update_shape"
+kind = "HEAD"
+helper = "update_shape.rs"
+bindings = [
+    { name = "level", ty = "&GameLevel<'_>", value = "self" },
+    { name = "pos", ty = "BlockPos", value = "pos" },
+    { name = "state", ty = "BlockStateId", value = "state" },
+    { name = "direction", ty = "Direction", value = "direction" },
+    { name = "neighbour", ty = "BlockStateId", value = "neighbour" },
+    { name = "new", ty = "&mut Option<BlockStateId>", value = "&mut *new" }
+]
+
+[[injection]]
+id = "is-signal-source"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_is_signal_source"
+kind = "HEAD"
+helper = "is_signal_source.rs"
+bindings = [
+    { name = "level", ty = "&GameLevel<'_>", value = "self" },
+    { name = "state", ty = "BlockStateId", value = "state" },
+    { name = "source", ty = "&mut bool", value = "&mut *source" }
+]
+
+[[injection]]
+id = "block-signal"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_block_signal"
+kind = "HEAD"
+helper = "block_signal.rs"
+bindings = [
+    { name = "level", ty = "&GameLevel<'_>", value = "self" },
+    { name = "state", ty = "BlockStateId", value = "state" },
+    { name = "face", ty = "Direction", value = "face" },
+    { name = "direct", ty = "bool", value = "direct" },
+    { name = "signal", ty = "&mut i32", value = "&mut *signal" }
+]
+
+[[injection]]
+id = "tick-block"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_tick_block"
+kind = "HEAD"
+helper = "tick_block.rs"
+bindings = [
+    { name = "level", ty = "&GameLevel<'_>", value = "self" },
+    { name = "pos", ty = "BlockPos", value = "pos" },
+    { name = "state", ty = "BlockStateId", value = "state" },
+    { name = "handled", ty = "&mut bool", value = "&mut *handled" }
+]
+
+[[injection]]
+id = "random-tick"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_random_tick"
+kind = "HEAD"
+helper = "random_tick.rs"
+bindings = [
+    { name = "level", ty = "&GameLevel<'_>", value = "self" },
+    { name = "pos", ty = "BlockPos", value = "pos" },
+    { name = "state", ty = "BlockStateId", value = "state" },
+    { name = "handled", ty = "&mut bool", value = "&mut *handled" }
+]
+
+[[injection]]
+id = "hurt-enemy"
+target = "horizon_client::game::native_hooks::Game<'_>::native_hurt_enemy"
+kind = "HEAD"
+helper = "hurt_enemy.rs"
+bindings = [
+    { name = "stack", ty = "&ItemStack", value = "stack" },
+    { name = "entity", ty = "u32", value = "entity" },
+    { name = "kind", ty = "&str", value = "kind" }
+]
+
+[[injection]]
+id = "net-from-client"
+target = "horizon_client::game::native_hooks::Game<'_>::native_net_from_client"
+kind = "HEAD"
+helper = "net.rs"
+bindings = [
+    { name = "player", ty = "u128", value = "player" },
+    { name = "channel", ty = "&str", value = "channel" },
+    { name = "data", ty = "&[u8]", value = "data" }
 ]

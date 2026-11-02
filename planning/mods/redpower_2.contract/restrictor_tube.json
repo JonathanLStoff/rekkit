@@ -1,0 +1,19 @@
+{
+  "scenarios": [
+    {
+      "name": "restrictor tube provides overflow priority via 1000000 routing weight",
+      "level": 4,
+      "covers": [
+        "adds 1000000 virtual routing weight to pneumatic path to create overflow priority"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:restrictor_tube"]
+        },
+        {
+          "setblock": [0, 0, 1, "minecraft:chest"]
+        }
+      ]
+    }
+  ]
+}

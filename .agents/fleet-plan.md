@@ -56,21 +56,21 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 |---|---|---|---|---|
 | **conductor** | all | `pro` | yes | Beads (the only writer), `planning/fleet-board.md` (`make board`), `planning/priority.md`, `planning/todo.md`, merges |
 | **scout** | context | `flash` | yes | nothing (read-only report) |
-| **spec-writer** | 1 | `pro` | yes | `planning/mods/<id>.md`, `planning/mods/<id>.features.json` |
-| **scaffolder** | 2 | `flash` | **no** | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
-| **domain-builder** | 3 | `flash` | **no** | `mods/<id>/src/**` (Standard tier) |
-| **domain-builder-pro** | 3 | `pro` | **no** | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
-| **hook-engineer** | 3 | `pro` | **no** | `mods/<id>/native/mixins/<id>/*.rs` |
-| **content-author** | 3 | `flash` | **no** | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
-| **test-smith** | 3 | `flash` | **no** | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
+| **spec-writer** | 1 | `flash` | yes | `planning/mods/<id>.md`, `planning/mods/<id>.features.json` |
+| **scaffolder** | 2 | `flash` | after the spec | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
+| **domain-builder** | 3 | `flash` | after the spec | `mods/<id>/src/**` (Standard tier) |
+| **domain-builder-pro** | 3 | `pro` | after the spec | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
+| **hook-engineer** | 3 | `pro` | after the spec | `mods/<id>/native/mixins/<id>/*.rs` |
+| **content-author** | 3 | `flash` | after the spec | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
+| **test-smith** | 3 | `flash` | after the spec | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
 | **parity-critic** | 4, 7 | `pro` | yes | nothing (findings in its report) |
 | **asset-smith** | 5, 6 | `flash` | no need | `assets/extracted/<id>/` (gitignored), `mods/<id>/asset-map.json`, `mods/<id>/art/**`, `content/assets/<id>/{textures,sounds}/**` |
 | **compat-auditor** | 8 | `flash` | no need | nothing (runs the harness, reports) |
 | **release-clerk** | 9 | `flash` | no need | version fields in the 4 lockstep files; local commit; `make pack-mods` |
 | **scribe** | docs | `flash` | no need | `mods/<id>/README.md`, mod table in `README.md` |
-| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths, read (clean-room) guards; the stop gate; `bd prime` at session start |
+| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths and read guards (no whole decompiled class, the 200k-token task budget); the stop gate; `bd prime` at session start |
 
-"Reads the Java" = may open `assets/decompiled/`. The builders marked **no** never see it (clean-room); the read guard blocks it in agy and Claude Code.
+"Reads the Java" = may open `assets/decompiled/`. Every role may now, after the spec: the column says who needs it.
 
 Models: `pro` is the tool's strongest model, `flash` its fast one. agy: Gemini 4 Argon and 3.8 Flash (run the conductor at `/effort high`; frontmatter has no effort field, so subagents run their model's default). Claude Code: Opus and Sonnet (`make agents` writes them into `.claude/agents/`). Other tools: whatever you pick for each role.
 
@@ -209,7 +209,7 @@ rekkit/
 ├── planning/fleet-board.md          # generated from Beads (make board)
 ├── planning/harness-allowed-warnings.txt   # the only accepted game-log warnings; a person edits it
 └── scripts/fleet/
-    ├── guard.py           # guards (shell, paths, clean-room read), the stop gate, bd prime, fleet-start/task/stop
+    ├── guard.py           # guards (shell, paths, read, task budget), the stop gate, bd prime, fleet-start/task/stop
     ├── beads.py           # the Beads layer: start, features, gaps, inbox, board, seed
     ├── hook.sh            # what the hooks run: finds Python, calls guard.py
     ├── sync_agents.py     # writes each tool's copy of .agents/ (make agents / agents-check)

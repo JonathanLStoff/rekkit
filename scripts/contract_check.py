@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Check a mod against its contract: what the original is, block by block and item by item.
 
-The spec-writer, who reads the original's code, records the contract in planning/mods/<id>.features.json
-(the mod-spec skill has the format): each block's shape, whether it turns to face the player, the
-original sprite on each face and its GUI's slots; each item's sprite, stack size and durability; and
-behaviour scenarios the live harness plays. The builders never see the Java, so nothing here is their
-guess: this script compares what the port draws with the original's own pixels.
+The spec-writer's outline (planning/mods/<id>.features.json) lists every block and item with the
+attributes a player must find (a solar panel generates in daylight and stores energy). The agent that
+ports a block or item writes its contract file, planning/mods/<id>.contract/<name>.json, from the
+original's Java: its shape, whether it turns to face the player, the original sprite on each face and
+its GUI's slots, or an item's sprite, stack size and durability, and a scenario testing each outlined
+attribute (the mod-spec skill has the format). This script compares what the port draws with the
+original's own pixels, and holds every untested attribute as a blocker.
 
 Static checks (make contract-check, and make check-mods COMPLETE=1):
   - every block and item of the mod has a complete contract entry, and every entry is in the mod;
+  - every attribute the outline gives a block or item is covered by a scenario ("covers");
   - each face's texture, after the blockstate's rotation and the model's parents, is the original's
     sprite pixel for pixel (a vanilla texture, the top on every side, or a swapped sprite fails, and
     the message names the sprite the texture really is);
@@ -245,13 +248,53 @@ def turns(blockstate: dict) -> bool:
     return any("facing" in json.dumps(p.get("when", {})) for p in blockstate.get("multipart", []))
 
 
-def check(mod_id: str, path: Path | None = None) -> list[dict]:
-    mod = Mod(mod_id)
+def load_contract(mod_id: str, path: Path | None = None) -> dict | None:
+    """The spec-writer's outline (planning/mods/<id>.features.json: every block and item, with the
+    attributes a player must find) merged with each block's and item's own contract file,
+    planning/mods/<id>.contract/<name>.json, which the agent porting it writes from the Java (its shape,
+    facing, faces, GUI, sprite, stack size, and scenarios). One file each, so parallel agents never
+    edit the same file. None when there is no outline."""
     path = path or ROOT / "planning" / "mods" / f"{mod_id}.features.json"
     if not path.is_file():
-        return [{"for": mod_id, "kind": "contract", "owner": "spec-writer",
-                 "why": f"{path} is missing"}]
+        return None
     contract = json.loads(path.read_text(encoding="utf-8"))
+    contract.setdefault("scenarios", [])
+    entries = {e["id"]: e for kind in ("blocks", "items") for e in contract.get(kind, []) if isinstance(e, dict)}
+    for f in sorted((path.parent / f"{mod_id}.contract").glob("*.json")):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            contract.setdefault("broken", []).append(f"{f.name}: {exc}")
+            continue
+        for scenario in data.pop("scenarios", []):
+            scenario.setdefault("for", [f.stem])
+            contract["scenarios"].append(scenario)
+        if f.stem in entries:
+            entries[f.stem].update({k: v for k, v in data.items() if k not in ("id", "name", "java")})
+    return contract
+
+
+# The harness's test levels (planning/harness.md). Level 1, placement and hitbox, the harness runs for
+# every block itself; 7 is the all-mods phase.
+LEVELS = {1: "placement & hitbox", 2: "item use", 3: "block function (energy, fuel, storage, GUI slots)",
+          4: "interaction with other blocks", 5: "persistence (chunk reloaded from disk)",
+          6: "automation & sides (hoppers, tubes, sided access)"}
+
+
+def attribute(raw: object) -> tuple[str, int | None]:
+    """An outline attribute: {"text": ..., "level": n} or "L<n>: text"."""
+    if isinstance(raw, dict):
+        return str(raw.get("text", "")), (int(raw["level"]) if str(raw.get("level", "")).isdigit() else None)
+    m = re.match(r"\s*L(\d)\s*:\s*(.+)", str(raw))
+    return (m.group(2).strip(), int(m.group(1))) if m else (str(raw), None)
+
+
+def check(mod_id: str, path: Path | None = None) -> list[dict]:
+    mod = Mod(mod_id)
+    contract = load_contract(mod_id, path)
+    if contract is None:
+        return [{"for": mod_id, "kind": "contract", "owner": "spec-writer",
+                 "why": f"planning/mods/{mod_id}.features.json (the outline) is missing"}]
     problems: list[dict] = []
 
     def problem(owner_id: str, kind: str, owner: str, why: str) -> None:
@@ -260,6 +303,18 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
 
     blocks = {b["id"]: b for b in contract.get("blocks", [])}
     items = {i["id"]: i for i in contract.get("items", [])}
+    for broken in contract.get("broken", []):
+        problem(mod_id, "contract", "content-author", f"planning/mods/{mod_id}.contract/{broken}")
+    # Every attribute the outline gives a block or item is a blocker until a scenario of its level tests it.
+    scenarios = contract["scenarios"]
+    for sc in scenarios:
+        label = f"scenario {sc.get('name', '?')!r}"
+        if int(sc.get("level") or 0) not in LEVELS:
+            problem(",".join(sc.get("for", [])) or mod_id, "scenario", "content-author",
+                    f"{label} has no test level (\"level\": 1-6: {', '.join(f'{k} {v}' for k, v in LEVELS.items())})")
+        if not any(k.startswith("expect") or "expect" in st for st in sc.get("steps", []) for k in st):
+            problem(",".join(sc.get("for", [])) or mod_id, "scenario", "content-author", f"{label} checks nothing (no expect step)")
+
     port_blocks = {p.stem for p in (mod.data / "block").glob("*.json")}
     port_items = {p.stem for p in (mod.data / "item").glob("*.json")}
     for name in sorted(port_blocks - set(blocks)):
@@ -271,10 +326,37 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
     for name in sorted(set(items) - port_items):
         problem(name, "missing", "content-author", "in the contract, not in the port")
 
+    def levels_for(name: str) -> set[int]:
+        return {int(sc.get("level") or 0) for sc in scenarios if name in sc.get("for", [])}
+
+    for name, entry in sorted({**items, **blocks}.items()):
+        if "attributes" not in entry:
+            problem(name, "outline", "spec-writer", 'no "attributes" in the outline: what a player must find it doing, '
+                    'each with its test level ([] for a plain block)')
+        for raw in entry.get("attributes", []):
+            text, level = attribute(raw)
+            if level not in LEVELS:
+                problem(name, "outline", "spec-writer", f"attribute {text!r} has no test level (1-6)")
+                continue
+            if not any(name in sc.get("for", []) and text in sc.get("covers", []) and int(sc.get("level") or 0) == level
+                       for sc in scenarios):
+                problem(name, "attribute", "content-author",
+                        f"level {level} ({LEVELS[level]}): attribute {text!r} has no scenario testing it (a level-{level} "
+                        f'scenario with "covers": [{text!r}] in planning/mods/{mod_id}.contract/{name}.json)')
+        have = levels_for(name)
+        needs = []
+        if name in items and (entry.get("use") or entry.get("durability")):
+            needs.append(2)
+        if name in blocks and (isinstance(entry.get("gui"), dict) or entry.get("energy")):
+            needs += [3, 5]
+        for level in needs:
+            if level not in have:
+                problem(name, "level", "content-author", f"needs a level-{level} scenario ({LEVELS[level]})")
+
     def check_face(name: str, label: str, tex: str | None, want: object) -> None:
         ref = parse_ref(want)
         if ref is None:
-            problem(name, "contract", "spec-writer", f"{label}: {want!r} is not a sprite reference (sheet.png#index)")
+            problem(name, "contract", "content-author", f"{label}: {want!r} is not a sprite reference (sheet.png#index)")
             return
         if tex is None:
             problem(name, "model", "content-author", f"{label}: the model draws nothing there")
@@ -286,7 +368,7 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
         original = mod.sheets.sprite(ref)
         where = f"sprite {ref['index']} of {ref['sheet']}"
         if original is None:
-            problem(name, "contract", "spec-writer", f"{label}: no {ref['sheet']} in the archives of asset-map.json")
+            problem(name, "contract", "content-author", f"{label}: no {ref['sheet']} in the archives of asset-map.json")
             return
         if tex.startswith("minecraft:"):
             problem(name, "texture", "content-author", f"{label} is vanilla's {tex}; the original is {where}")
@@ -319,7 +401,8 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
             continue
         lacking = [k for k in required_block if k not in entry] + ([] if "faces" in entry else ["faces"])
         if lacking:
-            problem(name, "contract", "spec-writer", "contract entry lacks " + ", ".join(lacking))
+            problem(name, "contract", "content-author",
+                    f"planning/mods/{mod_id}.contract/{name}.json lacks " + ", ".join(lacking) + " (read them from the Java)")
         blockstate = mod.json(mod.assets / "blockstates" / f"{name}.json")
         variant = default_variant(blockstate)
         if not variant or "model" not in variant:
@@ -372,7 +455,8 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
             continue
         lacking = [k for k in ("sprite", "max_stack") if k not in entry]
         if lacking:
-            problem(name, "contract", "spec-writer", "contract entry lacks " + ", ".join(lacking))
+            problem(name, "contract", "content-author",
+                    f"planning/mods/{mod_id}.contract/{name}.json lacks " + ", ".join(lacking) + " (read them from the Java)")
         item = mod.json(mod.data / "item" / f"{name}.json")
         if "max_stack" in entry and item.get("max_stack_size", None) not in (entry["max_stack"],) \
                 and not (entry["max_stack"] == 64 and "max_stack_size" not in item):

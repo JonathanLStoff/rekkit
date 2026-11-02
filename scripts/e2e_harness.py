@@ -50,6 +50,7 @@ import tomllib
 import urllib.request
 from pathlib import Path
 
+import contract_check  # noqa: E402
 import pack_mod
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -177,10 +178,10 @@ def discover_mod_spec(mod_dir: Path) -> dict:
         name = tab["id"].split(":", 1)[1]
         tab["label"] = lang.get(f"itemGroup.{mod_id}.{name}") or lang.get(tab["title"]) or tab["title"]
 
-    # The contract (planning/mods/<id>.features.json, from the original's code): each block's shape and
-    # GUI, and behaviour scenarios, checked live below (scripts/contract_check.py checks the rest).
-    contract_path = ROOT / "planning" / "mods" / f"{mod_id}.features.json"
-    contract = json.loads(contract_path.read_text(encoding="utf-8")) if contract_path.is_file() else {}
+    # The contract (the outline and each block's planning/mods/<id>.contract/<name>.json, from the
+    # original's code): each block's shape and GUI, and the scenarios testing its attributes, checked
+    # live below (scripts/contract_check.py checks the rest).
+    contract = contract_check.load_contract(mod_id) or {}
     by_name = {c["id"]: c for c in contract.get("blocks", []) if isinstance(c, dict) and "id" in c}
     for b in blocks:
         b["contract"] = by_name.get(b["name"], {})
@@ -493,17 +494,38 @@ def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
     {"setblock": [dx, dy, dz, block]}, {"command": text}, {"wait": ticks},
     {"use": item, "on": [dx, dy, dz]} (right-click the block holding item), {"interact": [dx, dy, dz]},
     {"expect_message": regex} (chat or action bar), {"expect_block": [dx, dy, dz, regex]} (its state),
-    {"expect_data": [dx, dy, dz, regex]} (`data get block`)."""
+    {"expect_data": [dx, dy, dz, regex]} (`data get block`),
+    {"ctl": [words...], "at": [dx, dy, dz], "expect": regex} (any horizon-ctl command, "{x}" "{y}" "{z}"
+    in its words replaced by the position; the regex is matched against its JSON reply),
+    {"reload_chunk": true} (forget the patch's chunk and load it again from disk: level 5, persistence)."""
     name = scenario.get("name", "scenario")
-    tag = {"scenario": name, "what": f"scenario {name!r}"}
+    tag = {"scenario": name, "for": scenario.get("for", []), "what": f"scenario {name!r}"}
     out = [{"stage": "10_scenario_floor", "cmd": "fill", "args": {"box": [ox - 2, oy - 1, oz - 2, ox + 3, oy - 1, oz + 3], "block": "minecraft:stone"}},
            {"stage": "10_scenario_clear", "cmd": "fill", "args": {"box": [ox - 2, oy, oz - 2, ox + 3, oy + 4, oz + 3], "block": "minecraft:air"}},
            tp_step("10_scenario_stand", ox + 0.5, oy, oz - 1.5), {"stage": "10_scenario_settle", "cmd": "wait", "args": {"ticks": 5}}]
 
     def at(rel):
         return {"x": ox + rel[0], "y": oy + rel[1], "z": oz + rel[2]}
+    tag["level"] = scenario.get("level")
     for st in scenario.get("steps", []):
-        if "setblock" in st:
+        if "ctl" in st:
+            pos = at(st.get("at", [0, 0, 0]))
+            words = [str(w).format(**pos) if isinstance(w, str) else w for w in st["ctl"]]
+            step = {"stage": "10_scenario_ctl", "cmd": "raw", "args": {"words": words}}
+            if st.get("expect"):
+                step.update({"expect_json": st["expect"], **tag})
+            out.append(step)
+        elif st.get("reload_chunk"):
+            # Out of range and back: the chunk is saved, dropped and read again from the region file.
+            out += [{"stage": "10_scenario_save", "cmd": "command", "args": {"command": "save-all flush"}},
+                    {"stage": "10_scenario_unpin", "cmd": "command", "args": {"command": "forceload remove all"}},
+                    tp_step("10_scenario_away", ox + 4000.5, oy + 50, oz + 0.5),
+                    {"stage": "10_scenario_unload", "cmd": "wait", "args": {"ticks": 200}},
+                    tp_step("10_scenario_back", ox + 0.5, oy, oz - 1.5),
+                    {"stage": "10_scenario_pin", "cmd": "command",
+                     "args": {"command": f"forceload add {ox - 2} {oz - 2} {ox + 3} {oz + 3}"}},
+                    {"stage": "10_scenario_reload", "cmd": "wait", "args": {"ticks": 60}}]
+        elif "setblock" in st:
             out += [{"stage": "10_scenario_setblock", "cmd": "setblock", "args": {**at(st["setblock"]), "block": st["setblock"][3]}},
                     {"stage": "10_scenario_lands", "cmd": "wait", "args": {"ticks": 5}}]
         elif "command" in st:
@@ -530,6 +552,9 @@ def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
     out.append({"stage": "10_scenario_close", "cmd": "close", "args": {}, "allow_kinds": ["state"]})
     for step in out:
         step.setdefault("scenario", name)
+        step.setdefault("for", tag["for"])
+        step.setdefault("level", tag["level"])
+        step.setdefault("what", tag["what"])
     return out
 
 
@@ -987,6 +1012,10 @@ MENU_TEMPLATE = re.compile(r"minecraft:(?:furnace|blast_furnace|smoker|(?:chippe
                            r"|brewing_stand|cartography_table|(?:trapped_)?chest|(?:\w+_)?copper_chest|crafter"
                            r"|crafting_table|dispenser|dropper|enchanting_table|ender_chest|grindstone|hopper|loom"
                            r"|(?:\w+_)?shulker_box|smithing_table|stonecutter)")
+# The test levels every block and item passes (planning/harness.md); a contract scenario names its level.
+TEST_LEVELS = {1: "placement & hitbox", 2: "item use", 3: "block function (energy, fuel, storage, GUI slots)",
+               4: "interaction with other blocks", 5: "persistence (chunk reloaded from disk)",
+               6: "automation & sides (hoppers, tubes, sided access)", 7: "all mods together"}
 CREATIVE_DISPLAY = 900  # Horizon's first creative display slot (Creative::DISPLAY): slot-900 onward show a tab
 
 
@@ -1098,6 +1127,8 @@ def step_words(step: dict, shots: Path) -> list:
         return ["ui"]
     if cmd == "messages":
         return ["messages", a.get("n", 10)]
+    if cmd == "raw":
+        return list(a["words"])
     if cmd == "entities":
         return ["entities", a["radius"], a["type"]]
     raise HarnessError(f"action plan uses a command the harness does not map: {cmd}")
@@ -1204,6 +1235,8 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
                 entry["block"] = step["block"]
             if step.get("scenario"):
                 entry["scenario"] = step["scenario"]
+                entry["for"] = step.get("for", [])
+                entry["level"] = step.get("level")
             problem = None
             if "error" in reply and reply.get("kind") not in step.get("allow_kinds", []):
                 problem = reply
@@ -1221,6 +1254,9 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
                 problem = problem and f"{step['what']}: {problem}"
             elif step.get("expect_no_menu") and reply.get("screen") in ("container", "station"):
                 problem = f"{step['what']}: it opened a {reply.get('screen')} screen"
+            elif step.get("expect_json"):
+                if not re.search(step["expect_json"], json.dumps(reply)):
+                    problem = f"{step['what']}: expected /{step['expect_json']}/ in {json.dumps(reply)[:300]}"
             elif step.get("expect_match"):
                 text = " | ".join([*(reply.get("chat") or []), reply.get("actionbar") or "", reply.get("state") or ""])
                 if not re.search(step["expect_match"], text):
@@ -1319,8 +1355,21 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
           f"{sum(v == 'ok' for v in blocks.values())}/{len(blocks)} blocks ok, {time.time() - started:.0f} s")
     if creative:
         print(f"[{session_name}] creative menu: {sum(v == 'ok' for v in creative.values())}/{len(creative)} items found")
+    # The test levels (planning/harness.md): 1 is every block's placement and outline; 2-6 are the
+    # contract's scenarios by their level.
+    placed = {b: "failed" if any(e.get("block") == b and str(e.get("stage", "")).startswith("2_") for e in errors)
+              else "ok" for b in blocks}
+    levels = {"1": {"name": TEST_LEVELS[1], "ok": sum(v == "ok" for v in placed.values()), "total": len(placed)}}
+    scenarios = [sc for spec in specs for sc in spec.get("scenarios", [])]
+    bad = {e.get("scenario") for e in errors if e.get("scenario")}
+    for n in sorted({int(sc.get("level") or 0) for sc in scenarios}):
+        mine = [sc.get("name") for sc in scenarios if int(sc.get("level") or 0) == n]
+        levels[str(n)] = {"name": TEST_LEVELS.get(n, "unlevelled"), "ok": sum(m not in bad for m in mine),
+                          "total": len(mine), "failed": sorted(m for m in mine if m in bad)}
+    for n, lv in levels.items():
+        print(f"[{session_name}] level {n} {lv['name']}: {lv['ok']}/{lv['total']} ok")
     return {"session": session_name, "mods": [s["id"] for s in specs], "status": status, "blocks": blocks,
-            "creative": creative,
+            "creative": creative, "levels": levels,
             "steps_executed": executed, "steps_skipped": skipped, "errors": errors, "steps": results}
 
 

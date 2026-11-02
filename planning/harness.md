@@ -96,3 +96,19 @@ With a contract (`planning/mods/<id>.features.json`, see the mod-spec skill) the
 | `ARGS="--keep-home --allow-log 'pattern' --prepare --server-jar PATH --bin-dir DIR --no-fetch --rebuild"` | Extra harness flags. |
 
 Stage 6 (recipes) has no `horizon-ctl` command yet; those steps are listed as skipped in the report.
+
+## Test levels
+
+The harness reports each session by level (`levels` in summary.json, a line each in its output); every level must pass.
+
+| Level | What | Where |
+|---|---|---|
+| 1 | Placement & hitbox: `/setblock`, by a player, every variant, outline = the original's shape | stage 2, every block |
+| 2 | Item use: tools break and wear, items carry their NBT/components, right-click effects | contract scenarios, level 2 |
+| 3 | Block function: energy, fuel, storage, GUI slots doing their job | stage 4 (slot layout) and scenarios, level 3 |
+| 4 | Interaction with other blocks: wires, tubes, gates, neighbours | scenarios, level 4 |
+| 5 | Persistence: the chunk saved, dropped and reloaded from disk | scenarios, level 5 (`reload_chunk`) |
+| 6 | Automation & sides: hoppers and tubes through the original's sided access | scenarios, level 6 |
+| 7 | All mods together | phase 2, `make e2e-all-mods` |
+
+`make contract-check` fails while an attribute lacks a scenario of its level; `make fleet-contract` files each failure on the block's or item's bead.

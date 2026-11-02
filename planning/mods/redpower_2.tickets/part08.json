@@ -1,0 +1,214 @@
+{
+  "tickets": [
+    {
+      "key": "part08-wiring-core",
+      "title": "Wiring Subsystem: TileWiring, sub-voxel faces, connection masks & placement",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "red_alloy_wiring"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/mod.rs",
+        "mods/redpower_2/src/wiring/tile_wiring.rs",
+        "mods/redpower_2/src/wiring/placement.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "TileWiring#getConnectableMask",
+        "TileWiring#getConnectionMask",
+        "TileWiring#getExtConnectionMask",
+        "TileWiring#setPartBounds",
+        "TileWiring#refreshBlockSupport",
+        "MicroPlacementWire#onPlaceMicro",
+        "MicroPlacementWire#initialPlace"
+      ],
+      "after": [
+        "part13-bluewire-and-jacketed"
+      ],
+      "description": "Implement base TileWiring sub-voxel logic and MicroPlacementWire for mounting wires on 6 block faces (ConSides 0..5). Compute 24-direction connection masks, edge corner traversal, solid face support checking, and part bounding boxes (0.125 height). Integrate with microblock cover occlusion masks (TileCovered). Done: connection mask bit arithmetic matches TileWiring/RedPowerLib; wire placement on walls, floors, and ceilings passes Level 1 hitbox and Level 4 connection tests."
+    },
+    {
+      "key": "part08-red-alloy-wire",
+      "title": "Red Alloy Wire: analog 0-255 signal propagation and vanilla redstone mapping",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "wire",
+        "wire_red_alloy"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/redwire.rs",
+        "planning/mods/redpower_2.contract/wire.json",
+        "planning/mods/redpower_2.contract/wire_red_alloy.json"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "TileRedwire#updateCurrentStrength",
+        "TileRedwire#scanPoweringStrength",
+        "TileRedwire#getCurrentStrength",
+        "TileRedwire#isBlockStrongPoweringTo",
+        "TileRedwire#isBlockWeakPoweringTo",
+        "RenderRedwire#renderWorldBlock"
+      ],
+      "after": [
+        "part08-wiring-core"
+      ],
+      "description": "Implement Red Alloy Wire (TileRedwire) transmitting analog redstone signals (0..=255 internal steps, mapped to 0..=15 vanilla redstone levels via strength / 17). Traverses 90-degree internal and external block corners without signal loss over up to 256 blocks. Emits weak and strong redstone power to adjacent vanilla blocks. Create contract files for wire and wire_red_alloy. Done: make contract-check clean for wire and wire_red_alloy; scenarios testing 256-block propagation, corner traversal, and vanilla redstone interaction (Level 1, 2, 4) pass."
+    },
+    {
+      "key": "part08-insulated-wire",
+      "title": "Insulated Wire: 16-color channel isolation without crosstalk",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "wire_insulated"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/insulated.rs",
+        "planning/mods/redpower_2.contract/wire_insulated.json"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "TileInsulatedWire#updateCurrentStrength",
+        "TileInsulatedWire#scanPoweringStrength",
+        "TileInsulatedWire#getConnectClass",
+        "TileInsulatedWire#isBlockWeakPoweringTo",
+        "RedPowerWiring#initialize"
+      ],
+      "after": [
+        "part08-red-alloy-wire"
+      ],
+      "description": "Implement Insulated Wire (TileInsulatedWire) across all 16 Minecraft dye color variants (metadata 0..15). Enforce connection and signal isolation rules: insulated wires connect to bare Red Alloy wire or insulated wire of the identical color, with zero crosstalk between distinct colors running in parallel. Weak powers adjacent blocks. Create contract file for wire_insulated. Done: make contract-check clean for wire_insulated; scenarios verifying zero crosstalk between distinct colors and correct connection to Red Alloy wire (Level 1, 2, 4) pass."
+    },
+    {
+      "key": "part08-bundled-cable",
+      "title": "Bundled Cable: 16-channel signal bus multiplexing",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "wire_bundled"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/bundled.rs",
+        "planning/mods/redpower_2.contract/wire_bundled.json"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "TileCable#updateCurrentStrength",
+        "TileCable#scanPoweringStrength",
+        "TileCable#getCurrentStrength",
+        "TileCable#getPoweringMask",
+        "TileCable#getConnectClass"
+      ],
+      "after": [
+        "part08-insulated-wire"
+      ],
+      "description": "Implement Bundled Cable (TileCable) multiplexing 16 independent redstone signals into a single conduit (BundledSignal / short[16] PowerState). Support neutral bundled cable (damage 768) and 16 color-coded variants (damage 769..784). Connects to insulated wires of matching colors (splitting/merging individual channels) and directly to logic gates and computer I/O expanders. Create contract file for wire_bundled. Done: make contract-check clean for wire_bundled; scenarios verifying 16-channel simultaneous transmission and color-specific tapping (Level 1, 2, 4) pass."
+    },
+    {
+      "key": "part08-bluewire",
+      "title": "Bluewire: 100V DC Blutricity power conduction and insulation",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "wire_blutricity",
+        "wire_blutricity_insulated"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/bluewire.rs",
+        "planning/mods/redpower_2.contract/wire_blutricity.json",
+        "planning/mods/redpower_2.contract/wire_blutricity_insulated.json"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.5 Blutricity Power Grid"
+      ],
+      "java": [
+        "TileBluewire#n_",
+        "TileBluewire#getBlueConductor",
+        "TileBluewire#getConnectionMask",
+        "TileBluewire#getExtConnectionMask"
+      ],
+      "after": [
+        "part08-wiring-core"
+      ],
+      "description": "Implement Bluewire (TileBluewire) transmitting 100V DC Blutricity power between machines, generators, and storage. Support uninsulated (damage 1280) and insulated (damage 1281) variants. Integrate BluePowerConductor with 0.01 ohm/block conductor resistance, dynamic potential balancing, and loss simulation. Create contract files for wire_blutricity and wire_blutricity_insulated. Done: make contract-check clean for both wires; scenarios verifying power conduction and voltage drop under load (Level 1, 4) pass."
+    },
+    {
+      "key": "part08-jacketed-wiring",
+      "title": "Jacketed Conduits: freestanding rigid wire, cable, and bluewire columns",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "wire_jacketed",
+        "cable_jacketed",
+        "wire_jacketed_blutricity"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/jacket.rs",
+        "planning/mods/redpower_2.contract/wire_jacketed.json",
+        "planning/mods/redpower_2.contract/cable_jacketed.json",
+        "planning/mods/redpower_2.contract/wire_jacketed_blutricity.json"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "MicroPlacementJacket#onPlaceMicro",
+        "MicroPlacementJacket#tryAddingJacket",
+        "MicroPlacementJacket#getWireMeta",
+        "RedPowerWiring#initJacketRecipes",
+        "RenderWiring#renderCenterBlock"
+      ],
+      "after": [
+        "part08-bundled-cable",
+        "part08-bluewire"
+      ],
+      "description": "Implement Jacketed Wire, Jacketed Cable, and Jacketed Bluewire (MicroPlacementJacket). Freestanding center-post columnar conduits (ConSides bit 64) that do not require attachment to a solid supporting block face. Render center post jacket textures wrapped in microblock cover materials. Create contract files for wire_jacketed, cable_jacketed, and wire_jacketed_blutricity. Done: make contract-check clean for all three jacketed conduits; scenarios testing freestanding placement in air, connection to surface wires, and jacket recipe crafting (Level 1, 2, 4) pass."
+    },
+    {
+      "key": "part08-wiring-recipes",
+      "title": "Wiring Recipes: crafting, alloy furnace smelting, and ore dictionary integration",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/wiring/recipes.rs",
+        "mods/redpower_2/content/assets/redpower_2/recipes/wire_red_alloy.json",
+        "mods/redpower_2/content/assets/redpower_2/recipes/wire_insulated.json",
+        "mods/redpower_2/content/assets/redpower_2/recipes/wire_bundled.json",
+        "mods/redpower_2/content/assets/redpower_2/recipes/wire_blutricity.json"
+      ],
+      "spec": [
+        "7.1 Custom Machine Recipes",
+        "7.3 Key Crafting Recipes"
+      ],
+      "java": [
+        "RedPowerWiring#initialize",
+        "RedPowerWiring#initJacketRecipes",
+        "RedPowerWiring#initOreDictionary"
+      ],
+      "after": [
+        "part08-jacketed-wiring"
+      ],
+      "description": "Register all shaped and shapeless crafting recipes for Red Alloy Wire, 16 Insulated Wires, neutral and dyed Bundled Cables, Bluewire, and Jacketed conduits. Register Alloy Furnace smelting recipes (Red Ingot -> 4 Red Alloy Wire, Blue Ingot -> 4 Bluewire, 5 Red Ingot -> 8 Bundled Cable). Configure ore dictionary bindings for wires. Done: all wiring crafting and alloy smelting recipes load and match original outputs."
+    }
+  ]
+}

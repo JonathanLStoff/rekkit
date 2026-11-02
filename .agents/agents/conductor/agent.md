@@ -31,18 +31,28 @@ in pieces (`make java-outline`, `make java-show`).
    `make fleet-task` shows it the earlier work. Never redo a closed bead.
    Create or switch to branch port/<id>. Resume at the first story that is
    not closed.
-2. Step 1 Spec. Invoke `spec-writer` (it decompiles the original and writes
-   planning/mods/<id>.md and <id>.features.json, with the contract: each
-   block's shape, facing, face sprites and GUI slots, each item's sprite and
-   stack size, and behaviour scenarios). The step is done only when
-   `make contract-check MOD=<id>` shows no `contract -> spec-writer` line. Then
-   run `make fleet-features MOD=<id>` for the Code, Extract assets and Harness
-   features.
+2. Step 1 Spec, in three rounds. (a) One `spec-writer` in outline mode:
+   planning/mods/<id>.md and <id>.features.json, an outline with each
+   block's and item's attributes and their test levels; then
+   `make fleet-features MOD=<id>`. (b) `make fleet-parts MOD=<id>` splits the
+   decompiled code into parts of ~200k tokens: start one `spec-writer` in
+   tickets mode per part, all at once (each prompt: the mod, the part's list
+   file, "tickets mode"). (c) When every report is in, `make fleet-tickets
+   MOD=<id> CHECK=1`. Read its problems and the order yourself: a ticket that
+   uses another's work must be after it, two tickets editing one file must
+   be ordered, nothing may be uncovered. Send problems back to a spec-writer
+   (tickets mode, the problem lines in its prompt) until it is clean, then
+   `make fleet-tickets MOD=<id>` files them with their order.
 3. Steps 2 and 5 together: `scaffolder` (Scaffold) and `asset-smith` (Extract
    assets: the original art and sound, tagged origin original).
-4. Step 3 Code. Invoke in parallel `domain-builder` (`domain-builder-pro` when
-   the Tier is Hard, and always for rekkit_core), `content-author`,
-   `hook-engineer`, `test-smith`. Give each the feature beads it owns.
+4. Step 3 Code (and the tickets of steps 5 and 6). Loop: `make fleet-ready
+   MOD=<id>` lists the tickets whose predecessors are closed; start one
+   subagent per ready ticket, of the ticket's role, all at once (up to ~10),
+   each prompt the ticket's id and `make fleet-task BEAD=<id> ROLE=<role>`
+   (the ticket's description is its brief). End your turn while they work;
+   `make fleet-inbox` files the reports (follow-ups become new beads); run
+   `make fleet-ready` again. A partial report (the 200k budget ran out) means a
+   fresh subagent on the same ticket. Repeat until no ticket is open.
 5. Step 4 Check. `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings,
    tests, check-mods, harness dry run) and `parity-critic` in Check mode (the
    Rust against the spec and the decompiled Java). Every finding is a bug under
@@ -119,15 +129,28 @@ The only commands you need (never run `bd ... --help`):
 - Record each decision in Beads when you make it (`bd comment <story>
   "<decision and why>"`): if you die, your successor has only Beads and the
   resume page. Every make target is safe to run again after an interruption.
-- Prefer several short subagents (one per subsystem or group of beads) to one
-  that runs a whole step: everything a subagent reads stays in its context.
+- **On a local model** (opencode with Ollama, LM Studio or llama.cpp), `make
+  fleet-local` first, and again when memory may have changed: it says how
+  many agents this machine's memory holds on your model (you count as one).
+  Never run more subagents at once than it allows; if it says one, start none
+  and do each role yourself from .agents/agents/<role>/agent.md, one ticket at
+  a time, still writing each report to the inbox. A cloud model is not limited
+  by it.
+- **Small tasks, many at once.** A subagent gets at most about 200k tokens of
+  work: one to three blocks or items (each with its contract file), one
+  subsystem slice, one GUI, one scenario's behaviour. Never a whole step. Start
+  as many as have independent work (6-10 at a time is fine): they write
+  different files. The hooks stop a subagent at 200k tokens of context; it
+  writes its progress notes and a partial report, and you start a fresh one on
+  what is left (`make fleet-task` shows it the earlier work).
 - While subagents work, end your turn: the stop hook waits for their reports.
   Do not send status messages, read files or set short timers to pass the
   time: each check is a whole turn paid again. A long command (`make
   e2e-mod` takes 20-40 min) runs in the background; wait for it to finish.
-- Clean-room: only `spec-writer`, `parity-critic` and `scout` read
-  assets/decompiled/. Builders work from the spec; when it is unclear they
-  report it and the spec-writer answers in the spec.
+- Everyone may read the Java (`make java-outline`/`java-show`, never whole
+  classes), after the spec. The spec is an outline; each block's facts
+  come from its own contract file, which its porting agent writes from the
+  Java and the parity-critic checks against the Java.
 - To invoke a role, start the subagent of that name (agy: .agents/agents,
   Claude Code: .claude/agents). If your tool has no subagents, do the role
   yourself from .agents/agents/<role>/agent.md, one at a time, and still write

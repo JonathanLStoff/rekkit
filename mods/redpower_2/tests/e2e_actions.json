@@ -2,10 +2,69 @@
   "mod": "redpower_2",
   "trigger_items": [
     "redpower_2:screwdriver",
+    "redpower_2:sonic_screwdriver",
     "redpower_2:paint_brush",
-    "minecraft:red_dye"
+    "redpower_2:iron_handsaw",
+    "redpower_2:diamond_handsaw",
+    "redpower_2:voltmeter",
+    "redpower_2:seed_bag",
+    "redpower_2:diamond_drawplate",
+    "redpower_2:wool_card",
+    "minecraft:red_dye",
+    "minecraft:blue_dye"
   ],
   "custom_recipe_types": [
     "redpower_2:alloy_furnace"
+  ],
+  "stage_3_interactions": [
+    {
+      "item": "redpower_2:screwdriver",
+      "target_blocks": [
+        "redpower_2:alloy_furnace",
+        "redpower_2:timer",
+        "redpower_2:counter",
+        "redpower_2:frame_motor",
+        "redpower_2:deployer"
+      ],
+      "expected_property": "facing"
+    },
+    {
+      "item": "redpower_2:paint_brush",
+      "target_blocks": [
+        "redpower_2:pneumatic_tube",
+        "redpower_2:wire_bundled"
+      ],
+      "expected_property": "color"
+    },
+    {
+      "item": "redpower_2:voltmeter",
+      "target_blocks": [
+        "redpower_2:wire_blutricity",
+        "redpower_2:battery_box",
+        "redpower_2:solar_panel",
+        "redpower_2:thermopile"
+      ],
+      "action": "query_potential"
+    }
+  ],
+  "stage_5_neighbors": [
+    {
+      "center": "redpower_2:alloy_furnace",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "automated_alloy_smelting"
+    },
+    {
+      "center": "redpower_2:pneumatic_tube",
+      "north": "redpower_2:transposer",
+      "south": "redpower_2:buffer_chest",
+      "purpose": "zero_drop_item_routing"
+    },
+    {
+      "center": "redpower_2:wire_blutricity",
+      "east": "redpower_2:solar_panel",
+      "west": "redpower_2:battery_box",
+      "purpose": "blutricity_energy_transfer"
+    }
   ]
 }

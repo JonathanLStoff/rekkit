@@ -1,0 +1,545 @@
+{
+  "tickets": [
+    {
+      "key": "part06-machine-base",
+      "title": "Machine and MachinePanel base blocks, tile entities, and rotation",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "item_logistics_machines"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/base.rs"
+      ],
+      "spec": [
+        "3. Machines & Devices",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "BlockMachine#<init>",
+        "BlockMachine#getTextureFile",
+        "BlockMachinePanel#<init>",
+        "BlockMachinePanel#getTextureFile",
+        "ItemMachine#<init>",
+        "ItemMachinePanel#<init>",
+        "TileMachine#getFacing",
+        "TileMachine#setPartRotation",
+        "TileMachine#onBlockPlacedBy",
+        "TileMachinePanel#getFacing",
+        "TileMachinePanel#setPartRotation",
+        "TileMachinePanel#onBlockPlacedBy",
+        "RenderMachine#renderWorldBlock",
+        "RedPowerMachine#initialize"
+      ],
+      "after": [],
+      "description": "Implements foundational machine block infrastructure: BlockMachine (meta 0..15), BlockMachinePanel (meta 0..4), 6-direction rotation handling (IRotatable), active and powered state flags, and packet synchronization. Base tile entity abstractions TileMachine and TileMachinePanel with IFrameSupport and Redstone/Tube connection interfaces. Done: contract-check clean for machine block registration, placement, and 6-direction rotation."
+    },
+    {
+      "key": "part06-frame-automation",
+      "title": "Support frames, moving frame placeholders, and BFS structural movement",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 180,
+      "covers": [
+        "frame",
+        "frame_tube",
+        "frame_redstone_tube",
+        "frame_automation"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/frame.rs",
+        "planning/mods/redpower_2.contract/frame.json",
+        "planning/mods/redpower_2.contract/frame_tube.json",
+        "planning/mods/redpower_2.contract/frame_redstone_tube.json"
+      ],
+      "spec": [
+        "2.6 Frame Automation & Structural Movement"
+      ],
+      "java": [
+        "BlockFrame#<init>",
+        "BlockFrame#a",
+        "TileFrame#rebuildSticky",
+        "TileFrame#tryAddCover",
+        "TileFrame#canFrameConnectIn",
+        "TileFrame#canFrameConnectOut",
+        "TileFrameMoving#setContents",
+        "TileFrameMoving#dropBlock",
+        "TileFrameMoving#pushEntities",
+        "TileFrameRenderer#a",
+        "RenderFrame#renderWorldBlock",
+        "RenderFrameMoving#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements support frames (rpframe, rptframe, rprtframe with tube and redstone conduit pass-through), side stickiness masking (covers and screwdriver toggle), moving frame entity placeholder (TileFrameMoving), entity pushing along translation axis, and atomic block/NBT transfer upon drop. Done: contract-check clean for frame, frame_tube, and frame_redstone_tube; level 1, 3, and 5 scenarios pass."
+    },
+    {
+      "key": "part06-deployer",
+      "title": "Deployer machine: 9-slot inventory, fake player right-click simulation, GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "deployer"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/deployer.rs",
+        "planning/mods/redpower_2.contract/deployer.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileDeploy#enableTowards",
+        "TileDeploy#onBlockActivated",
+        "TileDeployBase#initPlayer",
+        "TileDeployBase#tryUseItemStack",
+        "TileDeployBase#useOnEntity",
+        "ContainerDeploy#<init>",
+        "GuiDeploy#<init>"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Deployer (BlockMachine meta 0): 9-slot inventory, ContainerDeploy/GuiDeploy, and redstone-triggered right-click block placement and item use via Horizon fake player entity (supporting block placement, buckets, shears, bonemeal, weapons). Done: contract-check clean for deployer; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part06-block-breaker",
+      "title": "Block breaker: pulse harvesting, drop buffer, rear tube ejection",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "block_breaker"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/breaker.rs",
+        "planning/mods/redpower_2.contract/block_breaker.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileBreaker#onBlockNeighborChange",
+        "TileBreaker#onTileTick",
+        "TileBreaker#drainBuffer",
+        "TileBreaker#tubeItemEnter",
+        "RenderBreaker#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Block Breaker (BlockMachine meta 1): harvests facing block on redstone pulse (respecting hardness >= 0, leaving unbreakable blocks intact), collects drops into internal TubeBuffer, and ejects collected items into connected rear pneumatic tubes or inventories. Done: contract-check clean for block_breaker; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part06-filter",
+      "title": "Filter machine: 9 ghost filter slots, dye color tagging, extraction",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "filter"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/filter.rs",
+        "planning/mods/redpower_2.contract/filter.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileFilter#handleExtract",
+        "TileFilter#tubeItemEnter",
+        "TileFilter#tubeItemCanEnter",
+        "TileFilter#suckFilter",
+        "ContainerFilter#<init>",
+        "GuiFilter#changeColor",
+        "GuiFilter#a"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Filter (BlockMachine meta 3): 9-slot ghost item template, 16-color dye tagging button and cycling in GuiFilter, single-stack extraction on redstone pulse from adjacent inventory matching filter, and tag coloring on exported tube payloads. Done: contract-check clean for filter; level 1, 3, 4, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-item-detector",
+      "title": "Item detector: in-line tube detection, filter matching, pulse emission",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "item_detector"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/item_detector.rs",
+        "planning/mods/redpower_2.contract/item_detector.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileItemDetect#tubeItemEnter",
+        "TileItemDetect#tubeItemCanEnter",
+        "TileItemDetect#drainBuffer",
+        "TileItemDetect#onTileTick",
+        "ContainerItemDetect#<init>",
+        "GuiItemDetect#<init>"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Item Detector (BlockMachine meta 4): in-line tube conduit block with 9-slot filter template, pulse emission when passing items match filter (or any item if empty), and mode selection (pulse on entry / exit). Done: contract-check clean for item_detector; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part06-assembler",
+      "title": "Assembler: 16-channel bundled cable deployer, 18-slot storage, GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "assembler"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/assembler.rs",
+        "planning/mods/redpower_2.contract/assembler.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileAssemble#updateCurrentStrength",
+        "TileAssemble#enableTowardsActive",
+        "TileAssemble#getMatchingStack",
+        "TileAssemble#enableTowards",
+        "ContainerAssemble#<init>",
+        "GuiAssemble#<init>"
+      ],
+      "after": [
+        "part06-deployer"
+      ],
+      "description": "Implements Assembler (BlockMachine meta 13): 16 template selector slots (0..15), 18 internal inventory slots (16..33), 16-channel Bundled Cable input mapping, and selective item deployment per active channel. ContainerAssemble and GuiAssemble with mode and skip slot toggles. Done: contract-check clean for assembler; level 1, 3, 4, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-ejector",
+      "title": "Ejector machine: 9-slot buffer, pulse extraction and tube injection",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "ejector"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/ejector.rs",
+        "planning/mods/redpower_2.contract/ejector.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileEject#handleExtract",
+        "TileEjectBase#drainBuffer",
+        "TileEjectBase#tubeItemEnter",
+        "ContainerEject#<init>",
+        "GuiEject#<init>"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Ejector (BlockMachine meta 14): 9-slot internal inventory (TileEjectBase), single-item extraction from adjacent inventories into tube on redstone pulse, and tube backpressure buffering. ContainerEject and GuiEject. Done: contract-check clean for ejector; level 1, 3, 4, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-igniter",
+      "title": "Igniter machine: redstone fire ignition and extinguishing",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "igniter"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/igniter.rs",
+        "planning/mods/redpower_2.contract/igniter.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileIgniter#fireAction",
+        "TileIgniter#onBlockNeighborChange",
+        "TileIgniter#isOnFire"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Igniter (BlockMachine meta 12): creates fire on adjacent target face when powered by redstone, and extinguishes fire / removes netherrack flame when unpowered. Done: contract-check clean for igniter; level 1, 3, 4 scenarios pass."
+    },
+    {
+      "key": "part06-buffer-chest",
+      "title": "Buffer chest: 20-slot storage, multi-faced partitioned sided inventory",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "buffer_chest",
+        "buffer"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/buffer_chest.rs",
+        "planning/mods/redpower_2.contract/buffer_chest.json"
+      ],
+      "spec": [
+        "3.1 Appliance Machines"
+      ],
+      "java": [
+        "TileBufferChest#getStartInventorySide",
+        "TileBufferChest#getSizeInventorySide",
+        "TileBufferChest#onBlockPlacedBy",
+        "ContainerBufferChest#<init>",
+        "GuiBufferChest#<init>",
+        "RenderBufferChest#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Buffer Chest (BlockAppliance meta 2): 20 inventory slots (ContainerBufferChest), 5-way partitioned sided access (4 dedicated slots per side/top/bottom face; back face connects to all 20 slots), and IRotatable placement. Done: contract-check clean for buffer_chest; level 1, 3, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-blulectric-furnace",
+      "title": "Blulectric furnace: 2x speed Blutricity smelting and sided access",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "blulectric_furnace",
+        "blutricity_grid"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/blue_furnace.rs",
+        "planning/mods/redpower_2.contract/blulectric_furnace.json"
+      ],
+      "spec": [
+        "3.1 Appliance Machines",
+        "2.5 Blutricity Power Grid"
+      ],
+      "java": [
+        "TileBlueFurnace#canSmelt",
+        "TileBlueFurnace#smeltItem",
+        "TileBlueFurnace#updateLight",
+        "ContainerBlueFurnace#<init>",
+        "GuiBlueFurnace#<init>",
+        "RenderBlueFurnace#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Blulectric Furnace (BlockAppliance meta 1): input slot 0, output slot 1, Blutricity endpoint connection (requires >= 60V, consumes 1,000 W-t/tick), 100-tick cook time (2x vanilla furnace speed), dynamic furnace glow lighting, and sided access (top: input, sides/bottom: output). Done: contract-check clean for blulectric_furnace; level 1, 3, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-blulectric-alloy-furnace",
+      "title": "Blulectric alloy furnace: fuel-less 3x3 alloy smelting powered by Blutricity",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "blulectric_alloy_furnace"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/blue_alloy_furnace.rs",
+        "planning/mods/redpower_2.contract/blulectric_alloy_furnace.json"
+      ],
+      "spec": [
+        "3.1 Appliance Machines",
+        "7.1 Custom Machine Recipes",
+        "2.5 Blutricity Power Grid"
+      ],
+      "java": [
+        "TileBlueAlloyFurnace#canSmelt",
+        "TileBlueAlloyFurnace#smeltItem",
+        "ContainerBlueAlloyFurnace#<init>",
+        "GuiBlueAlloyFurnace#<init>"
+      ],
+      "after": [
+        "part06-blulectric-furnace"
+      ],
+      "description": "Implements Blulectric Alloy Furnace (BlockAppliance meta 4): 3x3 input matrix (slots 0..8) and output slot 9, fuel-less smelting using Blutricity (>= 60V, 1,000 W-t/tick, 100 ticks per cook), ContainerBlueAlloyFurnace and GuiBlueAlloyFurnace with charge and flow indicators. Done: contract-check clean for blulectric_alloy_furnace; level 1, 3, 5, 6 scenarios pass."
+    },
+    {
+      "key": "part06-battery-box",
+      "title": "Battery box storage machine and rechargeable BT battery item",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "battery_box"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/battery_box.rs",
+        "planning/mods/redpower_2.contract/battery_box.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileBatteryBox#n_",
+        "TileBatteryBox#getMaxStorage",
+        "TileBatteryBox#getStorageScaled",
+        "ContainerBatteryBox#<init>",
+        "GuiBatteryBox#<init>",
+        "RenderBatteryBox#renderWorldBlock",
+        "ItemBattery#<init>",
+        "ItemBattery#a"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Battery Box (BlockMachine meta 6): 6,000 storage units capacity, automatic charging when V > 90V, discharging when V < 80V (inhibited by redstone signal), 2 battery slots for charging/discharging BT Battery items at 25 units/tick. Done: contract-check clean for battery_box; level 1, 3, 5 scenarios pass."
+    },
+    {
+      "key": "part06-blutricity-tools",
+      "title": "Voltmeter diagnostic tool and Sonic Screwdriver chargeable multi-tool",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "voltmeter",
+        "sonic_screwdriver"
+      ],
+      "files": [
+        "mods/redpower_2/src/item/voltmeter.rs",
+        "mods/redpower_2/src/item/sonic_screwdriver.rs",
+        "planning/mods/redpower_2.contract/voltmeter.json",
+        "planning/mods/redpower_2.contract/sonic_screwdriver.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools",
+        "2.5 Blutricity Power Grid"
+      ],
+      "java": [
+        "ItemVoltmeter#itemUseShared",
+        "ItemVoltmeter#onItemUseFirst",
+        "ItemSonicDriver#onItemUseFirst",
+        "ItemSonicDriver#a"
+      ],
+      "after": [
+        "part06-battery-box"
+      ],
+      "description": "Implements Voltmeter (displays voltage, current, and wattage in chat when right-clicking any Blutricity conductor or machine) and Sonic Screwdriver (rechargeable screwdriver with entity disorient / creeper defuse capabilities, consuming charge from internal battery). Done: contract-check clean for voltmeter and sonic_screwdriver; level 2 scenarios pass."
+    },
+    {
+      "key": "part06-magtube-accelerator",
+      "title": "Magtubes: 16 blocks/tick magnetic transit, accelerator panel machine",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "magtube",
+        "accelerator"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/magtube.rs",
+        "planning/mods/redpower_2.contract/magtube.json",
+        "planning/mods/redpower_2.contract/accelerator.json"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TileMagTube#getSpeed",
+        "TileMagTube#getTubeConnectableSides",
+        "MicroPlacementTube#initialPlace",
+        "TileAccel#tubeItemEnter",
+        "TileAccel#n_",
+        "RenderAccel#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Magtube microblock conduit (BlockMicro damage 2816) with 16 blocks/tick travel speed, and Accelerator panel (BlockMachinePanel meta 2) requiring Blutricity (>= 60V, draws 100 W-t/item) to accelerate pneumatic payloads into magnetic capsules. Done: contract-check clean for magtube and accelerator; level 1, 3, 4 scenarios pass."
+    },
+    {
+      "key": "part06-grate",
+      "title": "Grate machine panel: suction intake, pressurized dispersal, BFS fluid pathfinding",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "grate"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/grate.rs",
+        "planning/mods/redpower_2.contract/grate.json"
+      ],
+      "spec": [
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileGrate#onTileTick",
+        "TileGrate#restartPath",
+        "TileGrate$GratePathfinder#trySuckFluid",
+        "TileGrate$GratePathfinder#tryDumpFluid",
+        "RenderGrate#renderWorldBlock"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements Grate panel (BlockMachinePanel meta 3): connects to fluid pipe network, performs BFS fluid search to suck source liquid blocks under suction into attached pipe network or pour liquid into world under positive pressure. Done: contract-check clean for grate; level 1, 3, 4 scenarios pass."
+    },
+    {
+      "key": "part06-sorter-gui",
+      "title": "Sorting machine: 40-slot 8-channel routing GUI and container",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "sorting_machine"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/sorter_gui.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "ContainerSorter#<init>",
+        "ContainerSorter#handleGuiEvent",
+        "GuiSorter#<init>",
+        "GuiSorter#actionPerformed"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements ContainerSorter (40 slots in 8 columns of 5) and GuiSorter with 8 column color cycle buttons, 6 routing mode toggles (Any, Sequential, Full Stack, All, Even Distribution, Random), and Blutricity auto-pulling toggle. Done: container slot layout, GUI event packets, and color button states match original."
+    },
+    {
+      "key": "part06-retriever-regulator-gui",
+      "title": "Retriever and regulator 9-slot and 27-slot logistics GUIs and containers",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "retriever",
+        "regulator"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/retriever_gui.rs",
+        "mods/redpower_2/src/machine/regulator_gui.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "ContainerRetriever#<init>",
+        "GuiRetriever#<init>",
+        "ContainerRegulator#<init>",
+        "GuiRegulator#<init>"
+      ],
+      "after": [
+        "part06-machine-base"
+      ],
+      "description": "Implements ContainerRetriever / GuiRetriever (9 ghost filter slots, dye color selector, Blutricity power gauge) and ContainerRegulator / GuiRegulator (27 slots: 9 target stock template, 9 buffer, 9 excess export filter, mode button). Done: container slot layouts and GUI event packets match original."
+    }
+  ]
+}

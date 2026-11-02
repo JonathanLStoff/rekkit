@@ -1,0 +1,372 @@
+{
+  "tickets": [
+    {
+      "key": "part07-pneumatic-tube",
+      "title": "Pneumatic tube and restrictor tube: zero-drop routing, Dijkstra search, and color painting",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "pneumatic_tube",
+        "restrictor_tube",
+        "pneumatic_tubes"
+      ],
+      "files": [
+        "mods/redpower_2/src/tube/mod.rs",
+        "mods/redpower_2/src/tube/pneumatic.rs",
+        "planning/mods/redpower_2.contract/pneumatic_tube.json",
+        "planning/mods/redpower_2.contract/restrictor_tube.json"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TileTube#n_",
+        "TileTube#tubeItemEnter",
+        "TileTube#tubeItemCanEnter",
+        "TileTube#tubeWeight",
+        "TileTube#tryPaint",
+        "TileTubeRenderer#a",
+        "TileRestrictTube#tubeWeight",
+        "TileRestrictTube#getExtendedID"
+      ],
+      "after": [],
+      "description": "Implement the core pneumatic tube mechanics: zero-drop guaranteed transit, Dijkstra shortest-path route resolution (+2 hop weight, +1 turn penalty), 1,000,000 weight for Restrictor Tube overflow routing, 16-color Paintbrush dyeing via tryPaint, and client item rendering. Done: make contract-check clean for pneumatic_tube and restrictor_tube; L1 placement and L4 Dijkstra routing scenarios pass."
+    },
+    {
+      "key": "part07-redstone-tube",
+      "title": "Redstone tube: dual pneumatic transport and redstone signal conduction",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "redstone_tube"
+      ],
+      "files": [
+        "mods/redpower_2/src/tube/redstone.rs",
+        "planning/mods/redpower_2.contract/redstone_tube.json"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.4 Pneumatic Tubes & Item Logistics"
+      ],
+      "java": [
+        "TileRedstoneTube#getPoweringMask",
+        "TileRedstoneTube#updateCurrentStrength",
+        "TileRedstoneTube#scanPoweringStrength",
+        "TileRedstoneTube#onBlockNeighborChange",
+        "TileRedstoneTube#isBlockWeakPoweringTo"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement Redstone Tube combining pneumatic item transport with IRedPowerWiring redstone conduction across connected tube networks. Done: make contract-check clean for redstone_tube; L1 placement and L4 dual conduction scenarios pass."
+    },
+    {
+      "key": "part07-fluid-pipe",
+      "title": "Fluid pipe: pressure network conduction and flange connections",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "pipe"
+      ],
+      "files": [
+        "mods/redpower_2/src/fluid/pipe.rs",
+        "planning/mods/redpower_2.contract/pipe.json"
+      ],
+      "spec": [
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TilePipe#n_",
+        "TilePipe#getPipePressure",
+        "TilePipe#getPipeBuffer",
+        "TilePipe#cacheCon",
+        "TilePipe#cacheFlange",
+        "TilePipeRenderer#a"
+      ],
+      "after": [],
+      "description": "Implement fluid pipe mechanics: IPipeConnectable network pressure propagation, fluid buffers, flange connection caching, and pipe rendering. Done: make contract-check clean for pipe; L1 placement and L4 fluid conduction scenarios pass."
+    },
+    {
+      "key": "part07-fluid-pump",
+      "title": "Fluid pump: blutricity suction and pressure pumping",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "pump"
+      ],
+      "files": [
+        "mods/redpower_2/src/fluid/pump.rs",
+        "planning/mods/redpower_2.contract/pump.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TilePump#n_",
+        "TilePump#pumpFluid",
+        "TilePump#getPipePressure",
+        "TilePump#getPipeBuffer",
+        "TilePumpRenderer#a"
+      ],
+      "after": [
+        "part07-fluid-pipe"
+      ],
+      "description": "Implement the blutricity-powered fluid pump: creates +1000 outlet pressure and -1000 inlet suction across attached pipes, drawing blutricity when operating. Done: make contract-check clean for pump; L1 placement, L3 power consumption, L4 pressure differential, and L5 chunk persistence scenarios pass."
+    },
+    {
+      "key": "part07-solar-panel",
+      "title": "Solar panel: daylight blutricity generation and 1/4-block plate",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "solar_panel"
+      ],
+      "files": [
+        "mods/redpower_2/src/blutricity/solar.rs",
+        "planning/mods/redpower_2.contract/solar_panel.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileSolarPanel#n_",
+        "TileSolarPanel#getBlueConductor",
+        "TileSolarPanel#setPartBounds"
+      ],
+      "after": [],
+      "description": "Implement the 1/4-block Solar Panel generating 2.0A current in daylight when voltage <= 100V, sky is unobstructed, and weather is clear. Done: make contract-check clean for solar_panel; L1 placement, L3 daylight generation, L4 conduction, and L5 chunk persistence scenarios pass."
+    },
+    {
+      "key": "part07-thermopile",
+      "title": "Thermopile: thermal gradient blutricity generator",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "thermopile"
+      ],
+      "files": [
+        "mods/redpower_2/src/blutricity/thermopile.rs",
+        "planning/mods/redpower_2.contract/thermopile.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileThermopile#updateTemps",
+        "TileThermopile#n_",
+        "TileThermopile#getBlueConductor"
+      ],
+      "after": [],
+      "description": "Implement the solid-block Thermopile generating 0.005 * min(Thot, Tcold) Amps when voltage <= 100V based on temperature differences across all 6 faces, scanning environment every 20 ticks. Done: make contract-check clean for thermopile; L1 placement, L3 thermal gradient generation, L4 conduction, and L5 chunk persistence scenarios pass."
+    },
+    {
+      "key": "part07-frame-motor",
+      "title": "Frame motor: blutricity structural body movement and BFS solver",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "frame_motor",
+        "frame_automation"
+      ],
+      "files": [
+        "mods/redpower_2/src/frame/motor.rs",
+        "planning/mods/redpower_2.contract/frame_motor.json"
+      ],
+      "spec": [
+        "2.6 Frame Automation & Structural Movement"
+      ],
+      "java": [
+        "TileMotor#n_",
+        "TileMotor#pickFrame",
+        "TileMotor#dropFrame",
+        "TileMotor#getDriveSide",
+        "TileMotor#pushEntities"
+      ],
+      "after": [],
+      "description": "Implement the Frame Motor: executes 16-tick translation of contiguous support frame assemblies using BFS solver (up to 1,000 blocks), drawing 100 + 10*LinkSize W-t power, pushing entities and re-instantiating tile entities at target coordinates. Done: make contract-check clean for frame_motor; L1 placement, L3 blutricity consumption, L4 frame movement, and L5 persistence scenarios pass."
+    },
+    {
+      "key": "part07-transposer",
+      "title": "Transposer: ground entity vacuum and adjacent inventory extraction",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "transposer"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/transposer.rs",
+        "planning/mods/redpower_2.contract/transposer.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileTranspose#onBlockNeighborChange",
+        "TileTranspose#handleExtract",
+        "TileTranspose#doSuck",
+        "TileTranspose#suckEntities",
+        "TileTranspose#drainBuffer"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement the Transposer: vacuums loose item entities in front or extracts 1 item stack from adjacent inventory on redstone pulse, injecting extracted items into attached tube. Done: make contract-check clean for transposer; L1 placement and L4 extraction/vacuuming scenarios pass."
+    },
+    {
+      "key": "part07-relay",
+      "title": "Relay: 9-slot buffer chest with periodic automatic tube ejection",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "relay"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/relay.rs",
+        "planning/mods/redpower_2.contract/relay.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileRelay#onTileTick",
+        "TileRelay#handleExtract",
+        "TileRelay#n_",
+        "TileRelay#onBlockActivated"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement the Relay: 9-slot inventory buffer chest that automatically ejects 1 item stack every 10 ticks into an attached tube. Done: make contract-check clean for relay; L1 placement, L3 9-slot inventory GUI, L4 periodic ejection, and L5 chunk persistence scenarios pass."
+    },
+    {
+      "key": "part07-retriever",
+      "title": "Retriever: network-wide item pull using blutricity and filter templates",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "retriever"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/retriever.rs",
+        "planning/mods/redpower_2.contract/retriever.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileRetriever#handleExtract",
+        "TileRetriever#n_",
+        "TileRetriever#suckEntity",
+        "TileRetriever#stepSelect",
+        "TileRetriever#onBlockActivated"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement the Retriever: 9 filter slots, blutricity consumption, and reverse-routing search to pull matching items from anywhere across the pneumatic tube network on redstone pulse. Done: make contract-check clean for retriever; L1 placement, L3 GUI filter/charge, L4 network retrieval, and L5 persistence scenarios pass."
+    },
+    {
+      "key": "part07-sorting-machine",
+      "title": "Sorting machine: 8-channel 40-slot multi-mode color router",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "sorting_machine"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/sorter.rs",
+        "planning/mods/redpower_2.contract/sorting_machine.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileSorter#n_",
+        "TileSorter#tubeItemEnter",
+        "TileSorter#tubeItemCanEnter",
+        "TileSorter#handleExtract",
+        "TileSorter#stepColumn",
+        "TileSorter#tryDrainBuffer",
+        "TileSorter#onBlockActivated"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement the Sorting Machine: 40-slot filter matrix across 8 column color channels with 6 routing modes (Any, Sequential, Full Stack, All Items, Even Distribution, Random) and blutricity auto-pulling. Done: make contract-check clean for sorting_machine; L1 placement, L3 40-slot multi-channel GUI, L4 routing mode logic, and L5 persistence scenarios pass."
+    },
+    {
+      "key": "part07-regulator",
+      "title": "Regulator: 27-slot stock template, buffer and inventory stabilizer",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "regulator",
+        "item_logistics_machines"
+      ],
+      "files": [
+        "mods/redpower_2/src/machine/regulator.rs",
+        "planning/mods/redpower_2.contract/regulator.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines"
+      ],
+      "java": [
+        "TileRegulator#onTileTick",
+        "TileRegulator#handleTransfer",
+        "TileRegulator#scanInput",
+        "TileRegulator#scanOutput",
+        "TileRegulator#drainBuffer",
+        "TileRegulator#onBlockActivated"
+      ],
+      "after": [
+        "part07-pneumatic-tube"
+      ],
+      "description": "Implement the Regulator: 27-slot 3-section inventory layout (target stock template, buffer, export filter) that maintains exact item counts in an adjacent inventory by requesting shortages and exporting excesses via tubes. Done: make contract-check clean for regulator; L1 placement, L3 27-slot GUI, L4 inventory balancing, and L5 persistence scenarios pass."
+    },
+    {
+      "key": "part07-machine-registration",
+      "title": "Machine registration: tile entity descriptors and machine packet handlers",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/machine/mod.rs"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "mod_RedPowerMachine#initialize",
+        "mod_RedPowerMachine#init_guihandler"
+      ],
+      "after": [
+        "part07-frame-motor",
+        "part07-transposer",
+        "part07-relay",
+        "part07-retriever",
+        "part07-sorting-machine",
+        "part07-regulator"
+      ],
+      "description": "Wire tile entity registration and packet descriptors for all part07 machines (FrameMotor, Transposer, Relay, Retriever, Sorter, Regulator) into the machine module framework. Done: all part07 machine tile entities register cleanly and handle tile packets without error."
+    }
+  ]
+}

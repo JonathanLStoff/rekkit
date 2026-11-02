@@ -1,0 +1,30 @@
+{
+  "sprite": "eloraam/control/control1.png#3",
+  "max_stack": 1,
+  "durability": null,
+  "use": "128 KB magnetic disk storage for 6502 disk drive",
+  "scenarios": [
+    {
+      "name": "insert floppy disk alias into disk drive",
+      "level": 2,
+      "covers": [
+        "provides 128KB magnetic storage when inserted in disk drive"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:disk_drive"]
+        },
+        {
+          "use": "redpower_2:floppy_disk",
+          "on": [0, 0, 0]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:disk_drive"]
+        }
+      ]
+    }
+  ]
+}

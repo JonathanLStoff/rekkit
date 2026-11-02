@@ -1,0 +1,353 @@
+{
+  "tickets": [
+    {
+      "key": "part13-wiring-core",
+      "title": "Red alloy, insulated and bundled wire transmission and microblock placement",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "wire",
+        "wire_red_alloy",
+        "wire_insulated",
+        "wire_bundled",
+        "ribbon_cable",
+        "wire_part",
+        "redwire_part",
+        "bundled_wafer",
+        "red_alloy_wiring"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/mod.rs",
+        "mods/redpower_2/src/wiring/signals.rs",
+        "planning/mods/redpower_2.contract/wire_red_alloy.json",
+        "planning/mods/redpower_2.contract/wire_insulated.json",
+        "planning/mods/redpower_2.contract/wire_bundled.json"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "6.1 Blocks",
+        "6.2 Items"
+      ],
+      "java": [
+        "RedPowerWiring#setupWires",
+        "TileWiring#getConnectableMask",
+        "TileRedwire#scanPoweringStrength",
+        "TileInsulatedWire#getConnectClass",
+        "TileCable#getCurrentStrength",
+        "MicroPlacementWire#onPlaceMicro",
+        "RenderWiring#renderWorldBlock",
+        "RenderRedwire#renderWorldBlock"
+      ],
+      "after": [],
+      "description": "Red alloy, insulated, and bundled wiring network logic. Implement signal propagation (0..=255 internal strength mapped to 0..=15 vanilla level via strength / 17), 16-color insulated wire isolation (no cross-color crosstalk), bundled cable 16-channel multiplexing with BundledSignal bitmask, ribbon cables, and microblock face-mounting placement. Done: make contract-check clean for red alloy, insulated, and bundled wire; level 1 and 4 wiring scenarios pass."
+    },
+    {
+      "key": "part13-bluewire-and-jacketed",
+      "title": "Bluewire Blutricity transmission and jacketed wire microblock columns",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "wire_blutricity",
+        "wire_blutricity_insulated",
+        "wire_jacketed",
+        "cable_jacketed",
+        "wire_jacketed_blutricity"
+      ],
+      "files": [
+        "mods/redpower_2/src/wiring/bluewire.rs",
+        "mods/redpower_2/src/wiring/jacketed.rs",
+        "planning/mods/redpower_2.contract/wire_blutricity.json",
+        "planning/mods/redpower_2.contract/wire_jacketed.json",
+        "planning/mods/redpower_2.contract/cable_jacketed.json"
+      ],
+      "spec": [
+        "2.2 Wiring System",
+        "2.5 Blutricity Power Grid",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "TileBluewire#scanPoweringStrength",
+        "MicroPlacementJacket#tryAddingJacket",
+        "MicroPlacementJacket#onPlaceMicro",
+        "TileWiring#setPartBounds"
+      ],
+      "after": [
+        "part13-wiring-core"
+      ],
+      "description": "Implement Bluewire (uninsulated and insulated 100V DC transmission with 0.01 Ohm/block conductor resistance) and freestanding rigid Jacketed Wire and Jacketed Cable columnar conduits. Done: make contract-check clean for bluewire and jacketed conduits; level 1 and 4 connection scenarios pass."
+    },
+    {
+      "key": "part13-logic-parts-and-simple-gates",
+      "title": "Logic crafting parts and combinational logic gates",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "integrated_logic",
+        "logic_tile",
+        "stone_wafer",
+        "anode",
+        "cathode",
+        "pointer",
+        "plate",
+        "silicon_chip",
+        "tainted_chip",
+        "logic_gate",
+        "and_gate",
+        "or_gate",
+        "nand_gate",
+        "nor_gate",
+        "xor_gate",
+        "xnor_gate",
+        "not_gate",
+        "buffer_gate",
+        "multiplexer",
+        "pulse_former"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/mod.rs",
+        "mods/redpower_2/src/logic/gates.rs",
+        "planning/mods/redpower_2.contract/and_gate.json",
+        "planning/mods/redpower_2.contract/or_gate.json",
+        "planning/mods/redpower_2.contract/not_gate.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks",
+        "6.2 Items"
+      ],
+      "java": [
+        "RedPowerLogic#setupLogic",
+        "BlockLogic#onBlockPlaced",
+        "ItemLogic#getItemName",
+        "TileLogic#onBlockNeighborChange",
+        "TileLogicSimple#simpleTick",
+        "TileLogicSimple#pulseChange",
+        "RenderLogic#renderWorldBlock",
+        "RenderLogicSimple#renderInvBlock"
+      ],
+      "after": [
+        "part13-wiring-core"
+      ],
+      "description": "Implement logic crafting substrates (stone wafer, anode, cathode, pointer, plate, silicon/tainted chips) and flat 1/8-block combinational logic gates: NOT, AND, OR, NAND, NOR, XOR, XNOR, Buffer, Multiplexer, and Pulse Former. Handled on floors/walls/ceilings with screwdriver rotation. Done: contract-check clean for covered gates; level 1 and 4 truth table scenarios pass."
+    },
+    {
+      "key": "part13-logic-latches-and-sensors",
+      "title": "Sequential logic latches, repeaters, synchronizers, randomizers, and light sensor",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "rs_latch",
+        "toggle_latch",
+        "transparent_latch",
+        "repeater",
+        "synchronizer",
+        "randomizer",
+        "light_sensor"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/latches.rs",
+        "planning/mods/redpower_2.contract/rs_latch.json",
+        "planning/mods/redpower_2.contract/toggle_latch.json",
+        "planning/mods/redpower_2.contract/repeater.json",
+        "planning/mods/redpower_2.contract/light_sensor.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "TileLogicSimple#latchTick",
+        "TileLogicSimple#toggleTick",
+        "TileLogicSimple#repTick",
+        "TileLogicSimple#syncTick",
+        "TileLogicSimple#randTick",
+        "TileLogicSimple#lightTick"
+      ],
+      "after": [
+        "part13-logic-parts-and-simple-gates"
+      ],
+      "description": "Implement RS Latch, Toggle Latch (T flip-flop), Transparent Latch (D-Latch), configurable delay Repeater (schedule table: 2..256 ticks), Synchronizer, Randomizer (1 of 3 outputs), and Light Sensor (skylight/blocklight sensing). Done: contract-check clean for covered tiles; level 1 and 4 latch and sensor scenarios pass."
+    },
+    {
+      "key": "part13-logic-pointer-tiles",
+      "title": "Pointer logic tiles: Timer, Sequencer, and State Cell with GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "timer",
+        "sequencer",
+        "state_cell"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/pointer.rs",
+        "planning/mods/redpower_2.contract/timer.json",
+        "planning/mods/redpower_2.contract/sequencer.json",
+        "planning/mods/redpower_2.contract/state_cell.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "TileLogicPointer#timerTick",
+        "TileLogicPointer#sequencerUpdate",
+        "TileLogicPointer#stateCellTick",
+        "IPointerTile#getPointerDirection",
+        "ContainerTimer#handleGuiEvent",
+        "GuiTimer#changeInterval",
+        "RenderLogicPointer#renderWorldBlock"
+      ],
+      "after": [
+        "part13-logic-parts-and-simple-gates"
+      ],
+      "description": "Implement pointer-based logic tiles: Timer (configurable interval 4..N ticks, 2-tick output pulse, GUI interval adjustment), Sequencer (rotates pointer continuously across 4 outputs, random.click audio), and State Cell (monostable pulse extender). Done: contract-check clean for pointer tiles; level 1, 3 and 4 timer/sequencer scenarios pass."
+    },
+    {
+      "key": "part13-logic-storage-and-bus",
+      "title": "Pulse Counter with GUI, Array Cells, and 16-channel Bus Transceiver",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "counter",
+        "null_cell",
+        "invert_cell",
+        "non_invert_cell",
+        "bus_transceiver"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/storage.rs",
+        "mods/redpower_2/src/logic/bus.rs",
+        "planning/mods/redpower_2.contract/counter.json",
+        "planning/mods/redpower_2.contract/null_cell.json",
+        "planning/mods/redpower_2.contract/bus_transceiver.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "TileLogicStorage#onBlockNeighborChange",
+        "ContainerCounter#handleGuiEvent",
+        "GuiCounter#changeCountMax",
+        "TileLogicArray#scanPoweringStrength",
+        "TileLogicAdv#getCurrentStrength",
+        "RenderLogicStorage#renderWorldBlock",
+        "RenderLogicArray#renderWorldBlock",
+        "RenderLogicAdv#renderWorldBlock"
+      ],
+      "after": [
+        "part13-logic-parts-and-simple-gates"
+      ],
+      "description": "Implement Counter logic tile (pulse counting with increment, decrement, max count, GUI configuration, click sound), Array logic cells (Null Cell, Invert Cell, Non-Invert Cell pass-through), and 16-channel Bus Transceiver interfacing Bundled Cables. Done: contract-check clean for covered tiles; level 1, 3 and 4 counter/bus scenarios pass."
+    },
+    {
+      "key": "part13-lighting-lamps",
+      "title": "Standard full-block lamps (16 colors, normal and inverted, active and inactive)",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "lamp",
+        "lamp_lit",
+        "lamp_inverted",
+        "inverted_lamp",
+        "lamp_inverted_lit"
+      ],
+      "files": [
+        "mods/redpower_2/src/lighting/mod.rs",
+        "mods/redpower_2/src/lighting/lamps.rs",
+        "planning/mods/redpower_2.contract/lamp.json",
+        "planning/mods/redpower_2.contract/lamp_lit.json",
+        "planning/mods/redpower_2.contract/lamp_inverted.json"
+      ],
+      "spec": [
+        "3. Machines & Devices",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "RedPowerLighting#setupLighting",
+        "BlockLamp#checkPowerState",
+        "ItemLamp#b",
+        "RenderLamp#renderWorldBlock"
+      ],
+      "after": [
+        "part13-wiring-core"
+      ],
+      "description": "Implement standard 16-color RedPower lamps: active and inactive states, normal (glows when powered) and inverted (glows when unpowered) variants, full light emission (level 15) when lit, redstone power state checking, and texture tinting from lumar. Done: contract-check clean for all lamp states; level 1 and 3 lighting scenarios pass."
+    },
+    {
+      "key": "part13-lighting-fixtures-and-cages",
+      "title": "Shaped lighting: Lumar Fixtures and Cage Lamps (16 colors, normal and inverted)",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "lumar_fixture",
+        "lumar_fixture_inverted",
+        "cage_lamp",
+        "cage_lamp_inverted"
+      ],
+      "files": [
+        "mods/redpower_2/src/lighting/shaped.rs",
+        "planning/mods/redpower_2.contract/lumar_fixture.json",
+        "planning/mods/redpower_2.contract/lumar_fixture_inverted.json",
+        "planning/mods/redpower_2.contract/cage_lamp.json",
+        "planning/mods/redpower_2.contract/cage_lamp_inverted.json"
+      ],
+      "spec": [
+        "3. Machines & Devices",
+        "6.1 Blocks"
+      ],
+      "java": [
+        "BlockShapedLamp#getLightValue",
+        "ItemShapedLamp#b",
+        "TileShapedLamp#onBlockPlaced",
+        "TileShapedLamp#onBlockNeighborChange",
+        "RenderShapedLamp#renderWorldBlock"
+      ],
+      "after": [
+        "part13-lighting-lamps"
+      ],
+      "description": "Implement surface-mounted shaped lighting: Lumar Fixtures and Cage Lamps in 16 colors, normal and inverted forms. Sub-block bounds matching original bounding box, redstone power reaction, frame movement support (IFrameSupport), and light level 15 when lit. Done: contract-check clean for shaped lamps; level 1 and 3 placement and powering scenarios pass."
+    },
+    {
+      "key": "part13-digital-renderers-and-proxies",
+      "title": "Client rendering, proxy registration, and integration tests for digital package",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/digital_client.rs",
+        "mods/redpower_2/tests/digital_e2e.rs"
+      ],
+      "spec": [
+        "9. Recreation Implementation Notes for Rekkit (Rust)",
+        "10. Hooks Needed"
+      ],
+      "java": [
+        "LightingProxy#init",
+        "LightingProxyClient#registerRenderers",
+        "LogicProxy#init",
+        "LogicProxyClient#registerRenderers",
+        "WiringProxy#init",
+        "WiringProxyClient#registerRenderers",
+        "TilePointerRenderer#renderTileEntityAt"
+      ],
+      "after": [
+        "part13-bluewire-and-jacketed",
+        "part13-logic-latches-and-sensors",
+        "part13-logic-pointer-tiles",
+        "part13-logic-storage-and-bus",
+        "part13-lighting-fixtures-and-cages"
+      ],
+      "description": "Implement client proxy wiring, TESR pointer rotation animation, wire connection renders, and end-to-end integration tests for RedPower Digital components (lighting, logic, wiring). Verifies that all 45 Java classes in redpowerdigital are fully represented in Rust. Done: cargo test passes for digital_e2e."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 [package]
 name = "redpower_2"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "RedPower 2 port for Horizon (microblocks, red alloy & bundled wiring, logic gates, pneumatic tubes, frames, blutricity, and 6502 computer)"
 license = "MIT"

@@ -15,11 +15,21 @@ skills:
 ---
 
 # System Prompt
-Clean-room: you work only from planning/mods/<id>.md. Never open
-assets/decompiled/ (the hooks block it). If the spec is unclear or seems wrong,
-report it as a follow_up instead of guessing.
-You own mods/<id>/content/data/** and
-mods/<id>/content/assets/<id>/{lang,models,blockstates,items}/**. Follow the
+Spec first: read the sections of planning/mods/<id>.md your beads need
+(`make spec-show MOD=<id> SECTION=...`), it is the outline. Then read the
+original's Java for what you port, in pieces: `make java-outline
+DIR=assets/decompiled/<archive> GREP=<Class>` and `make java-show ...
+MEMBER=<Class#method>` (never a whole class; the hooks refuse more than 200
+lines at once). Write our own Rust from it, do not paste Java. If the outline
+seems wrong, report it as a follow_up.
+You own mods/<id>/content/data/**,
+mods/<id>/content/assets/<id>/{lang,models,blockstates,items}/** and the
+contract file of each block and item you take,
+planning/mods/<id>.contract/<name>.json. Write that file first, from the Java
+(the mod-spec skill, Outline file and contracts): its shape, facing, the
+original sprite on each face and its GUI's size and slots, or an item's
+sprite, stack size and durability, and a scenario for each attribute the
+outline gives it (`covers`). Follow the
 JSON shapes in mods/example_mod/content exactly. Every block and item in the
 spec registry gets its JSON, a lang key, a model and a loot table, and is
 listed in one of the mod's creative tabs (data/<id>/horizon/creative_tab/*.json:
@@ -29,7 +39,7 @@ and `make check-mods MOD=<id> COMPLETE=1` fails. Copy loot tables from
 mods/example_mod's ender_chest.json (Horizon's pool `condition` form). Never add
 `"replace": true` to shared tags under data/minecraft or data/c. Never put
 Cargo.toml or .rs files under content/.
-Models and items follow the contract in planning/mods/<id>.features.json:
+Models and items follow the contract:
 each face draws the texture of the sprite the contract names for it (never a
 vanilla texture where the original has its own sprite, never one texture on
 every face of a block whose faces differ); the model's elements are the

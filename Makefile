@@ -26,8 +26,8 @@ COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: contract-check fleet-contract setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
-	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status
+.PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
+	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull
 
 all: tekkit direwolf20 agrarian
 
@@ -97,6 +97,23 @@ agents-check:
 # sprite pixel for pixel, stack sizes and durability. COMPLETE=1 check-mods runs it too.
 contract-check:
 	$(PYTHON) scripts/contract_check.py --mod "$(MOD)"
+
+# Local models only: how many agents this machine's memory holds on the selected model (1 = no subagents).
+fleet-local:
+	$(PYTHON) scripts/fleet/local_capacity.py $(ARGS)
+
+# Step 1: the decompiled code in parts one spec-writer can read in ~200k tokens (one writer per part).
+fleet-parts:
+	$(PYTHON) scripts/fleet/parts.py $(MOD)
+
+# The spec-writers' tickets (planning/mods/<id>.tickets/*.json): CHECK=1 only validates (sizes, roles,
+# order, files two tickets edit at once, coverage); otherwise files them with their order.
+fleet-tickets:
+	$(PYTHON) scripts/fleet/beads.py $(if $(filter 1,$(CHECK)),tickets-check,tickets) $(MOD)
+
+# Tickets whose predecessors are all closed: one subagent each, all at once.
+fleet-ready:
+	$(PYTHON) scripts/fleet/beads.py ready $(MOD)
 
 # File each contract difference as a bead under the step that owns it.
 fleet-contract:
@@ -210,6 +227,11 @@ horizon-baseline:
 horizon-status:
 	$(PYTHON) scripts/e2e_harness.py --status
 
+# A person's: force the horizon submodule to origin/main (local changes and stuck operations dropped,
+# errors shown and skipped, .local/ kept). Agents are blocked from it.
+horizon-pull:
+	$(PYTHON) scripts/horizon_pull.py $(if $(BRANCH),--branch "$(BRANCH)",)
+
 # Printed by make itself: cmd.exe would treat the | and < in it as pipes and redirects.
 define HELP
 make setup [ARGS="--skip-packs --skip-build"]
@@ -287,6 +309,8 @@ make check-mods MOD=<id> COMPLETE=1
 make play [MOD=<id>]  Open Horizon in a window with the mod (default: all mods) and a showcase world
 make horizon-baseline / horizon-status
                       Build and run Horizon with no mods at the pinned revision / show the result
+make horizon-pull [BRANCH=main]
+                      Force the horizon submodule to the remote's newest commit (yours to run)
 CURSEFORGE_API_KEY is optional for Agrarian Skies 2: without a working key it falls back
                       to the public CurseForge download of pack 2.0.6 (file 3016703).
 endef

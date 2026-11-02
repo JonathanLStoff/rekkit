@@ -1,0 +1,338 @@
+{
+  "tickets": [
+    {
+      "key": "part09-ores-and-storage-blocks",
+      "title": "Ores and mineral storage blocks: Ruby, Green Sapphire, Sapphire, Silver, Tin, Copper, Tungsten, Nikolite",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "ore_ruby",
+        "ore_green_sapphire",
+        "ore_sapphire",
+        "ore_silver",
+        "ore_tin",
+        "ore_copper",
+        "ore_tungsten",
+        "ore_nikolite",
+        "block_ruby",
+        "block_green_sapphire",
+        "block_sapphire",
+        "block_silver",
+        "block_tin",
+        "block_copper"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/ores.rs",
+        "planning/mods/redpower_2.contract/ore_ruby.json",
+        "planning/mods/redpower_2.contract/ore_green_sapphire.json",
+        "planning/mods/redpower_2.contract/ore_sapphire.json",
+        "planning/mods/redpower_2.contract/ore_silver.json",
+        "planning/mods/redpower_2.contract/ore_tin.json",
+        "planning/mods/redpower_2.contract/ore_copper.json",
+        "planning/mods/redpower_2.contract/ore_tungsten.json",
+        "planning/mods/redpower_2.contract/ore_nikolite.json",
+        "planning/mods/redpower_2.contract/block_ruby.json",
+        "planning/mods/redpower_2.contract/block_green_sapphire.json",
+        "planning/mods/redpower_2.contract/block_sapphire.json",
+        "planning/mods/redpower_2.contract/block_silver.json",
+        "planning/mods/redpower_2.contract/block_tin.json",
+        "planning/mods/redpower_2.contract/block_copper.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "BlockCustomOre#getHardness",
+        "BlockCustomOre#quantityDropped",
+        "BlockCustomOre#getBlockDropped",
+        "ItemCustomOre#getPlacedBlockMetadata",
+        "BlockStorage#getHardness",
+        "ItemStorage#getPlacedBlockMetadata",
+        "RedPowerWorld#initialize"
+      ],
+      "after": [],
+      "description": "Implement RedPower 2 ore blocks (BlockCustomOre meta 0..7: Ruby, Green Sapphire, Sapphire, Silver, Tin, Copper, Tungsten, Nikolite) and compact 3x3 storage blocks (BlockStorage meta 0..5: Ruby, Green Sapphire, Sapphire, Silver, Tin, Copper). Ores have varied hardness (gem ores and tungsten=3.0, silver=4.0, tin/copper=2.5) and harvest levels (iron pickaxe for gems/nikolite/tungsten, stone for silver, wood for tin/copper). Nikolite drops 4..5 dust with fortune scaling and 1..5 XP; gems drop 1 item with fortune scaling and 3..7 XP; metal ores drop smeltable blocks. Storage blocks craft reversibly from 9 gems or ingots. Done: make contract-check clean for all 8 ores and 6 storage blocks; level 1 and 3 scenarios pass."
+    },
+    {
+      "key": "part09-decorative-stone-basalt-marble",
+      "title": "Decorative stones: Marble, Basalt, bricks, cobblestone, chiseled, pavers, and mossifier logic",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "marble",
+        "block_marble",
+        "basalt",
+        "block_basalt",
+        "marble_brick",
+        "basalt_cobblestone",
+        "basalt_brick",
+        "basalt_chiseled",
+        "basalt_paver"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/stone.rs",
+        "planning/mods/redpower_2.contract/marble.json",
+        "planning/mods/redpower_2.contract/block_marble.json",
+        "planning/mods/redpower_2.contract/basalt.json",
+        "planning/mods/redpower_2.contract/block_basalt.json",
+        "planning/mods/redpower_2.contract/marble_brick.json",
+        "planning/mods/redpower_2.contract/basalt_cobblestone.json",
+        "planning/mods/redpower_2.contract/basalt_brick.json",
+        "planning/mods/redpower_2.contract/basalt_chiseled.json",
+        "planning/mods/redpower_2.contract/basalt_paver.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "BlockCustomStone#getHardness",
+        "BlockCustomStone#getSpecialExplosionResistance",
+        "ItemCustomStone#getPlacedBlockMetadata",
+        "BlockCobbleMossifier#spreadMoss",
+        "BlockBrickMossifier#crackBrick",
+        "BlockBrickMossifier#spreadMoss"
+      ],
+      "after": [],
+      "description": "Implement RedPower 2 decorative stones and volcanic rock blocks (BlockCustomStone meta 0..6: Marble, Basalt, Marble Brick, Basalt Cobblestone, Basalt Brick, Chiseled Basalt Brick, Basalt Paver) and stone brick/cobble mossifier and cracking mechanics. Basalt has high blast resistance (12.0F) and hardness (2.5F); mining basalt drops basalt cobblestone, which smelts back into smooth basalt. Marble has hardness 1.0F. BlockBrickMossifier and BlockCobbleMossifier simulate stone brick cracking near water+lava and moss spreading under humid conditions. Done: make contract-check clean for marble, basalt, and all stone variants; level 1 and 3 scenarios pass."
+    },
+    {
+      "key": "part09-flora-crops-rubber-trees",
+      "title": "Flora, crops, and rubber trees: Indigo flowers, Rubber sapling, log, leaves, and Flax crop",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "flax_crop",
+        "indigo_flower",
+        "rubber_sapling",
+        "rubber_leaves",
+        "rubber_log",
+        "flax_seeds"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/flora.rs",
+        "planning/mods/redpower_2.contract/flax_crop.json",
+        "planning/mods/redpower_2.contract/indigo_flower.json",
+        "planning/mods/redpower_2.contract/rubber_sapling.json",
+        "planning/mods/redpower_2.contract/rubber_leaves.json",
+        "planning/mods/redpower_2.contract/rubber_log.json",
+        "planning/mods/redpower_2.contract/flax_seeds.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "BlockCustomCrops#fertilize",
+        "BlockCustomCrops#getBlockDropped",
+        "BlockCustomFlower#growTree",
+        "BlockCustomLeaves#updateLeaves",
+        "BlockCustomLeaves#quantityDropped",
+        "BlockCustomLog#ctor",
+        "ItemCustomSeeds#onItemUseFirst",
+        "ItemCustomFlower#getPlacedBlockMetadata"
+      ],
+      "after": [],
+      "description": "Implement RedPower 2 flora, farming crops, and rubber trees. BlockCustomFlower meta 0 is Indigo Flower (harvested for dye_indigo); meta 1 is Rubber Sapling which grows into a rubber tree when bonemealed or ticked on dirt. BlockCustomLog (rubber wood) smelts into charcoal and crafts into 8 sticks. BlockCustomLeaves decay when detached from rubber logs and drop rubber saplings. BlockCustomCrops (Flax) grows through 6 maturity stages on farmland when planted with flax_seeds; harvesting mature flax yields 1..3 string and 1..3 flax seeds. Done: make contract-check clean for flax_crop, indigo_flower, rubber_sapling, rubber_leaves, rubber_log, flax_seeds; level 1, 2 and 3 scenarios pass."
+    },
+    {
+      "key": "part09-gem-tools",
+      "title": "Gem tools: Ruby, Green Sapphire, and Sapphire pickaxes, shovels, axes, swords, and hoes",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "ruby_pickaxe",
+        "green_sapphire_pickaxe",
+        "sapphire_pickaxe",
+        "ruby_shovel",
+        "green_sapphire_shovel",
+        "sapphire_shovel",
+        "ruby_axe",
+        "green_sapphire_axe",
+        "sapphire_axe",
+        "ruby_sword",
+        "green_sapphire_sword",
+        "sapphire_sword",
+        "ruby_hoe",
+        "green_sapphire_hoe",
+        "sapphire_hoe"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/gem_tools.rs",
+        "planning/mods/redpower_2.contract/ruby_pickaxe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_pickaxe.json",
+        "planning/mods/redpower_2.contract/sapphire_pickaxe.json",
+        "planning/mods/redpower_2.contract/ruby_shovel.json",
+        "planning/mods/redpower_2.contract/green_sapphire_shovel.json",
+        "planning/mods/redpower_2.contract/sapphire_shovel.json",
+        "planning/mods/redpower_2.contract/ruby_axe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_axe.json",
+        "planning/mods/redpower_2.contract/sapphire_axe.json",
+        "planning/mods/redpower_2.contract/ruby_sword.json",
+        "planning/mods/redpower_2.contract/green_sapphire_sword.json",
+        "planning/mods/redpower_2.contract/sapphire_sword.json",
+        "planning/mods/redpower_2.contract/ruby_hoe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_hoe.json",
+        "planning/mods/redpower_2.contract/sapphire_hoe.json"
+      ],
+      "spec": [
+        "4.2 Mining & Combat Equipment",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "ItemCustomPickaxe#ctor",
+        "ItemCustomShovel#ctor",
+        "ItemCustomAxe#ctor",
+        "ItemCustomSword#ctor",
+        "ItemCustomHoe#ctor",
+        "RedPowerWorld#initialize"
+      ],
+      "after": [],
+      "description": "Implement all 15 gemstone tools across Ruby, Green Sapphire, and Sapphire materials: Pickaxes, Shovels, Axes, Swords, and Hoes. Every gem tool has durability 500, harvest level 2 (iron tier), mining speed 8.0F (faster than iron 6.0F, approaching diamond 8.0F), combat attack damage 7 (swords) / 3 (tools), and enchantability 12. Hoes till dirt/grass into farmland losing 1 durability. Done: make contract-check clean for all 15 gem tools; level 2 scenarios pass."
+    },
+    {
+      "key": "part09-sickles-area-harvesting",
+      "title": "Sickles: Wood, Stone, Iron, Diamond, Gold, Ruby, Green Sapphire, Sapphire sickles & area harvesting",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "wood_sickle",
+        "stone_sickle",
+        "iron_sickle",
+        "sickle",
+        "diamond_sickle",
+        "gold_sickle",
+        "ruby_sickle",
+        "green_sapphire_sickle",
+        "sapphire_sickle"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/sickles.rs",
+        "planning/mods/redpower_2.contract/wood_sickle.json",
+        "planning/mods/redpower_2.contract/stone_sickle.json",
+        "planning/mods/redpower_2.contract/iron_sickle.json",
+        "planning/mods/redpower_2.contract/sickle.json",
+        "planning/mods/redpower_2.contract/diamond_sickle.json",
+        "planning/mods/redpower_2.contract/gold_sickle.json",
+        "planning/mods/redpower_2.contract/ruby_sickle.json",
+        "planning/mods/redpower_2.contract/green_sapphire_sickle.json",
+        "planning/mods/redpower_2.contract/sapphire_sickle.json"
+      ],
+      "spec": [
+        "4.2 Mining & Combat Equipment",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "ItemSickle#ctor",
+        "ItemSickle#onBlockDestroyed",
+        "RedPowerWorld#initialize"
+      ],
+      "after": [],
+      "description": "Implement sickle harvesting tools across all 8 tiers: Wood (durability 59), Stone (131), Iron (250, also aliased as sickle), Diamond (1561), Gold (32), Ruby (500), Green Sapphire (500), Sapphire (500). When used to break leaves or plants, sickles harvest in a 3x3x3 volume (leafRadius = 1) for leaves, and a 5x5 flat area (cropRadius = 2) for tall grass, crops, and flowers, taking 1 durability per broken block. Done: make contract-check clean for all sickle items; level 2 scenarios pass."
+    },
+    {
+      "key": "part09-athame-disjunction",
+      "title": "Athame ritual silver dagger and Disjunction enchantment",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "athame"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/athame.rs",
+        "planning/mods/redpower_2.contract/athame.json"
+      ],
+      "spec": [
+        "4.2 Mining & Combat Equipment",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "ItemAthame#ctor",
+        "ItemAthame#getDamageVsEntity",
+        "EnchantmentDisjunction#ctor",
+        "EnchantmentDisjunction#calcModifierLiving",
+        "EnchantmentDisjunction#canEnchantItem"
+      ],
+      "after": [],
+      "description": "Implement the Athame ceremonial silver dagger (ItemAthame) and the exclusive Disjunction weapon enchantment (EnchantmentDisjunction). Athame has durability 100, base attack damage 1 against normal mobs, but deals 25 base damage against Endermen and the Ender Dragon. Disjunction (levels 1..5) is exclusive to Athame and deals +6 * level additional bonus damage to Endermen and the Ender Dragon. Done: make contract-check clean for athame; level 2 combat scenarios pass."
+    },
+    {
+      "key": "part09-utility-woolcard-paint",
+      "title": "Utility crafting tools: Wool Card, Dry Paint Brush, Paint Brush, Empty Paint Can, and Paint Can",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "wool_card",
+        "dry_paint_brush",
+        "paint_brush",
+        "empty_paint_can",
+        "paint_can",
+        "tools_and_equipment"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/utility_tools.rs",
+        "planning/mods/redpower_2.contract/wool_card.json",
+        "planning/mods/redpower_2.contract/dry_paint_brush.json",
+        "planning/mods/redpower_2.contract/paint_brush.json",
+        "planning/mods/redpower_2.contract/empty_paint_can.json",
+        "planning/mods/redpower_2.contract/paint_can.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools",
+        "4.3 Utility & Storage Items",
+        "6. Complete Item & Block Registry (`redpower_2`)"
+      ],
+      "java": [
+        "ItemWoolCard#ctor",
+        "ItemPaintBrush#itemUseShared",
+        "ItemPaintCan#onItemRightClick",
+        "RedPowerWorld#initialize"
+      ],
+      "after": [],
+      "description": "Implement Wool Card, Paint Cans, and Paint Brushes. Wool Card (ItemWoolCard, durability 63) crafts with any color wool block to tease it back into 4 string, losing 1 durability in the crafting grid. Empty Paint Can (crafting from 3 tinplate) combines with dye and seeds to produce 16-color Paint Cans with 15 uses. Dry Paint Brush crafts with a full paint can to yield a colored Paint Brush (15 durability). Colored Paint Brush colors pneumatic tubes, jacketed cables, and canvas bags on right-click, consuming 1 durability. Also covers tools_and_equipment feature. Done: make contract-check clean for wool_card, dry_paint_brush, paint_brush, empty_paint_can, paint_can; level 2 scenarios pass."
+    },
+    {
+      "key": "part09-worldgen-features",
+      "title": "World generation: Ores, Marble pockets, Rubber Trees, Volcanoes with FractalLib, and surface gen",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "world_generation"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/gen.rs",
+        "mods/redpower_2/src/world/fractal.rs"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "8. Hazards & Safety Limits"
+      ],
+      "java": [
+        "FractalLib#perturb",
+        "FractalLib.BlockSnake#iterate",
+        "WorldGenCustomOre#generate",
+        "WorldGenMarble#searchBlock",
+        "WorldGenRubberTree#generate",
+        "WorldGenVolcano#searchBlock",
+        "WorldGenVolcano#eatTree",
+        "RedPowerWorld#GenerateSurface",
+        "mod_RedPowerWorld#generateSurface"
+      ],
+      "after": [
+        "part09-ores-and-storage-blocks",
+        "part09-decorative-stone-basalt-marble",
+        "part09-flora-crops-rubber-trees"
+      ],
+      "description": "Implement world generation routines for RedPowerWorld ores, structures, and biomes. WorldGenCustomOre generates clusters of Ruby, Green Sapphire, Sapphire (2 clusters/chunk, vein 7, Y 0..47), Silver (4 clusters/chunk, vein 8, Y 0..31), Tin (10 clusters/chunk, vein 8, Y 0..47), Copper (20 clusters/chunk, vein 8, Y 0..63), Tungsten (1 cluster/chunk, vein 4, Y 0..15), and Nikolite (4 clusters/chunk, vein 10, Y 0..15). WorldGenMarble deposits 4 smooth marble pockets per chunk at Y 32..63 using a 3D flood fill. WorldGenRubberTree populates Jungle and JungleHills biomes (up to 6 per chunk) with rubber wood trunks and leaves. WorldGenVolcano uses FractalLib (BlockSnake, 3D hash-based fractal noise) to carve active basalt volcano cones with obsidian rim and central lava chamber. Done: world generation integration tests pass; chunk generation produces ores, marble, volcanoes, and rubber trees according to spec distributions."
+    }
+  ]
+}

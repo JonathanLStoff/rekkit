@@ -1,0 +1,99 @@
+{
+  "tickets": [
+    {
+      "key": "part04-lamp-block-content",
+      "title": "RedPower Lamp: block definitions, metadata colors, creative tabs, and crafting recipes",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 60,
+      "covers": [
+        "lamp",
+        "lamp_lit",
+        "lamp_inverted",
+        "inverted_lamp",
+        "lamp_inverted_lit"
+      ],
+      "files": [
+        "mods/redpower_2/content/data/redpower_2/recipe/lamp.json",
+        "mods/redpower_2/content/data/redpower_2/recipe/lamp_inverted.json",
+        "mods/redpower_2/content/data/redpower_2/loot_table/blocks/lamp.json",
+        "mods/redpower_2/content/data/redpower_2/loot_table/blocks/lamp_lit.json",
+        "mods/redpower_2/content/data/redpower_2/loot_table/blocks/lamp_inverted.json",
+        "mods/redpower_2/content/data/redpower_2/loot_table/blocks/lamp_inverted_lit.json",
+        "planning/mods/redpower_2.contract/inverted_lamp.json",
+        "planning/mods/redpower_2.contract/lamp_inverted_lit.json"
+      ],
+      "spec": [
+        "6.1 Blocks (121 entries)",
+        "7.3 Key Crafting Recipes"
+      ],
+      "java": [
+        "RedPowerLighting#initialize",
+        "ItemLamp#getPlacedBlockMetadata",
+        "ItemLamp#d"
+      ],
+      "after": [],
+      "description": "Register block content and crafting recipes for 16-color standard and inverted RedPower lamps. Configure block properties (hardness 0.5, sounds glass, light level 15 for lit states), loot tables (breaking active/inactive standard lamps drops unlit lamp; breaking active/inactive inverted lamps drops lit inverted lamp item), creative tab registrations, and crafting recipes (6x Glass + 1x Lumar + 1x Redstone Dust for standard lamp; 6x Glass + 1x Lumar + 1x Redstone Torch for inverted lamp across all 16 lumar dye colors). Write contract files for inverted lamp states. Done: contract-check clean for inverted_lamp and lamp_inverted_lit; recipes craft correct colored lamp items."
+    },
+    {
+      "key": "part04-lamp-multipass-render",
+      "title": "RedPower Lamp: multipass block and inventory rendering with colored halo bloom",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [
+        "lamp",
+        "lamp_lit",
+        "lamp_inverted",
+        "lamp_inverted_lit"
+      ],
+      "files": [
+        "mods/redpower_2/src/lighting/render.rs",
+        "mods/redpower_2/src/lighting/halo.rs"
+      ],
+      "spec": [
+        "3. Machines & Devices",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "RenderLamp#renderWorldBlock",
+        "RenderLamp#renderInvBlock"
+      ],
+      "after": [
+        "part04-lamp-block-content"
+      ],
+      "description": "Implement custom multipass rendering for full-block lamps matching RenderLamp.java. Pass 0: renders full 1x1x1 cube with sprite index 16+md for unlit states (directional face shading) and 32+md for lit states (full 1.0F emissive brightness). Pass 1: for lit states, renders additive alpha bloom halo box expanded by 0.05 blocks ([-0.05, -0.05, -0.05, 1.05, 1.05, 1.05]) tinted with lightColors[md] at alpha 0.5. Implement inventory block rendering with proper lit/unlit textures. Done: contract-check model verification clean; pass 0 and pass 1 halo rendering verified in tests."
+    },
+    {
+      "key": "part04-lamp-power-logic-and-tests",
+      "title": "RedPower Lamp: redstone power state toggle and verification scenarios",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [
+        "lamp",
+        "lamp_lit",
+        "lamp_inverted",
+        "inverted_lamp",
+        "lamp_inverted_lit"
+      ],
+      "files": [
+        "mods/redpower_2/tests/lamp_tests.rs",
+        "mods/redpower_2/src/lighting/tests.rs"
+      ],
+      "spec": [
+        "3. Machines & Devices",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "BlockLamp#checkPowerState",
+        "BlockLamp#a"
+      ],
+      "after": [
+        "part04-lamp-multipass-render",
+        "part13-lighting-lamps"
+      ],
+      "description": "Implement power state checking and write contract integration scenarios for all 16 lamp colors. When neighbor blocks update, check RedPowerLib.isPowered (handling vanilla redstone, weak power, strong power, and bundled cables). Standard lamp toggles off -> lit on power and lit -> off on signal loss; inverted lamp toggles lit -> off on power and off -> lit on signal loss. Preserve metadata across state swaps. Done: Level 1 placement/hitbox and Level 4 redstone toggle scenarios pass for both standard and inverted lamps."
+    }
+  ]
+}

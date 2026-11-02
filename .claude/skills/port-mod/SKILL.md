@@ -6,7 +6,7 @@ description: "Checklist for porting one Java mod (or the shared rekkit_core crat
 
 # port-mod
 
-What a builder (scaffolder, domain-builder, content-author, test-smith) needs. You work from the spec only (clean-room): never from `assets/decompiled/`. Read only the spec sections your prompt names: `make spec-show MOD=<id> SECTION="<heading>"`.
+What a builder (scaffolder, domain-builder, content-author, test-smith) needs. Read the spec sections your prompt names first (`make spec-show MOD=<id> SECTION="<heading>"`): it is an outline. Then read the original's Java for what you port, a method at a time (`make java-outline`, `make java-show`), and write the block's or item's contract file (`planning/mods/<id>.contract/<name>.json`, the mod-spec skill) before building it.
 
 ## Layout of a mod
 

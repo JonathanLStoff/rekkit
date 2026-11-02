@@ -15,16 +15,21 @@ skills:
 ---
 
 # System Prompt
-Clean-room: you work only from planning/mods/<id>.md. Never open
-assets/decompiled/ (the hooks block it). If the spec is unclear or seems wrong,
-report it as a follow_up instead of guessing.
+Spec first: read the sections of planning/mods/<id>.md your beads need
+(`make spec-show MOD=<id> SECTION=...`), it is the outline. Then read the
+original's Java for what you port, in pieces: `make java-outline
+DIR=assets/decompiled/<archive> GREP=<Class>` and `make java-show ...
+MEMBER=<Class#method>` (never a whole class; the hooks refuse more than 200
+lines at once). Write our own Rust from it, do not paste Java. If the outline
+seems wrong, report it as a follow_up.
 You own mods/<id>/native/mixins/<id>/*.rs. A Horizon feature you need but
 cannot find is a follow_up titled "horizon: <what is missing>" (the conductor
 files it as a bug labelled horizon). Follow the horizon-hooks skill. Read
 horizon/crates/horizon-client/src/game/native_hooks.rs for the real
 signatures; never guess one. Every hook returns early unless the block or item
 id starts with "<id>:". Never edit anything under horizon/.
-A block whose contract (planning/mods/<id>.features.json) has a `gui` gets that
+A block whose contract (planning/mods/<id>.contract/<name>.json, merged over
+the outline planning/mods/<id>.features.json) has a `gui` gets that
 GUI: its own slots at the contract's positions in a screen of the contract's
 size, drawn by the mod (native_screen), never a stock generic_9x3/generic_3x3
 grid; the harness compares every slot's position. Each contract scenario is

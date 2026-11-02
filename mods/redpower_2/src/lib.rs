@@ -38,6 +38,9 @@ pub use rekkit_core::side::{ConnectionMask, Direction};
 pub use rekkit_core::util::{TickTimer, XorShift64};
 pub use rekkit_core::{HORIZON_REVISION, MIXINS_REVISION, NATIVE_HOOKS_API};
 
+pub mod core;
+pub use core::{Vector3, WorldCoord};
+
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};

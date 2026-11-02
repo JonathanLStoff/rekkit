@@ -4,7 +4,7 @@ Every mod is released on its own, never bundled: the GitHub release `<id>-<versi
 
 ## Pre-release or full release: the art decides
 
-Rekkit's code is our own (clean-room: written from the spec, never from the decompiled Java). The **art and sound are the original mod's** until we replace them, and we keep them only to test. So:
+Rekkit's code is our own Rust, written from the spec and the original's behaviour, never pasted Java. The **art and sound are the original mod's** until we replace them, and we keep them only to test. So:
 
 | The mod ships | Release | Horizon's registry |
 |---|---|---|

@@ -1,0 +1,58 @@
+fn block_entity_ticks(block: &str, ticks: &mut bool) {
+    if !block.starts_with("redpower_2:") {
+        return;
+    }
+    if matches!(
+        block,
+        "redpower_2:alloy_furnace"
+            | "redpower_2:project_table"
+            | "redpower_2:blulectric_furnace"
+            | "redpower_2:buffer_chest"
+            | "redpower_2:buffer"
+            | "redpower_2:blulectric_alloy_furnace"
+            | "redpower_2:charging_bench"
+            | "redpower_2:deployer"
+            | "redpower_2:block_breaker"
+            | "redpower_2:transposer"
+            | "redpower_2:filter"
+            | "redpower_2:item_detector"
+            | "redpower_2:sorting_machine"
+            | "redpower_2:battery_box"
+            | "redpower_2:frame_motor"
+            | "redpower_2:retriever"
+            | "redpower_2:wind_turbine"
+            | "redpower_2:regulator"
+            | "redpower_2:thermopile"
+            | "redpower_2:igniter"
+            | "redpower_2:assembler"
+            | "redpower_2:ejector"
+            | "redpower_2:relay"
+            | "redpower_2:sortron"
+            | "redpower_2:manager"
+            | "redpower_2:solar_panel"
+            | "redpower_2:pump"
+            | "redpower_2:accelerator"
+            | "redpower_2:grate"
+            | "redpower_2:transformer"
+            | "redpower_2:blulectric_engine"
+            | "redpower_2:timer"
+            | "redpower_2:sequencer"
+            | "redpower_2:state_cell"
+            | "redpower_2:pulse_former"
+            | "redpower_2:repeater"
+            | "redpower_2:synchronizer"
+            | "redpower_2:randomizer"
+            | "redpower_2:light_sensor"
+            | "redpower_2:pneumatic_tube"
+            | "redpower_2:redstone_tube"
+            | "redpower_2:restrictor_tube"
+            | "redpower_2:magtube"
+            | "redpower_2:cpu"
+            | "redpower_2:display"
+            | "redpower_2:monitor"
+            | "redpower_2:disk_drive"
+            | "redpower_2:io_expander"
+    ) {
+        *ticks = true;
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "scenarios": [
+    {
+      "name": "pneumatic tube routes items using Dijkstra shortest-path logic without dropping",
+      "level": 4,
+      "covers": [
+        "routes items to destinations using Dijkstra shortest-path logic without dropping"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:pneumatic_tube"]
+        },
+        {
+          "setblock": [0, 0, 1, "minecraft:chest"]
+        }
+      ]
+    }
+  ]
+}

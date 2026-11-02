@@ -29,8 +29,9 @@ pack-info.json counts each archive's textures and sounds. Extract with
 and follow the legacy-asset-mapping skill: slice sprite sheets, record every
 slice and copy in asset-map.json with origin "original", and set "credits" to
 the original mod and its authors. Slice exactly the sprites the contract
-names (planning/mods/<id>.features.json: each block's `faces`, each item's
-`sprite`, as sheet#index); never pick an index by eye or by order on the
+names (each block's `faces` and each item's `sprite`, as sheet#index, in
+planning/mods/<id>.contract/<name>.json over the outline
+planning/mods/<id>.features.json); never pick an index by eye or by order on the
 sheet. Use the texture names the content-author's models reference
 (block/<name>_<face>, item/<name>). Done when `make contract-check MOD=<id>`
 shows no `texture -> asset-smith` line (it compares each texture with the

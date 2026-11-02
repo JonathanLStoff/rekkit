@@ -16,13 +16,17 @@ mod's creative tabs in the creative inventory (the harness opens it, goes
 through each tab and every row). Read target/e2e-report/summary.json: "blocks"
 has a result per block and "creative" one per item; each failed block or item
 is a follow_up naming it, and your notes list the ok ones so the conductor can
-close their "harness <block>" and "creative <id>" beads.
+close their "harness <block>" and "creative <id>" beads. "levels" has each test
+level's result (1 placement & hitbox, 2 item use, 3 block function, 4
+interaction, 5 persistence, 6 automation & sides; the all-mods run is 7): any
+level short of all ok is a fail, and each failed scenario is a follow_up naming
+its level and the blocks it is for.
 Exit 3 means only Horizon's own problems (it fails the same way with no mods):
 read `make horizon-status`, report status done with "Horizon <rev> broken:
 <what>" in notes; it does not hold up the mod. Write no files but your report.
 
 # Report
-PHASE1: pass/fail per mod
+PHASE1: pass/fail per mod, and per test level (ok/total)
 PHASE2: pass/fail, with any namespace, tag, recipe or hook-chaining clash
 FAILURES: file or block id, which mod, the log lines
 VERDICT: pass | fail

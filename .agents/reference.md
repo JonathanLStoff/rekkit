@@ -16,9 +16,9 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 
 | # | Step | Done when |
 |---|---|---|
-| 1 | **Spec from the Java**: decompile, describe the behaviour citing classes, list blocks/items/subsystems | spec + `<id>.features.json`; feature beads filed |
+| 1 | **Spec and tickets from the Java**: an outline with attributes and test levels, then one spec-writer per part of the code writing ≤200k-token tickets with their order | tickets filed (`make fleet-tickets`) |
 | 2 | **Scaffold** the three parts above | it builds; check-mods passes |
-| 3 | **Code** from the spec only (clean-room) | every Code feature closed |
+| 3 | **Code**: one subagent per ready ticket, many at once; spec first, then the Java; each block's contract file first | every ticket closed |
 | 4 | **Check** syntax and logic: `make agent-gate`, parity-critic against spec and Java | clean |
 | 5 | **Extract assets**: the original's art and sound from a client build, `origin: original`, credited | every block and item mapped |
 | 6 | **New assets**: only what 26.3 needs and the original never had, at its size and palette (`make fleet-gaps`, `make art`) | `make check-mods COMPLETE=1` passes |
@@ -49,6 +49,10 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 | `make fleet-models [ARGS=--clear]` | The model chain (`.agents/models.json`) and which models are resting after a limit |
 | `make fleet-start MOD=<id>` / `fleet-stop` | Start a mod (claim, stories, Horizon check) / let every fleet agent stop |
 | `make fleet-task BEAD=<id> ROLE=<role>` / `fleet-inbox` | A subagent takes a bead / the conductor files the reports |
+| `make fleet-local [ARGS=...]` | Local models only: how many agents the machine's VRAM (or unified memory, or RAM) holds on the selected model, and the Ollama settings to serve them (`target/fleet/local.json`) |
+| `make fleet-parts MOD=<id>` | The decompiled code in ~200k-token parts, one spec-writer each (lists in `target/fleet/parts/<id>/`) |
+| `make fleet-tickets MOD=<id> [CHECK=1]` | Validate the spec-writers' tickets (sizes, roles, order, shared files, coverage) and file them with their order |
+| `make fleet-ready MOD=<id>` | Tickets whose predecessors are all closed: one subagent each |
 | `make fleet-features MOD=<id>` / `fleet-gaps MOD=<id>` / `fleet-status [MOD=<id>]` / `board` | Beads: features from the spec / from missing assets / progress / regenerate the board |
 | `make tasks [MOD=<id>]` / `watch` / `board-live` / `board-html` | Look at progress: the mod in progress on one screen / redrawn every 30 s / the board in your browser, live or as a file |
 | `make fleet-resume MOD=<id>` | Where a run stands after a crash, lost credits or a network drop: interrupted subagents, waiting reports, the last actions |

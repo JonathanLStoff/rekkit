@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from functools import lru_cache
 import os
 import re
 import shutil
@@ -289,7 +290,8 @@ def gaps(mod: str) -> str:
 
 
 # Where each kind of difference from the original is fixed: (step, role).
-CONTRACT_OWNERS = {"spec-writer": 1, "asset-smith": 5, "content-author": 3, "domain-builder": 3, "hook-engineer": 3}
+CONTRACT_OWNERS = {"spec-writer": 1, "asset-smith": 5, "content-author": 3, "domain-builder": 3, "hook-engineer": 3,
+                   "test-smith": 3}
 LIVE_CONTRACT_STAGES = ("2_shape", "4_gui", "4_menu_opens", "10_scenario")
 
 
@@ -312,54 +314,224 @@ def contract(mod: str) -> str:
         for e in session.get("errors", []):
             if str(e.get("stage", "")).startswith(LIVE_CONTRACT_STAGES):
                 role = "domain-builder" if e["stage"].startswith(("4_", "10_")) else "content-author"
-                found.append({"for": e.get("block") or e.get("scenario") or mod, "kind": "live " + e["stage"],
-                              "owner": role, "why": str(e.get("error"))})
+                for subject in [e["block"]] if e.get("block") else (e.get("for") or [mod]):
+                    found.append({"for": subject, "kind": "live " + e["stage"], "owner": role,
+                                  "why": str(e.get("error"))})
     grouped: dict[tuple[int, str, str], list[dict]] = {}
     for p in found:
-        # The spec-writer completes the contract in one pass over the Java: one bead, not one per block.
-        subject = "the contract" if p["owner"] == "spec-writer" else p["for"]
+        # The outline is one pass over the mod: one bead for it, not one per block.
+        subject = "the outline" if p["owner"] == "spec-writer" else p["for"].split(":", 1)[-1]
         grouped.setdefault((CONTRACT_OWNERS.get(p["owner"], 3), p["owner"], subject), []).append(p)
-    made = reopened = 0
+    st = mod_status(mod)
+    made = updated = reopened = 0
     for step in sorted({k[0] for k in grouped}):
+        story = st["stories"][step]
+        kids = {i["title"]: i for i in issues("--parent", story["id"])}
         entries = []
-        for (s, owner, subject), ps in sorted(grouped.items()):
-            if s != step:
+        for (s_, owner, subject), ps in sorted(grouped.items()):
+            if s_ != step:
                 continue
             kinds = ", ".join(sorted({p["kind"] for p in ps}))
-            entries.append((f"{mod}: match the original: {subject} ({owner})", "bug", ["contract", owner],
-                            f"Differs from the original ({kinds}):\n"
-                            + "\n".join(f"- {p['for']}: {p['why']}" if subject == "the contract" else f"- {p['why']}"
-                                        for p in ps[:300])
-                            + "\n\nRecheck: make contract-check MOD=" + mod))
+            text = (f"Differs from the original ({kinds}), for {owner}:\n"
+                    + "\n".join(f"- {p['for']}: {p['why']}" if subject == "the outline" else f"- {p['why']}"
+                                for p in ps[:300])
+                    + f"\n\nRecheck: make contract-check MOD={mod}")
+            # The block's or item's own feature bead carries it: one bead per block, small enough for
+            # one agent, many in parallel.
+            prefix = "assets for " if step == 5 else ""
+            existing = next((kids[t] for t in (f"{mod}: {prefix}block {subject}", f"{mod}: {prefix}item {subject}",
+                                               f"{mod}: match the original: {subject} ({owner})") if t in kids), None)
+            if existing:
+                bd("update", existing["id"], "--description", text, parse=False)
+                updated += 1
+                if existing["status"] == "closed":
+                    bd("reopen", existing["id"], "--reason", "Differs from the original: see its description", parse=False)
+                    reopened += 1
+            else:
+                entries.append((f"{mod}: match the original: {subject} ({owner})", "bug", ["contract", owner], text))
         made += add_children(mod, step, entries)
-        story = mod_status(mod)["stories"][step]
-        titles = {e[0] for e in entries}
-        closed = [i["id"] for i in issues("--parent", story["id"], "--status", "closed") if i["title"] in titles]
-        for bead in closed:
-            bd("reopen", bead)
-        reopened += len(closed)
-        if entries and story["status"] == "closed":
-            bd("reopen", story["id"])
-    epic = mod_status(mod)["epic"]
-    if found and epic["status"] == "closed":
-        bd("reopen", epic["id"])
-    return (f"{len(found)} difference(s) from the original in {len(grouped)} block(s)/item(s): "
-            f"{made} new bead(s), {reopened} reopened." if found else f"{mod} matches its contract.")
+        if story["status"] == "closed":
+            bd("reopen", story["id"], "--reason", "Differs from the original (make contract-check)", parse=False)
+    # Beads this command filed earlier whose difference is gone: close them.
+    fixed = [i for n, story in st["stories"].items() for i in issues("--parent", story["id"])
+             if "contract" in i.get("labels", []) and i["status"] != "closed"
+             and i["title"].startswith(f"{mod}: match the original: ")
+             and not any(i["title"] == f"{mod}: match the original: {sub} ({own})" for (_, own, sub) in grouped)]
+    for i in fixed:
+        bd("close", i["id"], "--reason", "No difference from the original any more (make contract-check)", parse=False)
+    # A block's or item's own beads close once it matches the original (and every attribute's scenario passed).
+    differs = {sub for (_, _, sub) in grouped}
+    feature = re.compile(rf"{re.escape(mod)}: (?:assets for )?(?:block|item) (\S+)$")
+    matching = [i for n in (3, 5) if n in st["stories"] for i in issues("--parent", st["stories"][n]["id"])
+                if i["status"] != "closed" and (m := feature.match(i["title"])) and m.group(1) not in differs
+                and found is not None and not any(p["owner"] == "spec-writer" for p in found)]
+    for c in range(0, len(matching), 100):
+        bd("close", *[i["id"] for i in matching[c:c + 100]], "--reason",
+           "Matches the original: make contract-check and the last harness run find no difference", parse=False)
+    fixed += matching
+    if found and st["epic"]["status"] == "closed":
+        bd("reopen", st["epic"]["id"])
+    return (f"{len(found)} difference(s) from the original in {len(grouped)} block(s)/item(s): {updated} bead(s) "
+            f"updated ({reopened} reopened), {made} new, {len(fixed)} closed as fixed." if found
+            else f"{mod} matches its contract." + (f" {len(fixed)} bead(s) closed as fixed." if fixed else ""))
+
+
+TICKET_ROLES = {"content-author", "domain-builder", "domain-builder-pro", "hook-engineer", "test-smith",
+                "asset-smith", "scaffolder", "scribe"}
+TICKET_BUDGET_K = 200  # thousand tokens of work a ticket may need: one agent, one context
+# Files many tickets add a line or entry to: sharing them does not need an order between tickets.
+SHARED_FILES = re.compile(r"/lang/[^/]+\.json$|/creative_tab/|/data/minecraft/tags/|/data/c/tags/|Cargo\.lock$")
+
+
+def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
+    """The spec-writers' tickets (planning/mods/<id>.tickets/*.json, one file per part of the decompiled
+    code) and what is wrong with them: sizes, roles, unknown or circular `after`, two tickets that edit
+    the same file with no order between them, and blocks, items or attributes no ticket covers."""
+    folder = MAIN / "planning" / "mods" / f"{mod}.tickets"
+    tickets: list[dict] = []
+    problems: list[str] = []
+    for f in sorted(folder.glob("*.json")) if folder.is_dir() else []:
+        try:
+            part = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            problems.append(f"{f.name}: not JSON ({exc})")
+            continue
+        for t in part.get("tickets", []):
+            t["_file"] = f.name
+            tickets.append(t)
+    if not tickets:
+        return [], [f"no tickets in {folder.relative_to(MAIN)}/ (the spec-writers write them in step 1)"]
+    keys: dict[str, dict] = {}
+    for t in tickets:
+        where = f"{t['_file']}: {t.get('key', '?')}"
+        for field in ("key", "title", "role", "effort_k", "description"):
+            if not t.get(field):
+                problems.append(f"{where}: no {field}")
+        if t.get("key") in keys:
+            problems.append(f"{where}: key also in {keys[t['key']]['_file']}")
+        keys[t.get("key", "")] = t
+        if t.get("role") and t["role"] not in TICKET_ROLES:
+            problems.append(f"{where}: role {t['role']!r} is not one of {', '.join(sorted(TICKET_ROLES))}")
+        if isinstance(t.get("effort_k"), (int, float)) and t["effort_k"] > TICKET_BUDGET_K:
+            problems.append(f"{where}: {t['effort_k']}k tokens of work; split it into tickets of at most {TICKET_BUDGET_K}k")
+        if int(t.get("step", 3)) not in STEPS:
+            problems.append(f"{where}: no step {t.get('step')}")
+    for t in tickets:
+        for dep in t.get("after", []):
+            if dep not in keys:
+                problems.append(f"{t['_file']}: {t['key']} is after {dep!r}, which no ticket has as its key")
+
+    @lru_cache(maxsize=None)
+    def before(key: str, trail: tuple = ()) -> frozenset:
+        """Every ticket that must be done before `key`."""
+        if key in trail:
+            cycle = f"circular order: {' -> '.join(trail[trail.index(key):] + (key,))}"
+            if not any(p.startswith("circular order") and set(p.split(": ")[1].split(" -> ")) ==
+                       set(cycle.split(": ")[1].split(" -> ")) for p in problems):
+                problems.append(cycle)
+            return frozenset()
+        out: set[str] = set()
+        for dep in keys.get(key, {}).get("after", []):
+            if dep in keys:
+                out |= {dep} | before(dep, trail + (key,))
+        return frozenset(out)
+    for t in tickets:
+        before(t.get("key", ""))  # reports every circular order once it is reached
+    for a in tickets:
+        for b in tickets:
+            if a["key"] >= b["key"]:
+                continue
+            same = {f for f in set(a.get("files", [])) & set(b.get("files", [])) if not SHARED_FILES.search(f)}
+            if same and a["key"] not in before(b["key"]) and b["key"] not in before(a["key"]):
+                problems.append(f"{a['key']} and {b['key']} both edit {', '.join(sorted(same))} with no order: "
+                                f"put one after the other (or split the file)")
+    outline_path = MAIN / "planning" / "mods" / f"{mod}.features.json"
+    try:
+        outline = json.loads(outline_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        outline = {}
+    covered = {c for t in tickets for c in t.get("covers", [])}
+    for kind in ("blocks", "items", "features"):
+        for e in outline.get(kind, []):
+            if e.get("id") not in covered:
+                problems.append(f"no ticket covers {kind[:-1]} {e.get('id')} (list it in a ticket's covers)")
+    return tickets, problems
+
+
+def tickets(mod: str, check_only: bool = False) -> str:
+    """File the spec-writers' tickets under their steps, with their order as Beads dependencies (a ticket is
+    ready when every ticket it is after is closed). Refuses a plan with problems; files only new keys."""
+    plan, problems = ticket_plan(mod)
+    if problems:
+        raise BeadsError(f"{len(problems)} problem(s) in {mod}'s tickets (send them back to the spec-writer):\n"
+                         + "\n".join(f"- {p}" for p in problems[:80]))
+    if check_only:
+        return f"{len(plan)} tickets for {mod}: sizes, roles, order, shared files and coverage are fine."
+    st = mod_status(mod)
+    filed = {label_value(i, "key"): i["id"] for i in issues("--label", "ticket", "--label", f"mod:{mod}")
+             if label_value(i, "key")}
+    new = [t for t in plan if t["key"] not in filed]
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    for step in sorted({int(t.get("step", 3)) for t in new}):
+        story = st["stories"][step]
+        inherited = [l for l in story.get("labels", []) if l != "story"]
+        batch = [t for t in new if int(t.get("step", 3)) == step]
+        nodes = []
+        for t in batch:
+            body = (t["description"] + "\n\nSize: ~" + f"{t['effort_k']}k tokens."
+                    + (f"\nCovers: {', '.join(t.get('covers', []))}" if t.get("covers") else "")
+                    + (f"\nRead first: spec {', '.join(t['spec'])}" if t.get("spec") else "")
+                    + (f"\nJava: {', '.join(t['java'])}" if t.get("java") else "")
+                    + (f"\nFiles: {', '.join(t['files'])}" if t.get("files") else ""))
+            nodes.append({"key": t["key"], "title": f"{mod}: {t['title']}", "type": "task", "parent_id": story["id"],
+                          "description": body,
+                          "labels": sorted(set(inherited) | {"ticket", f"role:{t['role']}", f"key:{t['key']}"}),
+                          "deps": [{"target": d, "type": "blocks"} for d in t.get("after", [])
+                                   if d in {b["key"] for b in batch}]})
+        plan_file = STATE_DIR / f"tickets-{mod}-{step}.json"
+        plan_file.write_text(json.dumps({"nodes": nodes}), encoding="utf-8")
+        bd("create", "--graph", str(plan_file))
+        plan_file.unlink(missing_ok=True)
+        if story["status"] == "closed":
+            bd("reopen", story["id"], "--reason", "New tickets", parse=False)
+    # Orders across steps or onto tickets filed before go in one by one.
+    ids = {label_value(i, "key"): i["id"] for i in issues("--label", "ticket", "--label", f"mod:{mod}")
+           if label_value(i, "key")}
+    steps_of = {t["key"]: int(t.get("step", 3)) for t in plan}
+    for t in new:
+        for d in t.get("after", []):
+            if d in filed or steps_of.get(d) != steps_of[t["key"]]:
+                bd("dep", "add", ids[t["key"]], "--blocked-by", ids[d], parse=False)
+    return f"{len(new)} new ticket(s) filed for {mod} ({len(plan) - len(new)} already filed)."
+
+
+def ready(mod: str) -> list[dict]:
+    """Open tickets of the mod whose every predecessor is closed: one subagent each."""
+    out = bd("ready", "--json", "--limit", "0", "--label", "ticket", "--label", f"mod:{mod}")
+    return [i for i in out if i.get("status") == "open"] if isinstance(out, list) else []
 
 
 def inbox() -> str:
-    """File every subagent report: a comment, the bead's new status, and follow-ups as new beads."""
+    """File every subagent report: a comment, the bead's new status, and follow-ups as new beads. One
+    report that cannot be filed never holds up the others: a status Beads refuses (a story still blocked
+    by its step before, a report written too early) is noted on the bead, which keeps its status, and
+    the report counts as filed; one that is not JSON or names no bead is moved to inbox/bad/."""
     done_dir = INBOX / "done"
     done_dir.mkdir(parents=True, exist_ok=True)
-    filed = []
+    filed, notes = [], []
+    stamp = time.strftime("%Y%m%dT%H%M%S")
     for path in sorted(INBOX.glob("*.json")):
         try:
             report = json.loads(path.read_text(encoding="utf-8"))
-        except ValueError as exc:
-            raise BeadsError(f"{path.name} is not JSON ({exc}); ask its role to rewrite it") from exc
-        bead = report.get("bead") or path.stem
-        show = bd("show", bead)
-        issue = show[0] if isinstance(show, list) else show
+            bead = report.get("bead") or path.stem
+            show = bd("show", bead)
+            issue = show[0] if isinstance(show, list) else show
+        except (ValueError, BeadsError) as exc:
+            bad = INBOX / "bad"
+            bad.mkdir(exist_ok=True)
+            path.rename(bad / f"{path.stem}-{stamp}.json")
+            notes.append(f"{path.name}: not filed ({str(exc)[:160]}); moved to {bad.relative_to(MAIN)}/ for its role to rewrite")
+            continue
         status = report.get("status", "done")
         lines = [f"[{report.get('role', 'subagent')}] {status}: {report.get('summary', '')}".strip()]
         if report.get("files"):
@@ -376,13 +548,19 @@ def inbox() -> str:
                 core_need(mod, title.split(":", 1)[1].strip() if ":" in title else title, f.get("why", ""))
             else:
                 create(title, kind, parent=parent, description=f.get("why", ""))
-        if status == "done":
-            bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
-        elif status == "blocked":
-            bd("update", bead, "--status", "blocked")
-        else:
-            bd("update", bead, "--status", "open")
-        path.rename(done_dir / f"{path.stem}-{time.strftime('%Y%m%dT%H%M%S')}.json")
+        try:
+            if status == "done":
+                bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
+            elif status == "blocked":
+                bd("update", bead, "--status", "blocked")
+            else:
+                bd("update", bead, "--status", "open")
+        except BeadsError as exc:
+            reason = str(exc).strip().splitlines()[-1][:200]
+            bd("comment", bead, f"Report filed, status not changed to {status}: {reason}. Redo this work when "
+                                "the bead is ready (make fleet-ready).", parse=False)
+            notes.append(f"{bead}: report filed, still {issue['status']} ({reason})")
+        path.rename(done_dir / f"{path.stem}-{stamp}.json")
         filed.append(f"{bead} ({status}, {len(report.get('follow_ups', []))} follow-up(s))")
     sync = core_sync() if filed else ""
     if filed:  # the reported work is one version ahead of the last commit (bundled until committed)
@@ -390,7 +568,8 @@ def inbox() -> str:
         import version_sync
         bumped = version_sync.sync_units()
         sync = "\n".join(x for x in [sync, *bumped] if x)
-    return ("Filed: " + ", ".join(filed) + (f"\n{sync}" if sync else "")) if filed else "Inbox empty."
+    out = ("Filed: " + ", ".join(filed) + (f"\n{sync}" if sync else "")) if filed else "Inbox empty."
+    return out + "".join(f"\nNote: {n}" for n in notes)
 
 
 # ---------------------------------------------------------------- board
@@ -475,8 +654,9 @@ def seed(board_md: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["status", "start", "features", "gaps", "contract", "inbox", "board",
-                                            "seed", "core-need", "core-sync"])
+    parser.add_argument("command", choices=["status", "start", "features", "gaps", "contract", "tickets",
+                                            "tickets-check", "ready", "inbox", "board", "seed", "core-need",
+                                            "core-sync"])
     parser.add_argument("mod", nargs="?")
     parser.add_argument("--title", help="core-need: what core needs")
     parser.add_argument("--why", default="", help="core-need: which mod feature needs it, and why it is shared")
@@ -485,7 +665,8 @@ def main() -> int:
         print("Beads is not set up: run ./setup.sh (it installs bd and runs bd init).", file=sys.stderr)
         return 1
     try:
-        if args.command in ("start", "features", "gaps", "contract", "core-need") and not args.mod:
+        if args.command in ("start", "features", "gaps", "contract", "tickets", "tickets-check", "ready",
+                            "core-need") and not args.mod:
             raise BeadsError(f"{args.command} needs a mod id (MOD=<id>)")
         if args.command == "status":
             if not args.mod:
@@ -507,6 +688,14 @@ def main() -> int:
             print(gaps(args.mod))
         elif args.command == "contract":
             print(contract(args.mod))
+        elif args.command in ("tickets", "tickets-check"):
+            print(tickets(args.mod, check_only=args.command == "tickets-check"))
+        elif args.command == "ready":
+            rows = ready(args.mod)
+            for i in rows:
+                print(f"{i['id']:14} {label_value(i, 'role') or '?':20} {i['title']}")
+            print(f"{len(rows)} ticket(s) ready for {args.mod}: start one subagent for each (its role), "
+                  "`make fleet-task BEAD=<id> ROLE=<role>` first." if rows else f"No ticket of {args.mod} is ready.")
         elif args.command == "inbox":
             print(inbox())
         elif args.command == "board":

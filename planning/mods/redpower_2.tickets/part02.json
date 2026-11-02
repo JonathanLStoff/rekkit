@@ -1,0 +1,425 @@
+{
+  "part": "part02",
+  "archive": "assets/decompiled/RedPowerCore-2.0pr5b2",
+  "tickets": [
+    {
+      "key": "part02-core-math-traits",
+      "title": "Core Math, 3D Orientation & Common Mod Traits",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/math.rs",
+        "mods/redpower_2/src/core/traits.rs"
+      ],
+      "spec": [
+        "2. Core Systems & Mechanics",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "MathLib#orientMatrix",
+        "MathLib#orientQuat",
+        "CoreLib#rotToSide",
+        "CoreLib#compareItemStack",
+        "Packet211TileDesc#<init>",
+        "Packet212GuiEvent#<init>",
+        "PacketVLC#<init>"
+      ],
+      "after": [],
+      "description": "Implement 3D rotation matrix and quaternion orientation math supporting all 24 block orientations, along with fundamental RedPower 2 traits and network packet abstractions: IConnectable, ICoverable, IMultipart, IRotatable, IPaintable, IFrameSupport, IPipeConnectable, ITubeConnectable, and description/GUI packet handlers. Done: unit tests for orientation matrix/quaternion transformations and trait contracts pass cleanly."
+    },
+    {
+      "key": "part02-multipart-core",
+      "title": "Core Multipart, Extended Blocks & Appliance Base",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/multipart.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "9. Recreation Implementation Notes for Rekkit (Rust)"
+      ],
+      "java": [
+        "BlockExtended#addTileEntityMapping",
+        "BlockMultipart#computeCollidingBoxes",
+        "BlockMultipart#removeBlockByPlayer",
+        "BlockMultipart#getBlockDropped",
+        "BlockCoverable#isBlockSolidOnSide",
+        "TileAppliance#onBlockPlacedBy",
+        "TileAppliance#getFramePacket"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement BlockExtended, BlockMultipart, BlockCoverable, and TileAppliance base abstractions. Handles sub-tile metadata dispatch, raytraced multipart bounding boxes, player partial harvesting, and frame movement support (IFrameSupport). Done: unit tests for multi-bounding-box raytracing, sub-tile metadata mapping, and block break behaviors pass."
+    },
+    {
+      "key": "part02-redpower-lib",
+      "title": "RedPower Redstone Rules & Wire Network Search",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/redpower_lib.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "RedPowerLib#canSupportWire",
+        "RedPowerLib#isSideNormal",
+        "RedPowerLib#getConnections",
+        "RedPowerLib#getExtConnections",
+        "RedPowerLib#mapConToLocal",
+        "RedPowerLib#mapLocalToCon",
+        "RedPowerLib#updateCurrent",
+        "PowerLib#cutBits"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement RedPowerLib and PowerLib redstone connectivity logic: wire attachment surface rules, corner connection queries across block boundaries, local-to-connection side bitmask transformations, and recursive wire cluster signal strength propagation. Done: unit tests validating wire connection bitmasks, 6-face mapping, and signal level propagation pass."
+    },
+    {
+      "key": "part02-blutricity-conductor",
+      "title": "Blutricity Dynamic RLC Circuit Simulation Engine",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/conductor.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "11. Uses from `rekkit_core`"
+      ],
+      "java": [
+        "BluePowerConductor#iterate",
+        "BluePowerConductor#recache",
+        "BluePowerConductor#getVoltage",
+        "BluePowerConductor#applyCurrent",
+        "BluePowerConductor#drawPower",
+        "BluePowerEndpoint#iterate"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement the complete RedPower 2 Blutricity physical model (BluePowerConductor and BluePowerEndpoint): 100.0V nominal, 60.0V minimum machine threshold, 120.0V safe operating limit, R=0.01 ohm conductor resistance, inductive scaling step factor 0.07, parallel conductance 0.5, capacitance (endpoint 4.0F, panel 0.25F), and NBT charge persistence. Done: unit tests validating exact dynamic current iteration step, voltage calculation, parallel flow, and endpoint charge storage pass."
+    },
+    {
+      "key": "part02-machine-lib",
+      "title": "Machine Inventory Access & FilterMap Logistics",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/machine_lib.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics",
+        "3. Machines & Devices"
+      ],
+      "java": [
+        "MachineLib#getInventory",
+        "MachineLib#addToInventoryCore",
+        "MachineLib#makeFilterMap",
+        "MachineLib#genMatchCounts",
+        "MachineLib#matchOneStack",
+        "MachineLib#matchAnyStack",
+        "MachineLib#collectOneStack"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement MachineLib automated inventory handling: sided inventory access extraction and insertion, item stack equality and damage comparison, item ejection, and FilterMap pattern matching and counting algorithms for logistics sorting machines. Done: unit tests for sided inventory filtering, item matching, and stack collection pass."
+    },
+    {
+      "key": "part02-fluid-pipe-lib",
+      "title": "Fluid Buffer & Pipe Transfer Framework",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/pipe_lib.rs"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "FluidBuffer#addLevel",
+        "FluidBuffer#getLevel",
+        "PipeLib#getConnections",
+        "PipeLib#movePipeLiquid",
+        "FluidClassBase#getFluidLevel"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement FluidBuffer, FluidClass, FluidClassBase, and PipeLib: fluid pipe connection testing, liquid registration by block ID and fluid ID, pressure-driven liquid movement between adjacent IPipeConnectable buffers, and NBT/packet synchronization. Done: unit tests for fluid buffer level conservation, pressure leveling, and pipe connectivity pass."
+    },
+    {
+      "key": "part02-automation-helpers",
+      "title": "Automation Framework: Frame Solver, Redbus & Disk Helpers",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/core/automation.rs"
+      ],
+      "spec": [
+        "2.6 Frame Automation & Structural Movement",
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "FrameLib$FrameSolver#solve",
+        "RedbusLib#getAddr",
+        "DiskLib#generateSerialNumber",
+        "DiskLib#getSaveDir"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement FrameLib::FrameSolver structural movement linkage graph solver (IFrameLink traversal), RedbusLib 8-bit bus addressing and ribbon pathfinding, and DiskLib serial number generation and disk directory resolution. Done: unit tests for frame structure linkage resolution, redbus address query, and disk serial generation pass."
+    },
+    {
+      "key": "part02-base-resources",
+      "title": "Metallurgy & Base Resource Items (Ingots, Gems, Alloys, Lumars, Nuggets)",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "lumar",
+        "ruby",
+        "green_sapphire",
+        "sapphire",
+        "silver_ingot",
+        "tin_ingot",
+        "copper_ingot",
+        "nikolite",
+        "red_alloy_ingot",
+        "blue_alloy_ingot",
+        "brass_ingot",
+        "silicon_boule",
+        "silicon_wafer",
+        "blue_doped_wafer",
+        "red_doped_wafer",
+        "tinplate",
+        "fine_copper_wire",
+        "fine_iron_wire",
+        "copper_coil",
+        "bl_motor",
+        "iron_nugget",
+        "silver_nugget",
+        "tin_nugget",
+        "copper_nugget"
+      ],
+      "files": [
+        "mods/redpower_2/src/base/resources.rs",
+        "planning/mods/redpower_2.contract/lumar.json",
+        "planning/mods/redpower_2.contract/ruby.json",
+        "planning/mods/redpower_2.contract/green_sapphire.json",
+        "planning/mods/redpower_2.contract/sapphire.json",
+        "planning/mods/redpower_2.contract/silver_ingot.json",
+        "planning/mods/redpower_2.contract/tin_ingot.json",
+        "planning/mods/redpower_2.contract/copper_ingot.json",
+        "planning/mods/redpower_2.contract/nikolite.json",
+        "planning/mods/redpower_2.contract/red_alloy_ingot.json",
+        "planning/mods/redpower_2.contract/blue_alloy_ingot.json",
+        "planning/mods/redpower_2.contract/brass_ingot.json",
+        "planning/mods/redpower_2.contract/silicon_boule.json",
+        "planning/mods/redpower_2.contract/silicon_wafer.json",
+        "planning/mods/redpower_2.contract/blue_doped_wafer.json",
+        "planning/mods/redpower_2.contract/red_doped_wafer.json",
+        "planning/mods/redpower_2.contract/tinplate.json",
+        "planning/mods/redpower_2.contract/fine_copper_wire.json",
+        "planning/mods/redpower_2.contract/fine_iron_wire.json",
+        "planning/mods/redpower_2.contract/copper_coil.json",
+        "planning/mods/redpower_2.contract/bl_motor.json",
+        "planning/mods/redpower_2.contract/iron_nugget.json",
+        "planning/mods/redpower_2.contract/silver_nugget.json",
+        "planning/mods/redpower_2.contract/tin_nugget.json",
+        "planning/mods/redpower_2.contract/copper_nugget.json"
+      ],
+      "spec": [
+        "4. Tools, Armor & Items",
+        "6.2 Items"
+      ],
+      "java": [
+        "RedPowerBase#initBaseItems",
+        "ItemParts#addItem",
+        "ItemParts#getTextureFile"
+      ],
+      "after": [
+        "part02-core-math-traits"
+      ],
+      "description": "Implement all RedPower Base metal ingots, gems, alloys, doped wafers, silicon boules, coils, motors, nuggets, and 16-color Lumars. Configures item registration, max stack size (64), sprites from eloraam/base/items1.png, and contract definitions. Done: make contract-check clean for all 24 resource items; their scenarios pass."
+    },
+    {
+      "key": "part02-alloy-metallurgy-core",
+      "title": "Alloy Metallurgy Recipe System & Remainder Handling",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "alloy_metallurgy"
+      ],
+      "files": [
+        "mods/redpower_2/src/base/alloys.rs"
+      ],
+      "spec": [
+        "3.1 Appliance Machines",
+        "7.1 Custom Machine Recipes"
+      ],
+      "java": [
+        "CraftLib#addAlloyResult",
+        "CraftLib#getAlloyResult",
+        "CraftLib#addDamageOnCraft",
+        "RedPowerBase#initAlloys"
+      ],
+      "after": [
+        "part02-base-resources"
+      ],
+      "description": "Implement CraftLib alloy recipe registry ('redpower_2:alloy_furnace'): 3x3 unordered ingredient count matching, partial consumption, damage-on-craft tool tracking, and recipes for Red Alloy Ingot, Blue Alloy Ingot, Brass Ingot, Silicon Boule, Red/Blue Doped Wafers, and metal recycling. Done: unit tests for alloy recipe matching, ingredient subtraction, and craft remainder handling pass."
+    },
+    {
+      "key": "part02-alloy-furnace",
+      "title": "Alloy Furnace: Block, Tile Entity, Container & GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "alloy_furnace"
+      ],
+      "files": [
+        "mods/redpower_2/src/base/alloy_furnace.rs"
+      ],
+      "spec": [
+        "3.1 Appliance Machines",
+        "7.1 Custom Machine Recipes"
+      ],
+      "java": [
+        "TileAlloyFurnace#n_",
+        "TileAlloyFurnace#canSmelt",
+        "TileAlloyFurnace#smeltItem",
+        "ContainerAlloyFurnace#<init>",
+        "TileAlloyFurnace#getStartInventorySide",
+        "RenderAlloyFurnace#renderWorldBlock"
+      ],
+      "after": [
+        "part02-multipart-core",
+        "part02-alloy-metallurgy-core"
+      ],
+      "description": "Implement Alloy Furnace block, tile entity, container, and GUI: 11 slots (0..8 alloy input matrix, 9 solid fuel, 10 output), 200 tick cook time, solid fuel burn times, sided inventory access (top = inputs, front = fuel, bottom/sides = output), front active fire texture change, and chunk reload persistence. Done: make contract-check clean for alloy_furnace; its level 1, 3, 5 and 6 scenarios pass."
+    },
+    {
+      "key": "part02-project-table",
+      "title": "Project Table: Block, Tile Entity, Container & GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "project_table"
+      ],
+      "files": [
+        "mods/redpower_2/src/base/project_table.rs"
+      ],
+      "spec": [
+        "3.1 Appliance Machines"
+      ],
+      "java": [
+        "TileAdvBench#onBlockActivated",
+        "ContainerAdvBench#<init>",
+        "ContainerAdvBench#mergeCrafting",
+        "InventorySubCraft#<init>",
+        "SlotCraftRefill#a",
+        "RenderAdvBench#renderWorldBlock"
+      ],
+      "after": [
+        "part02-multipart-core",
+        "part02-base-resources"
+      ],
+      "description": "Implement Project Table block, tile entity, container, and GUI: 28 slots (0..8 persistent 3x3 crafting matrix, 9 plan slot, 10..27 18 internal storage slots), automatic grid refill from storage on craft completion, recipe persistence across GUI closes, sided access to storage slots, and chunk reload persistence. Done: make contract-check clean for project_table; its level 1, 3, 5 and 6 scenarios pass."
+    },
+    {
+      "key": "part02-crafting-tools",
+      "title": "Crafting Tools: Handsaws, Screwdriver, Diamond Drawplate & Indigo Dye",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "iron_handsaw",
+        "handsaw",
+        "diamond_handsaw",
+        "screwdriver",
+        "diamond_drawplate",
+        "dye_indigo"
+      ],
+      "files": [
+        "mods/redpower_2/src/base/tools.rs",
+        "planning/mods/redpower_2.contract/iron_handsaw.json",
+        "planning/mods/redpower_2.contract/handsaw.json",
+        "planning/mods/redpower_2.contract/diamond_handsaw.json",
+        "planning/mods/redpower_2.contract/screwdriver.json",
+        "planning/mods/redpower_2.contract/diamond_drawplate.json",
+        "planning/mods/redpower_2.contract/dye_indigo.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools"
+      ],
+      "java": [
+        "ItemHandsaw#getSharpness",
+        "ItemScrewdriver#onItemUseFirst",
+        "ItemDrawplate#<init>",
+        "ItemDyeIndigo#a",
+        "RedPowerBase#initIndigo"
+      ],
+      "after": [
+        "part02-base-resources"
+      ],
+      "description": "Implement core RedPower crafting tools: Iron Handsaw (durability 320, sharpness 0), Diamond Handsaw (durability 1280, sharpness 2) with damage on craft in microblock cutting; Screwdriver (lossless remainder, right-click rotates blocks, shift+right-click cycles operational modes); Diamond Drawplate (durability 255, draws copper/iron ingots into fine wire); and Indigo Dye (dyes wool and sheep blue, dye crafting combinations). Done: make contract-check clean for all 6 tool items; their level 2 scenarios pass."
+    },
+    {
+      "key": "part02-microblock-core",
+      "title": "Microblock Geometry, Slicing Rules & Placement System",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "microblock",
+        "microblocks"
+      ],
+      "files": [
+        "mods/redpower_2/src/core/cover_lib.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System"
+      ],
+      "java": [
+        "CoverLib#getThickness",
+        "CoverLib#damageToCoverData",
+        "CoverLib#checkPlacement",
+        "CoverLib#getPlacement",
+        "CoverRecipe#getSawRecipe",
+        "CoverRecipe#findResult",
+        "CoverRenderer#setSize",
+        "BlockMicro#<init>",
+        "ItemMicro#useCover"
+      ],
+      "after": [
+        "part02-multipart-core",
+        "part02-crafting-tools"
+      ],
+      "description": "Implement microblock sub-voxel geometric system, slicing recipes, and placement rules: 1/8th thickness hierarchy (cover 1/8 to anticover 7/8), shapes (face plate, hollow face plate, edge strip, corner, post, pillar, column), handsaw cutting recipes (vertical cut halves thickness, horizontal cut slices strips/corners), hollow cover crafting (8 covers around empty center), slice recombination crafting, sub-voxel raytracing placement, face occlusion masking (solid covers block connections, hollow covers permit wire/tube pass-through), BlockMicro and ItemMicro. Done: make contract-check clean for microblock; its level 1, 2, and 4 scenarios pass."
+    }
+  ]
+}

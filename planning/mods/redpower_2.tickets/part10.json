@@ -1,0 +1,117 @@
+{
+  "tickets": [
+    {
+      "key": "part10-brass-gear",
+      "title": "Brass gear: item registration, crafting recipes and asset verification",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 50,
+      "covers": [
+        "brass_gear"
+      ],
+      "files": [
+        "mods/redpower_2/content/assets/redpower_2/items/brass_gear.json",
+        "mods/redpower_2/content/assets/redpower_2/models/item/brass_gear.json",
+        "mods/redpower_2/content/data/redpower_2/recipe/brass_gear.json",
+        "planning/mods/redpower_2.contract/brass_gear.json"
+      ],
+      "spec": [
+        "4. Tools, Armor & Items",
+        "6.2 Items",
+        "7.3 Key Crafting Recipes"
+      ],
+      "java": [
+        "RedPowerCompat#setupBlocks"
+      ],
+      "after": [],
+      "description": "Register the Brass Gear item (ItemParts itemCompatParts meta 0, sprite /eloraam/compat/compat1.png#1, max stack 64) and crafting recipes: standard recipe (4x brass ingot surrounding BuildCraft stone gear) and alternative recipe (4x brass ingot surrounding iron gear microblock). Ensure item model and texture sliced from eloraam/compat/compat1.png#1 are properly bound. Write planning/mods/redpower_2.contract/brass_gear.json with sprite, max_stack, and crafting scenario. Done: make contract-check clean for brass_gear."
+    },
+    {
+      "key": "part10-blulectric-engine-assets",
+      "title": "Blulectric engine: 3D model, 6-way oriented blockstates and crafting recipe",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 70,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/content/assets/redpower_2/blockstates/blulectric_engine.json",
+        "mods/redpower_2/content/assets/redpower_2/models/block/blulectric_engine.json",
+        "mods/redpower_2/content/data/redpower_2/recipe/blulectric_engine.json"
+      ],
+      "spec": [
+        "3.3 Power & Fluid Machines",
+        "6.1 Blocks",
+        "7.3 Key Crafting Recipes"
+      ],
+      "java": [
+        "RedPowerCompat#setupBlocks",
+        "RenderBlueEngine:15-23",
+        "RenderBlueEngine#renderWorldBlock",
+        "BlockMachineCompat#getTextureFile"
+      ],
+      "after": [
+        "part10-brass-gear"
+      ],
+      "description": "Construct the 3D block model and 6-directional blockstates for the Blulectric Engine based on original btengine1.obj (engine base), btengine2.obj (sliding piston), and btengine3.obj (crankshaft gear) geometry and /eloraam/compat/compat1.png#0 texture mappings. Configure blockstates for all 6 facings (down, up, north, south, west, east). Register the crafting recipe: 3x brass ingot (top row), 1x glass (center), 2x brass gear (sides), 1x bl_motor (bottom center). Done: block model and blockstates validate against check-mods and match original dimensions."
+    },
+    {
+      "key": "part10-blulectric-engine-domain",
+      "title": "Blulectric engine: state machine, blutricity consumer node, flywheel MJ conversion, pump cycle and sided power delivery",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "blulectric_engine"
+      ],
+      "files": [
+        "mods/redpower_2/src/compat/engine.rs",
+        "mods/redpower_2/native/mixins/redpower_2/blulectric_engine.rs",
+        "planning/mods/redpower_2.contract/blulectric_engine.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines",
+        "6.1 Blocks",
+        "11. Uses from rekkit_core"
+      ],
+      "java": [
+        "TileBlueEngine#g",
+        "TileBlueEngine#deliverPower",
+        "TileBlueEngine#onBlockNeighborChange",
+        "TileMachineCompat#getFacing",
+        "TileMachineCompat#onBlockPlaced",
+        "TileBlueEngine#a",
+        "TileBlueEngine#b",
+        "RedPowerCompat#initFluids"
+      ],
+      "after": [
+        "part10-blulectric-engine-assets",
+        "part11-blutricity-core"
+      ],
+      "description": "Implement the Blulectric Engine tile entity and state machine. Orient placement to 6 directions (pitch and yaw towards player). Connects to Blutricity power grid as an endpoint consumer: reaches Charged state when voltage >= 60.0V; checks redstone power on neighbor change for Powered state. When Charged and Powered: enters Active state, draws 50W base blutricity power, advances pump stroke cycle (PumpSpeed accelerates from 16 down to 4 ticks per half-stroke), draws up to 32 MJ/tick (1,000 W/MJ) into 512 MJ flywheel. At half-stroke (PumpTick == PumpSpeed), pushes stored flywheel MJ into adjacent BuildCraft IPowerReceptor / rekkit_core MjBuffer at facing^1. Saves and loads flywheel charge, pump speed, and pump tick via NBT ('flyw', 'spd', 'ptk'). Also registers BuildCraft oil fluid compatibility with RedPower fluid pipeline. Write planning/mods/redpower_2.contract/blulectric_engine.json with L1 placement & hitbox, L3 blutricity-to-flywheel charging, L4 adjacent BuildCraft MJ power delivery, and L5 chunk reload persistence scenarios. Done: contract-check clean for blulectric_engine; level 1, 3, 4, 5 scenarios pass."
+    },
+    {
+      "key": "part10-compat-tests",
+      "title": "BuildCraft compatibility integration tests: Blulectric engine power conversion and fluid interop",
+      "role": "test-smith",
+      "step": 4,
+      "effort_k": 50,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/tests/compat_tests.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "TileBlueEngine#g",
+        "TileBlueEngine#deliverPower"
+      ],
+      "after": [
+        "part10-blulectric-engine-domain"
+      ],
+      "description": "Integration tests for RedPower 2 BuildCraft compatibility: test Blulectric Engine blutricity consumption, charging at 60V threshold, flywheel energy accumulation (up to 512 MJ), kinetic power emission into adjacent MjBuffer at facing^1 on half-stroke pump tick, pump acceleration (from 16 down to 4 ticks), redstone on/off switching, and chunk save/reload persistence."
+    }
+  ]
+}

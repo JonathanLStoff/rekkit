@@ -1,0 +1,254 @@
+{
+  "tickets": [
+    {
+      "key": "part01-ribbon-cable",
+      "title": "Ribbon cable: 8-bit bus microblock and placement item",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 100,
+      "covers": [
+        "ribbon_cable"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/ribbon.rs",
+        "planning/mods/redpower_2.contract/ribbon_cable.json"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System",
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "TileRibbon#getConnectClass",
+        "MicroPlacementRibbon#getMicroName",
+        "RenderRibbon#renderWorldBlock"
+      ],
+      "after": [],
+      "description": "Implement the 8-bit ribbon bus cable microblock and its placement item. Ribbon cables route 8-bit multiplexed Redbus signals between the 6502 CPU, backplanes, and peripheral devices across block surfaces. Done: make contract-check clean for ribbon_cable; level 1, 2 and 4 scenarios pass."
+    },
+    {
+      "key": "part01-backplane-ram",
+      "title": "Backplane bus and 8K RAM expansion module",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "backplane",
+        "ram_module"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/backplane.rs",
+        "planning/mods/redpower_2.contract/backplane.json",
+        "planning/mods/redpower_2.contract/ram_module.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem"
+      ],
+      "java": [
+        "TileBackplane#readBackplane",
+        "TileBackplane#writeBackplane",
+        "TileRAM#readBackplane",
+        "TileRAM#writeBackplane",
+        "ItemBackplane#itemUseShared",
+        "RenderBackplane#renderWorldBlock"
+      ],
+      "after": [
+        "part01-ribbon-cable"
+      ],
+      "description": "Implement the 8-bit bus backplane block and the 8K RAM expansion module. Backplanes connect horizontally behind the CPU and peripherals to extend the address/data bus; RAM modules plug into backplane slots to provide 8KB memory expansion per module up to 64KB total. Done: make contract-check clean for backplane and ram_module; level 1, 4 and 5 scenarios pass."
+    },
+    {
+      "key": "part01-floppy-disks",
+      "title": "Floppy disk items: blank, boot disk, and extra disk",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 90,
+      "covers": [
+        "blank_disk",
+        "floppy_disk",
+        "forth_boot_disk",
+        "forth_extra_disk"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/disks.rs",
+        "planning/mods/redpower_2.contract/blank_disk.json",
+        "planning/mods/redpower_2.contract/floppy_disk.json",
+        "planning/mods/redpower_2.contract/forth_boot_disk.json",
+        "planning/mods/redpower_2.contract/forth_extra_disk.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "4.3 Utility & Storage Items"
+      ],
+      "java": [
+        "ItemDisk#ctor",
+        "ItemDisk#onItemUseFirst",
+        "ItemDisk#addCreativeItems"
+      ],
+      "after": [],
+      "description": "Implement magnetic floppy disk items: Blank Floppy Disk (and its alias floppy_disk), RedPower Forth Boot Disk (with redforth.img payload), and RedPower Forth Extra Disk (with redforthxp.img payload). Disks hold 256KB of virtual magnetic storage (2048 sectors of 128 bytes). Done: make contract-check clean for blank_disk, floppy_disk, forth_boot_disk, and forth_extra_disk; level 2 scenarios pass."
+    },
+    {
+      "key": "part01-disk-drive",
+      "title": "Floppy disk drive peripheral: sector I/O and Redbus protocol",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "disk_drive"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/disk_drive.rs",
+        "planning/mods/redpower_2.contract/disk_drive.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "3. Machines & Devices"
+      ],
+      "java": [
+        "TileDiskDrive#rbRead",
+        "TileDiskDrive#rbWrite",
+        "TileDiskDrive#runDiskCmd",
+        "TileDiskDrive#setDisk",
+        "TileDiskDrive#ejectDisk",
+        "RenderDiskDrive#renderWorldBlock"
+      ],
+      "after": [
+        "part01-backplane-ram",
+        "part01-floppy-disks"
+      ],
+      "description": "Implement the Disk Drive block peripheral accepting floppy disks and responding to Redbus protocol commands: 1=Read Label, 2=Write Label, 3=Read Serial Number, 4=Read Sector, 5=Write Sector (128 bytes per sector buffer). Persists inserted disk item and sector modifications. Done: make contract-check clean for disk_drive; level 1, 3, 4 and 5 scenarios pass."
+    },
+    {
+      "key": "part01-display-terminal",
+      "title": "Display terminal and keyboard: 80x50 character screen, blitter, and GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "display",
+        "monitor",
+        "keyboard"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/display.rs",
+        "planning/mods/redpower_2.contract/display.json",
+        "planning/mods/redpower_2.contract/monitor.json",
+        "planning/mods/redpower_2.contract/keyboard.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "3. Machines & Devices"
+      ],
+      "java": [
+        "TileDisplay#rbRead",
+        "TileDisplay#rbWrite",
+        "TileDisplay#runblitter",
+        "TileDisplay#pushKey",
+        "GuiDisplay#sendKey",
+        "ContainerDisplay#handleGuiEvent",
+        "RenderDisplay#renderWorldBlock"
+      ],
+      "after": [
+        "part01-backplane-ram"
+      ],
+      "description": "Implement the Monitor / Display terminal block peripheral (and monitor alias), peripheral keyboard, and interactive terminal GUI. Features an 80x50 character matrix buffer (4000 bytes ASCII), 3 cursor modes, hardware blitter for high-speed rectangular screen block memory copies, and a 16-byte keyboard ring buffer sending keystrokes to the CPU. Done: make contract-check clean for display, monitor, and keyboard; level 1, 3, 4 and 5 scenarios pass."
+    },
+    {
+      "key": "part01-io-expander",
+      "title": "I/O expander: Redbus memory-mapped bundled cable interface",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "io_expander"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/io_expander.rs",
+        "planning/mods/redpower_2.contract/io_expander.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "2.2 Wiring System"
+      ],
+      "java": [
+        "TileIOExpander#rbRead",
+        "TileIOExpander#rbWrite",
+        "TileIOExpander#getPoweringMask",
+        "TileIOExpander#onBlockNeighborChange",
+        "GuiBusId#sendAddr",
+        "ContainerBusId#handleGuiEvent",
+        "RenderIOExpander#renderWorldBlock"
+      ],
+      "after": [
+        "part01-backplane-ram"
+      ],
+      "description": "Implement the IO Expander block peripheral. Maps 16-channel Bundled Cable inputs (RBuf) and outputs (WBuf) to 4 memory-mapped Redbus registers with configurable bus ID GUI (GuiBusId). Communicates with adjacent bundled cables and transmits state updates across backplane. Done: make contract-check clean for io_expander; level 1, 3, 4 and 5 scenarios pass."
+    },
+    {
+      "key": "part01-cpu",
+      "title": "6502/65C816 CPU: core emulator, backplane bus, registers, and GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 180,
+      "covers": [
+        "cpu"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/cpu.rs",
+        "planning/mods/redpower_2.contract/cpu.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "3. Machines & Devices"
+      ],
+      "java": [
+        "TileCPU#coldBootCPU",
+        "TileCPU#warmBootCPU",
+        "TileCPU#haltCPU",
+        "TileCPU#executeInsn",
+        "TileCPU#refreshBackplane",
+        "TileCPU#readMem",
+        "TileCPU#writeMem",
+        "GuiCPU#sendEvent",
+        "ContainerCPU#handleGuiEvent",
+        "RenderCPU#renderWorldBlock"
+      ],
+      "after": [
+        "part01-backplane-ram",
+        "part01-disk-drive",
+        "part01-display-terminal",
+        "part01-io-expander"
+      ],
+      "description": "Implement the 6502 / 65C816 microprocessor CPU block peripheral with 8KB onboard RAM, backplane address decoding for external RAM modules and Redbus peripherals (Display, Disk Drive, IO Expander). Executes 1000 instruction cycles per tick with burst accumulator up to 100,000 cycles. Loads 256-byte bootloader (rpcboot.bin) into 0x0400 on cold boot. Debugger GUI with run, halt, reset, step controls, and register display. Done: make contract-check clean for cpu; level 1, 3, 4 and 5 scenarios pass."
+    },
+    {
+      "key": "part01-control-computing-system",
+      "title": "Control computing subsystem: Forth OS boot, Redbus integration, and E2E",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 160,
+      "covers": [
+        "control_computing"
+      ],
+      "files": [
+        "mods/redpower_2/src/control/mod.rs",
+        "tests/control_e2e.rs"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "8. Hazards & Safety Limits",
+        "10. Hooks Needed"
+      ],
+      "java": [
+        "TileCPU#coldBootCPU",
+        "TileDiskDrive#runDiskCmd",
+        "TileDisplay#pushKey",
+        "mod_RedPowerControl#initialize"
+      ],
+      "after": [
+        "part01-cpu"
+      ],
+      "description": "End-to-end integration of the Control 6502 computing subsystem. Connects CPU, Backplanes, RAM modules, Disk Drive, Display Terminal, and IO Expander over Redbus and Ribbon Cable. Verifies cold boot from rpcboot.bin, loading RedPower Forth from forth_boot_disk, interactive keyboard input in terminal, and Bundled Cable IO expander output switching. Done: full subsystem integration clean, test scenarios passing."
+    }
+  ]
+}

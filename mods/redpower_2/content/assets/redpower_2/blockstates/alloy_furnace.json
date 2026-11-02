@@ -1,7 +1,8 @@
 {
   "variants": {
-    "": {
-      "model": "redpower_2:block/alloy_furnace"
-    }
+    "facing=north": { "model": "redpower_2:block/alloy_furnace" },
+    "facing=south": { "model": "redpower_2:block/alloy_furnace", "y": 180 },
+    "facing=west": { "model": "redpower_2:block/alloy_furnace", "y": 270 },
+    "facing=east": { "model": "redpower_2:block/alloy_furnace", "y": 90 }
   }
 }

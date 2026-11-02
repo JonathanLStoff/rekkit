@@ -67,7 +67,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: smelts alloys from a 3x3 input with solid fuel",
+        "L5: keeps its items and progress when its chunk reloads",
+        "L6: takes inputs from the top and fuel from the front"
+      ]
     },
     {
       "id": "project_table",
@@ -206,7 +211,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: provides persistent 3x3 crafting grid with plan slot and 18 storage slots",
+        "L5: keeps its crafting matrix and storage contents when its chunk reloads",
+        "L6: allows sided insertion and extraction to internal storage"
+      ]
     },
     {
       "id": "blulectric_furnace",
@@ -239,7 +249,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: smelts vanilla recipes at double speed consuming blutricity",
+        "L5: keeps its items and progress when its chunk reloads",
+        "L6: accepts input from top and extracts from sides"
+      ]
     },
     {
       "id": "buffer_chest",
@@ -341,7 +356,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: stores 20 inventory slots with partitioned sided routing",
+        "L5: keeps its inventory when its chunk reloads",
+        "L6: routes side faces to 4-slot partitions and back to all 20 slots"
+      ]
     },
     {
       "id": "buffer",
@@ -443,7 +463,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: stores 20 inventory slots with partitioned sided routing",
+        "L5: keeps its inventory when its chunk reloads",
+        "L6: routes side faces to 4-slot partitions and back to all 20 slots"
+      ]
     },
     {
       "id": "blulectric_alloy_furnace",
@@ -508,7 +533,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: smelts alloy recipes without fuel consuming blutricity",
+        "L5: keeps its items and progress when its chunk reloads",
+        "L6: accepts inputs from top and extracts from back"
+      ]
     },
     {
       "id": "charging_bench",
@@ -597,7 +627,11 @@
       },
       "energy": {
         "role": "storage"
-      }
+      },
+      "attributes": [
+        "L3: recharges portable blutricity items across 16 slots with 3000-unit buffer",
+        "L5: keeps its charging items and energy buffer when its chunk reloads"
+      ]
     },
     {
       "id": "microblock",
@@ -616,7 +650,10 @@
         "all": "eloraam/world/world1.png#16"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: sub-voxel multipart container holding covers, panels, wires and tubes"
+      ]
     },
     {
       "id": "wire",
@@ -637,7 +674,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: transmits redstone signals up to 256 blocks with analog strength"
+      ]
     },
     {
       "id": "wire_red_alloy",
@@ -658,7 +698,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: transmits redstone signals up to 256 blocks with analog strength"
+      ]
     },
     {
       "id": "wire_insulated",
@@ -679,7 +722,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: transmits redstone signal on one of 16 isolated color channels without crosstalk"
+      ]
     },
     {
       "id": "wire_bundled",
@@ -700,7 +746,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: multiplexes 16 insulated redstone channels into a single cable"
+      ]
     },
     {
       "id": "wire_blutricity",
@@ -721,7 +770,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: conducts 100V DC blutricity power between machines and generators"
+      ]
     },
     {
       "id": "wire_blutricity_insulated",
@@ -742,7 +794,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: conducts 100V DC blutricity with insulation preventing bridging"
+      ]
     },
     {
       "id": "wire_jacketed",
@@ -763,7 +818,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: freestanding rigid redstone conduit that does not require surface support"
+      ]
     },
     {
       "id": "cable_jacketed",
@@ -784,7 +842,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: freestanding rigid bundled cable conduit carrying 16 channels"
+      ]
     },
     {
       "id": "wire_jacketed_blutricity",
@@ -805,7 +866,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: freestanding rigid blutricity conduit that does not require surface support"
+      ]
     },
     {
       "id": "pipe",
@@ -824,7 +888,10 @@
         "all": "eloraam/machine/machine1.png#23"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: conducts fluids under pressure between pumps and grates"
+      ]
     },
     {
       "id": "pneumatic_tube",
@@ -843,7 +910,10 @@
         "all": "eloraam/machine/machine1.png#21"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: routes items to destinations using Dijkstra shortest-path logic without dropping"
+      ]
     },
     {
       "id": "redstone_tube",
@@ -862,7 +932,10 @@
         "all": "eloraam/machine/machine1.png#22"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: combines pneumatic item transport with redstone signal conduction"
+      ]
     },
     {
       "id": "restrictor_tube",
@@ -881,7 +954,10 @@
         "all": "eloraam/machine/machine1.png#24"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: adds 1000000 virtual routing weight to pneumatic path to create overflow priority"
+      ]
     },
     {
       "id": "magtube",
@@ -900,7 +976,10 @@
         "all": "eloraam/machine/machine1.png#25"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: high-speed magnetic transit tube moving item capsules at 16 blocks per tick"
+      ]
     },
     {
       "id": "ribbon_cable",
@@ -921,7 +1000,10 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L4: flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes"
+      ]
     },
     {
       "id": "timer",
@@ -949,7 +1031,12 @@
         "title": "Timer",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: configurable interval from 4 to 200 ticks via GUI",
+        "L4: emits periodic redstone pulse at configured interval",
+        "L5: keeps interval setting and timer state when its chunk reloads"
+      ]
     },
     {
       "id": "sequencer",
@@ -977,7 +1064,12 @@
         "title": "Sequencer",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: configurable rotation interval via GUI",
+        "L4: sequentially pulses 4 outputs in continuous rotation",
+        "L5: keeps sequence state and interval when its chunk reloads"
+      ]
     },
     {
       "id": "state_cell",
@@ -1005,7 +1097,12 @@
         "title": "State Cell",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: configurable active duration via GUI",
+        "L4: monostable pulse timer emitting signal for set duration after trigger pulse",
+        "L5: keeps timer configuration and state when its chunk reloads"
+      ]
     },
     {
       "id": "rs_latch",
@@ -1026,7 +1123,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: bistable flip-flop with set and reset inputs"
+      ]
     },
     {
       "id": "nor_gate",
@@ -1047,7 +1147,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs high when all active inputs are low"
+      ]
     },
     {
       "id": "or_gate",
@@ -1068,7 +1171,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs high when any active input is high"
+      ]
     },
     {
       "id": "nand_gate",
@@ -1089,7 +1195,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs high unless all active inputs are high"
+      ]
     },
     {
       "id": "and_gate",
@@ -1110,7 +1219,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs redstone signal only when all active inputs are high"
+      ]
     },
     {
       "id": "logic_gate",
@@ -1131,7 +1243,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs redstone signal only when all active inputs are high"
+      ]
     },
     {
       "id": "xnor_gate",
@@ -1152,7 +1267,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs high when an even number of active inputs are high"
+      ]
     },
     {
       "id": "xor_gate",
@@ -1173,7 +1291,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: outputs high when an odd number of active inputs are high"
+      ]
     },
     {
       "id": "pulse_former",
@@ -1194,7 +1315,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: emits an exact 1-tick pulse on rising edge of input signal"
+      ]
     },
     {
       "id": "toggle_latch",
@@ -1215,7 +1339,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: toggles output state on each rising edge input pulse"
+      ]
     },
     {
       "id": "not_gate",
@@ -1236,7 +1363,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: inverts input signal with 1 input and 3 outputs"
+      ]
     },
     {
       "id": "buffer_gate",
@@ -1257,7 +1387,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: delays signal by 1 tick and isolates inputs to prevent backflow"
+      ]
     },
     {
       "id": "multiplexer",
@@ -1278,7 +1411,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: routes input A or B to output based on selector input state"
+      ]
     },
     {
       "id": "repeater",
@@ -1299,7 +1435,12 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: configurable redstone delay from 2 to 256 ticks via GUI",
+        "L4: delays redstone signal by configured tick interval",
+        "L5: keeps delay setting when its chunk reloads"
+      ]
     },
     {
       "id": "synchronizer",
@@ -1320,7 +1461,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: latches two input pulses and emits joint output pulse only when both have arrived"
+      ]
     },
     {
       "id": "randomizer",
@@ -1341,7 +1485,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: clock pulse randomly activates 1 of 3 outputs with 33% probability"
+      ]
     },
     {
       "id": "transparent_latch",
@@ -1362,7 +1509,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: passes data while clock is high and latches state when clock falls"
+      ]
     },
     {
       "id": "light_sensor",
@@ -1383,7 +1533,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: emits redstone signal based on ambient light level"
+      ]
     },
     {
       "id": "null_cell",
@@ -1404,7 +1557,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: passive pass-through cell for array logic"
+      ]
     },
     {
       "id": "invert_cell",
@@ -1425,7 +1581,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: inverting pass-through cell for array logic"
+      ]
     },
     {
       "id": "non_invert_cell",
@@ -1446,7 +1605,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: non-inverting buffer cell for array logic"
+      ]
     },
     {
       "id": "counter",
@@ -1474,7 +1636,12 @@
         "title": "Counter",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: configurable maximum count, increment and decrement values via GUI",
+        "L4: counts up and down pulses and outputs signals at minimum and maximum count",
+        "L5: keeps count value and configuration when its chunk reloads"
+      ]
     },
     {
       "id": "bus_transceiver",
@@ -1495,7 +1662,10 @@
         "bottom": "eloraam/logic/logic1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: bidirectional 16-channel bundled cable transceiver with direction control"
+      ]
     },
     {
       "id": "lamp",
@@ -1507,7 +1677,10 @@
         "all": "eloraam/lighting/lighting1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: illuminates when powered by redstone signal"
+      ]
     },
     {
       "id": "lamp_lit",
@@ -1519,7 +1692,10 @@
         "all": "eloraam/lighting/lighting1.png#16"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: illuminates world when powered"
+      ]
     },
     {
       "id": "lamp_inverted",
@@ -1531,7 +1707,10 @@
         "all": "eloraam/lighting/lighting1.png#32"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: illuminates by default and turns off when powered by redstone signal"
+      ]
     },
     {
       "id": "inverted_lamp",
@@ -1543,7 +1722,10 @@
         "all": "eloraam/lighting/lighting1.png#32"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: illuminates by default and turns off when powered by redstone signal"
+      ]
     },
     {
       "id": "lamp_inverted_lit",
@@ -1555,7 +1737,10 @@
         "all": "eloraam/lighting/lighting1.png#48"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: emits light in inverted state"
+      ]
     },
     {
       "id": "lumar_fixture",
@@ -1574,7 +1759,10 @@
         "all": "eloraam/lighting/lighting1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: wall-mounted light fixture that illuminates when redstone powered"
+      ]
     },
     {
       "id": "lumar_fixture_inverted",
@@ -1593,7 +1781,10 @@
         "all": "eloraam/lighting/lighting1.png#32"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: wall-mounted light fixture that illuminates by default and turns off with redstone"
+      ]
     },
     {
       "id": "cage_lamp",
@@ -1612,7 +1803,10 @@
         "all": "eloraam/lighting/lighting1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: industrial cage lamp that illuminates when powered by redstone"
+      ]
     },
     {
       "id": "cage_lamp_inverted",
@@ -1631,7 +1825,10 @@
         "all": "eloraam/lighting/lighting1.png#32"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: industrial cage lamp that illuminates by default and turns off with redstone"
+      ]
     },
     {
       "id": "ore_ruby",
@@ -1643,7 +1840,8 @@
         "all": "eloraam/world/world1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_green_sapphire",
@@ -1655,7 +1853,8 @@
         "all": "eloraam/world/world1.png#1"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_sapphire",
@@ -1667,7 +1866,8 @@
         "all": "eloraam/world/world1.png#2"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_silver",
@@ -1679,7 +1879,8 @@
         "all": "eloraam/world/world1.png#3"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_tin",
@@ -1691,7 +1892,8 @@
         "all": "eloraam/world/world1.png#4"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_copper",
@@ -1703,7 +1905,8 @@
         "all": "eloraam/world/world1.png#5"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_tungsten",
@@ -1715,7 +1918,8 @@
         "all": "eloraam/world/world1.png#6"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "ore_nikolite",
@@ -1727,7 +1931,8 @@
         "all": "eloraam/world/world1.png#7"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_ruby",
@@ -1739,7 +1944,8 @@
         "all": "eloraam/world/world1.png#80"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_green_sapphire",
@@ -1751,7 +1957,8 @@
         "all": "eloraam/world/world1.png#81"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_sapphire",
@@ -1763,7 +1970,8 @@
         "all": "eloraam/world/world1.png#82"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_silver",
@@ -1775,7 +1983,8 @@
         "all": "eloraam/world/world1.png#83"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_tin",
@@ -1787,7 +1996,8 @@
         "all": "eloraam/world/world1.png#84"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_copper",
@@ -1799,7 +2009,8 @@
         "all": "eloraam/world/world1.png#85"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "marble",
@@ -1811,7 +2022,8 @@
         "all": "eloraam/world/world1.png#16"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_marble",
@@ -1823,7 +2035,8 @@
         "all": "eloraam/world/world1.png#16"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "basalt",
@@ -1835,7 +2048,8 @@
         "all": "eloraam/world/world1.png#17"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "block_basalt",
@@ -1847,7 +2061,8 @@
         "all": "eloraam/world/world1.png#17"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "marble_brick",
@@ -1859,7 +2074,8 @@
         "all": "eloraam/world/world1.png#18"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "basalt_cobblestone",
@@ -1871,7 +2087,8 @@
         "all": "eloraam/world/world1.png#19"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "basalt_brick",
@@ -1883,7 +2100,8 @@
         "all": "eloraam/world/world1.png#20"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "basalt_chiseled",
@@ -1895,7 +2113,8 @@
         "all": "eloraam/world/world1.png#21"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "basalt_paver",
@@ -1907,7 +2126,8 @@
         "all": "eloraam/world/world1.png#22"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "flax_crop",
@@ -1919,7 +2139,10 @@
         "all": "eloraam/world/world1.png#64"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: grows through stages on farmland to yield string and seeds"
+      ]
     },
     {
       "id": "indigo_flower",
@@ -1931,7 +2154,8 @@
         "all": "eloraam/world/world1.png#54"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "rubber_sapling",
@@ -1943,7 +2167,10 @@
         "all": "eloraam/world/world1.png#53"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: grows into a rubber tree when planted on dirt and given light or bonemeal"
+      ]
     },
     {
       "id": "rubber_leaves",
@@ -1955,7 +2182,8 @@
         "all": "eloraam/world/world1.png#52"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "rubber_log",
@@ -1969,7 +2197,8 @@
         "bottom": "eloraam/world/world1.png#51"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": []
     },
     {
       "id": "deployer",
@@ -2029,7 +2258,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: holds 9 inventory slots for items to deploy",
+        "L4: simulates right-click with held item on redstone pulse",
+        "L5: keeps its inventory when its chunk reloads"
+      ]
     },
     {
       "id": "block_breaker",
@@ -2045,7 +2279,10 @@
         "bottom": "eloraam/machine/machine1.png#58"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: breaks adjacent block on redstone pulse and ejects into tube"
+      ]
     },
     {
       "id": "transposer",
@@ -2061,7 +2298,10 @@
         "bottom": "eloraam/machine/machine1.png#58"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: vacuums ground entities or extracts 1 stack from adjacent inventory on redstone pulse"
+      ]
     },
     {
       "id": "filter",
@@ -2121,7 +2361,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: holds 9 ghost filter slots and configured color tag in GUI",
+        "L4: extracts 1 stack matching filter on pulse and applies color tag to passing items",
+        "L5: keeps its filter slots and color tag when its chunk reloads"
+      ]
     },
     {
       "id": "item_detector",
@@ -2181,7 +2426,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: holds 9 filter slots in GUI",
+        "L4: emits redstone pulse when a passing tube item matches filter",
+        "L5: keeps its filter slots when its chunk reloads"
+      ]
     },
     {
       "id": "sorting_machine",
@@ -2367,7 +2617,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: provides 40 filter slots across 8 color channels with mode selection GUI",
+        "L4: routes passing tube items to color channels according to selected mode",
+        "L5: keeps its filter slots and channel settings when its chunk reloads"
+      ]
     },
     {
       "id": "battery_box",
@@ -2400,7 +2655,12 @@
       },
       "energy": {
         "role": "storage"
-      }
+      },
+      "attributes": [
+        "L3: stores blutricity up to 6000 units and charges batteries in slot",
+        "L4: connects to blutricity network",
+        "L5: keeps its stored energy and battery items when its chunk reloads"
+      ]
     },
     {
       "id": "frame_motor",
@@ -2418,7 +2678,12 @@
       "gui": null,
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: draws blutricity to move connected frame assemblies",
+        "L4: moves connected support frame structures by 1 block on redstone pulse consuming blutricity",
+        "L5: keeps its energy and motor state when its chunk reloads"
+      ]
     },
     {
       "id": "retriever",
@@ -2480,7 +2745,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: holds 9 filter slots and blutricity buffer in GUI",
+        "L4: pulls matching items across entire tube network on redstone pulse consuming blutricity",
+        "L5: keeps its filter slots and charge when its chunk reloads"
+      ]
     },
     {
       "id": "wind_turbine",
@@ -2510,7 +2780,12 @@
       },
       "energy": {
         "role": "producer"
-      }
+      },
+      "attributes": [
+        "L3: generates blutricity from mounted turbine rotor based on unobstructed wind clearance",
+        "L4: engages mechanical brake halting generation when powered by redstone",
+        "L5: keeps its rotor item and power state when its chunk reloads"
+      ]
     },
     {
       "id": "regulator",
@@ -2644,7 +2919,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: provides 27 slots for stock template, buffer, and export filter in GUI",
+        "L4: maintains exact item counts in adjacent inventory using tube network",
+        "L5: keeps its inventory slots and template settings when its chunk reloads"
+      ]
     },
     {
       "id": "thermopile",
@@ -2662,7 +2942,12 @@
       "gui": null,
       "energy": {
         "role": "producer"
-      }
+      },
+      "attributes": [
+        "L3: generates blutricity from temperature differential between adjacent blocks",
+        "L4: conducts blutricity to adjacent conductors",
+        "L5: keeps its power state when its chunk reloads"
+      ]
     },
     {
       "id": "igniter",
@@ -2678,7 +2963,10 @@
         "bottom": "eloraam/machine/machine1.png#48"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: creates fire in front on redstone pulse and extinguishes it when unpowered"
+      ]
     },
     {
       "id": "assembler",
@@ -2840,7 +3128,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: provides 34 slots for 16 templates and 18 storage slots in GUI",
+        "L4: deploys items matching active bundled cable channel on redstone pulse",
+        "L5: keeps its template slots and storage inventory when its chunk reloads"
+      ]
     },
     {
       "id": "ejector",
@@ -2900,7 +3193,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: holds 9 inventory slots in GUI",
+        "L4: ejects 1 item into connected tube on redstone pulse",
+        "L5: keeps its inventory when its chunk reloads"
+      ]
     },
     {
       "id": "relay",
@@ -2960,7 +3258,12 @@
           ]
         ]
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: holds 9 inventory slots in GUI",
+        "L4: automatically ejects items into connected tube every 10 ticks",
+        "L5: keeps its inventory when its chunk reloads"
+      ]
     },
     {
       "id": "sortron",
@@ -2978,7 +3281,12 @@
       "gui": null,
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: draws blutricity to operate Redbus sorting interface",
+        "L4: memory-mapped redbus sorting interface for 6502 computer",
+        "L5: keeps its sorting registers when its chunk reloads"
+      ]
     },
     {
       "id": "manager",
@@ -3100,7 +3408,12 @@
       },
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: provides 24-slot inventory template synchronization in GUI",
+        "L4: balances and synchronizes adjacent inventory with tube network",
+        "L5: keeps its template settings when its chunk reloads"
+      ]
     },
     {
       "id": "solar_panel",
@@ -3123,7 +3436,12 @@
       "gui": null,
       "energy": {
         "role": "producer"
-      }
+      },
+      "attributes": [
+        "L3: generates blutricity in daylight",
+        "L4: conducts blutricity to adjacent conductors",
+        "L5: keeps its power state when its chunk reloads"
+      ]
     },
     {
       "id": "pump",
@@ -3137,7 +3455,12 @@
       "gui": null,
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: pumps fluids through pipes consuming blutricity",
+        "L4: creates suction on intake and pressure on output",
+        "L5: keeps its fluid buffer and power state when its chunk reloads"
+      ]
     },
     {
       "id": "accelerator",
@@ -3151,7 +3474,12 @@
       "gui": null,
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: consumes blutricity to accelerate item capsules into magtubes",
+        "L4: connects magtubes to pneumatic tube networks",
+        "L5: keeps its charge when its chunk reloads"
+      ]
     },
     {
       "id": "grate",
@@ -3163,7 +3491,10 @@
         "all": "eloraam/machine/machine1.png#227"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: sucks liquid blocks from world under suction or places liquids under pressure"
+      ]
     },
     {
       "id": "transformer",
@@ -3177,7 +3508,12 @@
       "gui": null,
       "energy": {
         "role": "conductor"
-      }
+      },
+      "attributes": [
+        "L3: steps voltage between 100V low voltage and 10000V high voltage",
+        "L4: conducts blutricity across voltage boundaries",
+        "L5: keeps its electrical state when its chunk reloads"
+      ]
     },
     {
       "id": "frame",
@@ -3189,7 +3525,10 @@
         "all": "eloraam/machine/machine1.png#2"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: binds adjacent blocks into structural bodies moved by frame motors"
+      ]
     },
     {
       "id": "frame_tube",
@@ -3201,7 +3540,10 @@
         "all": "eloraam/machine/machine1.png#2"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: structural support frame with integrated pneumatic tube routing"
+      ]
     },
     {
       "id": "frame_redstone_tube",
@@ -3213,7 +3555,10 @@
         "all": "eloraam/machine/machine1.png#2"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: structural support frame with integrated redstone tube conduction"
+      ]
     },
     {
       "id": "backplane",
@@ -3232,7 +3577,10 @@
         "all": "eloraam/control/control1.png#0"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: 8-bit bus backplane connecting CPU to RAM and IO expanders"
+      ]
     },
     {
       "id": "ram_module",
@@ -3251,7 +3599,10 @@
         "all": "eloraam/control/control1.png#1"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: provides 8KB memory expansion when mounted on backplane"
+      ]
     },
     {
       "id": "display",
@@ -3273,7 +3624,12 @@
         "title": "Display",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: displays 80x50 character terminal GUI with cursor and hardware blitter",
+        "L4: connects to CPU over backplane and transmits keyboard input packets",
+        "L5: keeps its 4000-byte screen buffer when its chunk reloads"
+      ]
     },
     {
       "id": "monitor",
@@ -3295,7 +3651,12 @@
         "title": "Display",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: displays 80x50 character terminal GUI with cursor and hardware blitter",
+        "L4: connects to CPU over backplane and transmits keyboard input packets",
+        "L5: keeps its 4000-byte screen buffer when its chunk reloads"
+      ]
     },
     {
       "id": "keyboard",
@@ -3316,7 +3677,10 @@
         "bottom": "eloraam/control/control1.png#23"
       },
       "gui": null,
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L4: input peripheral sending keystrokes to CPU terminal buffer"
+      ]
     },
     {
       "id": "cpu",
@@ -3338,7 +3702,12 @@
         "title": "CPU",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: executes 6502 machine code at 1000 cycles per tick with 8KB onboard RAM",
+        "L4: controls peripherals and memory over backplane bus",
+        "L5: keeps its 6502 registers and RAM when its chunk reloads"
+      ]
     },
     {
       "id": "disk_drive",
@@ -3360,7 +3729,12 @@
         "title": "Disk Drive",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: accepts floppy disks and reads or writes 128-byte sectors",
+        "L4: communicates over Redbus with CPU",
+        "L5: keeps its inserted disk when its chunk reloads"
+      ]
     },
     {
       "id": "io_expander",
@@ -3386,7 +3760,12 @@
         "title": "IO Expander",
         "slots": []
       },
-      "energy": null
+      "energy": null,
+      "attributes": [
+        "L3: provides memory-mapped bundled cable interface with 4 registers in GUI",
+        "L4: maps 16-channel bundled cable inputs and outputs to Redbus",
+        "L5: keeps its register states when its chunk reloads"
+      ]
     },
     {
       "id": "blulectric_engine",
@@ -3400,7 +3779,12 @@
       "gui": null,
       "energy": {
         "role": "consumer"
-      }
+      },
+      "attributes": [
+        "L3: converts blutricity into BuildCraft mechanical power",
+        "L4: provides kinetic power to adjacent BuildCraft pipes and machines",
+        "L5: keeps its energy and flywheel charge when its chunk reloads"
+      ]
     }
   ],
   "items": [
@@ -3414,7 +3798,8 @@
       ],
       "max_stack": 64,
       "durability": null,
-      "use": "Crafting illuminant light source"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "ruby",
@@ -3423,7 +3808,8 @@
       "sprite": "eloraam/base/items1.png#48",
       "max_stack": 64,
       "durability": null,
-      "use": "Gemstone used for crafting ruby tools and redstone blocks"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "green_sapphire",
@@ -3432,7 +3818,8 @@
       "sprite": "eloraam/base/items1.png#49",
       "max_stack": 64,
       "durability": null,
-      "use": "Gemstone used for crafting green sapphire tools"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "sapphire",
@@ -3441,7 +3828,8 @@
       "sprite": "eloraam/base/items1.png#50",
       "max_stack": 64,
       "durability": null,
-      "use": "Gemstone used for crafting sapphire tools"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "silver_ingot",
@@ -3450,7 +3838,8 @@
       "sprite": "eloraam/base/items1.png#51",
       "max_stack": 64,
       "durability": null,
-      "use": "Metallic ingot used in advanced recipes and alloy smelting"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "tin_ingot",
@@ -3459,7 +3848,8 @@
       "sprite": "eloraam/base/items1.png#52",
       "max_stack": 64,
       "durability": null,
-      "use": "Ingot smelted in alloy furnace with copper for brass or iron for tinplate"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "copper_ingot",
@@ -3468,7 +3858,8 @@
       "sprite": "eloraam/base/items1.png#53",
       "max_stack": 64,
       "durability": null,
-      "use": "Metallic ingot used to make copper coils, fine copper wire, and brass"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "nikolite",
@@ -3477,7 +3868,8 @@
       "sprite": "eloraam/base/items1.png#54",
       "max_stack": 64,
       "durability": null,
-      "use": "Blue energy dust used in blulectric circuitry and blue alloy"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "tungsten_ingot",
@@ -3486,7 +3878,8 @@
       "sprite": "eloraam/base/items1.png#51",
       "max_stack": 64,
       "durability": null,
-      "use": "Dense refractory metallic ingot"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "red_alloy_ingot",
@@ -3495,7 +3888,8 @@
       "sprite": "eloraam/base/items1.png#64",
       "max_stack": 64,
       "durability": null,
-      "use": "Alloy of copper and redstone for redstone wiring"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "blue_alloy_ingot",
@@ -3504,7 +3898,8 @@
       "sprite": "eloraam/base/items1.png#65",
       "max_stack": 64,
       "durability": null,
-      "use": "Alloy of silver and nikolite for blulectric conductors"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "brass_ingot",
@@ -3513,7 +3908,8 @@
       "sprite": "eloraam/base/items1.png#66",
       "max_stack": 64,
       "durability": null,
-      "use": "Alloy of copper and tin for pneumatic and mechanical parts"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "silicon_boule",
@@ -3522,7 +3918,8 @@
       "sprite": "eloraam/base/items1.png#67",
       "max_stack": 64,
       "durability": null,
-      "use": "Single crystal silicon boule made in alloy furnace with sand and coal"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "silicon_wafer",
@@ -3531,7 +3928,8 @@
       "sprite": "eloraam/base/items1.png#68",
       "max_stack": 64,
       "durability": null,
-      "use": "Sliced from silicon boule using a diamond handsaw"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "blue_doped_wafer",
@@ -3540,7 +3938,8 @@
       "sprite": "eloraam/base/items1.png#69",
       "max_stack": 64,
       "durability": null,
-      "use": "Silicon wafer infused with nikolite for solar cells"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "red_doped_wafer",
@@ -3549,7 +3948,8 @@
       "sprite": "eloraam/base/items1.png#70",
       "max_stack": 64,
       "durability": null,
-      "use": "Silicon wafer infused with redstone for microchips"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "tinplate",
@@ -3558,7 +3958,8 @@
       "sprite": "eloraam/base/items1.png#71",
       "max_stack": 64,
       "durability": null,
-      "use": "Tinned sheet iron for casing and machinery"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "fine_copper_wire",
@@ -3567,7 +3968,8 @@
       "sprite": "eloraam/base/items1.png#72",
       "max_stack": 64,
       "durability": null,
-      "use": "Drawn copper wire through diamond drawplate"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "fine_iron_wire",
@@ -3576,7 +3978,8 @@
       "sprite": "eloraam/base/items1.png#73",
       "max_stack": 64,
       "durability": null,
-      "use": "Drawn iron wire through diamond drawplate"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "copper_coil",
@@ -3585,7 +3988,8 @@
       "sprite": "eloraam/base/items1.png#74",
       "max_stack": 64,
       "durability": null,
-      "use": "Electromagnetic winding coil"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "bl_motor",
@@ -3594,7 +3998,8 @@
       "sprite": "eloraam/base/items1.png#75",
       "max_stack": 64,
       "durability": null,
-      "use": "Blulectric brushless DC motor"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "canvas",
@@ -3603,7 +4008,8 @@
       "sprite": "eloraam/base/items1.png#76",
       "max_stack": 64,
       "durability": null,
-      "use": "Woven cloth from flax string used for bags and sails"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "iron_nugget",
@@ -3612,7 +4018,8 @@
       "sprite": "eloraam/base/items1.png#160",
       "max_stack": 64,
       "durability": null,
-      "use": "1/9 of iron ingot"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "silver_nugget",
@@ -3621,7 +4028,8 @@
       "sprite": "eloraam/base/items1.png#161",
       "max_stack": 64,
       "durability": null,
-      "use": "1/9 of silver ingot"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "tin_nugget",
@@ -3630,7 +4038,8 @@
       "sprite": "eloraam/base/items1.png#162",
       "max_stack": 64,
       "durability": null,
-      "use": "1/9 of tin ingot"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "copper_nugget",
@@ -3639,7 +4048,8 @@
       "sprite": "eloraam/base/items1.png#163",
       "max_stack": 64,
       "durability": null,
-      "use": "1/9 of copper ingot"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "stone_wafer",
@@ -3648,7 +4058,8 @@
       "sprite": "eloraam/base/items1.png#0",
       "max_stack": 64,
       "durability": null,
-      "use": "Substrate base cut from smooth stone with a handsaw"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "logic_tile",
@@ -3657,7 +4068,8 @@
       "sprite": "eloraam/logic/logic1.png#0",
       "max_stack": 64,
       "durability": null,
-      "use": "Base substrate tile for logic gate construction"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "wire_part",
@@ -3666,7 +4078,8 @@
       "sprite": "eloraam/base/items1.png#1",
       "max_stack": 64,
       "durability": null,
-      "use": "Surface wire element for logic circuits"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "anode",
@@ -3675,7 +4088,8 @@
       "sprite": "eloraam/base/items1.png#2",
       "max_stack": 64,
       "durability": null,
-      "use": "Diode anode terminal"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "cathode",
@@ -3684,7 +4098,8 @@
       "sprite": "eloraam/base/items1.png#3",
       "max_stack": 64,
       "durability": null,
-      "use": "Diode cathode terminal"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "pointer",
@@ -3693,7 +4108,8 @@
       "sprite": "eloraam/base/items1.png#4",
       "max_stack": 64,
       "durability": null,
-      "use": "Rotating needle indicator for timers and counters"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "redwire_part",
@@ -3702,7 +4118,8 @@
       "sprite": "eloraam/base/items1.png#5",
       "max_stack": 64,
       "durability": null,
-      "use": "Surface redstone wiring element"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "plate",
@@ -3711,7 +4128,8 @@
       "sprite": "eloraam/base/items1.png#6",
       "max_stack": 64,
       "durability": null,
-      "use": "Silicon base plate for chip carrier"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "silicon_chip",
@@ -3720,7 +4138,8 @@
       "sprite": "eloraam/base/items1.png#7",
       "max_stack": 64,
       "durability": null,
-      "use": "Standard silicon logic microchip"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "tainted_chip",
@@ -3729,7 +4148,8 @@
       "sprite": "eloraam/base/items1.png#8",
       "max_stack": 64,
       "durability": null,
-      "use": "Inverted microchip infused with redstone"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "bundled_wafer",
@@ -3738,7 +4158,8 @@
       "sprite": "eloraam/base/items1.png#9",
       "max_stack": 64,
       "durability": null,
-      "use": "16-channel bundled bus wafer connection"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "wire_red_alloy",
@@ -3747,7 +4168,10 @@
       "sprite": "eloraam/wiring/redpower1.png#97",
       "max_stack": 64,
       "durability": null,
-      "use": "Places surface red alloy wire"
+      "use": "Places surface red alloy wire",
+      "attributes": [
+        "L2: places red alloy wire on targeted block surface"
+      ]
     },
     {
       "id": "wire_insulated",
@@ -3756,7 +4180,10 @@
       "sprite": "eloraam/wiring/redpower1.png#16",
       "max_stack": 64,
       "durability": null,
-      "use": "Places colored insulated wire"
+      "use": "Places colored insulated wire",
+      "attributes": [
+        "L2: places insulated colored wire on targeted block surface"
+      ]
     },
     {
       "id": "wire_bundled",
@@ -3765,7 +4192,10 @@
       "sprite": "eloraam/wiring/redpower1.png#2",
       "max_stack": 64,
       "durability": null,
-      "use": "Places 16-channel bundled cable"
+      "use": "Places 16-channel bundled cable",
+      "attributes": [
+        "L2: places 16-channel bundled cable on targeted block surface"
+      ]
     },
     {
       "id": "wire_jacketed",
@@ -3774,7 +4204,10 @@
       "sprite": "eloraam/wiring/redpower1.png#5",
       "max_stack": 64,
       "durability": null,
-      "use": "Places freestanding jacketed wire"
+      "use": "Places freestanding jacketed wire",
+      "attributes": [
+        "L2: places freestanding jacketed wire in targeted space"
+      ]
     },
     {
       "id": "ribbon_cable",
@@ -3783,7 +4216,10 @@
       "sprite": "eloraam/wiring/redpower1.png#3",
       "max_stack": 64,
       "durability": null,
-      "use": "Places 8-bit ribbon bus cable"
+      "use": "Places 8-bit ribbon bus cable",
+      "attributes": [
+        "L2: places ribbon cable on targeted block surface"
+      ]
     },
     {
       "id": "iron_handsaw",
@@ -3792,7 +4228,10 @@
       "sprite": "eloraam/base/items1.png#17",
       "max_stack": 1,
       "durability": 320,
-      "use": "Craft with solid blocks in crafting grid to cut into covers and panels"
+      "use": "Craft with solid blocks in crafting grid to cut into covers and panels",
+      "attributes": [
+        "L2: cuts solid blocks into covers and panels in crafting grid losing durability"
+      ]
     },
     {
       "id": "handsaw",
@@ -3801,7 +4240,10 @@
       "sprite": "eloraam/base/items1.png#17",
       "max_stack": 1,
       "durability": 320,
-      "use": "Craft with solid blocks in crafting grid to cut into covers and panels"
+      "use": "Craft with solid blocks in crafting grid to cut into covers and panels",
+      "attributes": [
+        "L2: cuts solid blocks into covers and panels in crafting grid losing durability"
+      ]
     },
     {
       "id": "diamond_handsaw",
@@ -3810,7 +4252,10 @@
       "sprite": "eloraam/base/items1.png#18",
       "max_stack": 1,
       "durability": 1280,
-      "use": "Precision handsaw; required for slicing silicon boules into wafers"
+      "use": "Precision handsaw; required for slicing silicon boules into wafers",
+      "attributes": [
+        "L2: cuts blocks and slices silicon boules into wafers in crafting grid losing durability"
+      ]
     },
     {
       "id": "ruby_handsaw",
@@ -3819,7 +4264,10 @@
       "sprite": "eloraam/base/items1.png#19",
       "max_stack": 1,
       "durability": 640,
-      "use": "Gemstone handsaw for cutting microblocks"
+      "use": "Gemstone handsaw for cutting microblocks",
+      "attributes": [
+        "L2: cuts solid blocks into covers and panels in crafting grid losing durability"
+      ]
     },
     {
       "id": "green_sapphire_handsaw",
@@ -3828,7 +4276,10 @@
       "sprite": "eloraam/base/items1.png#20",
       "max_stack": 1,
       "durability": 640,
-      "use": "Gemstone handsaw for cutting microblocks"
+      "use": "Gemstone handsaw for cutting microblocks",
+      "attributes": [
+        "L2: cuts solid blocks into covers and panels in crafting grid losing durability"
+      ]
     },
     {
       "id": "sapphire_handsaw",
@@ -3837,7 +4288,10 @@
       "sprite": "eloraam/base/items1.png#21",
       "max_stack": 1,
       "durability": 640,
-      "use": "Gemstone handsaw for cutting microblocks"
+      "use": "Gemstone handsaw for cutting microblocks",
+      "attributes": [
+        "L2: cuts solid blocks into covers and panels in crafting grid losing durability"
+      ]
     },
     {
       "id": "screwdriver",
@@ -3846,7 +4300,10 @@
       "sprite": "eloraam/base/items1.png#16",
       "max_stack": 1,
       "durability": null,
-      "use": "Right-click or shift-right-click RedPower machines or logic gates to rotate them"
+      "use": "Right-click or shift-right-click RedPower machines or logic gates to rotate them",
+      "attributes": [
+        "L2: rotates redpower machines and toggles logic gates on right-click"
+      ]
     },
     {
       "id": "diamond_drawplate",
@@ -3855,7 +4312,10 @@
       "sprite": "eloraam/base/items1.png#22",
       "max_stack": 1,
       "durability": 255,
-      "use": "Craft in crafting grid with metal ingots to draw fine wire"
+      "use": "Craft in crafting grid with metal ingots to draw fine wire",
+      "attributes": [
+        "L2: draws metal ingots into fine wire in crafting grid losing durability"
+      ]
     },
     {
       "id": "blank_plan",
@@ -3864,7 +4324,10 @@
       "sprite": "eloraam/base/items1.png#81",
       "max_stack": 64,
       "durability": null,
-      "use": "Place in project table plan slot and click write button to create a crafting plan"
+      "use": "Place in project table plan slot and click write button to create a crafting plan",
+      "attributes": [
+        "L2: encodes crafting recipe when written in project table plan slot"
+      ]
     },
     {
       "id": "plan",
@@ -3873,7 +4336,10 @@
       "sprite": "eloraam/base/items1.png#82",
       "max_stack": 1,
       "durability": null,
-      "use": "Contains saved recipe for automated crafting in project table"
+      "use": "Contains saved recipe for automated crafting in project table",
+      "attributes": [
+        "L2: automatically supplies ghost recipe pattern when placed in project table"
+      ]
     },
     {
       "id": "canvas_bag",
@@ -3882,7 +4348,10 @@
       "sprite": "eloraam/base/items1.png#192",
       "max_stack": 1,
       "durability": null,
-      "use": "Right-click in air to open portable 27-slot storage inventory"
+      "use": "Right-click in air to open portable 27-slot storage inventory",
+      "attributes": [
+        "L2: opens portable 27-slot storage inventory on right-click"
+      ]
     },
     {
       "id": "ruby_pickaxe",
@@ -3891,7 +4360,10 @@
       "sprite": "eloraam/world/worlditems1.png#64",
       "max_stack": 1,
       "durability": 500,
-      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: mines stone-based blocks at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "green_sapphire_pickaxe",
@@ -3900,7 +4372,10 @@
       "sprite": "eloraam/world/worlditems1.png#65",
       "max_stack": 1,
       "durability": 500,
-      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: mines stone-based blocks at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "sapphire_pickaxe",
@@ -3909,7 +4384,10 @@
       "sprite": "eloraam/world/worlditems1.png#66",
       "max_stack": 1,
       "durability": 500,
-      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: mines stone-based blocks at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "ruby_shovel",
@@ -3918,7 +4396,10 @@
       "sprite": "eloraam/world/worlditems1.png#48",
       "max_stack": 1,
       "durability": 500,
-      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: digs dirt and sand at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "green_sapphire_shovel",
@@ -3927,7 +4408,10 @@
       "sprite": "eloraam/world/worlditems1.png#49",
       "max_stack": 1,
       "durability": 500,
-      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: digs dirt and sand at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "sapphire_shovel",
@@ -3936,7 +4420,10 @@
       "sprite": "eloraam/world/worlditems1.png#50",
       "max_stack": 1,
       "durability": 500,
-      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: digs dirt and sand at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "ruby_axe",
@@ -3945,7 +4432,10 @@
       "sprite": "eloraam/world/worlditems1.png#80",
       "max_stack": 1,
       "durability": 500,
-      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: chops wood at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "green_sapphire_axe",
@@ -3954,7 +4444,10 @@
       "sprite": "eloraam/world/worlditems1.png#81",
       "max_stack": 1,
       "durability": 500,
-      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: chops wood at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "sapphire_axe",
@@ -3963,7 +4456,10 @@
       "sprite": "eloraam/world/worlditems1.png#82",
       "max_stack": 1,
       "durability": 500,
-      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency",
+      "attributes": [
+        "L2: chops wood at 8.0 speed losing durability"
+      ]
     },
     {
       "id": "ruby_sword",
@@ -3972,7 +4468,10 @@
       "sprite": "eloraam/world/worlditems1.png#32",
       "max_stack": 1,
       "durability": 500,
-      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)",
+      "attributes": [
+        "L2: deals 7 melee attack damage to entities losing durability"
+      ]
     },
     {
       "id": "green_sapphire_sword",
@@ -3981,7 +4480,10 @@
       "sprite": "eloraam/world/worlditems1.png#33",
       "max_stack": 1,
       "durability": 500,
-      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)",
+      "attributes": [
+        "L2: deals 7 melee attack damage to entities losing durability"
+      ]
     },
     {
       "id": "sapphire_sword",
@@ -3990,7 +4492,10 @@
       "sprite": "eloraam/world/worlditems1.png#34",
       "max_stack": 1,
       "durability": 500,
-      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)",
+      "attributes": [
+        "L2: deals 7 melee attack damage to entities losing durability"
+      ]
     },
     {
       "id": "ruby_hoe",
@@ -3999,7 +4504,10 @@
       "sprite": "eloraam/world/worlditems1.png#96",
       "max_stack": 1,
       "durability": 500,
-      "use": "Tills dirt or grass into farmland"
+      "use": "Tills dirt or grass into farmland",
+      "attributes": [
+        "L2: tills dirt and grass into farmland on right-click losing durability"
+      ]
     },
     {
       "id": "green_sapphire_hoe",
@@ -4008,7 +4516,10 @@
       "sprite": "eloraam/world/worlditems1.png#97",
       "max_stack": 1,
       "durability": 500,
-      "use": "Tills dirt or grass into farmland"
+      "use": "Tills dirt or grass into farmland",
+      "attributes": [
+        "L2: tills dirt and grass into farmland on right-click losing durability"
+      ]
     },
     {
       "id": "sapphire_hoe",
@@ -4017,7 +4528,10 @@
       "sprite": "eloraam/world/worlditems1.png#98",
       "max_stack": 1,
       "durability": 500,
-      "use": "Tills dirt or grass into farmland"
+      "use": "Tills dirt or grass into farmland",
+      "attributes": [
+        "L2: tills dirt and grass into farmland on right-click losing durability"
+      ]
     },
     {
       "id": "wood_sickle",
@@ -4026,7 +4540,10 @@
       "sprite": "eloraam/world/worlditems1.png#16",
       "max_stack": 1,
       "durability": 59,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "stone_sickle",
@@ -4035,7 +4552,10 @@
       "sprite": "eloraam/world/worlditems1.png#17",
       "max_stack": 1,
       "durability": 131,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "iron_sickle",
@@ -4044,7 +4564,10 @@
       "sprite": "eloraam/world/worlditems1.png#18",
       "max_stack": 1,
       "durability": 250,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "sickle",
@@ -4053,7 +4576,10 @@
       "sprite": "eloraam/world/worlditems1.png#18",
       "max_stack": 1,
       "durability": 250,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "diamond_sickle",
@@ -4062,7 +4588,10 @@
       "sprite": "eloraam/world/worlditems1.png#19",
       "max_stack": 1,
       "durability": 1561,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "gold_sickle",
@@ -4071,7 +4600,10 @@
       "sprite": "eloraam/world/worlditems1.png#20",
       "max_stack": 1,
       "durability": 32,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "ruby_sickle",
@@ -4080,7 +4612,10 @@
       "sprite": "eloraam/world/worlditems1.png#21",
       "max_stack": 1,
       "durability": 500,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "green_sapphire_sickle",
@@ -4089,7 +4624,10 @@
       "sprite": "eloraam/world/worlditems1.png#22",
       "max_stack": 1,
       "durability": 500,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "sapphire_sickle",
@@ -4098,7 +4636,10 @@
       "sprite": "eloraam/world/worlditems1.png#23",
       "max_stack": 1,
       "durability": 500,
-      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once",
+      "attributes": [
+        "L2: harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability"
+      ]
     },
     {
       "id": "athame",
@@ -4107,7 +4648,10 @@
       "sprite": "eloraam/world/worlditems1.png#112",
       "max_stack": 1,
       "durability": 100,
-      "use": "Ceremonial silver blade; deals 25 damage vs Endermen and the Ender Dragon"
+      "use": "Ceremonial silver blade; deals 25 damage vs Endermen and the Ender Dragon",
+      "attributes": [
+        "L2: deals 25 damage against endermen and the ender dragon losing durability"
+      ]
     },
     {
       "id": "flax_seeds",
@@ -4119,7 +4663,10 @@
       ],
       "max_stack": 64,
       "durability": null,
-      "use": "Plant on farmland to grow flax crops for string"
+      "use": "Plant on farmland to grow flax crops for string",
+      "attributes": [
+        "L2: plants flax crop on farmland on right-click"
+      ]
     },
     {
       "id": "dye_indigo",
@@ -4128,7 +4675,10 @@
       "sprite": "eloraam/base/items1.png#80",
       "max_stack": 64,
       "durability": null,
-      "use": "Blue dye extracted from indigo flowers"
+      "use": "Blue dye extracted from indigo flowers",
+      "attributes": [
+        "L2: dyes sheep and wool blue on right-click"
+      ]
     },
     {
       "id": "wool_card",
@@ -4137,7 +4687,10 @@
       "sprite": "eloraam/world/worlditems1.png#128",
       "max_stack": 1,
       "durability": 63,
-      "use": "Craft with wool block to tease back into 4 string"
+      "use": "Craft with wool block to tease back into 4 string",
+      "attributes": [
+        "L2: teases wool block into 4 string in crafting grid losing durability"
+      ]
     },
     {
       "id": "dry_paint_brush",
@@ -4146,7 +4699,8 @@
       "sprite": "eloraam/base/items1.png#28",
       "max_stack": 16,
       "durability": null,
-      "use": "Dip into paint can in crafting grid to make colored paint brush"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "paint_brush",
@@ -4155,16 +4709,20 @@
       "sprite": "eloraam/base/items1.png#28",
       "max_stack": 1,
       "durability": 15,
-      "use": "Right-click jacketed cable or machine to paint it with chosen color"
+      "use": "Right-click jacketed cable or machine to paint it with chosen color",
+      "attributes": [
+        "L2: paints tubes, cables and canvas bags on right-click losing durability"
+      ]
     },
     {
       "id": "empty_paint_can",
       "name": "Empty Paint Can",
       "java": "ItemTextured paintcan.empty",
-      "sprite": "eloraam/base/items1.png#24",
-      "max_stack": 16,
+      "sprite": "eloraam/base/items1.png#23",
+      "max_stack": 64,
       "durability": null,
-      "use": "Craft with dyes in crafting grid to fill with colored paint"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "paint_can",
@@ -4173,7 +4731,10 @@
       "sprite": "eloraam/base/items1.png#26",
       "max_stack": 1,
       "durability": 15,
-      "use": "Craft with dry paintbrush to apply 15 brush coatings"
+      "use": "Craft with dry paintbrush to apply 15 brush coatings",
+      "attributes": [
+        "L2: coats dry paint brush with 15 applications of colored paint"
+      ]
     },
     {
       "id": "seed_bag",
@@ -4182,19 +4743,22 @@
       "sprite": "eloraam/world/worlditems1.png#129",
       "max_stack": 1,
       "durability": 576,
-      "use": "Shift-right-click to open 9-slot seed inventory; right-click farmland to plant in spiral outward"
+      "use": "Shift-right-click to open 9-slot seed inventory; right-click farmland to plant in spiral outward",
+      "attributes": [
+        "L2: plants stored seeds in spiral on farmland on right-click"
+      ]
     },
     {
       "id": "voltmeter",
       "name": "Voltmeter",
       "java": "ItemVoltmeter",
-      "sprite": [
-        "eloraam/base/items1.png#23",
-        "eloraam/base/items1.png#24"
-      ],
+      "sprite": "eloraam/base/items1.png#24",
       "max_stack": 1,
       "durability": null,
-      "use": "Right-click blulectric block or pipe to read voltage, current, power or pressure in chat"
+      "use": "Right-click blulectric block or pipe to read voltage, current, power or pressure in chat",
+      "attributes": [
+        "L2: reads voltage and current on right-click of blutricity blocks"
+      ]
     },
     {
       "id": "sonic_screwdriver",
@@ -4203,7 +4767,10 @@
       "sprite": "eloraam/base/items1.png#129",
       "max_stack": 1,
       "durability": 400,
-      "use": "Rechargeable sonic tool that rotates machines wirelessly from a distance"
+      "use": "Rechargeable sonic tool that rotates machines wirelessly from a distance",
+      "attributes": [
+        "L2: wirelessly rotates and configures RedPower machines from distance using charge"
+      ]
     },
     {
       "id": "battery_empty",
@@ -4212,7 +4779,8 @@
       "sprite": "eloraam/base/items1.png#25",
       "max_stack": 1,
       "durability": null,
-      "use": "Uncharged blulectric battery; insert into battery box to charge"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "battery_powered",
@@ -4221,7 +4789,10 @@
       "sprite": "eloraam/base/items1.png#25",
       "max_stack": 1,
       "durability": 1500,
-      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools"
+      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools",
+      "attributes": [
+        "L2: discharges 1500 units of blutricity into handheld tools or battery box"
+      ]
     },
     {
       "id": "battery",
@@ -4230,7 +4801,10 @@
       "sprite": "eloraam/base/items1.png#25",
       "max_stack": 1,
       "durability": 1500,
-      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools"
+      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools",
+      "attributes": [
+        "L2: discharges 1500 units of blutricity into handheld tools or battery box"
+      ]
     },
     {
       "id": "wood_sail",
@@ -4239,7 +4813,8 @@
       "sprite": "eloraam/base/items1.png#176",
       "max_stack": 64,
       "durability": null,
-      "use": "Sail component for assembling wind turbines and windmills"
+      "use": null,
+      "attributes": []
     },
     {
       "id": "wood_turbine",
@@ -4248,7 +4823,10 @@
       "sprite": "eloraam/base/items1.png#177",
       "max_stack": 1,
       "durability": 1000,
-      "use": "Vertical axis wind turbine rotor; place inside wind turbine machine"
+      "use": "Vertical axis wind turbine rotor; place inside wind turbine machine",
+      "attributes": [
+        "L2: mounts into wind turbine machine to generate blutricity losing durability from wind wear"
+      ]
     },
     {
       "id": "wood_windmill",
@@ -4257,7 +4835,10 @@
       "sprite": "eloraam/base/items1.png#178",
       "max_stack": 1,
       "durability": 1000,
-      "use": "Horizontal axis windmill rotor; place inside wind turbine machine"
+      "use": "Horizontal axis windmill rotor; place inside wind turbine machine",
+      "attributes": [
+        "L2: mounts into wind turbine machine to generate blutricity losing durability from wind wear"
+      ]
     },
     {
       "id": "blank_disk",
@@ -4266,7 +4847,10 @@
       "sprite": "eloraam/control/control1.png#3",
       "max_stack": 1,
       "durability": null,
-      "use": "128 KB magnetic disk storage for 6502 disk drive"
+      "use": "128 KB magnetic disk storage for 6502 disk drive",
+      "attributes": [
+        "L2: provides 128KB magnetic storage when inserted in disk drive"
+      ]
     },
     {
       "id": "floppy_disk",
@@ -4275,7 +4859,10 @@
       "sprite": "eloraam/control/control1.png#3",
       "max_stack": 1,
       "durability": null,
-      "use": "128 KB magnetic disk storage for 6502 disk drive"
+      "use": "128 KB magnetic disk storage for 6502 disk drive",
+      "attributes": [
+        "L2: provides 128KB magnetic storage when inserted in disk drive"
+      ]
     },
     {
       "id": "forth_boot_disk",
@@ -4284,7 +4871,10 @@
       "sprite": "eloraam/control/control1.png#4",
       "max_stack": 1,
       "durability": null,
-      "use": "Operating system boot disk containing RedPower Forth for the 6502 CPU"
+      "use": "Operating system boot disk containing RedPower Forth for the 6502 CPU",
+      "attributes": [
+        "L2: boots RedPower Forth operating system when inserted in disk drive"
+      ]
     },
     {
       "id": "forth_extra_disk",
@@ -4293,7 +4883,10 @@
       "sprite": "eloraam/control/control1.png#5",
       "max_stack": 1,
       "durability": null,
-      "use": "Extended utility library disk for RedPower Forth"
+      "use": "Extended utility library disk for RedPower Forth",
+      "attributes": [
+        "L2: provides extended Forth utility libraries when inserted in disk drive"
+      ]
     },
     {
       "id": "brass_gear",
@@ -4302,7 +4895,8 @@
       "sprite": "eloraam/compat/compat1.png#1",
       "max_stack": 64,
       "durability": null,
-      "use": "Pneumatic/mechanical transmission gear for BuildCraft engine compatibility"
+      "use": null,
+      "attributes": []
     }
   ],
   "features": [
@@ -4369,6 +4963,11 @@
         "solar_panel",
         "voltmeter"
       ],
+      "level": 3,
+      "covers": [
+        "generates blutricity in daylight",
+        "reads voltage and current on right-click of blutricity blocks"
+      ],
       "steps": [
         {
           "command": "time set noon"
@@ -4404,6 +5003,12 @@
         "solar_panel",
         "wire_blutricity",
         "voltmeter"
+      ],
+      "level": 3,
+      "covers": [
+        "stores blutricity up to 6000 units and charges batteries in slot",
+        "conducts 100V DC blutricity power between machines and generators",
+        "reads voltage and current on right-click of blutricity blocks"
       ],
       "steps": [
         {
@@ -4456,6 +5061,10 @@
         "pump",
         "voltmeter"
       ],
+      "level": 2,
+      "covers": [
+        "reads voltage and current on right-click of blutricity blocks"
+      ],
       "steps": [
         {
           "setblock": [
@@ -4486,6 +5095,11 @@
       "for": [
         "thermopile",
         "voltmeter"
+      ],
+      "level": 3,
+      "covers": [
+        "generates blutricity from temperature differential between adjacent blocks",
+        "reads voltage and current on right-click of blutricity blocks"
       ],
       "steps": [
         {
@@ -4534,6 +5148,10 @@
         "alloy_furnace",
         "screwdriver"
       ],
+      "level": 2,
+      "covers": [
+        "rotates redpower machines and toggles logic gates on right-click"
+      ],
       "steps": [
         {
           "setblock": [
@@ -4569,6 +5187,11 @@
       "for": [
         "block_breaker",
         "pneumatic_tube"
+      ],
+      "level": 4,
+      "covers": [
+        "breaks adjacent block on redstone pulse and ejects into tube",
+        "routes items to destinations using Dijkstra shortest-path logic without dropping"
       ],
       "steps": [
         {
@@ -4616,6 +5239,10 @@
       "for": [
         "deployer"
       ],
+      "level": 4,
+      "covers": [
+        "simulates right-click with held item on redstone pulse"
+      ],
       "steps": [
         {
           "setblock": [
@@ -4646,6 +5273,11 @@
       "for": [
         "seed_bag",
         "flax_seeds"
+      ],
+      "level": 2,
+      "covers": [
+        "plants stored seeds in spiral on farmland on right-click",
+        "plants flax crop on farmland on right-click"
       ],
       "steps": [
         {
@@ -4682,6 +5314,11 @@
       "for": [
         "ruby_sickle",
         "flax_crop"
+      ],
+      "level": 2,
+      "covers": [
+        "harvests crops in 5x5 area and leaves in 3x3x3 volume losing durability",
+        "grows through stages on farmland to yield string and seeds"
       ],
       "steps": [
         {
@@ -4727,6 +5364,11 @@
         "timer",
         "wire_red_alloy"
       ],
+      "level": 4,
+      "covers": [
+        "emits periodic redstone pulse at configured interval",
+        "transmits redstone signals up to 256 blocks with analog strength"
+      ],
       "steps": [
         {
           "setblock": [
@@ -4762,6 +5404,11 @@
       "for": [
         "and_gate",
         "wire_red_alloy"
+      ],
+      "level": 4,
+      "covers": [
+        "outputs redstone signal only when all active inputs are high",
+        "transmits redstone signals up to 256 blocks with analog strength"
       ],
       "steps": [
         {
@@ -4806,6 +5453,11 @@
       "for": [
         "disk_drive",
         "forth_boot_disk"
+      ],
+      "level": 3,
+      "covers": [
+        "accepts floppy disks and reads or writes 128-byte sectors",
+        "boots RedPower Forth operating system when inserted in disk drive"
       ],
       "steps": [
         {

@@ -1,0 +1,312 @@
+{
+  "tickets": [
+    {
+      "key": "part05-logic-parts-crafting",
+      "title": "Logic crafting parts, substrates, and recipes",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 80,
+      "covers": [
+        "stone_wafer",
+        "logic_tile",
+        "wire_part",
+        "anode",
+        "cathode",
+        "pointer",
+        "redwire_part",
+        "plate",
+        "silicon_chip",
+        "tainted_chip",
+        "bundled_wafer"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/parts.rs",
+        "planning/mods/redpower_2.contract/stone_wafer.json",
+        "planning/mods/redpower_2.contract/logic_tile.json",
+        "planning/mods/redpower_2.contract/wire_part.json",
+        "planning/mods/redpower_2.contract/anode.json",
+        "planning/mods/redpower_2.contract/cathode.json",
+        "planning/mods/redpower_2.contract/pointer.json",
+        "planning/mods/redpower_2.contract/redwire_part.json",
+        "planning/mods/redpower_2.contract/plate.json",
+        "planning/mods/redpower_2.contract/silicon_chip.json",
+        "planning/mods/redpower_2.contract/tainted_chip.json",
+        "planning/mods/redpower_2.contract/bundled_wafer.json"
+      ],
+      "spec": [
+        "4. Tools, Armor & Items",
+        "6.2 Items (99 entries)",
+        "7.3 Key Crafting Recipes"
+      ],
+      "java": [
+        "RedPowerLogic#initialize"
+      ],
+      "after": [],
+      "description": "Register and implement logic crafting components: Stone Wafer (irwafer), Wire Component (irwire), Anode (iranode), Cathode (ircathode), Pointer (irpointer), Redwire Part (irredwire), Plate Part (irplate), Silicon Chip (irchip), Tainted Chip (irtchip), Bundled Wafer (irbundle), and Logic Tile substrate. Register their crafting recipes from stone wafers, redstone, red alloy ingots, cathodes, and wafers. Done: contract files complete for all 11 items; make contract-check clean; all crafting scenarios pass."
+    },
+    {
+      "key": "part05-logic-foundation",
+      "title": "Logic tile substrate, placement, orientation, screwdriver interaction, and legacy converter shims",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "integrated_logic",
+        "logic_gate"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/mod.rs",
+        "mods/redpower_2/src/logic/tile.rs",
+        "mods/redpower_2/src/logic/converter.rs",
+        "planning/mods/redpower_2.contract/logic_gate.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "BlockLogic#canConnectRedstone",
+        "BlockLogic#getLightValue",
+        "ItemLogic#tryPlace",
+        "ItemLogic#itemUseShared",
+        "TileLogic#getPartRotation",
+        "TileLogic#setPartRotation",
+        "TileLogic#getConnectableMask",
+        "TileLogic#canAddCover",
+        "TileLogic#tryAddCover",
+        "TileLogic#tryRemoveCover",
+        "TileConverter#n_"
+      ],
+      "after": [
+        "part05-logic-parts-crafting",
+        "part13-logic-parts-and-simple-gates"
+      ],
+      "description": "Implement the core logic tile infrastructure (BlockLogic, ItemLogic, TileLogic) and 1.2.5 legacy conversion shims (TileConverter for TileAnd, TileOr, TileNand, TileNor, TileXor, TileXnor, TilePulse, TileToggle, TileLatch, TileNot, TileBuffer, TileMux, TileRepeater, TileCounter, TileTimer, TileSequencer): 1/8-block sub-voxel flat bounding box ([0, 0, 0, 16, 2, 16]), 24 valid rotations (6 mounting faces x 4 rotations), right-click screwdriver rotation/cycling, cover plate attachment and removal, neighbor block update propagation, and redstone connection masking. Done: contract-check clean for logic_gate; level 1 placement/hitbox and level 2 screwdriver interaction scenarios pass."
+    },
+    {
+      "key": "part05-simple-gates",
+      "title": "Combinational logic gates (NOT, AND, OR, NAND, NOR, XOR, XNOR, Buffer)",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "not_gate",
+        "and_gate",
+        "or_gate",
+        "nand_gate",
+        "nor_gate",
+        "xor_gate",
+        "xnor_gate",
+        "buffer_gate"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/simple_gates.rs",
+        "planning/mods/redpower_2.contract/not_gate.json",
+        "planning/mods/redpower_2.contract/and_gate.json",
+        "planning/mods/redpower_2.contract/or_gate.json",
+        "planning/mods/redpower_2.contract/nand_gate.json",
+        "planning/mods/redpower_2.contract/nor_gate.json",
+        "planning/mods/redpower_2.contract/xor_gate.json",
+        "planning/mods/redpower_2.contract/xnor_gate.json",
+        "planning/mods/redpower_2.contract/buffer_gate.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicSimple#simpleWantsPower",
+        "TileLogicSimple#simpleUpdatePowerState",
+        "TileLogicSimple#simpleTick",
+        "TileLogicSimple#getPoweringMask",
+        "TileLogicSimple#onPartActivateSide",
+        "RenderLogicSimple#getTorchState"
+      ],
+      "after": [
+        "part05-logic-foundation",
+        "part13-logic-parts-and-simple-gates"
+      ],
+      "description": "Implement combinational logic gates based on TileLogicSimple: NOT Gate / Inverter (1 input, 3 outputs), AND Gate (3 inputs, 1 output), OR Gate (3 inputs, 1 output), NAND Gate, NOR Gate, XOR Gate (odd parity), XNOR Gate (even parity / equivalence), and Buffer Gate (1 tick delay, unidirectional). Support screwdriver deadmap cycling to disable unused input sides. Done: contract-check clean for all 8 gates; level 3 block logic and level 4 redstone interaction scenarios pass."
+    },
+    {
+      "key": "part05-advanced-simple-gates",
+      "title": "Complex simple gates (Multiplexer, Repeater, Latches, Synchronizer, Randomizer, Light Sensor)",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "multiplexer",
+        "repeater",
+        "pulse_former",
+        "toggle_latch",
+        "rs_latch",
+        "transparent_latch",
+        "synchronizer",
+        "randomizer",
+        "light_sensor"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/special_gates.rs",
+        "planning/mods/redpower_2.contract/multiplexer.json",
+        "planning/mods/redpower_2.contract/repeater.json",
+        "planning/mods/redpower_2.contract/pulse_former.json",
+        "planning/mods/redpower_2.contract/toggle_latch.json",
+        "planning/mods/redpower_2.contract/rs_latch.json",
+        "planning/mods/redpower_2.contract/transparent_latch.json",
+        "planning/mods/redpower_2.contract/synchronizer.json",
+        "planning/mods/redpower_2.contract/randomizer.json",
+        "planning/mods/redpower_2.contract/light_sensor.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicSimple#latchUpdatePowerState",
+        "TileLogicSimple#latch2UpdatePowerState",
+        "TileLogicSimple#pulseChange",
+        "TileLogicSimple#toggleUpdatePowerState",
+        "TileLogicSimple#repUpdatePowerState",
+        "TileLogicSimple#syncChange",
+        "TileLogicSimple#randUpdatePowerState",
+        "TileLogicSimple#lightTick"
+      ],
+      "after": [
+        "part05-simple-gates",
+        "part13-logic-latches-and-sensors"
+      ],
+      "description": "Implement advanced sequential, pulse, and sensor gates based on TileLogicSimple: Multiplexer (selects A or B based on S input), Repeater (schedule table: 2, 4, 6, 8, 16, 32, 64, 128, 256 ticks), Pulse Former (exact 1-tick pulse on rising edge), Toggle Latch (T flip-flop toggling on rising edge), RS Latch (bistable set/reset), Transparent Latch (D-latch), Synchronizer (latches two independent inputs, outputs when both arrive), Randomizer (random 1-of-3 output on clock pulse with 33.3% probability), and Light Sensor (signal on ambient light threshold). Done: contract-check clean for all 9 gates; level 3 and level 4 scenarios pass."
+    },
+    {
+      "key": "part05-pointer-tiles",
+      "title": "Pointer logic tiles (Timer, Sequencer, State Cell) and interval GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "timer",
+        "sequencer",
+        "state_cell"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/pointer.rs",
+        "mods/redpower_2/native/mixins/redpower_2/gui_timer.rs",
+        "planning/mods/redpower_2.contract/timer.json",
+        "planning/mods/redpower_2.contract/sequencer.json",
+        "planning/mods/redpower_2.contract/state_cell.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicPointer#timerTick",
+        "TileLogicPointer#timerUpdate",
+        "TileLogicPointer#sequencerUpdate",
+        "TileLogicPointer#stateCellUpdate",
+        "TileLogicPointer#getPointerDirection",
+        "TileLogicPointer#SetInterval",
+        "TileLogicPointer#GetInterval",
+        "GuiTimer#a",
+        "mod_RedPowerLogic#init_guihandler"
+      ],
+      "after": [
+        "part05-logic-foundation",
+        "part13-logic-pointer-tiles"
+      ],
+      "description": "Implement pointer-based rotating logic tiles (TileLogicPointer): Timer (default interval 40 ticks / 2.0s, adjustable from 4 ticks up, emits 2-tick pulse on completion), Sequencer (4 outputs cycled sequentially at interval, rotating pointer, random.click audio on step), and State Cell (monostable pulse timer with configurable active duration). Implement GuiTimer for adjusting interval via GUI buttons. Done: contract-check clean for timer, sequencer, state_cell; level 3 GUI and level 4 timer pulse scenarios pass."
+    },
+    {
+      "key": "part05-counter-tile",
+      "title": "Counter logic tile, storage module, and configuration GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "counter"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/counter.rs",
+        "mods/redpower_2/native/mixins/redpower_2/gui_counter.rs",
+        "planning/mods/redpower_2.contract/counter.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicStorage#onTileTick",
+        "TileLogicStorage$LogicStorageCounter#updatePowerState",
+        "ContainerCounter#handleGuiEvent",
+        "GuiCounter#a",
+        "mod_RedPowerLogic#init_guihandler"
+      ],
+      "after": [
+        "part05-logic-foundation",
+        "part13-logic-storage-and-bus"
+      ],
+      "description": "Implement the Counter logic tile (TileLogicStorage, LogicStorageCounter): counts pulses with configurable CountMax (default 10), Inc (default 1), Dec (default 1); left input increments, right input decrements; emits signals at minimum (0) and maximum (CountMax); plays random.click audio; persists count across chunk reloads (level 5 persistence). Implement ContainerCounter and GuiCounter for configuring parameters. Done: contract-check clean for counter; level 3 GUI, level 4 counting, and level 5 persistence scenarios pass."
+    },
+    {
+      "key": "part05-array-logic",
+      "title": "Array logic cells (Null Cell, Invert Cell, Non-Invert Cell)",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "null_cell",
+        "invert_cell",
+        "non_invert_cell"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/array.rs",
+        "planning/mods/redpower_2.contract/null_cell.json",
+        "planning/mods/redpower_2.contract/invert_cell.json",
+        "planning/mods/redpower_2.contract/non_invert_cell.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicArray#updatePowerState",
+        "TileLogicArray#getTopwireMask",
+        "TileLogicArray#onBlockNeighborChange",
+        "RenderLogicArray#isArrayTopwire"
+      ],
+      "after": [
+        "part05-logic-foundation",
+        "part13-logic-storage-and-bus"
+      ],
+      "description": "Implement array logic cells (TileLogicArray): Null Cell (passive pass-through spacer with top wire crossing), Invert Cell (inverting buffer cell connecting top/bottom signals), and Non-Invert Cell (non-inverting buffer cell). Support orthogonal signal propagation without cross-axis interference and integrated topwire connections. Done: contract-check clean for null_cell, invert_cell, non_invert_cell; level 4 array signal routing scenarios pass."
+    },
+    {
+      "key": "part05-bus-transceiver",
+      "title": "Bus Transceiver: 16-channel bundled cable interfacing and latching",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "bus_transceiver"
+      ],
+      "files": [
+        "mods/redpower_2/src/logic/transceiver.rs",
+        "planning/mods/redpower_2.contract/bus_transceiver.json"
+      ],
+      "spec": [
+        "2.3 Integrated Logic Tiles",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileLogicAdv#getPoweringMask",
+        "TileLogicAdv$LogicAdvXcvr#updatePowerState",
+        "TileLogicAdv#onBlockNeighborChange"
+      ],
+      "after": [
+        "part05-logic-foundation",
+        "part13-logic-storage-and-bus"
+      ],
+      "description": "Implement the Bus Transceiver (TileLogicAdv, LogicAdvXcvr): connects two 16-channel Bundled Cables across opposing sides; control inputs enable bidirectional data transfer (A to B, B to A) or transparent pass-through; latches 16-channel bundled signals on control pulse; preserves internal 16-bit register across chunk reloads (level 5 persistence). Done: contract-check clean for bus_transceiver; level 4 bundled cable transceiver scenarios pass."
+    }
+  ]
+}

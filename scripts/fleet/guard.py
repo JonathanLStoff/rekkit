@@ -6,16 +6,13 @@ Checks a hook runs:
          rewrites or recursive deletes (a human does those). It notices `make fleet-start MOD=<id>`
          (this session conducts that mod) and `make fleet-task BEAD=<id> ROLE=<role>` (this session
          works one bead as that role). A role subagent may not run bd at all (it reports instead).
-         Clean-room, both ways: a coder (a builder role, or a session that wrote under mods/ or crates/)
-         never touches the original's Java (assets/decompiled/, .java/.class under assets/, make
-         decompile, make java-*), and a session that has read it never writes mods/ or crates/.
          In agy every command also gets DOLT_ROOT_PATH (target/dolt-root), so `bd` also works where
          ~/.dolt is unreadable (agy's terminal sandbox, if a person turns it back on).
   paths  a file an agent is about to write: horizon/ is a read-only submodule, mods/<id>/content/ holds
-         data only (no Cargo.toml, no .rs), the harness's list of accepted warnings is the human's, and
-         a session that has read the Java writes no mods/ or crates/. It records what the session wrote.
-  read   a file an agent is about to read: a coder never reads the original's Java (clean-room), and
-         nobody reads more than MAX_JAVA_READ lines of a decompiled class at once (make java-outline).
+         data only (no Cargo.toml, no .rs), and the harness's list of accepted warnings is the
+         human's. It records what the session wrote.
+  read   a file an agent is about to read: nobody reads more than MAX_JAVA_READ lines of a decompiled
+         class at once (make java-outline, java-show). Anyone may read the Java; the spec comes first.
   gate   before an agent (or, in Claude Code, a subagent) stops:
            - a role subagent has written its report for every bead it took (target/fleet/inbox/);
            - the conductor of a fleet run has filed every report (`make fleet-inbox`) and its mod is
@@ -61,7 +58,7 @@ STATE = MAIN / "target" / "agent-gate"
 STOP_FILE = MAIN / "target" / "fleet.stop"
 ALLOWED_WARNINGS = "planning/harness-allowed-warnings.txt"
 BLOCKED_SHELL = re.compile(
-    r"git push|gh release|minisign|git submodule|git reset --hard|--force|rm -rf"
+    r"git push|gh release|minisign|git submodule|git reset --hard|--force|rm -rf|horizon[-_]pull"
     # Git in the submodule only reads (grep, log, show...); anything else would change it.
     r"|git -C \S*horizon/?\s+(?!(?:grep|log|show|diff|status|rev-parse|ls-files|ls-tree|blame|cat-file|merge-base"
     r"|describe)\b)")
@@ -70,15 +67,7 @@ HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$", re.S | re.M
 FLEET_START = re.compile(r"(?:make\s+fleet-start\s+MOD=|guard\.py\s+claim\s+)['\"]?([a-z0-9_]+)")
 FLEET_TASK = re.compile(r"(?:make\s+fleet-task|guard\.py\s+task)\s+(?:BEAD=)?['\"]?([A-Za-z0-9_.-]+)['\"]?"
                         r"(?:\s+(?:ROLE=|--role\s+)['\"]?([a-z-]+))?")
-# Roles that write the mod from the spec and must never see the original's code.
-BUILDERS = {"scaffolder", "domain-builder", "domain-builder-pro", "content-author", "hook-engineer", "test-smith"}
 DECOMPILED = "assets/decompiled"
-# Shell commands that read or produce the original's Java.
-JAVA_SHELL = re.compile(r"assets/decompiled|assets/\S*\.(?:java|class)\b|\bmake\s+(?:decompile|java-(?:outline|show|find))\b"
-                        r"|scripts/(?:decompile|java_outline)\.py|\bjavap\b|vineflower")
-CLEAN_ROOM = ("Clean-room: an agent that writes a mod's code never reads the original Java, and an agent that "
-              "has read it never writes mods/ or crates/. Work from the spec (make spec-show MOD=<id> "
-              "SECTION=...); report what it lacks and the spec-writer answers in the spec.")
 MAX_IDLE_STOPS = 10
 MAX_JAVA_READ = 200  # lines of decompiled Java one read may take
 WAIT_FOR_REPORTS = 600  # seconds a conductor's turn end waits for running subagents (hook timeout: 900)
@@ -120,7 +109,6 @@ class Session:
         self.touched: set[str] = set(data.get("touched", []))
         self.idle_stops: int = data.get("idle_stops", 0)
         self.progress: str = data.get("progress", "")
-        self.read_java: bool = data.get("read_java", False)
         self.last_seen: float = data.get("last_seen", 0)
 
     @property
@@ -133,18 +121,13 @@ class Session:
             self.last_seen = time.time()
             self.save()
 
-    @property
-    def coder(self) -> bool:
-        """A builder role, or a session that has written under mods/ or crates/."""
-        return self.role in BUILDERS or bool(self.touched)
-
     def save(self) -> None:
         if not self.path:
             return
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps({"fleet": self.fleet, "tasks": self.tasks, "role": self.role,
                                          "touched": sorted(self.touched), "idle_stops": self.idle_stops,
-                                         "progress": self.progress, "read_java": self.read_java,
+                                         "progress": self.progress,
                                          "last_seen": self.last_seen}),
                                      encoding="utf-8")
 
@@ -218,14 +201,100 @@ def owner(rel: str) -> str | None:
 
 # ---------------------------------------------------------------- shell, paths, read
 
+TASK_TOKENS = 200_000  # a role subagent's context budget; past it, it reports and a fresh agent goes on
+# What a subagent over budget may still do: write its progress notes and its report.
+WRAP_UP = re.compile(r"target/fleet/(?:inbox|progress)/")
+
+
+def context_tokens(payload: dict) -> int | None:
+    """The session's context now (prompt plus cache), from its own transcript: agy's brain log, or
+    Claude Code's JSONL (a subagent's own file under <session>/subagents/)."""
+    candidates = []
+    if conv := payload.get("conversationId"):
+        candidates.append(Path.home() / ".gemini" / "antigravity-cli" / "brain" / str(conv) / ".system_generated"
+                          / "logs" / "transcript_full.jsonl")
+    if payload.get("agent_transcript_path"):
+        candidates.append(Path(payload["agent_transcript_path"]))
+    if tp := payload.get("transcript_path"):
+        if payload.get("agent_id"):
+            candidates.append(Path(tp).with_suffix("") / "subagents" / f"agent-{payload['agent_id']}.jsonl")
+        else:
+            candidates.append(Path(tp))
+    for path in candidates:
+        try:
+            with path.open("rb") as f:
+                f.seek(max(0, path.stat().st_size - 400_000))
+                lines = f.read().decode("utf-8", "replace").splitlines()
+        except OSError:
+            continue
+        for line in reversed(lines):
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            if "input_tokens" in row:  # agy
+                return int(row.get("input_tokens") or 0) + int(row.get("cache_read_tokens") or 0)
+            usage = (row.get("message") or {}).get("usage") if isinstance(row.get("message"), dict) else None
+            if usage:  # Claude Code
+                return sum(int(usage.get(k) or 0) for k in
+                           ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
+    return None
+
+
+def over_budget(payload: dict, session: "Session", text: str) -> str | None:
+    """A role subagent past TASK_TOKENS may only wrap up: notes, then a partial report."""
+    if not session.tasks or session.fleet or WRAP_UP.search(text):
+        return None
+    used = context_tokens(payload)
+    if used is None or used <= TASK_TOKENS:
+        return None
+    beads_list = ", ".join(session.tasks)
+    return (f"Token budget reached ({used:,} of {TASK_TOKENS:,}): stop working now. Append what you finished to "
+            f"target/fleet/progress/<bead>.md, then write your report for {beads_list} with status partial, "
+            "listing exactly what is left; the conductor starts a fresh agent on the rest.")
+
+
+def bd_text_removed(text: str) -> str:
+    """The command with the quoted arguments of `bd` calls emptied: a comment, title or reason that
+    quotes "--force" or "git push" is text for Beads, not a command. Quotes that run something
+    ($(...) or backticks) stay."""
+    out, i, words, word = [], 0, [], ""
+    while i < len(text):
+        c = text[i]
+        if c in "\"'":
+            end = i + 1
+            while end < len(text) and text[end] != c:
+                end += 2 if c == '"' and text[end] == "\\" else 1
+            quoted = text[i:end + 1]
+            runs = c == '"' and ("$(" in quoted or "`" in quoted)
+            command = (words + [word])[0] if (words or word) else ""
+            out.append(c + c if command == "bd" and not runs else quoted)
+            word += "q"
+            i = end + 1
+            continue
+        if c in ";&|\n":
+            words, word = [], ""
+        elif c.isspace():
+            if word:
+                words.append(word)
+            word = ""
+        else:
+            word += c
+        out.append(c)
+        i += 1
+    return "".join(out)
+
+
 def check_shell(payload: dict) -> str | None:
     commands = strings_named(tool_input(payload), lambda k: k in ("command", "commandline", "cmd"))
     # A heredoc's body is text being written, not commands being run.
     text = HEREDOC.sub("", "\n".join(commands)) if commands else json.dumps(payload)
-    if BLOCKED_SHELL.search(text):
+    if BLOCKED_SHELL.search(bd_text_removed(text) if commands else text):
         return ("Blocked by the Rekkit fleet guard: pushing, releasing, signing, submodule changes, "
                 "history rewrites and recursive deletes are for the human. Ask them to run it.")
     session = Session(payload)
+    if budget := over_budget(payload, session, text):
+        return budget
     if m := FLEET_TASK.search(text):
         if m.group(1) not in session.tasks:
             session.tasks.append(m.group(1))
@@ -235,12 +304,6 @@ def check_shell(payload: dict) -> str | None:
     if session.tasks and not session.fleet and BEADS_CMD.search(text):
         return ("Role subagents do not use Beads (not even to read or for --help): your bead and what it needs "
                 f"are in your prompt. Put anything for Beads in your report (follow_ups, notes): {INBOX_HINT}")
-    if JAVA_SHELL.search(text):
-        if session.coder:
-            return CLEAN_ROOM
-        if not session.read_java:
-            session.read_java = True
-            session.save()
     if m := FLEET_START.search(text):
         session.fleet, session.idle_stops, session.progress = m.group(1), 0, ""
         session.save()
@@ -297,6 +360,8 @@ def agy_env(payload: dict) -> dict:
 
 
 def check_paths(payload: dict) -> str | None:
+    if budget := over_budget(payload, Session(payload), " ".join(repo_paths(payload))):
+        return budget
     units = set()
     for rel in repo_paths(payload):
         if rel == "horizon" or rel.startswith("horizon/"):
@@ -308,8 +373,6 @@ def check_paths(payload: dict) -> str | None:
         if unit := owner(rel):
             units.add(unit)
     session = Session(payload)
-    if units and session.read_java:
-        return CLEAN_ROOM
     if session.id and not units <= session.touched:
         session.touched |= units
         session.save()
@@ -318,20 +381,11 @@ def check_paths(payload: dict) -> str | None:
     return None
 
 
-def java_path(rel: str) -> bool:
-    """The original's Java: the decompiled tree, any .java or .class under assets/, or a search over assets/."""
-    return rel == "assets" or rel.startswith(DECOMPILED) or (rel.startswith("assets/") and rel.endswith((".java", ".class")))
-
-
 def check_read(payload: dict) -> str | None:
     session = Session(payload)
     paths = repo_paths(payload)
-    if any(java_path(p) for p in paths):
-        if session.coder:
-            return CLEAN_ROOM
-        if not session.read_java:
-            session.read_java = True
-            session.save()
+    if budget := over_budget(payload, session, " ".join(paths)):
+        return budget
     return whole_java_read(payload, paths)
 
 
@@ -578,7 +632,9 @@ def main() -> int:
         print(f"You work {args.target}{' as ' + args.role if args.role else ''}. After each piece of work you finish "
               f"(a file, a block, a test passing), append one line saying what is done to {rel}: if you are "
               "interrupted, the next agent continues from it. When you finish (or cannot go on), write "
-              f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself.")
+              f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself. "
+              f"Your budget is {TASK_TOKENS:,} tokens of context: read narrowly (the spec's sections, then the "
+              "Java a method at a time); past it the hooks let you only write your notes and a partial report.")
         earlier = earlier_work(args.target)
         if earlier:
             print("\nAn earlier agent worked this bead and was interrupted. Continue from its work; do not redo "

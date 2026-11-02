@@ -1,0 +1,593 @@
+{
+  "tickets": [
+    {
+      "key": "part16-tubes-redstone-restrict",
+      "title": "Pneumatic Tubes: Redstone and Restrictor tube routing and connection logic",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "redstone_tube",
+        "restrictor_tube",
+        "pneumatic_tube",
+        "pneumatic_tubes"
+      ],
+      "files": [
+        "mods/redpower_2/src/tubes/redstone_tube.rs",
+        "mods/redpower_2/src/tubes/restrictor_tube.rs",
+        "planning/mods/redpower_2.contract/redstone_tube.json",
+        "planning/mods/redpower_2.contract/restrictor_tube.json",
+        "planning/mods/redpower_2.contract/pneumatic_tube.json"
+      ],
+      "spec": [
+        "2.4 Pneumatic Tubes & Item Logistics",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileRedstoneTube#getConnectableMask",
+        "TileRedstoneTube#getCurrentStrength",
+        "TileRedstoneTube#isBlockWeakPoweringTo",
+        "TileRestrictTube#tubeWeight",
+        "TileTube#tubeItemCanEnter",
+        "TileTube#tryPaint"
+      ],
+      "after": [
+        "part07-pneumatic-tube",
+        "part07-redstone-tube"
+      ],
+      "description": "Implement Redstone Tube (transmits redstone signals alongside items and powers adjacent blocks) and Restrictor Tube (imposes +1,000,000 Dijkstra traversal routing weight for overflow paths). Includes paint coloring rules and tube flow integration. Done: contract-check clean for redstone_tube, restrictor_tube, and pneumatic_tube; Level 1, 3, and 4 scenarios passing."
+    },
+    {
+      "key": "part16-transposer-relay",
+      "title": "Logistics Machines: Transposer suction/vacuum and Relay auto-ejection",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "transposer",
+        "relay"
+      ],
+      "files": [
+        "mods/redpower_2/src/machines/transposer.rs",
+        "mods/redpower_2/src/machines/relay.rs",
+        "planning/mods/redpower_2.contract/transposer.json",
+        "planning/mods/redpower_2.contract/relay.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileTranspose#suckEntities",
+        "TileTranspose#handleExtract",
+        "TileTranspose#drainBuffer",
+        "TileRelay#onTileTick",
+        "TileRelay#handleExtract"
+      ],
+      "after": [
+        "part16-tubes-redstone-restrict",
+        "part07-transposer",
+        "part07-relay",
+        "part14-machine-blocks-base"
+      ],
+      "description": "Implement Transposer (vacuums nearby dropped entities or extracts single item stack from adjacent inventory on redstone pulse, feeding rear tube) and Relay (9-slot buffer inventory automatically ejecting one stack every 10 ticks into connected pneumatic network). Done: contract-check clean for transposer and relay; Level 1, 3, 4 scenarios passing."
+    },
+    {
+      "key": "part16-sorting-machine",
+      "title": "Sorting Machine: 8-channel routing, operational modes, color tagging & GUI",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "sorting_machine"
+      ],
+      "files": [
+        "mods/redpower_2/src/machines/sorter.rs",
+        "planning/mods/redpower_2.contract/sorting_machine.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileSorter#handleExtract",
+        "TileSorter#tubeItemEnter",
+        "TileSorter#stepColumn",
+        "ContainerSorter#handleGuiEvent",
+        "GuiSorter#actionPerformed"
+      ],
+      "after": [
+        "part16-transposer-relay",
+        "part07-sorting-machine",
+        "part14-gui-containers-routing"
+      ],
+      "description": "Implement Sorting Machine with 40-slot filter inventory (8 columns x 5 rows), 8-channel color selector buttons, operational routing modes (Any, Sequential, Full Stack, All Items, Even Distribution, Random), Blutricity automatic extraction, and GUI networking event sync. Done: contract-check clean for sorting_machine; Level 1, 3, 4, 5 scenarios passing."
+    },
+    {
+      "key": "part16-retriever-regulator",
+      "title": "Logistics Machines: Retriever network-pulling and Regulator inventory stocking",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "retriever",
+        "regulator"
+      ],
+      "files": [
+        "mods/redpower_2/src/machines/retriever.rs",
+        "mods/redpower_2/src/machines/regulator.rs",
+        "planning/mods/redpower_2.contract/retriever.json",
+        "planning/mods/redpower_2.contract/regulator.json"
+      ],
+      "spec": [
+        "3.2 Tube & Logistics Machines",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileRetriever#handleExtract",
+        "TileRetriever#stepSelect",
+        "TileRegulator#scanInput",
+        "TileRegulator#scanOutput",
+        "TileRegulator#handleTransfer"
+      ],
+      "after": [
+        "part16-sorting-machine",
+        "part07-retriever",
+        "part07-regulator",
+        "part14-gui-containers-routing",
+        "part14-gui-containers-management"
+      ],
+      "description": "Implement Retriever (searches connected pneumatic network on pulse to pull items matching its 9 filter slots, using Blutricity) and Regulator (compares adjacent inventory contents against 9-slot stocking template, routing missing items in and excess items out). Includes GUIs and container sync. Done: contract-check clean for retriever and regulator; Level 1, 3, 4, 5 scenarios passing."
+    },
+    {
+      "key": "part16-sortron",
+      "title": "Sortron: 6502 Redbus MMIO item query, inspection & routing peripheral",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "sortron",
+        "item_logistics_machines"
+      ],
+      "files": [
+        "mods/redpower_2/src/machines/sortron.rs",
+        "planning/mods/redpower_2.contract/sortron.json"
+      ],
+      "spec": [
+        "2.7 Control 6502 Computing Subsystem",
+        "3.2 Tube & Logistics Machines",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileSortron#rbRead",
+        "TileSortron#rbWrite",
+        "TileSortron#processCommand",
+        "TileSortron#tubeItemEnter",
+        "TileSortron#hashItem"
+      ],
+      "after": [
+        "part16-retriever-regulator"
+      ],
+      "description": "Implement Sortron tube machine and Redbus peripheral for 6502 Forth control. Exposes registers for Command, Item Type/ID, Damage, Quantity, Color, and Slot to read passing tube items and programmatically route them. Done: contract-check clean for sortron; Level 1, 3, 4 scenarios passing."
+    },
+    {
+      "key": "part16-solar-thermopile",
+      "title": "Blutricity: Solar Panel daylight generation and Thermopile thermal gradient generator",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "solar_panel",
+        "thermopile"
+      ],
+      "files": [
+        "mods/redpower_2/src/blutricity/solar.rs",
+        "mods/redpower_2/src/blutricity/thermopile.rs",
+        "planning/mods/redpower_2.contract/solar_panel.json",
+        "planning/mods/redpower_2.contract/thermopile.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "TileSolarPanel#g",
+        "TileSolarPanel#setPartBounds",
+        "TileThermopile#updateTemps",
+        "TileThermopile#g"
+      ],
+      "after": [
+        "part16-sortron",
+        "part07-solar-panel",
+        "part07-thermopile",
+        "part14-machine-panels-blocks"
+      ],
+      "description": "Implement Solar Panel (1/4-block flat panel, generates 2.0A daytime current when seeing sky and V <= 100V) and Thermopile (scans 6 adjacent faces every 20 ticks, generating 0.005A * min(Thot, Tcold) current from hot/cold block differences such as lava vs water/ice). Done: contract-check clean for solar_panel and thermopile; Level 1, 3, 4, 5 scenarios passing."
+    },
+    {
+      "key": "part16-turbine-transformer",
+      "title": "Blutricity: Wind Turbine multiblock generation and 100x Transformer",
+      "role": "domain-builder-pro",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "wind_turbine",
+        "transformer",
+        "wood_sail",
+        "blutricity_grid"
+      ],
+      "files": [
+        "mods/redpower_2/src/blutricity/turbine.rs",
+        "mods/redpower_2/src/blutricity/transformer.rs",
+        "planning/mods/redpower_2.contract/wind_turbine.json",
+        "planning/mods/redpower_2.contract/transformer.json",
+        "planning/mods/redpower_2.contract/wood_sail.json"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines",
+        "6.1 Blocks (121 entries)",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "TileWindTurbine#traceAir0",
+        "TileWindTurbine#traceAir1",
+        "TileWindTurbine#tryDeployBlades",
+        "TileWindTurbine#onTileTick",
+        "TileTransformer#g",
+        "TileTransformer#onBlockPlaced"
+      ],
+      "after": [
+        "part16-solar-thermopile",
+        "part14-machine-panels-blocks",
+        "part14-gui-containers-power"
+      ],
+      "description": "Implement Wind Turbine (multiblock tower turbine raytracing clear air space in 4 directions to determine efficiency, sail durability degradation, redstone brakes) and Transformer (steps voltage between 100V low voltage and 10,000V high voltage for long distance power lines). Includes Wooden Windmill Sail (wood_sail) and Turbine GUI. Done: contract-check clean for wind_turbine, transformer, and wood_sail; Level 1, 2, 3, 4, 5 scenarios passing."
+    },
+    {
+      "key": "part16-ores-storage",
+      "title": "World Blocks: Custom gem and metal ores with metal/gem storage blocks",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "ore_ruby",
+        "ore_green_sapphire",
+        "ore_sapphire",
+        "ore_silver",
+        "ore_tin",
+        "ore_copper",
+        "ore_tungsten",
+        "ore_nikolite",
+        "tungsten_ingot",
+        "block_ruby",
+        "block_green_sapphire",
+        "block_sapphire",
+        "block_silver",
+        "block_tin",
+        "block_copper"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/ores.rs",
+        "mods/redpower_2/src/world/storage.rs",
+        "planning/mods/redpower_2.contract/ore_ruby.json",
+        "planning/mods/redpower_2.contract/ore_green_sapphire.json",
+        "planning/mods/redpower_2.contract/ore_sapphire.json",
+        "planning/mods/redpower_2.contract/ore_silver.json",
+        "planning/mods/redpower_2.contract/ore_tin.json",
+        "planning/mods/redpower_2.contract/ore_copper.json",
+        "planning/mods/redpower_2.contract/ore_tungsten.json",
+        "planning/mods/redpower_2.contract/ore_nikolite.json",
+        "planning/mods/redpower_2.contract/tungsten_ingot.json",
+        "planning/mods/redpower_2.contract/block_ruby.json",
+        "planning/mods/redpower_2.contract/block_green_sapphire.json",
+        "planning/mods/redpower_2.contract/block_sapphire.json",
+        "planning/mods/redpower_2.contract/block_silver.json",
+        "planning/mods/redpower_2.contract/block_tin.json",
+        "planning/mods/redpower_2.contract/block_copper.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6.1 Blocks (121 entries)",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "BlockCustomOre#quantityDropped",
+        "BlockCustomOre#a",
+        "BlockStorage#a",
+        "ItemCustomOre#b",
+        "ItemStorage#b"
+      ],
+      "after": [
+        "part16-turbine-transformer",
+        "part09-ores-and-storage-blocks"
+      ],
+      "description": "Implement 8 custom ores (Ruby, Green Sapphire, Sapphire, Silver, Tin, Copper, Tungsten, Nikolite) with Fortune-affected gem drops, XP emission, and Silk Touch behavior, plus Tungsten Ingot and 6 metallic and gemstone 3x3 compact storage blocks. Done: contract-check clean for all 8 ores, tungsten_ingot, and 6 storage blocks; Level 1 and Level 2 scenarios passing."
+    },
+    {
+      "key": "part16-stone-mossifier",
+      "title": "World Blocks: Marble, Basalt variants, hardness properties and mossifier spread",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 120,
+      "covers": [
+        "marble",
+        "block_marble",
+        "basalt",
+        "block_basalt",
+        "marble_brick",
+        "basalt_cobblestone",
+        "basalt_brick",
+        "basalt_chiseled",
+        "basalt_paver"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/stone.rs",
+        "mods/redpower_2/src/world/mossifier.rs",
+        "planning/mods/redpower_2.contract/marble.json",
+        "planning/mods/redpower_2.contract/block_marble.json",
+        "planning/mods/redpower_2.contract/basalt.json",
+        "planning/mods/redpower_2.contract/block_basalt.json",
+        "planning/mods/redpower_2.contract/marble_brick.json",
+        "planning/mods/redpower_2.contract/basalt_cobblestone.json",
+        "planning/mods/redpower_2.contract/basalt_brick.json",
+        "planning/mods/redpower_2.contract/basalt_chiseled.json",
+        "planning/mods/redpower_2.contract/basalt_paver.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6.1 Blocks (121 entries)"
+      ],
+      "java": [
+        "BlockCustomStone#getPrototypicalHardness",
+        "BlockCustomStone#getExplosionResistance",
+        "BlockBrickMossifier#crackBrick",
+        "BlockBrickMossifier#spreadMoss",
+        "BlockCobbleMossifier#b"
+      ],
+      "after": [
+        "part16-ores-storage",
+        "part09-decorative-stone-basalt-marble"
+      ],
+      "description": "Implement Marble and Basalt stone variants (raw, brick, cobblestone, chiseled, paver) with custom hardness and blast resistance. Includes mossifier tick logic for spreading moss onto adjacent cobblestone and stone bricks near water sources. Done: contract-check clean for all 9 stone blocks and aliases; Level 1 scenarios passing."
+    },
+    {
+      "key": "part16-flora-crops",
+      "title": "World Flora: Flax crop growth, Indigo flowers, and Rubber tree logs/leaves",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "flax_crop",
+        "flax_seeds",
+        "indigo_flower",
+        "rubber_sapling",
+        "rubber_leaves",
+        "rubber_log"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/crops.rs",
+        "mods/redpower_2/src/world/trees.rs",
+        "planning/mods/redpower_2.contract/flax_crop.json",
+        "planning/mods/redpower_2.contract/flax_seeds.json",
+        "planning/mods/redpower_2.contract/indigo_flower.json",
+        "planning/mods/redpower_2.contract/rubber_sapling.json",
+        "planning/mods/redpower_2.contract/rubber_leaves.json",
+        "planning/mods/redpower_2.contract/rubber_log.json"
+      ],
+      "spec": [
+        "5. World Generation & Resources",
+        "6.1 Blocks (121 entries)",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "BlockCustomCrops#fertilize",
+        "BlockCustomCrops#getBlockDropped",
+        "BlockCustomFlower#growTree",
+        "BlockCustomLeaves#b",
+        "BlockCustomLog#onBlockRemoval",
+        "ItemCustomSeeds#a"
+      ],
+      "after": [
+        "part16-stone-mossifier",
+        "part09-flora-crops-rubber-trees"
+      ],
+      "description": "Implement Flax crops (5 growth stages, drops String and Flax Seeds on harvest, bonemeal acceleration), wild Indigo flowers (harvested for Indigo dye), and Rubber trees (rubber logs smelting into charcoal, decaying leaves dropping rubber saplings with growth into rubber trees). Done: contract-check clean for all flora blocks and flax seeds; Level 1, 2, and 3 scenarios passing."
+    },
+    {
+      "key": "part16-worldgen",
+      "title": "World Generation: Ore clusters, Marble veins, Basalt volcanoes & Rubber trees",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 140,
+      "covers": [
+        "world_generation"
+      ],
+      "files": [
+        "mods/redpower_2/src/world/gen.rs",
+        "mods/redpower_2/src/world/events.rs"
+      ],
+      "spec": [
+        "5. World Generation & Resources"
+      ],
+      "java": [
+        "WorldGenHandler#generate",
+        "WorldGenCustomOre#a",
+        "WorldGenMarble#a",
+        "WorldGenVolcano#a",
+        "WorldGenRubberTree#a",
+        "WorldEvents#onBonemeal"
+      ],
+      "after": [
+        "part16-flora-crops",
+        "part09-worldgen-features"
+      ],
+      "description": "Implement world generation features: Custom ore vein distribution (Ruby, Sapphire, Silver, Tin, Copper, Tungsten, Nikolite Y-ranges and cluster sizes), Marble pockets in Y 32..63, Basalt volcano cones with internal magma chambers and lava tubes, and Jungle rubber tree distribution. Includes WorldEvents hook. Done: world generation unit and integration tests passing; Level 4 scenario verifying terrain feature generation."
+    },
+    {
+      "key": "part16-gem-tools-sickles",
+      "title": "Equipment: Ruby/Sapphire gem tools, handsaws and 8 sickle material variants",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 150,
+      "covers": [
+        "ruby_pickaxe",
+        "green_sapphire_pickaxe",
+        "sapphire_pickaxe",
+        "ruby_shovel",
+        "green_sapphire_shovel",
+        "sapphire_shovel",
+        "ruby_axe",
+        "green_sapphire_axe",
+        "sapphire_axe",
+        "ruby_sword",
+        "green_sapphire_sword",
+        "sapphire_sword",
+        "ruby_hoe",
+        "green_sapphire_hoe",
+        "sapphire_hoe",
+        "ruby_handsaw",
+        "green_sapphire_handsaw",
+        "sapphire_handsaw",
+        "wood_sickle",
+        "stone_sickle",
+        "iron_sickle",
+        "sickle",
+        "diamond_sickle",
+        "gold_sickle",
+        "ruby_sickle",
+        "green_sapphire_sickle",
+        "sapphire_sickle"
+      ],
+      "files": [
+        "mods/redpower_2/src/items/tools.rs",
+        "mods/redpower_2/src/items/sickle.rs",
+        "planning/mods/redpower_2.contract/ruby_pickaxe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_pickaxe.json",
+        "planning/mods/redpower_2.contract/sapphire_pickaxe.json",
+        "planning/mods/redpower_2.contract/ruby_shovel.json",
+        "planning/mods/redpower_2.contract/green_sapphire_shovel.json",
+        "planning/mods/redpower_2.contract/sapphire_shovel.json",
+        "planning/mods/redpower_2.contract/ruby_axe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_axe.json",
+        "planning/mods/redpower_2.contract/sapphire_axe.json",
+        "planning/mods/redpower_2.contract/ruby_sword.json",
+        "planning/mods/redpower_2.contract/green_sapphire_sword.json",
+        "planning/mods/redpower_2.contract/sapphire_sword.json",
+        "planning/mods/redpower_2.contract/ruby_hoe.json",
+        "planning/mods/redpower_2.contract/green_sapphire_hoe.json",
+        "planning/mods/redpower_2.contract/sapphire_hoe.json",
+        "planning/mods/redpower_2.contract/ruby_handsaw.json",
+        "planning/mods/redpower_2.contract/green_sapphire_handsaw.json",
+        "planning/mods/redpower_2.contract/sapphire_handsaw.json",
+        "planning/mods/redpower_2.contract/wood_sickle.json",
+        "planning/mods/redpower_2.contract/stone_sickle.json",
+        "planning/mods/redpower_2.contract/iron_sickle.json",
+        "planning/mods/redpower_2.contract/sickle.json",
+        "planning/mods/redpower_2.contract/diamond_sickle.json",
+        "planning/mods/redpower_2.contract/gold_sickle.json",
+        "planning/mods/redpower_2.contract/ruby_sickle.json",
+        "planning/mods/redpower_2.contract/green_sapphire_sickle.json",
+        "planning/mods/redpower_2.contract/sapphire_sickle.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools",
+        "4.2 Mining & Combat Equipment",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "ItemCustomPickaxe",
+        "ItemCustomShovel",
+        "ItemCustomAxe",
+        "ItemCustomSword",
+        "ItemCustomHoe",
+        "ItemSickle#a"
+      ],
+      "after": [
+        "part16-worldgen",
+        "part09-gem-tools",
+        "part09-sickles-area-harvesting",
+        "part11-base-tools"
+      ],
+      "description": "Implement gem tools (Pickaxes, Shovels, Axes, Swords, Hoes across Ruby, Green Sapphire, and Sapphire materials: Durability 500, Harvest level 2, Mining speed 8.0, Damage 3), gem handsaws (Sharpness 1, Durability 640), and Sickles across 8 material tiers (Wood, Stone, Iron, Diamond, Gold, Ruby, Green Sapphire, Sapphire), with area-of-effect harvesting of 3x3x3 leaves and 5x5 tall grass/crops. Done: contract-check clean for all 27 tool items; Level 2 item use scenarios passing."
+    },
+    {
+      "key": "part16-athame-enchantments",
+      "title": "Combat: Athame Ender-slaying dagger, Disjunction and Vorpal decapitation enchantments",
+      "role": "domain-builder",
+      "step": 3,
+      "effort_k": 110,
+      "covers": [
+        "athame"
+      ],
+      "files": [
+        "mods/redpower_2/src/items/athame.rs",
+        "mods/redpower_2/src/items/enchantments.rs",
+        "planning/mods/redpower_2.contract/athame.json"
+      ],
+      "spec": [
+        "4.2 Mining & Combat Equipment",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "ItemAthame#a",
+        "EnchantmentDisjunction#a",
+        "EnchantmentVorpal#a",
+        "WorldEvents#onDeath"
+      ],
+      "after": [
+        "part16-gem-tools-sickles",
+        "part09-athame-disjunction"
+      ],
+      "description": "Implement Athame silver ritual dagger (durability 100, 1 base damage to normal mobs, 25 massive damage to Endermen and Ender Dragon), Disjunction enchantment (+6 dmg/level vs Ender mobs), and Vorpal weapon enchantment (2*lvl^2 % chance of +100 critical damage, overkill <= -20 HP decapitates victim heads). Done: contract-check clean for athame; Level 2 combat and damage scenarios passing."
+    },
+    {
+      "key": "part16-utility-items",
+      "title": "Utility: Seed Bag auto-planting GUI, Wool Card string crafting, and Paint Can/Brush coloring",
+      "role": "content-author",
+      "step": 3,
+      "effort_k": 130,
+      "covers": [
+        "seed_bag",
+        "wool_card",
+        "dry_paint_brush",
+        "paint_brush",
+        "empty_paint_can",
+        "paint_can",
+        "tools_and_equipment"
+      ],
+      "files": [
+        "mods/redpower_2/src/items/seed_bag.rs",
+        "mods/redpower_2/src/items/wool_card.rs",
+        "mods/redpower_2/src/items/paint.rs",
+        "planning/mods/redpower_2.contract/seed_bag.json",
+        "planning/mods/redpower_2.contract/wool_card.json",
+        "planning/mods/redpower_2.contract/dry_paint_brush.json",
+        "planning/mods/redpower_2.contract/paint_brush.json",
+        "planning/mods/redpower_2.contract/empty_paint_can.json",
+        "planning/mods/redpower_2.contract/paint_can.json"
+      ],
+      "spec": [
+        "4.1 Metallurgy & Crafting Tools",
+        "4.3 Utility & Storage Items",
+        "6.2 Items (99 entries)"
+      ],
+      "java": [
+        "ItemSeedBag#getBagInventory",
+        "ItemSeedBag#a",
+        "ContainerSeedBag",
+        "GuiSeedBag",
+        "ItemWoolCard",
+        "ItemPaintBrush#itemUseShared",
+        "ItemPaintCan#a",
+        "WorldEvents#onPickupItem"
+      ],
+      "after": [
+        "part16-athame-enchantments",
+        "part09-utility-woolcard-paint"
+      ],
+      "description": "Implement Seed Bag (9-slot inventory holding up to 576 seeds, spiral 5x5 planting on farmland right-click, vacuuming picked up seeds), Wool Card (crafting remainder card turning 1 wool into 4 string), and 16-color Paint Cans & Paint Brushes for coloring tubes, cables, and canvas bags. Done: contract-check clean for all 6 utility items; Level 2 and Level 3 scenarios passing."
+    }
+  ]
+}
