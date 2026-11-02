@@ -374,6 +374,21 @@ def uncommitted() -> set[str]:
     return {u for p in changed if (u := owner(p))}
 
 
+def contract_differences(mod: str) -> int:
+    """How the mod differs from its contract: the static check, plus the last harness run's live screen,
+    shape and scenario failures for it."""
+    import contract_check
+    count = len(contract_check.check(mod))
+    try:
+        summary = json.loads((MAIN / "target" / "e2e-report" / "summary.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return count
+    for session in summary.get("phases", {}).get("isolated", []):
+        if mod in session.get("mods", []):
+            count += sum(str(e.get("stage", "")).startswith(beads.LIVE_CONTRACT_STAGES) for e in session.get("errors", []))
+    return count
+
+
 def run_checks(units: set[str]) -> tuple[list[str], str]:
     """Failed mods/crates (of `units`, as mods/<id> and crates/<name>) and the end of their output: the
     syntax checks (rustfmt, clippy -D warnings, tests) and check-mods."""
@@ -479,6 +494,13 @@ def gate(payload: dict, units: set[str] | None) -> str | None:
                     "progress or to ask whether to continue. Stop only when step 9 Package is closed, when the "
                     "user tells you to, or when only a person can unblock it: then set the epic to blocked with "
                     "the reason as a comment.")
+            elif st["epic"]["status"] != "blocked" and (differs := contract_differences(session.fleet)):
+                # Closed in Beads is not done: the port must be the original, block by block.
+                filed = beads.contract(session.fleet)
+                problems.append(
+                    f"{session.fleet} is closed in Beads but differs from the original in {differs} way(s) "
+                    f"(make contract-check MOD={session.fleet}, and the last harness run's screen, shape and "
+                    f"scenario checks). {filed} Work those beads; do not stop.")
             else:
                 session.fleet = None
         except beads.BeadsError as exc:

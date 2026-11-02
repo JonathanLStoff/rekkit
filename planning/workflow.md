@@ -62,7 +62,9 @@ graph LR
 | 10 | **Human** | The conductor ends with `DONE, CHECK OUT THE PROGRESS: make play MOD=<id>`. A person plays it, reviews, and pushes; `.github/workflows/release-mods.yml` signs and publishes a **pre-release** while original assets remain (`.agents/release.md`). | you | pushed |
 | 11 | **Own art** | Later: replace every original asset with our own; then full releases reach Horizon's registry. Deferred until a person starts it. | asset-smith | 0 original assets |
 
-**Complete, ready for a human** = steps 1–9 closed. The conductor's stop hook holds it to that (agy, Claude Code); `make fleet-next` relaunches any agent until it is (`.agents/fleet-plan.md` §9).
+**The port is the original.** Step 1's contract (`planning/mods/<id>.features.json`, from the Java: shapes, facing, face and item sprites, GUI slots, stack sizes, behaviour scenarios) is what every later step is checked against: `make contract-check MOD=<id>` statically (pixel for pixel against the original sheets), the harness live (outlines, GUI slot positions, scenarios). `make fleet-contract MOD=<id>` files each difference as a bug under the step that fixes it.
+
+**Complete, ready for a human** = steps 1–9 closed and no contract difference. The conductor's stop hook holds it to that (agy, Claude Code); `make fleet-next` relaunches any agent until it is (`.agents/fleet-plan.md` §9).
 
 ## 3. Who writes what
 

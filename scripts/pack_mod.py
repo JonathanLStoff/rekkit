@@ -23,6 +23,9 @@ import tomllib
 import zipfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import contract_check  # noqa: E402
+
 ID_RE = re.compile(r"^[a-z0-9_]{1,64}$")
 NS_RE = re.compile(r"^[a-z0-9_.-]{1,64}$")
 PATH_PART_RE = re.compile(r"^[a-z0-9_.-]+$")
@@ -635,6 +638,10 @@ def main() -> int:
             if args.complete and (found := asset_gaps(mod_dir)):
                 listed = "\n".join(f"  {g['path']} ({g['for']}: {g['why']})" for g in found)
                 raise ValidationError(f"{mod_dir.name}: {len(found)} asset(s) missing:\n{listed}")
+            if args.complete and mod_dir.name != "example_mod" and (found := contract_check.check(mod_dir.name)):
+                listed = "\n".join(f"  {p['for']}: [{p['kind']} -> {p['owner']}] {p['why']}" for p in found[:60])
+                more = f"\n  ... and {len(found) - 60} more (make contract-check MOD={mod_dir.name})" if len(found) > 60 else ""
+                raise ValidationError(f"{mod_dir.name}: {len(found)} difference(s) from the original (its contract):\n{listed}{more}")
     except ValidationError as exc:
         print(f"[ERROR] {exc}", file=sys.stderr)
         return 1

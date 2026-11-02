@@ -328,7 +328,7 @@
 
 ## 6. Complete Item & Block Registry (`redpower_2`)
 
-### 6.1 Blocks (113 entries)
+### 6.1 Blocks (121 entries)
 
 | Rekkit ID | Name | Original Java Mapping |
 | :--- | :--- | :--- |
@@ -445,8 +445,16 @@
 | `redpower_2:disk_drive` | Disk Drive | `BlockPeripheral` meta 2 |
 | `redpower_2:io_expander` | IO Expander | `BlockMultipart` meta 0 |
 | `redpower_2:blulectric_engine` | Blulectric Engine | `BlockMachineCompat` meta 0 |
+| `redpower_2:block_basalt` | Basalt (Alias) | Alias for `redpower_2:basalt` |
+| `redpower_2:block_marble` | Marble (Alias) | Alias for `redpower_2:marble` |
+| `redpower_2:buffer` | Buffer (Alias) | Alias for `redpower_2:buffer_chest` |
+| `redpower_2:inverted_lamp` | Inverted Lamp (Alias) | Alias for `redpower_2:lamp_inverted` |
+| `redpower_2:keyboard` | Keyboard | `BlockPeripheral` peripheral keyboard |
+| `redpower_2:logic_gate` | Logic Gate (Generic) | Scaffold / generic alias for logic gates |
+| `redpower_2:monitor` | Monitor (Alias) | Alias for `redpower_2:display` |
+| `redpower_2:wire` | Wire (Generic) | Scaffold / generic alias for red alloy wire |
 
-### 6.2 Items (88 entries)
+### 6.2 Items (99 entries)
 
 | Rekkit ID | Name | Original Java Mapping |
 | :--- | :--- | :--- |
@@ -538,6 +546,17 @@
 | `redpower_2:forth_boot_disk` | RedPower Forth Boot Disk | `ItemDisk` meta 1 |
 | `redpower_2:forth_extra_disk` | RedPower Forth Extra Disk | `ItemDisk` meta 2 |
 | `redpower_2:brass_gear` | Brass Gear | `ItemParts` itemCompatParts meta 0 |
+| `redpower_2:battery` | Battery (Alias) | Alias for `redpower_2:battery_powered` |
+| `redpower_2:floppy_disk` | Floppy Disk (Alias) | Alias for `redpower_2:blank_disk` |
+| `redpower_2:handsaw` | Handsaw (Alias) | Alias for `redpower_2:iron_handsaw` |
+| `redpower_2:logic_tile` | Logic Tile (Generic) | Scaffold alias for logic tiles |
+| `redpower_2:ribbon_cable` | Ribbon Cable (Item) | Item representation of ribbon cable |
+| `redpower_2:sickle` | Sickle (Alias) | Alias for `redpower_2:iron_sickle` |
+| `redpower_2:tungsten_ingot` | Tungsten Ingot | `ItemParts` meta 51 / ore dictionary |
+| `redpower_2:wire_bundled` | Bundled Wire (Item) | Item representation of bundled wire |
+| `redpower_2:wire_insulated` | Insulated Wire (Item) | Item representation of insulated wire |
+| `redpower_2:wire_jacketed` | Jacketed Wire (Item) | Item representation of jacketed wire |
+| `redpower_2:wire_red_alloy` | Red Alloy Wire (Item) | Item representation of red alloy wire |
 
 ---
 

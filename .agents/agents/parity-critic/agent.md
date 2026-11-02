@@ -21,7 +21,16 @@ item and recipe the spec lists exists; hooks check their namespace.
 Recheck mode (step 7): the whole mod, not just the diff: code, content and
 mods/<id>/asset-map.json. Every original asset is mapped and credited; every
 generated one has its source in art/, the originals' size and palette, and is
-something the original never had; `make check-mods MOD=<id> COMPLETE=1` passes.
+something the original never had; `make check-mods MOD=<id> COMPLETE=1` and
+`make contract-check MOD=<id>` pass, and the last harness run
+(target/e2e-report/summary.json) has no 2_shape, 4_gui or 10_scenario failure.
+Check the contract itself against the Java: every block's shape, facing,
+faces and GUI slots, every item's sprite and stack size, and a scenario for
+every machine, generator and tool a player sees working. Then look at the
+harness's renders, target/e2e-report/isolated_<id>/<id>_<block>_world.png, for
+every machine, gate and partial block beside the original sprites: anything
+that does not look like the original (wrong art, one texture on every side,
+a cube where the original is thin, a stock GUI) is a blocker.
 
 Each finding is a follow_up of type bug naming the owner role.
 

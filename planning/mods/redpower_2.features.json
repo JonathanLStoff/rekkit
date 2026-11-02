@@ -5,1051 +5,4346 @@
     {
       "id": "alloy_furnace",
       "name": "Alloy Furnace",
-      "java": "`BlockAppliance` meta 0"
+      "java": "BlockAppliance meta 0",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/base/base1.png#19",
+        "bottom": "eloraam/base/base1.png#16",
+        "front": "eloraam/base/base1.png#17",
+        "side": "eloraam/base/base1.png#16"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Alloy Furnace",
+        "slots": [
+          [
+            48,
+            17
+          ],
+          [
+            66,
+            17
+          ],
+          [
+            84,
+            17
+          ],
+          [
+            48,
+            35
+          ],
+          [
+            66,
+            35
+          ],
+          [
+            84,
+            35
+          ],
+          [
+            48,
+            53
+          ],
+          [
+            66,
+            53
+          ],
+          [
+            84,
+            53
+          ],
+          [
+            17,
+            42
+          ],
+          [
+            141,
+            35
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "project_table",
       "name": "Project Table",
-      "java": "`BlockAppliance` meta 3"
+      "java": "BlockAppliance meta 3",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/base/base1.png#32",
+        "front": "eloraam/base/base1.png#33",
+        "side": "eloraam/base/base1.png#34",
+        "bottom": "eloraam/base/base1.png#35"
+      },
+      "gui": {
+        "size": [
+          176,
+          222
+        ],
+        "title": "Project Table",
+        "slots": [
+          [
+            48,
+            18
+          ],
+          [
+            66,
+            18
+          ],
+          [
+            84,
+            18
+          ],
+          [
+            48,
+            36
+          ],
+          [
+            66,
+            36
+          ],
+          [
+            84,
+            36
+          ],
+          [
+            48,
+            54
+          ],
+          [
+            66,
+            54
+          ],
+          [
+            84,
+            54
+          ],
+          [
+            17,
+            36
+          ],
+          [
+            143,
+            36
+          ],
+          [
+            8,
+            90
+          ],
+          [
+            26,
+            90
+          ],
+          [
+            44,
+            90
+          ],
+          [
+            62,
+            90
+          ],
+          [
+            80,
+            90
+          ],
+          [
+            98,
+            90
+          ],
+          [
+            116,
+            90
+          ],
+          [
+            134,
+            90
+          ],
+          [
+            152,
+            90
+          ],
+          [
+            8,
+            108
+          ],
+          [
+            26,
+            108
+          ],
+          [
+            44,
+            108
+          ],
+          [
+            62,
+            108
+          ],
+          [
+            80,
+            108
+          ],
+          [
+            98,
+            108
+          ],
+          [
+            116,
+            108
+          ],
+          [
+            134,
+            108
+          ],
+          [
+            152,
+            108
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "blulectric_furnace",
       "name": "Blulectric Furnace",
-      "java": "`BlockAppliance` meta 1"
+      "java": "BlockAppliance meta 1",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "bottom": "eloraam/machine/machine1.png#84",
+        "top": "eloraam/machine/machine1.png#83",
+        "front": "eloraam/machine/machine1.png#81",
+        "side": "eloraam/machine/machine1.png#80"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Blulectric Furnace",
+        "slots": [
+          [
+            62,
+            35
+          ],
+          [
+            126,
+            35
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "buffer_chest",
       "name": "Buffer Chest",
-      "java": "`BlockAppliance` meta 2"
+      "java": "BlockAppliance meta 2",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "top": "eloraam/machine/machine1.png#87",
+        "bottom": "eloraam/machine/machine1.png#89",
+        "side": "eloraam/machine/machine1.png#88"
+      },
+      "gui": {
+        "size": [
+          176,
+          186
+        ],
+        "title": "Buffer Chest",
+        "slots": [
+          [
+            44,
+            18
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            44,
+            54
+          ],
+          [
+            44,
+            72
+          ],
+          [
+            62,
+            18
+          ],
+          [
+            62,
+            36
+          ],
+          [
+            62,
+            54
+          ],
+          [
+            62,
+            72
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            80,
+            72
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            98,
+            72
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            116,
+            72
+          ]
+        ]
+      },
+      "energy": null
+    },
+    {
+      "id": "buffer",
+      "name": "Buffer",
+      "java": "BlockAppliance meta 2",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "top": "eloraam/machine/machine1.png#87",
+        "bottom": "eloraam/machine/machine1.png#89",
+        "side": "eloraam/machine/machine1.png#88"
+      },
+      "gui": {
+        "size": [
+          176,
+          186
+        ],
+        "title": "Buffer Chest",
+        "slots": [
+          [
+            44,
+            18
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            44,
+            54
+          ],
+          [
+            44,
+            72
+          ],
+          [
+            62,
+            18
+          ],
+          [
+            62,
+            36
+          ],
+          [
+            62,
+            54
+          ],
+          [
+            62,
+            72
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            80,
+            72
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            98,
+            72
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            116,
+            72
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "blulectric_alloy_furnace",
       "name": "Blulectric Alloy Furnace",
-      "java": "`BlockAppliance` meta 4"
+      "java": "BlockAppliance meta 4",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "bottom": "eloraam/machine/machine1.png#84",
+        "top": "eloraam/machine/machine1.png#163",
+        "front": "eloraam/machine/machine1.png#161",
+        "side": "eloraam/machine/machine1.png#160"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Blulectric Alloy Furnace",
+        "slots": [
+          [
+            48,
+            17
+          ],
+          [
+            66,
+            17
+          ],
+          [
+            84,
+            17
+          ],
+          [
+            48,
+            35
+          ],
+          [
+            66,
+            35
+          ],
+          [
+            84,
+            35
+          ],
+          [
+            48,
+            53
+          ],
+          [
+            66,
+            53
+          ],
+          [
+            84,
+            53
+          ],
+          [
+            141,
+            35
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "charging_bench",
       "name": "Charging Bench",
-      "java": "`BlockAppliance` meta 5"
+      "java": "BlockAppliance meta 5",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "bottom": "eloraam/machine/machine1.png#180",
+        "top": "eloraam/machine/machine1.png#176",
+        "front": "eloraam/machine/machine1.png#181",
+        "side": "eloraam/machine/machine1.png#178"
+      },
+      "gui": {
+        "size": [
+          176,
+          186
+        ],
+        "title": "Charging Bench",
+        "slots": [
+          [
+            80,
+            18
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            134,
+            18
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            134,
+            36
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            134,
+            54
+          ],
+          [
+            80,
+            72
+          ],
+          [
+            98,
+            72
+          ],
+          [
+            116,
+            72
+          ],
+          [
+            134,
+            72
+          ]
+        ]
+      },
+      "energy": {
+        "role": "storage"
+      }
     },
     {
       "id": "microblock",
       "name": "Microblock Plate",
-      "java": "`BlockMicro` (compound multi-part)"
+      "java": "BlockMicro",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/world/world1.png#16"
+      },
+      "gui": null,
+      "energy": null
+    },
+    {
+      "id": "wire",
+      "name": "Redwire",
+      "java": "BlockMicro damage 256",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#97"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_red_alloy",
       "name": "Red Alloy Wire",
-      "java": "`BlockMicro` damage 256"
+      "java": "BlockMicro damage 256",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#97"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_insulated",
-      "name": "Insulated Wire (16 colors)",
-      "java": "`BlockMicro` damage 512..527"
+      "name": "Insulated Wire",
+      "java": "BlockMicro damage 512..527",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        3,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#16"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_bundled",
-      "name": "Bundled Cable (Neutral + 16 colors)",
-      "java": "`BlockMicro` damage 768..784"
+      "name": "Bundled Cable",
+      "java": "BlockMicro damage 768..784",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        4,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#2"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_blutricity",
       "name": "Bluewire",
-      "java": "`BlockMicro` damage 1280"
+      "java": "BlockMicro damage 1280",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        3,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#98"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_blutricity_insulated",
       "name": "Insulated Bluewire",
-      "java": "`BlockMicro` damage 1281"
+      "java": "BlockMicro damage 1281",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        4,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#99"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_jacketed",
       "name": "Jacketed Wire",
-      "java": "`BlockMicro` damage 16384+"
+      "java": "BlockMicro damage 16384+",
+      "shape": [
+        4,
+        0,
+        4,
+        12,
+        16,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#5"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "cable_jacketed",
       "name": "Jacketed Cable",
-      "java": "`BlockMicro` damage 16640+"
+      "java": "BlockMicro damage 16640+",
+      "shape": [
+        4,
+        0,
+        4,
+        12,
+        16,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#6"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "wire_jacketed_blutricity",
       "name": "Jacketed Bluewire",
-      "java": "`BlockMicro` damage 16896+"
+      "java": "BlockMicro damage 16896+",
+      "shape": [
+        4,
+        0,
+        4,
+        12,
+        16,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#7"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "pipe",
       "name": "Fluid Pipe",
-      "java": "`BlockMicro` damage 1792"
+      "java": "BlockMicro damage 1792",
+      "shape": [
+        4,
+        4,
+        4,
+        12,
+        12,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#23"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "pneumatic_tube",
       "name": "Pneumatic Tube",
-      "java": "`BlockMicro` damage 2048"
+      "java": "BlockMicro damage 2048",
+      "shape": [
+        4,
+        4,
+        4,
+        12,
+        12,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#21"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "redstone_tube",
       "name": "Redstone Tube",
-      "java": "`BlockMicro` damage 2304"
+      "java": "BlockMicro damage 2304",
+      "shape": [
+        4,
+        4,
+        4,
+        12,
+        12,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#22"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "restrictor_tube",
       "name": "Restrictor Tube",
-      "java": "`BlockMicro` damage 2560"
+      "java": "BlockMicro damage 2560",
+      "shape": [
+        4,
+        4,
+        4,
+        12,
+        12,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#24"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "magtube",
       "name": "Magtube",
-      "java": "`BlockMicro` damage 2816"
+      "java": "BlockMicro damage 2816",
+      "shape": [
+        4,
+        4,
+        4,
+        12,
+        12,
+        12
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#25"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ribbon_cable",
       "name": "Ribbon Cable",
-      "java": "`BlockMicro` damage 3072"
+      "java": "BlockMicro damage 3072",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/wiring/redpower1.png#3"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "timer",
       "name": "Timer",
-      "java": "`BlockLogic` meta 0"
+      "java": "BlockLogic meta 0",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#16",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": {
+        "size": [
+          228,
+          82
+        ],
+        "title": "Timer",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "sequencer",
       "name": "Sequencer",
-      "java": "`BlockLogic` meta 1"
+      "java": "BlockLogic meta 1",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#3",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": {
+        "size": [
+          228,
+          82
+        ],
+        "title": "Sequencer",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "state_cell",
       "name": "State Cell",
-      "java": "`BlockLogic` meta 2"
+      "java": "BlockLogic meta 2",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#48",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": {
+        "size": [
+          228,
+          82
+        ],
+        "title": "State Cell",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "rs_latch",
       "name": "RS Latch",
-      "java": "`BlockLogic` meta 256"
+      "java": "BlockLogic meta 256",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#25",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "nor_gate",
       "name": "NOR Gate",
-      "java": "`BlockLogic` meta 257"
+      "java": "BlockLogic meta 257",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#24",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "or_gate",
       "name": "OR Gate",
-      "java": "`BlockLogic` meta 258"
+      "java": "BlockLogic meta 258",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#128",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "nand_gate",
       "name": "NAND Gate",
-      "java": "`BlockLogic` meta 259"
+      "java": "BlockLogic meta 259",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#88",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "and_gate",
       "name": "AND Gate",
-      "java": "`BlockLogic` meta 260"
+      "java": "BlockLogic meta 260",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#144",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
+    },
+    {
+      "id": "logic_gate",
+      "name": "Logic Gate",
+      "java": "BlockLogic meta 260",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#144",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "xnor_gate",
       "name": "XNOR Gate",
-      "java": "`BlockLogic` meta 261"
+      "java": "BlockLogic meta 261",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#128",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "xor_gate",
       "name": "XOR Gate",
-      "java": "`BlockLogic` meta 262"
+      "java": "BlockLogic meta 262",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#132",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "pulse_former",
       "name": "Pulse Former",
-      "java": "`BlockLogic` meta 263"
+      "java": "BlockLogic meta 263",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#5",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "toggle_latch",
       "name": "Toggle Latch",
-      "java": "`BlockLogic` meta 264"
+      "java": "BlockLogic meta 264",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#140",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "not_gate",
-      "name": "NOT Gate / Inverter",
-      "java": "`BlockLogic` meta 265"
+      "name": "NOT Gate",
+      "java": "BlockLogic meta 265",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#184",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "buffer_gate",
       "name": "Buffer Gate",
-      "java": "`BlockLogic` meta 266"
+      "java": "BlockLogic meta 266",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#240",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "multiplexer",
       "name": "Multiplexer",
-      "java": "`BlockLogic` meta 267"
+      "java": "BlockLogic meta 267",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#144",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "repeater",
       "name": "Repeater",
-      "java": "`BlockLogic` meta 268"
+      "java": "BlockLogic meta 268",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic2.png#237",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "synchronizer",
       "name": "Synchronizer",
-      "java": "`BlockLogic` meta 269"
+      "java": "BlockLogic meta 269",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#160",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "randomizer",
       "name": "Randomizer",
-      "java": "`BlockLogic` meta 270"
+      "java": "BlockLogic meta 270",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#192",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "transparent_latch",
       "name": "Transparent Latch",
-      "java": "`BlockLogic` meta 271"
+      "java": "BlockLogic meta 271",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#208",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "light_sensor",
       "name": "Light Sensor",
-      "java": "`BlockLogic` meta 272"
+      "java": "BlockLogic meta 272",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/sensor1.png#1",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "null_cell",
       "name": "Null Cell",
-      "java": "`BlockLogic` meta 512"
+      "java": "BlockLogic meta 512",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/array1.png#0",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "invert_cell",
       "name": "Invert Cell",
-      "java": "`BlockLogic` meta 513"
+      "java": "BlockLogic meta 513",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/array1.png#1",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "non_invert_cell",
       "name": "Non-Invert Cell",
-      "java": "`BlockLogic` meta 514"
+      "java": "BlockLogic meta 514",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/array1.png#2",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "counter",
       "name": "Counter",
-      "java": "`BlockLogic` meta 768"
+      "java": "BlockLogic meta 768",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/logic1.png#224",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": {
+        "size": [
+          228,
+          117
+        ],
+        "title": "Counter",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "bus_transceiver",
       "name": "Bus Transceiver",
-      "java": "`BlockLogic` meta 1024"
+      "java": "BlockLogic meta 1024",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/logic/array1.png#0",
+        "side": "eloraam/logic/logic1.png#0",
+        "bottom": "eloraam/logic/logic1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lamp",
-      "name": "Lamp (16 colors)",
-      "java": "`BlockLamp` off"
+      "name": "Lamp",
+      "java": "BlockLamp off",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lamp_lit",
-      "name": "Lamp Lit (16 colors)",
-      "java": "`BlockLamp` on"
+      "name": "Lamp Lit",
+      "java": "BlockLamp on",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#16"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lamp_inverted",
-      "name": "Inverted Lamp (16 colors)",
-      "java": "`BlockLamp` inv off"
+      "name": "Inverted Lamp",
+      "java": "BlockLamp inv off",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#32"
+      },
+      "gui": null,
+      "energy": null
+    },
+    {
+      "id": "inverted_lamp",
+      "name": "Inverted Lamp",
+      "java": "BlockLamp inv off",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#32"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lamp_inverted_lit",
-      "name": "Inverted Lamp Lit (16 colors)",
-      "java": "`BlockLamp` inv on"
+      "name": "Inverted Lamp Lit",
+      "java": "BlockLamp inv on",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#48"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lumar_fixture",
-      "name": "Lumar Fixture (16 colors)",
-      "java": "`BlockShapedLamp` meta 0..15"
+      "name": "Lumar Fixture",
+      "java": "BlockShapedLamp meta 0..15",
+      "shape": [
+        2,
+        0,
+        2,
+        14,
+        8,
+        14
+      ],
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "lumar_fixture_inverted",
-      "name": "Inverted Fixture (16 colors)",
-      "java": "`BlockShapedLamp` meta 16..31"
+      "name": "Inverted Lumar Fixture",
+      "java": "BlockShapedLamp meta 16..31",
+      "shape": [
+        2,
+        0,
+        2,
+        14,
+        8,
+        14
+      ],
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#32"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "cage_lamp",
-      "name": "Cage Lamp (16 colors)",
-      "java": "`BlockShapedLamp` meta 32..47"
+      "name": "Cage Lamp",
+      "java": "BlockShapedLamp meta 32..47",
+      "shape": [
+        3,
+        0,
+        3,
+        13,
+        12,
+        13
+      ],
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "cage_lamp_inverted",
-      "name": "Inverted Cage Lamp (16 colors)",
-      "java": "`BlockShapedLamp` meta 48..63"
+      "name": "Inverted Cage Lamp",
+      "java": "BlockShapedLamp meta 48..63",
+      "shape": [
+        3,
+        0,
+        3,
+        13,
+        12,
+        13
+      ],
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/lighting/lighting1.png#32"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_ruby",
       "name": "Ruby Ore",
-      "java": "`BlockCustomOre` meta 0"
+      "java": "BlockCustomOre meta 0",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_green_sapphire",
       "name": "Green Sapphire Ore",
-      "java": "`BlockCustomOre` meta 1"
+      "java": "BlockCustomOre meta 1",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#1"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_sapphire",
       "name": "Sapphire Ore",
-      "java": "`BlockCustomOre` meta 2"
+      "java": "BlockCustomOre meta 2",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#2"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_silver",
       "name": "Silver Ore",
-      "java": "`BlockCustomOre` meta 3"
+      "java": "BlockCustomOre meta 3",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#3"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_tin",
       "name": "Tin Ore",
-      "java": "`BlockCustomOre` meta 4"
+      "java": "BlockCustomOre meta 4",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#4"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_copper",
       "name": "Copper Ore",
-      "java": "`BlockCustomOre` meta 5"
+      "java": "BlockCustomOre meta 5",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#5"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_tungsten",
       "name": "Tungsten Ore",
-      "java": "`BlockCustomOre` meta 6"
+      "java": "BlockCustomOre meta 6",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#6"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ore_nikolite",
       "name": "Nikolite Ore",
-      "java": "`BlockCustomOre` meta 7"
+      "java": "BlockCustomOre meta 7",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#7"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_ruby",
       "name": "Ruby Block",
-      "java": "`BlockStorage` meta 0"
+      "java": "BlockStorage meta 0",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#80"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_green_sapphire",
       "name": "Green Sapphire Block",
-      "java": "`BlockStorage` meta 1"
+      "java": "BlockStorage meta 1",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#81"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_sapphire",
       "name": "Sapphire Block",
-      "java": "`BlockStorage` meta 2"
+      "java": "BlockStorage meta 2",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#82"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_silver",
       "name": "Silver Block",
-      "java": "`BlockStorage` meta 3"
+      "java": "BlockStorage meta 3",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#83"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_tin",
       "name": "Tin Block",
-      "java": "`BlockStorage` meta 4"
+      "java": "BlockStorage meta 4",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#84"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "block_copper",
       "name": "Copper Block",
-      "java": "`BlockStorage` meta 5"
+      "java": "BlockStorage meta 5",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#85"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "marble",
       "name": "Marble",
-      "java": "`BlockCustomStone` meta 0"
+      "java": "BlockCustomStone meta 0",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#16"
+      },
+      "gui": null,
+      "energy": null
+    },
+    {
+      "id": "block_marble",
+      "name": "Marble",
+      "java": "BlockCustomStone meta 0",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#16"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "basalt",
       "name": "Basalt",
-      "java": "`BlockCustomStone` meta 1"
+      "java": "BlockCustomStone meta 1",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#17"
+      },
+      "gui": null,
+      "energy": null
+    },
+    {
+      "id": "block_basalt",
+      "name": "Basalt",
+      "java": "BlockCustomStone meta 1",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#17"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "marble_brick",
       "name": "Marble Brick",
-      "java": "`BlockCustomStone` meta 2"
+      "java": "BlockCustomStone meta 2",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#18"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "basalt_cobblestone",
       "name": "Basalt Cobblestone",
-      "java": "`BlockCustomStone` meta 3"
+      "java": "BlockCustomStone meta 3",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#19"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "basalt_brick",
       "name": "Basalt Brick",
-      "java": "`BlockCustomStone` meta 4"
+      "java": "BlockCustomStone meta 4",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#20"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "basalt_chiseled",
       "name": "Chiseled Basalt Brick",
-      "java": "`BlockCustomStone` meta 5"
+      "java": "BlockCustomStone meta 5",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#21"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "basalt_paver",
       "name": "Basalt Paver",
-      "java": "`BlockCustomStone` meta 6"
+      "java": "BlockCustomStone meta 6",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#22"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "flax_crop",
       "name": "Flax Crop",
-      "java": "`BlockCustomCrops` meta 0..5"
+      "java": "BlockCustomCrops meta 0..5",
+      "shape": "cross",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#64"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "indigo_flower",
       "name": "Indigo Flower",
-      "java": "`BlockCustomFlower` meta 0"
+      "java": "BlockCustomFlower meta 0",
+      "shape": "cross",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#54"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "rubber_sapling",
       "name": "Rubber Sapling",
-      "java": "`BlockCustomFlower` meta 1"
+      "java": "BlockCustomFlower meta 1",
+      "shape": "cross",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#53"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "rubber_leaves",
       "name": "Rubber Leaves",
-      "java": "`BlockCustomLeaves`"
+      "java": "BlockCustomLeaves",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/world/world1.png#52"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "rubber_log",
       "name": "Rubber Wood",
-      "java": "`BlockCustomLog`"
+      "java": "BlockCustomLog",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "side": "eloraam/world/world1.png#50",
+        "top": "eloraam/world/world1.png#51",
+        "bottom": "eloraam/world/world1.png#51"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "deployer",
       "name": "Deployer",
-      "java": "`BlockMachine` meta 0"
+      "java": "BlockMachine meta 0",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#48",
+        "back": "eloraam/machine/machine1.png#56",
+        "side": "eloraam/machine/machine1.png#55",
+        "top": "eloraam/machine/machine1.png#53",
+        "bottom": "eloraam/machine/machine1.png#48"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Deployer",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "block_breaker",
       "name": "Block Breaker",
-      "java": "`BlockMachine` meta 1"
+      "java": "BlockMachine meta 1",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#49",
+        "back": "eloraam/machine/machine1.png#58",
+        "side": "eloraam/machine/machine1.png#51",
+        "top": "eloraam/machine/machine1.png#51",
+        "bottom": "eloraam/machine/machine1.png#58"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "transposer",
       "name": "Transposer",
-      "java": "`BlockMachine` meta 2"
+      "java": "BlockMachine meta 2",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#50",
+        "back": "eloraam/machine/machine1.png#58",
+        "side": "eloraam/machine/machine1.png#59",
+        "top": "eloraam/machine/machine1.png#57",
+        "bottom": "eloraam/machine/machine1.png#58"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "filter",
       "name": "Filter",
-      "java": "`BlockMachine` meta 3"
+      "java": "BlockMachine meta 3",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#51",
+        "back": "eloraam/machine/machine1.png#58",
+        "side": "eloraam/machine/machine1.png#61",
+        "top": "eloraam/machine/machine1.png#57",
+        "bottom": "eloraam/machine/machine1.png#58"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Filter",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "item_detector",
       "name": "Item Detector",
-      "java": "`BlockMachine` meta 4"
+      "java": "BlockMachine meta 4",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#52",
+        "back": "eloraam/machine/machine1.png#102",
+        "side": "eloraam/machine/machine1.png#96",
+        "top": "eloraam/machine/machine1.png#103",
+        "bottom": "eloraam/machine/machine1.png#102"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Item Detector",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "sorting_machine",
       "name": "Sorting Machine",
-      "java": "`BlockMachine` meta 5"
+      "java": "BlockMachine meta 5",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#53",
+        "back": "eloraam/machine/machine1.png#113",
+        "side": "eloraam/machine/machine1.png#117",
+        "top": "eloraam/machine/machine1.png#112",
+        "bottom": "eloraam/machine/machine1.png#113"
+      },
+      "gui": {
+        "size": [
+          176,
+          222
+        ],
+        "title": "Sorting Machine",
+        "slots": [
+          [
+            26,
+            18
+          ],
+          [
+            44,
+            18
+          ],
+          [
+            62,
+            18
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            134,
+            18
+          ],
+          [
+            152,
+            18
+          ],
+          [
+            26,
+            36
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            62,
+            36
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            134,
+            36
+          ],
+          [
+            152,
+            36
+          ],
+          [
+            26,
+            54
+          ],
+          [
+            44,
+            54
+          ],
+          [
+            62,
+            54
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            134,
+            54
+          ],
+          [
+            152,
+            54
+          ],
+          [
+            26,
+            72
+          ],
+          [
+            44,
+            72
+          ],
+          [
+            62,
+            72
+          ],
+          [
+            80,
+            72
+          ],
+          [
+            98,
+            72
+          ],
+          [
+            116,
+            72
+          ],
+          [
+            134,
+            72
+          ],
+          [
+            152,
+            72
+          ],
+          [
+            26,
+            90
+          ],
+          [
+            44,
+            90
+          ],
+          [
+            62,
+            90
+          ],
+          [
+            80,
+            90
+          ],
+          [
+            98,
+            90
+          ],
+          [
+            116,
+            90
+          ],
+          [
+            134,
+            90
+          ],
+          [
+            152,
+            90
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "battery_box",
       "name": "Battery Box",
-      "java": "`BlockMachine` meta 6"
+      "java": "BlockMachine meta 6",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/machine/machine1.png#128",
+        "bottom": "eloraam/machine/machine1.png#84",
+        "front": "eloraam/machine/machine1.png#54",
+        "side": "eloraam/machine/machine1.png#54"
+      },
+      "gui": {
+        "size": [
+          176,
+          170
+        ],
+        "title": "Battery Box",
+        "slots": [
+          [
+            120,
+            27
+          ],
+          [
+            120,
+            55
+          ]
+        ]
+      },
+      "energy": {
+        "role": "storage"
+      }
     },
     {
       "id": "frame_motor",
       "name": "Frame Motor",
-      "java": "`BlockMachine` meta 7"
+      "java": "BlockMachine meta 7",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#151",
+        "back": "eloraam/machine/machine1.png#150",
+        "side": "eloraam/machine/machine1.png#155",
+        "top": "eloraam/machine/machine1.png#155",
+        "bottom": "eloraam/machine/machine1.png#150"
+      },
+      "gui": null,
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "retriever",
       "name": "Retriever",
-      "java": "`BlockMachine` meta 8"
+      "java": "BlockMachine meta 8",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#120",
+        "back": "eloraam/machine/machine1.png#124",
+        "side": "eloraam/machine/machine1.png#120",
+        "top": "eloraam/machine/machine1.png#125",
+        "bottom": "eloraam/machine/machine1.png#124"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Retriever",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "wind_turbine",
       "name": "Wind Turbine",
-      "java": "`BlockMachine` meta 9"
+      "java": "BlockMachine meta 9",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#157",
+        "back": "eloraam/machine/machine1.png#157",
+        "side": "eloraam/machine/machine1.png#156",
+        "top": "eloraam/machine/machine1.png#158",
+        "bottom": "eloraam/machine/machine1.png#150"
+      },
+      "gui": {
+        "size": [
+          176,
+          167
+        ],
+        "title": "Wind Turbine",
+        "slots": [
+          [
+            80,
+            35
+          ]
+        ]
+      },
+      "energy": {
+        "role": "producer"
+      }
     },
     {
       "id": "regulator",
       "name": "Regulator",
-      "java": "`BlockMachine` meta 10"
+      "java": "BlockMachine meta 10",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#104",
+        "back": "eloraam/machine/machine1.png#102",
+        "side": "eloraam/machine/machine1.png#106",
+        "top": "eloraam/machine/machine1.png#103",
+        "bottom": "eloraam/machine/machine1.png#102"
+      },
+      "gui": {
+        "size": [
+          211,
+          167
+        ],
+        "title": "Regulator",
+        "slots": [
+          [
+            8,
+            18
+          ],
+          [
+            26,
+            18
+          ],
+          [
+            44,
+            18
+          ],
+          [
+            8,
+            36
+          ],
+          [
+            26,
+            36
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            8,
+            54
+          ],
+          [
+            26,
+            54
+          ],
+          [
+            44,
+            54
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            152,
+            18
+          ],
+          [
+            170,
+            18
+          ],
+          [
+            188,
+            18
+          ],
+          [
+            152,
+            36
+          ],
+          [
+            170,
+            36
+          ],
+          [
+            188,
+            36
+          ],
+          [
+            152,
+            54
+          ],
+          [
+            170,
+            54
+          ],
+          [
+            188,
+            54
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "thermopile",
       "name": "Thermopile",
-      "java": "`BlockMachine` meta 11"
+      "java": "BlockMachine meta 11",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "top": "eloraam/machine/machine1.png#140",
+        "bottom": "eloraam/machine/machine1.png#140",
+        "side": "eloraam/machine/machine1.png#139",
+        "front": "eloraam/machine/machine1.png#138",
+        "back": "eloraam/machine/machine1.png#138"
+      },
+      "gui": null,
+      "energy": {
+        "role": "producer"
+      }
     },
     {
       "id": "igniter",
       "name": "Igniter",
-      "java": "`BlockMachine` meta 12"
+      "java": "BlockMachine meta 12",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#164",
+        "back": "eloraam/machine/machine1.png#48",
+        "side": "eloraam/machine/machine1.png#166",
+        "top": "eloraam/machine/machine1.png#167",
+        "bottom": "eloraam/machine/machine1.png#48"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "assembler",
       "name": "Assembler",
-      "java": "`BlockMachine` meta 13"
+      "java": "BlockMachine meta 13",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#168",
+        "back": "eloraam/machine/machine1.png#172",
+        "side": "eloraam/machine/machine1.png#170",
+        "top": "eloraam/machine/machine1.png#171",
+        "bottom": "eloraam/machine/machine1.png#172"
+      },
+      "gui": {
+        "size": [
+          176,
+          195
+        ],
+        "title": "Assembler",
+        "slots": [
+          [
+            8,
+            18
+          ],
+          [
+            26,
+            18
+          ],
+          [
+            44,
+            18
+          ],
+          [
+            62,
+            18
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            134,
+            18
+          ],
+          [
+            8,
+            36
+          ],
+          [
+            26,
+            36
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            62,
+            36
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            134,
+            36
+          ],
+          [
+            8,
+            63
+          ],
+          [
+            26,
+            63
+          ],
+          [
+            44,
+            63
+          ],
+          [
+            62,
+            63
+          ],
+          [
+            80,
+            63
+          ],
+          [
+            98,
+            63
+          ],
+          [
+            116,
+            63
+          ],
+          [
+            134,
+            63
+          ],
+          [
+            152,
+            63
+          ],
+          [
+            8,
+            81
+          ],
+          [
+            26,
+            81
+          ],
+          [
+            44,
+            81
+          ],
+          [
+            62,
+            81
+          ],
+          [
+            80,
+            81
+          ],
+          [
+            98,
+            81
+          ],
+          [
+            116,
+            81
+          ],
+          [
+            134,
+            81
+          ],
+          [
+            152,
+            81
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "ejector",
       "name": "Ejector",
-      "java": "`BlockMachine` meta 14"
+      "java": "BlockMachine meta 14",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#89",
+        "back": "eloraam/machine/machine1.png#58",
+        "side": "eloraam/machine/machine1.png#90",
+        "top": "eloraam/machine/machine1.png#91",
+        "bottom": "eloraam/machine/machine1.png#58"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Ejector",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "relay",
       "name": "Relay",
-      "java": "`BlockMachine` meta 15"
+      "java": "BlockMachine meta 15",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#89",
+        "back": "eloraam/machine/machine1.png#58",
+        "side": "eloraam/machine/machine1.png#90",
+        "top": "eloraam/machine/machine1.png#93",
+        "bottom": "eloraam/machine/machine1.png#58"
+      },
+      "gui": {
+        "size": [
+          176,
+          166
+        ],
+        "title": "Relay",
+        "slots": [
+          [
+            62,
+            17
+          ],
+          [
+            80,
+            17
+          ],
+          [
+            98,
+            17
+          ],
+          [
+            62,
+            35
+          ],
+          [
+            80,
+            35
+          ],
+          [
+            98,
+            35
+          ],
+          [
+            62,
+            53
+          ],
+          [
+            80,
+            53
+          ],
+          [
+            98,
+            53
+          ]
+        ]
+      },
+      "energy": null
     },
     {
       "id": "sortron",
       "name": "Sortron",
-      "java": "`BlockMachine2` meta 0"
+      "java": "BlockMachine2 meta 0",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#197",
+        "back": "eloraam/machine/machine1.png#198",
+        "side": "eloraam/machine/machine1.png#201",
+        "top": "eloraam/machine/machine1.png#199",
+        "bottom": "eloraam/machine/machine1.png#198"
+      },
+      "gui": null,
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "manager",
       "name": "Manager",
-      "java": "`BlockMachine2` meta 1"
+      "java": "BlockMachine2 meta 1",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "front": "eloraam/machine/machine1.png#208",
+        "back": "eloraam/machine/machine1.png#209",
+        "side": "eloraam/machine/machine1.png#210",
+        "top": "eloraam/machine/machine1.png#210",
+        "bottom": "eloraam/machine/machine1.png#209"
+      },
+      "gui": {
+        "size": [
+          176,
+          186
+        ],
+        "title": "Manager",
+        "slots": [
+          [
+            44,
+            18
+          ],
+          [
+            62,
+            18
+          ],
+          [
+            80,
+            18
+          ],
+          [
+            98,
+            18
+          ],
+          [
+            116,
+            18
+          ],
+          [
+            134,
+            18
+          ],
+          [
+            44,
+            36
+          ],
+          [
+            62,
+            36
+          ],
+          [
+            80,
+            36
+          ],
+          [
+            98,
+            36
+          ],
+          [
+            116,
+            36
+          ],
+          [
+            134,
+            36
+          ],
+          [
+            44,
+            54
+          ],
+          [
+            62,
+            54
+          ],
+          [
+            80,
+            54
+          ],
+          [
+            98,
+            54
+          ],
+          [
+            116,
+            54
+          ],
+          [
+            134,
+            54
+          ],
+          [
+            44,
+            72
+          ],
+          [
+            62,
+            72
+          ],
+          [
+            80,
+            72
+          ],
+          [
+            98,
+            72
+          ],
+          [
+            116,
+            72
+          ],
+          [
+            134,
+            72
+          ]
+        ]
+      },
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "solar_panel",
       "name": "Solar Panel",
-      "java": "`BlockMachinePanel` meta 0"
+      "java": "BlockMachinePanel meta 0",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        4,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/machine/machine1.png#230",
+        "bottom": "eloraam/machine/machine1.png#84",
+        "side": "eloraam/machine/machine1.png#231"
+      },
+      "gui": null,
+      "energy": {
+        "role": "producer"
+      }
     },
     {
       "id": "pump",
       "name": "Pump",
-      "java": "`BlockMachinePanel` meta 1"
+      "java": "BlockMachinePanel meta 1",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#228"
+      },
+      "gui": null,
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "accelerator",
       "name": "Accelerator",
-      "java": "`BlockMachinePanel` meta 2"
+      "java": "BlockMachinePanel meta 2",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#225"
+      },
+      "gui": null,
+      "energy": {
+        "role": "consumer"
+      }
     },
     {
       "id": "grate",
       "name": "Grate",
-      "java": "`BlockMachinePanel` meta 3"
+      "java": "BlockMachinePanel meta 3",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#227"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "transformer",
       "name": "Transformer",
-      "java": "`BlockMachinePanel` meta 4"
+      "java": "BlockMachinePanel meta 4",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#226"
+      },
+      "gui": null,
+      "energy": {
+        "role": "conductor"
+      }
     },
     {
       "id": "frame",
       "name": "Support Frame",
-      "java": "`BlockFrame` meta 0"
+      "java": "BlockFrame meta 0",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#2"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "frame_tube",
       "name": "Tube Frame",
-      "java": "`BlockFrame` meta 2"
+      "java": "BlockFrame meta 2",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#2"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "frame_redstone_tube",
       "name": "Redstone Tube Frame",
-      "java": "`BlockFrame` meta 3"
+      "java": "BlockFrame meta 3",
+      "shape": "full",
+      "facing": "none",
+      "faces": {
+        "all": "eloraam/machine/machine1.png#2"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "backplane",
       "name": "Backplane",
-      "java": "`BlockMultipart` meta 0"
+      "java": "BlockMultipart meta 0",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "all": "eloraam/control/control1.png#0"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "ram_module",
       "name": "8K RAM Module",
-      "java": "`BlockMultipart` meta 1"
+      "java": "BlockMultipart meta 1",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "all": "eloraam/control/control1.png#1"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "display",
       "name": "Monitor / Display",
-      "java": "`BlockPeripheral` meta 0"
+      "java": "BlockPeripheral meta 0",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "front": "eloraam/control/control1.png#19",
+        "top": "eloraam/control/control1.png#21",
+        "bottom": "eloraam/control/control1.png#23",
+        "side": "eloraam/control/control1.png#20"
+      },
+      "gui": {
+        "size": [
+          350,
+          230
+        ],
+        "title": "Display",
+        "slots": []
+      },
+      "energy": null
+    },
+    {
+      "id": "monitor",
+      "name": "Monitor",
+      "java": "BlockPeripheral meta 0",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "front": "eloraam/control/control1.png#19",
+        "top": "eloraam/control/control1.png#21",
+        "bottom": "eloraam/control/control1.png#23",
+        "side": "eloraam/control/control1.png#20"
+      },
+      "gui": {
+        "size": [
+          350,
+          230
+        ],
+        "title": "Display",
+        "slots": []
+      },
+      "energy": null
+    },
+    {
+      "id": "keyboard",
+      "name": "Keyboard",
+      "java": "BlockMultipart meta 2",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "top": "eloraam/control/control1.png#21",
+        "side": "eloraam/control/control1.png#22",
+        "bottom": "eloraam/control/control1.png#23"
+      },
+      "gui": null,
+      "energy": null
     },
     {
       "id": "cpu",
       "name": "CPU",
-      "java": "`BlockPeripheral` meta 1"
+      "java": "BlockPeripheral meta 1",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "front": "eloraam/control/control1.png#24",
+        "top": "eloraam/control/control1.png#21",
+        "bottom": "eloraam/control/control1.png#23",
+        "side": "eloraam/control/control1.png#20"
+      },
+      "gui": {
+        "size": [
+          227,
+          145
+        ],
+        "title": "CPU",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "disk_drive",
       "name": "Disk Drive",
-      "java": "`BlockPeripheral` meta 2"
+      "java": "BlockPeripheral meta 2",
+      "shape": "full",
+      "facing": "horizontal",
+      "faces": {
+        "front": "eloraam/control/control1.png#28",
+        "top": "eloraam/control/control1.png#29",
+        "bottom": "eloraam/control/control1.png#23",
+        "side": "eloraam/control/control1.png#22"
+      },
+      "gui": {
+        "size": [
+          123,
+          81
+        ],
+        "title": "Disk Drive",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "io_expander",
       "name": "IO Expander",
-      "java": "`BlockMultipart` meta 0"
+      "java": "BlockMultipart meta 0",
+      "shape": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        16
+      ],
+      "facing": "horizontal",
+      "faces": {
+        "all": "eloraam/control/control1.png#2"
+      },
+      "gui": {
+        "size": [
+          123,
+          81
+        ],
+        "title": "IO Expander",
+        "slots": []
+      },
+      "energy": null
     },
     {
       "id": "blulectric_engine",
       "name": "Blulectric Engine",
-      "java": "`BlockMachineCompat` meta 0"
+      "java": "BlockMachineCompat meta 0",
+      "shape": "full",
+      "facing": "all",
+      "faces": {
+        "all": "eloraam/compat/compat1.png#0"
+      },
+      "gui": null,
+      "energy": {
+        "role": "consumer"
+      }
     }
   ],
   "items": [
     {
       "id": "lumar",
-      "name": "Lumar (16 colors)",
-      "java": "`ItemParts` itemLumar meta 0..15"
+      "name": "Lumar",
+      "java": "ItemParts itemLumar meta 0..15",
+      "sprite": [
+        "eloraam/base/items1.png#32",
+        "eloraam/base/items1.png#112"
+      ],
+      "max_stack": 64,
+      "durability": null,
+      "use": "Crafting illuminant light source"
     },
     {
       "id": "ruby",
       "name": "Ruby",
-      "java": "`ItemParts` itemResource meta 0"
+      "java": "ItemParts itemResource meta 0",
+      "sprite": "eloraam/base/items1.png#48",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Gemstone used for crafting ruby tools and redstone blocks"
     },
     {
       "id": "green_sapphire",
       "name": "Green Sapphire",
-      "java": "`ItemParts` itemResource meta 1"
+      "java": "ItemParts itemResource meta 1",
+      "sprite": "eloraam/base/items1.png#49",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Gemstone used for crafting green sapphire tools"
     },
     {
       "id": "sapphire",
       "name": "Sapphire",
-      "java": "`ItemParts` itemResource meta 2"
+      "java": "ItemParts itemResource meta 2",
+      "sprite": "eloraam/base/items1.png#50",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Gemstone used for crafting sapphire tools"
     },
     {
       "id": "silver_ingot",
       "name": "Silver Ingot",
-      "java": "`ItemParts` itemResource meta 3"
+      "java": "ItemParts itemResource meta 3",
+      "sprite": "eloraam/base/items1.png#51",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Metallic ingot used in advanced recipes and alloy smelting"
     },
     {
       "id": "tin_ingot",
       "name": "Tin Ingot",
-      "java": "`ItemParts` itemResource meta 4"
+      "java": "ItemParts itemResource meta 4",
+      "sprite": "eloraam/base/items1.png#52",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Ingot smelted in alloy furnace with copper for brass or iron for tinplate"
     },
     {
       "id": "copper_ingot",
       "name": "Copper Ingot",
-      "java": "`ItemParts` itemResource meta 5"
+      "java": "ItemParts itemResource meta 5",
+      "sprite": "eloraam/base/items1.png#53",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Metallic ingot used to make copper coils, fine copper wire, and brass"
     },
     {
       "id": "nikolite",
       "name": "Nikolite",
-      "java": "`ItemParts` itemResource meta 6"
+      "java": "ItemParts itemResource meta 6",
+      "sprite": "eloraam/base/items1.png#54",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Blue energy dust used in blulectric circuitry and blue alloy"
+    },
+    {
+      "id": "tungsten_ingot",
+      "name": "Tungsten Ingot",
+      "java": "ItemParts meta 7",
+      "sprite": "eloraam/base/items1.png#51",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Dense refractory metallic ingot"
     },
     {
       "id": "red_alloy_ingot",
       "name": "Red Alloy Ingot",
-      "java": "`ItemParts` itemAlloy meta 0"
+      "java": "ItemParts itemAlloy meta 0",
+      "sprite": "eloraam/base/items1.png#64",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Alloy of copper and redstone for redstone wiring"
     },
     {
       "id": "blue_alloy_ingot",
       "name": "Blue Alloy Ingot",
-      "java": "`ItemParts` itemAlloy meta 1"
+      "java": "ItemParts itemAlloy meta 1",
+      "sprite": "eloraam/base/items1.png#65",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Alloy of silver and nikolite for blulectric conductors"
     },
     {
       "id": "brass_ingot",
       "name": "Brass Ingot",
-      "java": "`ItemParts` itemAlloy meta 2"
+      "java": "ItemParts itemAlloy meta 2",
+      "sprite": "eloraam/base/items1.png#66",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Alloy of copper and tin for pneumatic and mechanical parts"
     },
     {
       "id": "silicon_boule",
       "name": "Silicon Boule",
-      "java": "`ItemParts` itemAlloy meta 3"
+      "java": "ItemParts itemAlloy meta 3",
+      "sprite": "eloraam/base/items1.png#67",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Single crystal silicon boule made in alloy furnace with sand and coal"
     },
     {
       "id": "silicon_wafer",
       "name": "Silicon Wafer",
-      "java": "`ItemParts` itemAlloy meta 4"
+      "java": "ItemParts itemAlloy meta 4",
+      "sprite": "eloraam/base/items1.png#68",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Sliced from silicon boule using a diamond handsaw"
     },
     {
       "id": "blue_doped_wafer",
       "name": "Blue-Doped Wafer",
-      "java": "`ItemParts` itemAlloy meta 5"
+      "java": "ItemParts itemAlloy meta 5",
+      "sprite": "eloraam/base/items1.png#69",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Silicon wafer infused with nikolite for solar cells"
     },
     {
       "id": "red_doped_wafer",
       "name": "Red-Doped Wafer",
-      "java": "`ItemParts` itemAlloy meta 6"
+      "java": "ItemParts itemAlloy meta 6",
+      "sprite": "eloraam/base/items1.png#70",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Silicon wafer infused with redstone for microchips"
     },
     {
       "id": "tinplate",
       "name": "Tinplate",
-      "java": "`ItemParts` itemAlloy meta 7"
+      "java": "ItemParts itemAlloy meta 7",
+      "sprite": "eloraam/base/items1.png#71",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Tinned sheet iron for casing and machinery"
     },
     {
       "id": "fine_copper_wire",
       "name": "Fine Copper Wire",
-      "java": "`ItemParts` itemAlloy meta 8"
+      "java": "ItemParts itemAlloy meta 8",
+      "sprite": "eloraam/base/items1.png#72",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Drawn copper wire through diamond drawplate"
     },
     {
       "id": "fine_iron_wire",
       "name": "Fine Iron Wire",
-      "java": "`ItemParts` itemAlloy meta 9"
+      "java": "ItemParts itemAlloy meta 9",
+      "sprite": "eloraam/base/items1.png#73",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Drawn iron wire through diamond drawplate"
     },
     {
       "id": "copper_coil",
       "name": "Copper Coil",
-      "java": "`ItemParts` itemAlloy meta 10"
+      "java": "ItemParts itemAlloy meta 10",
+      "sprite": "eloraam/base/items1.png#74",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Electromagnetic winding coil"
     },
     {
       "id": "bl_motor",
       "name": "BL Motor",
-      "java": "`ItemParts` itemAlloy meta 11"
+      "java": "ItemParts itemAlloy meta 11",
+      "sprite": "eloraam/base/items1.png#75",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Blulectric brushless DC motor"
     },
     {
       "id": "canvas",
       "name": "Canvas",
-      "java": "`ItemParts` itemAlloy meta 12"
+      "java": "ItemParts itemAlloy meta 12",
+      "sprite": "eloraam/base/items1.png#76",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Woven cloth from flax string used for bags and sails"
     },
     {
       "id": "iron_nugget",
       "name": "Iron Nugget",
-      "java": "`ItemParts` itemNugget meta 0"
+      "java": "ItemParts itemNugget meta 0",
+      "sprite": "eloraam/base/items1.png#160",
+      "max_stack": 64,
+      "durability": null,
+      "use": "1/9 of iron ingot"
     },
     {
       "id": "silver_nugget",
       "name": "Silver Nugget",
-      "java": "`ItemParts` itemNugget meta 1"
+      "java": "ItemParts itemNugget meta 1",
+      "sprite": "eloraam/base/items1.png#161",
+      "max_stack": 64,
+      "durability": null,
+      "use": "1/9 of silver ingot"
     },
     {
       "id": "tin_nugget",
       "name": "Tin Nugget",
-      "java": "`ItemParts` itemNugget meta 2"
+      "java": "ItemParts itemNugget meta 2",
+      "sprite": "eloraam/base/items1.png#162",
+      "max_stack": 64,
+      "durability": null,
+      "use": "1/9 of tin ingot"
     },
     {
       "id": "copper_nugget",
       "name": "Copper Nugget",
-      "java": "`ItemParts` itemNugget meta 3"
-    },
-    {
-      "id": "dye_indigo",
-      "name": "Indigo Dye",
-      "java": "`ItemDyeIndigo`"
-    },
-    {
-      "id": "iron_handsaw",
-      "name": "Iron Handsaw",
-      "java": "`ItemHandsaw` iron"
-    },
-    {
-      "id": "diamond_handsaw",
-      "name": "Diamond Handsaw",
-      "java": "`ItemHandsaw` diamond"
-    },
-    {
-      "id": "screwdriver",
-      "name": "Screwdriver",
-      "java": "`ItemScrewdriver`"
-    },
-    {
-      "id": "diamond_drawplate",
-      "name": "Diamond Drawplate",
-      "java": "`ItemDrawplate`"
-    },
-    {
-      "id": "blank_plan",
-      "name": "Blank Plan",
-      "java": "`ItemTextured` planBlank"
-    },
-    {
-      "id": "plan",
-      "name": "Plan",
-      "java": "`ItemPlan`"
-    },
-    {
-      "id": "canvas_bag",
-      "name": "Canvas Bag (16 colors)",
-      "java": "`ItemBag` meta 0..15"
+      "java": "ItemParts itemNugget meta 3",
+      "sprite": "eloraam/base/items1.png#163",
+      "max_stack": 64,
+      "durability": null,
+      "use": "1/9 of copper ingot"
     },
     {
       "id": "stone_wafer",
       "name": "Stone Wafer",
-      "java": "`ItemParts` itemParts meta 0"
+      "java": "ItemParts itemParts meta 0",
+      "sprite": "eloraam/base/items1.png#0",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Substrate base cut from smooth stone with a handsaw"
+    },
+    {
+      "id": "logic_tile",
+      "name": "Logic Tile Substrate",
+      "java": "ItemParts itemParts meta 0",
+      "sprite": "eloraam/logic/logic1.png#0",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Base substrate tile for logic gate construction"
     },
     {
       "id": "wire_part",
       "name": "Wire Component",
-      "java": "`ItemParts` itemParts meta 1"
+      "java": "ItemParts itemParts meta 1",
+      "sprite": "eloraam/base/items1.png#1",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Surface wire element for logic circuits"
     },
     {
       "id": "anode",
       "name": "Anode",
-      "java": "`ItemParts` itemParts meta 2"
+      "java": "ItemParts itemParts meta 2",
+      "sprite": "eloraam/base/items1.png#2",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Diode anode terminal"
     },
     {
       "id": "cathode",
       "name": "Cathode",
-      "java": "`ItemParts` itemParts meta 3"
+      "java": "ItemParts itemParts meta 3",
+      "sprite": "eloraam/base/items1.png#3",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Diode cathode terminal"
     },
     {
       "id": "pointer",
       "name": "Pointer",
-      "java": "`ItemParts` itemParts meta 4"
+      "java": "ItemParts itemParts meta 4",
+      "sprite": "eloraam/base/items1.png#4",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Rotating needle indicator for timers and counters"
     },
     {
       "id": "redwire_part",
       "name": "Redwire Part",
-      "java": "`ItemParts` itemParts meta 5"
+      "java": "ItemParts itemParts meta 5",
+      "sprite": "eloraam/base/items1.png#5",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Surface redstone wiring element"
     },
     {
       "id": "plate",
       "name": "Plate Part",
-      "java": "`ItemParts` itemParts meta 6"
+      "java": "ItemParts itemParts meta 6",
+      "sprite": "eloraam/base/items1.png#6",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Silicon base plate for chip carrier"
     },
     {
       "id": "silicon_chip",
       "name": "Silicon Chip",
-      "java": "`ItemParts` itemParts meta 7"
+      "java": "ItemParts itemParts meta 7",
+      "sprite": "eloraam/base/items1.png#7",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Standard silicon logic microchip"
     },
     {
       "id": "tainted_chip",
       "name": "Tainted Chip",
-      "java": "`ItemParts` itemParts meta 8"
+      "java": "ItemParts itemParts meta 8",
+      "sprite": "eloraam/base/items1.png#8",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Inverted microchip infused with redstone"
     },
     {
       "id": "bundled_wafer",
       "name": "Bundled Wafer",
-      "java": "`ItemParts` itemParts meta 9"
+      "java": "ItemParts itemParts meta 9",
+      "sprite": "eloraam/base/items1.png#9",
+      "max_stack": 64,
+      "durability": null,
+      "use": "16-channel bundled bus wafer connection"
     },
     {
-      "id": "ruby_pickaxe",
-      "name": "Ruby Pickaxe",
-      "java": "`ItemCustomPickaxe`"
+      "id": "wire_red_alloy",
+      "name": "Red Alloy Wire",
+      "java": "BlockMicro damage 256",
+      "sprite": "eloraam/wiring/redpower1.png#97",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Places surface red alloy wire"
     },
     {
-      "id": "green_sapphire_pickaxe",
-      "name": "Green Sapphire Pickaxe",
-      "java": "`ItemCustomPickaxe`"
+      "id": "wire_insulated",
+      "name": "Insulated Wire",
+      "java": "BlockMicro damage 512..527",
+      "sprite": "eloraam/wiring/redpower1.png#16",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Places colored insulated wire"
     },
     {
-      "id": "sapphire_pickaxe",
-      "name": "Sapphire Pickaxe",
-      "java": "`ItemCustomPickaxe`"
+      "id": "wire_bundled",
+      "name": "Bundled Cable",
+      "java": "BlockMicro damage 768..784",
+      "sprite": "eloraam/wiring/redpower1.png#2",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Places 16-channel bundled cable"
     },
     {
-      "id": "ruby_shovel",
-      "name": "Ruby Shovel",
-      "java": "`ItemCustomShovel`"
+      "id": "wire_jacketed",
+      "name": "Jacketed Wire",
+      "java": "BlockMicro damage 16384+",
+      "sprite": "eloraam/wiring/redpower1.png#5",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Places freestanding jacketed wire"
     },
     {
-      "id": "green_sapphire_shovel",
-      "name": "Green Sapphire Shovel",
-      "java": "`ItemCustomShovel`"
+      "id": "ribbon_cable",
+      "name": "Ribbon Cable",
+      "java": "BlockMicro damage 3072",
+      "sprite": "eloraam/wiring/redpower1.png#3",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Places 8-bit ribbon bus cable"
     },
     {
-      "id": "sapphire_shovel",
-      "name": "Sapphire Shovel",
-      "java": "`ItemCustomShovel`"
+      "id": "iron_handsaw",
+      "name": "Iron Handsaw",
+      "java": "ItemHandsaw iron",
+      "sprite": "eloraam/base/items1.png#17",
+      "max_stack": 1,
+      "durability": 320,
+      "use": "Craft with solid blocks in crafting grid to cut into covers and panels"
     },
     {
-      "id": "ruby_axe",
-      "name": "Ruby Axe",
-      "java": "`ItemCustomAxe`"
+      "id": "handsaw",
+      "name": "Handsaw",
+      "java": "ItemHandsaw iron",
+      "sprite": "eloraam/base/items1.png#17",
+      "max_stack": 1,
+      "durability": 320,
+      "use": "Craft with solid blocks in crafting grid to cut into covers and panels"
     },
     {
-      "id": "green_sapphire_axe",
-      "name": "Green Sapphire Axe",
-      "java": "`ItemCustomAxe`"
-    },
-    {
-      "id": "sapphire_axe",
-      "name": "Sapphire Axe",
-      "java": "`ItemCustomAxe`"
-    },
-    {
-      "id": "ruby_sword",
-      "name": "Ruby Sword",
-      "java": "`ItemCustomSword`"
-    },
-    {
-      "id": "green_sapphire_sword",
-      "name": "Green Sapphire Sword",
-      "java": "`ItemCustomSword`"
-    },
-    {
-      "id": "sapphire_sword",
-      "name": "Sapphire Sword",
-      "java": "`ItemCustomSword`"
-    },
-    {
-      "id": "ruby_hoe",
-      "name": "Ruby Hoe",
-      "java": "`ItemCustomHoe`"
-    },
-    {
-      "id": "green_sapphire_hoe",
-      "name": "Green Sapphire Hoe",
-      "java": "`ItemCustomHoe`"
-    },
-    {
-      "id": "sapphire_hoe",
-      "name": "Sapphire Hoe",
-      "java": "`ItemCustomHoe`"
+      "id": "diamond_handsaw",
+      "name": "Diamond Handsaw",
+      "java": "ItemHandsaw diamond",
+      "sprite": "eloraam/base/items1.png#18",
+      "max_stack": 1,
+      "durability": 1280,
+      "use": "Precision handsaw; required for slicing silicon boules into wafers"
     },
     {
       "id": "ruby_handsaw",
       "name": "Ruby Handsaw",
-      "java": "`ItemHandsaw` ruby"
+      "java": "ItemHandsaw ruby",
+      "sprite": "eloraam/base/items1.png#19",
+      "max_stack": 1,
+      "durability": 640,
+      "use": "Gemstone handsaw for cutting microblocks"
     },
     {
       "id": "green_sapphire_handsaw",
       "name": "Green Sapphire Handsaw",
-      "java": "`ItemHandsaw` green sapphire"
+      "java": "ItemHandsaw green sapphire",
+      "sprite": "eloraam/base/items1.png#20",
+      "max_stack": 1,
+      "durability": 640,
+      "use": "Gemstone handsaw for cutting microblocks"
     },
     {
       "id": "sapphire_handsaw",
       "name": "Sapphire Handsaw",
-      "java": "`ItemHandsaw` sapphire"
+      "java": "ItemHandsaw sapphire",
+      "sprite": "eloraam/base/items1.png#21",
+      "max_stack": 1,
+      "durability": 640,
+      "use": "Gemstone handsaw for cutting microblocks"
+    },
+    {
+      "id": "screwdriver",
+      "name": "Screwdriver",
+      "java": "ItemScrewdriver",
+      "sprite": "eloraam/base/items1.png#16",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Right-click or shift-right-click RedPower machines or logic gates to rotate them"
+    },
+    {
+      "id": "diamond_drawplate",
+      "name": "Diamond Drawplate",
+      "java": "ItemDrawplate",
+      "sprite": "eloraam/base/items1.png#22",
+      "max_stack": 1,
+      "durability": 255,
+      "use": "Craft in crafting grid with metal ingots to draw fine wire"
+    },
+    {
+      "id": "blank_plan",
+      "name": "Blank Plan",
+      "java": "ItemTextured planBlank",
+      "sprite": "eloraam/base/items1.png#81",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Place in project table plan slot and click write button to create a crafting plan"
+    },
+    {
+      "id": "plan",
+      "name": "Plan",
+      "java": "ItemPlan",
+      "sprite": "eloraam/base/items1.png#82",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Contains saved recipe for automated crafting in project table"
+    },
+    {
+      "id": "canvas_bag",
+      "name": "Canvas Bag",
+      "java": "ItemBag meta 0..15",
+      "sprite": "eloraam/base/items1.png#192",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Right-click in air to open portable 27-slot storage inventory"
+    },
+    {
+      "id": "ruby_pickaxe",
+      "name": "Ruby Pickaxe",
+      "java": "ItemCustomPickaxe",
+      "sprite": "eloraam/world/worlditems1.png#64",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "green_sapphire_pickaxe",
+      "name": "Green Sapphire Pickaxe",
+      "java": "ItemCustomPickaxe",
+      "sprite": "eloraam/world/worlditems1.png#65",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "sapphire_pickaxe",
+      "name": "Sapphire Pickaxe",
+      "java": "ItemCustomPickaxe",
+      "sprite": "eloraam/world/worlditems1.png#66",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "ruby_shovel",
+      "name": "Ruby Shovel",
+      "java": "ItemCustomShovel",
+      "sprite": "eloraam/world/worlditems1.png#48",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "green_sapphire_shovel",
+      "name": "Green Sapphire Shovel",
+      "java": "ItemCustomShovel",
+      "sprite": "eloraam/world/worlditems1.png#49",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "sapphire_shovel",
+      "name": "Sapphire Shovel",
+      "java": "ItemCustomShovel",
+      "sprite": "eloraam/world/worlditems1.png#50",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "ruby_axe",
+      "name": "Ruby Axe",
+      "java": "ItemCustomAxe",
+      "sprite": "eloraam/world/worlditems1.png#80",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "green_sapphire_axe",
+      "name": "Green Sapphire Axe",
+      "java": "ItemCustomAxe",
+      "sprite": "eloraam/world/worlditems1.png#81",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "sapphire_axe",
+      "name": "Sapphire Axe",
+      "java": "ItemCustomAxe",
+      "sprite": "eloraam/world/worlditems1.png#82",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency"
+    },
+    {
+      "id": "ruby_sword",
+      "name": "Ruby Sword",
+      "java": "ItemCustomSword",
+      "sprite": "eloraam/world/worlditems1.png#32",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+    },
+    {
+      "id": "green_sapphire_sword",
+      "name": "Green Sapphire Sword",
+      "java": "ItemCustomSword",
+      "sprite": "eloraam/world/worlditems1.png#33",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+    },
+    {
+      "id": "sapphire_sword",
+      "name": "Sapphire Sword",
+      "java": "ItemCustomSword",
+      "sprite": "eloraam/world/worlditems1.png#34",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)"
+    },
+    {
+      "id": "ruby_hoe",
+      "name": "Ruby Hoe",
+      "java": "ItemCustomHoe",
+      "sprite": "eloraam/world/worlditems1.png#96",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Tills dirt or grass into farmland"
+    },
+    {
+      "id": "green_sapphire_hoe",
+      "name": "Green Sapphire Hoe",
+      "java": "ItemCustomHoe",
+      "sprite": "eloraam/world/worlditems1.png#97",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Tills dirt or grass into farmland"
+    },
+    {
+      "id": "sapphire_hoe",
+      "name": "Sapphire Hoe",
+      "java": "ItemCustomHoe",
+      "sprite": "eloraam/world/worlditems1.png#98",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Tills dirt or grass into farmland"
     },
     {
       "id": "wood_sickle",
       "name": "Wood Sickle",
-      "java": "`ItemSickle` wood"
+      "java": "ItemSickle wood",
+      "sprite": "eloraam/world/worlditems1.png#16",
+      "max_stack": 1,
+      "durability": 59,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "stone_sickle",
       "name": "Stone Sickle",
-      "java": "`ItemSickle` stone"
+      "java": "ItemSickle stone",
+      "sprite": "eloraam/world/worlditems1.png#17",
+      "max_stack": 1,
+      "durability": 131,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "iron_sickle",
       "name": "Iron Sickle",
-      "java": "`ItemSickle` iron"
+      "java": "ItemSickle iron",
+      "sprite": "eloraam/world/worlditems1.png#18",
+      "max_stack": 1,
+      "durability": 250,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
+    },
+    {
+      "id": "sickle",
+      "name": "Sickle",
+      "java": "ItemSickle iron",
+      "sprite": "eloraam/world/worlditems1.png#18",
+      "max_stack": 1,
+      "durability": 250,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "diamond_sickle",
       "name": "Diamond Sickle",
-      "java": "`ItemSickle` diamond"
+      "java": "ItemSickle diamond",
+      "sprite": "eloraam/world/worlditems1.png#19",
+      "max_stack": 1,
+      "durability": 1561,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "gold_sickle",
       "name": "Gold Sickle",
-      "java": "`ItemSickle` gold"
+      "java": "ItemSickle gold",
+      "sprite": "eloraam/world/worlditems1.png#20",
+      "max_stack": 1,
+      "durability": 32,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "ruby_sickle",
       "name": "Ruby Sickle",
-      "java": "`ItemSickle` ruby"
+      "java": "ItemSickle ruby",
+      "sprite": "eloraam/world/worlditems1.png#21",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "green_sapphire_sickle",
       "name": "Green Sapphire Sickle",
-      "java": "`ItemSickle` green sapphire"
+      "java": "ItemSickle green sapphire",
+      "sprite": "eloraam/world/worlditems1.png#22",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "sapphire_sickle",
       "name": "Sapphire Sickle",
-      "java": "`ItemSickle` sapphire"
+      "java": "ItemSickle sapphire",
+      "sprite": "eloraam/world/worlditems1.png#23",
+      "max_stack": 1,
+      "durability": 500,
+      "use": "Harvests 5x5 crops and 3x3x3 leaves at once"
     },
     {
       "id": "athame",
       "name": "Athame",
-      "java": "`ItemAthame`"
+      "java": "ItemAthame",
+      "sprite": "eloraam/world/worlditems1.png#112",
+      "max_stack": 1,
+      "durability": 100,
+      "use": "Ceremonial silver blade; deals 25 damage vs Endermen and the Ender Dragon"
     },
     {
       "id": "flax_seeds",
       "name": "Flax Seeds",
-      "java": "`ItemCustomSeeds`"
+      "java": "ItemCustomSeeds",
+      "sprite": [
+        "eloraam/world/worlditems1.png#1",
+        "eloraam/world/worlditems1.png#3"
+      ],
+      "max_stack": 64,
+      "durability": null,
+      "use": "Plant on farmland to grow flax crops for string"
+    },
+    {
+      "id": "dye_indigo",
+      "name": "Indigo Dye",
+      "java": "ItemDyeIndigo",
+      "sprite": "eloraam/base/items1.png#80",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Blue dye extracted from indigo flowers"
     },
     {
       "id": "wool_card",
       "name": "Wool Card",
-      "java": "`ItemWoolCard`"
+      "java": "ItemWoolCard",
+      "sprite": "eloraam/world/worlditems1.png#128",
+      "max_stack": 1,
+      "durability": 63,
+      "use": "Craft with wool block to tease back into 4 string"
     },
     {
       "id": "dry_paint_brush",
       "name": "Dry Paint Brush",
-      "java": "`ItemTextured` paintbrush.dry"
+      "java": "ItemTextured paintbrush.dry",
+      "sprite": "eloraam/base/items1.png#28",
+      "max_stack": 16,
+      "durability": null,
+      "use": "Dip into paint can in crafting grid to make colored paint brush"
     },
     {
       "id": "paint_brush",
-      "name": "Paint Brush (16 colors)",
-      "java": "`ItemPaintBrush` 16 colors"
+      "name": "Paint Brush",
+      "java": "ItemPaintBrush 16 colors",
+      "sprite": "eloraam/base/items1.png#28",
+      "max_stack": 1,
+      "durability": 15,
+      "use": "Right-click jacketed cable or machine to paint it with chosen color"
     },
     {
       "id": "empty_paint_can",
       "name": "Empty Paint Can",
-      "java": "`ItemTextured` paintcan.empty"
+      "java": "ItemTextured paintcan.empty",
+      "sprite": "eloraam/base/items1.png#24",
+      "max_stack": 16,
+      "durability": null,
+      "use": "Craft with dyes in crafting grid to fill with colored paint"
     },
     {
       "id": "paint_can",
-      "name": "Paint Can (16 colors)",
-      "java": "`ItemPaintCan` 16 colors"
+      "name": "Paint Can",
+      "java": "ItemPaintCan 16 colors",
+      "sprite": "eloraam/base/items1.png#26",
+      "max_stack": 1,
+      "durability": 15,
+      "use": "Craft with dry paintbrush to apply 15 brush coatings"
     },
     {
       "id": "seed_bag",
       "name": "Seed Bag",
-      "java": "`ItemSeedBag`"
+      "java": "ItemSeedBag",
+      "sprite": "eloraam/world/worlditems1.png#129",
+      "max_stack": 1,
+      "durability": 576,
+      "use": "Shift-right-click to open 9-slot seed inventory; right-click farmland to plant in spiral outward"
     },
     {
       "id": "voltmeter",
       "name": "Voltmeter",
-      "java": "`ItemVoltmeter`"
+      "java": "ItemVoltmeter",
+      "sprite": [
+        "eloraam/base/items1.png#23",
+        "eloraam/base/items1.png#24"
+      ],
+      "max_stack": 1,
+      "durability": null,
+      "use": "Right-click blulectric block or pipe to read voltage, current, power or pressure in chat"
     },
     {
       "id": "sonic_screwdriver",
       "name": "Sonic Screwdriver",
-      "java": "`ItemSonicDriver`"
+      "java": "ItemSonicDriver",
+      "sprite": "eloraam/base/items1.png#129",
+      "max_stack": 1,
+      "durability": 400,
+      "use": "Rechargeable sonic tool that rotates machines wirelessly from a distance"
     },
     {
       "id": "battery_empty",
       "name": "BT Battery (Empty)",
-      "java": "`ItemTextured` btbattery"
+      "java": "ItemTextured btbattery",
+      "sprite": "eloraam/base/items1.png#25",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Uncharged blulectric battery; insert into battery box to charge"
     },
     {
       "id": "battery_powered",
       "name": "BT Battery (Powered)",
-      "java": "`ItemBattery`"
+      "java": "ItemBattery",
+      "sprite": "eloraam/base/items1.png#25",
+      "max_stack": 1,
+      "durability": 1500,
+      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools"
+    },
+    {
+      "id": "battery",
+      "name": "BT Battery",
+      "java": "ItemBattery",
+      "sprite": "eloraam/base/items1.png#25",
+      "max_stack": 1,
+      "durability": 1500,
+      "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools"
     },
     {
       "id": "wood_sail",
       "name": "Wooden Windmill Sail",
-      "java": "`ItemParts` itemMachineParts meta 0"
+      "java": "ItemParts itemMachineParts meta 0",
+      "sprite": "eloraam/base/items1.png#176",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Sail component for assembling wind turbines and windmills"
     },
     {
       "id": "wood_turbine",
       "name": "Wooden Wind Turbine",
-      "java": "`ItemWindmill` type 1"
+      "java": "ItemWindmill type 1",
+      "sprite": "eloraam/base/items1.png#177",
+      "max_stack": 1,
+      "durability": 1000,
+      "use": "Vertical axis wind turbine rotor; place inside wind turbine machine"
     },
     {
       "id": "wood_windmill",
       "name": "Wooden Windmill",
-      "java": "`ItemWindmill` type 2"
+      "java": "ItemWindmill type 2",
+      "sprite": "eloraam/base/items1.png#178",
+      "max_stack": 1,
+      "durability": 1000,
+      "use": "Horizontal axis windmill rotor; place inside wind turbine machine"
     },
     {
       "id": "blank_disk",
       "name": "Blank Floppy Disk",
-      "java": "`ItemDisk` meta 0"
+      "java": "ItemDisk meta 0",
+      "sprite": "eloraam/control/control1.png#3",
+      "max_stack": 1,
+      "durability": null,
+      "use": "128 KB magnetic disk storage for 6502 disk drive"
+    },
+    {
+      "id": "floppy_disk",
+      "name": "Floppy Disk",
+      "java": "ItemDisk meta 0",
+      "sprite": "eloraam/control/control1.png#3",
+      "max_stack": 1,
+      "durability": null,
+      "use": "128 KB magnetic disk storage for 6502 disk drive"
     },
     {
       "id": "forth_boot_disk",
       "name": "RedPower Forth Boot Disk",
-      "java": "`ItemDisk` meta 1"
+      "java": "ItemDisk meta 1",
+      "sprite": "eloraam/control/control1.png#4",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Operating system boot disk containing RedPower Forth for the 6502 CPU"
     },
     {
       "id": "forth_extra_disk",
       "name": "RedPower Forth Extra Disk",
-      "java": "`ItemDisk` meta 2"
+      "java": "ItemDisk meta 2",
+      "sprite": "eloraam/control/control1.png#5",
+      "max_stack": 1,
+      "durability": null,
+      "use": "Extended utility library disk for RedPower Forth"
     },
     {
       "id": "brass_gear",
       "name": "Brass Gear",
-      "java": "`ItemParts` itemCompatParts meta 0"
+      "java": "ItemParts itemCompatParts meta 0",
+      "sprite": "eloraam/compat/compat1.png#1",
+      "max_stack": 64,
+      "durability": null,
+      "use": "Pneumatic/mechanical transmission gear for BuildCraft engine compatibility"
     }
   ],
   "features": [
     {
       "id": "microblocks",
       "name": "Microblock Multi-Part System",
-      "spec": "Section 1.1"
+      "spec": "Section 2.1"
     },
     {
       "id": "red_alloy_wiring",
       "name": "Red Alloy & Bundled Wiring",
-      "spec": "Section 1.2"
+      "spec": "Section 2.2"
     },
     {
       "id": "integrated_logic",
       "name": "Integrated Logic Gates & Sensors",
-      "spec": "Section 1.3"
+      "spec": "Section 2.3"
     },
     {
       "id": "pneumatic_tubes",
       "name": "Pneumatic Tube & Routing Network",
-      "spec": "Section 2"
+      "spec": "Section 2.4"
     },
     {
       "id": "item_logistics_machines",
       "name": "Item Logistics & Automation Machines",
-      "spec": "Section 2.2"
+      "spec": "Section 3.2"
     },
     {
       "id": "frame_automation",
-      "name": "Frame Mechanics & World Movers",
-      "spec": "Section 2.4"
+      "name": "Frame Mechanics & Structural Movement",
+      "spec": "Section 2.6"
     },
     {
       "id": "blutricity_grid",
       "name": "Blulectric Power Network",
-      "spec": "Section 3"
+      "spec": "Section 2.5"
     },
     {
       "id": "control_computing",
       "name": "Control 6502 Computing System",
-      "spec": "Section 4"
+      "spec": "Section 2.7"
     },
     {
       "id": "world_generation",
@@ -1059,12 +4354,488 @@
     {
       "id": "tools_and_equipment",
       "name": "Tools, Weapons & Utility Equipment",
-      "spec": "Section 4.2 & 4.3"
+      "spec": "Section 4"
     },
     {
       "id": "alloy_metallurgy",
       "name": "Alloy Metallurgy & Smelting",
       "spec": "Section 7.1"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "solar panel charges in daylight",
+      "for": [
+        "solar_panel",
+        "voltmeter"
+      ],
+      "steps": [
+        {
+          "command": "time set noon"
+        },
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "wait": 200
+        },
+        {
+          "use": "redpower_2:voltmeter",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_message": "Reading (?!0\\.00V)\\d+\\.\\d\\dV"
+        }
+      ]
+    },
+    {
+      "name": "battery box charges and reports voltage",
+      "for": [
+        "battery_box",
+        "solar_panel",
+        "wire_blutricity",
+        "voltmeter"
+      ],
+      "steps": [
+        {
+          "command": "time set noon"
+        },
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "setblock": [
+            1,
+            0,
+            0,
+            "redpower_2:wire_blutricity"
+          ]
+        },
+        {
+          "setblock": [
+            2,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        },
+        {
+          "wait": 200
+        },
+        {
+          "use": "redpower_2:voltmeter",
+          "on": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_message": "Reading \\d+\\.\\d\\dV \\d+\\.\\d\\dA"
+        }
+      ]
+    },
+    {
+      "name": "voltmeter measures fluid pipe pressure",
+      "for": [
+        "pipe",
+        "pump",
+        "voltmeter"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:pipe"
+          ]
+        },
+        {
+          "wait": 40
+        },
+        {
+          "use": "redpower_2:voltmeter",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_message": "Reading \\d+ psi"
+        }
+      ]
+    },
+    {
+      "name": "thermopile generates blutricity between lava and water",
+      "for": [
+        "thermopile",
+        "voltmeter"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        },
+        {
+          "setblock": [
+            1,
+            0,
+            0,
+            "minecraft:lava"
+          ]
+        },
+        {
+          "setblock": [
+            -1,
+            0,
+            0,
+            "minecraft:water"
+          ]
+        },
+        {
+          "wait": 100
+        },
+        {
+          "use": "redpower_2:voltmeter",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_message": "Reading (?!0\\.00V)\\d+\\.\\d\\dV"
+        }
+      ]
+    },
+    {
+      "name": "screwdriver rotates machine facing",
+      "for": [
+        "alloy_furnace",
+        "screwdriver"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        },
+        {
+          "use": "redpower_2:screwdriver",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "wait": 5
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "facing=(east|south|west)"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "block breaker breaks stone and ejects item",
+      "for": [
+        "block_breaker",
+        "pneumatic_tube"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:block_breaker"
+          ]
+        },
+        {
+          "setblock": [
+            0,
+            0,
+            1,
+            "minecraft:stone"
+          ]
+        },
+        {
+          "setblock": [
+            0,
+            0,
+            -1,
+            "redpower_2:pneumatic_tube"
+          ]
+        },
+        {
+          "command": "setblock 0 1 0 minecraft:redstone_block"
+        },
+        {
+          "wait": 20
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            1,
+            "minecraft:air"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "deployer places block when pulsed with redstone",
+      "for": [
+        "deployer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:deployer"
+          ]
+        },
+        {
+          "command": "setblock 0 1 0 minecraft:redstone_block"
+        },
+        {
+          "wait": 20
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:deployer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "seed bag plants seeds on tilled soil",
+      "for": [
+        "seed_bag",
+        "flax_seeds"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "minecraft:farmland"
+          ]
+        },
+        {
+          "use": "redpower_2:seed_bag",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [
+            0,
+            1,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sickle harvests mature crops in area",
+      "for": [
+        "ruby_sickle",
+        "flax_crop"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "minecraft:farmland"
+          ]
+        },
+        {
+          "setblock": [
+            0,
+            1,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        },
+        {
+          "use": "redpower_2:ruby_sickle",
+          "on": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [
+            0,
+            1,
+            0,
+            "minecraft:air"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "timer pulses redstone at set frequency",
+      "for": [
+        "timer",
+        "wire_red_alloy"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        },
+        {
+          "setblock": [
+            1,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        },
+        {
+          "wait": 40
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "and gate requires both inputs active",
+      "for": [
+        "and_gate",
+        "wire_red_alloy"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:and_gate"
+          ]
+        },
+        {
+          "setblock": [
+            1,
+            0,
+            0,
+            "minecraft:redstone_torch"
+          ]
+        },
+        {
+          "setblock": [
+            -1,
+            0,
+            0,
+            "minecraft:redstone_torch"
+          ]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:and_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "disk drive accepts forth boot disk",
+      "for": [
+        "disk_drive",
+        "forth_boot_disk"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:disk_drive"
+          ]
+        },
+        {
+          "use": "redpower_2:forth_boot_disk",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:disk_drive"
+          ]
+        }
+      ]
     }
   ]
 }

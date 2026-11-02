@@ -57,6 +57,8 @@ For every mod under `./mods/<id>/`, the harness inspects `content/data/<id>/hori
 | **Creative menu** | Open the creative inventory, find each of the mod's tabs by its title, go through every page of it, and check that every item and block item of the mod is in one of them (an item in no tab is only in the search). | `key e`, `ui`, `click <tab>`, `scroll-at` | Content creative tabs (`creative_tab/`, Horizon 74ff545e6+), item registration, lang titles. |
 | **7. Survival Break & Loot Drops** | Switch to survival mode, equip the required tool from `data/minecraft/tags/block/mineable/*.json`, break each block, and verify dropped item entities match the loot table. | `command "gamemode survival"`, `break x y z`, `entities` | `native_destroy_block` (API 14), block hardness/tool tags, loot table evaluation. |
 
+With a contract (`planning/mods/<id>.features.json`, see the mod-spec skill) the harness also checks, per block: **2_shape** (the crosshair meets a full block near its top, and passes over a thin one just above the original's outline); **2_render** (a screenshot of it in the world, `<id>_<block>_world.png`, for the parity-critic's look); **4_gui_layout** (its screen has the original's slots where the original's Container puts them, relative to a screen of the original's size; a stock grid fails) or **4_gui_none** (a block the original gives no GUI opens none); and per mod **10_scenario** (each behaviour scenario on a patch behind the plot: a generator charging, a tool's reading). `make fleet-contract MOD=<id>` files these failures as bugs.
+
 ---
 
 ## 4. Phase 1 vs. Phase 2 Execution Flow

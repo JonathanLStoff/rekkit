@@ -26,7 +26,7 @@ COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
+.PHONY: contract-check fleet-contract setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
 	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status
 
 all: tekkit direwolf20 agrarian
@@ -92,6 +92,15 @@ agents:
 
 agents-check:
 	$(PYTHON) scripts/fleet/sync_agents.py --check
+
+# The port against its contract (planning/mods/<id>.features.json): shapes, facing, every face's and icon's
+# sprite pixel for pixel, stack sizes and durability. COMPLETE=1 check-mods runs it too.
+contract-check:
+	$(PYTHON) scripts/contract_check.py --mod "$(MOD)"
+
+# File each contract difference as a bead under the step that owns it.
+fleet-contract:
+	$(PYTHON) scripts/fleet/beads.py contract $(MOD)
 
 agent-gate:
 	$(PYTHON) scripts/fleet/guard.py gate $(if $(MOD),--mod "$(MOD)",)

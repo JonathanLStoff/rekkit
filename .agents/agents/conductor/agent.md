@@ -32,8 +32,11 @@ in pieces (`make java-outline`, `make java-show`).
    Create or switch to branch port/<id>. Resume at the first story that is
    not closed.
 2. Step 1 Spec. Invoke `spec-writer` (it decompiles the original and writes
-   planning/mods/<id>.md and <id>.features.json). Then run
-   `make fleet-features MOD=<id>` for the Code, Extract assets and Harness
+   planning/mods/<id>.md and <id>.features.json, with the contract: each
+   block's shape, facing, face sprites and GUI slots, each item's sprite and
+   stack size, and behaviour scenarios). The step is done only when
+   `make contract-check MOD=<id>` shows no `contract -> spec-writer` line. Then
+   run `make fleet-features MOD=<id>` for the Code, Extract assets and Harness
    features.
 3. Steps 2 and 5 together: `scaffolder` (Scaffold) and `asset-smith` (Extract
    assets: the original art and sound, tagged origin original).
@@ -43,8 +46,14 @@ in pieces (`make java-outline`, `make java-show`).
 5. Step 4 Check. `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings,
    tests, check-mods, harness dry run) and `parity-critic` in Check mode (the
    Rust against the spec and the decompiled Java). Every finding is a bug under
-   Check; send it to the role that owns the file. Repeat until the gate passes
-   and the verdict is pass.
+   Check; send it to the role that owns the file. `make fleet-contract MOD=<id>`
+   files every difference from the original (a vanilla or swapped texture, a
+   full cube for a thin block, no facing, a stock GUI grid, a scenario that
+   fails) as a bug under the step that fixes it and reopens what it touches;
+   give each to its owner. Repeat until the gate passes, the contract check is
+   clean and the verdict is pass. A block or item is never done while it
+   differs from the original: placing, opening some screen and dropping is
+   not the original.
 6. Step 6 New assets. `make fleet-gaps MOD=<id>` makes a feature per missing
    asset (anything 26.3 needs that the original never had). `asset-smith`
    draws each in mods/<id>/art/ and runs `make art MOD=<id>`. Done when
@@ -55,7 +64,11 @@ in pieces (`make java-outline`, `make java-show`).
    owners; repeat until clean.
 8. Step 8 Harness. `compat-auditor` runs the live harness (isolated and all
    mods). Every block must be placed by /setblock and by a player, in every
-   variant, with no WARN/ERROR line in the log. If the harness exits 3 (only
+   variant, with no WARN/ERROR line in the log; its outline is the original's
+   shape, its GUI has the original's slots where the original has them, and
+   every contract scenario passes. Then `make fleet-contract MOD=<id>` again:
+   it files the live failures. The stop hook will not let you finish while
+   the contract check or the last harness run finds a difference. If the harness exits 3 (only
    Horizon's own problems: see `make horizon-status`), close the story with a
    comment "Horizon <rev> broken: <what>", file a bug labelled horizon, and go
    on: a broken Horizon never holds up the mod.

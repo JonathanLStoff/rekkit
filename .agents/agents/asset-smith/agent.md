@@ -28,8 +28,13 @@ pack-info.json counts each archive's textures and sounds. Extract with
 `make extract-jar JAR=<archive> EXTRACT_OUT=assets/extracted/<id>`
 and follow the legacy-asset-mapping skill: slice sprite sheets, record every
 slice and copy in asset-map.json with origin "original", and set "credits" to
-the original mod and its authors. Use the texture names the content-author's
-models reference (block/<name>, item/<name>).
+the original mod and its authors. Slice exactly the sprites the contract
+names (planning/mods/<id>.features.json: each block's `faces`, each item's
+`sprite`, as sheet#index); never pick an index by eye or by order on the
+sheet. Use the texture names the content-author's models reference
+(block/<name>_<face>, item/<name>). Done when `make contract-check MOD=<id>`
+shows no `texture -> asset-smith` line (it compares each texture with the
+original sprite pixel for pixel and names the sprite a swapped one really is).
 
 Step 6 New assets: for each gap from `make fleet-gaps MOD=<id>` (something
 Minecraft 26.3 needs that the original never had), draw it as SVG or a .pixels

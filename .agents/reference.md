@@ -34,7 +34,9 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 |---|---|
 | `./setup.sh` / `setup.cmd` / `make setup` | Set up a fresh clone end to end; `--check` / `make doctor` reports only |
 | `make test-mods` | `cargo test` for every crate under `mods/` |
-| `make check-mods [MOD=<id>] [COMPLETE=1]` | Validate `.hmod` content and `.hnmod` manifests against Horizon's rules; `COMPLETE=1` also fails on any asset 26.3 needs that is missing |
+| `make check-mods [MOD=<id>] [COMPLETE=1]` | Validate `.hmod` content and `.hnmod` manifests against Horizon's rules; `COMPLETE=1` also fails on any asset 26.3 needs that is missing, and on any contract difference |
+| `make contract-check MOD=<id>` | The port against its contract (`planning/mods/<id>.features.json`): shapes, facing, each face's and icon's sprite pixel for pixel, stack sizes, durability |
+| `make fleet-contract MOD=<id>` | File each contract difference (static and the last harness run's GUI, shape and scenario failures) as a bug under its step, reopening what it touches |
 | `make pack-mods [MOD=<id>]` | Build deterministic `.hmod` and `.hnmod` in `mods/<id>/target/horizon-mod/` |
 | `make e2e-setup` / `e2e-mod` / `e2e-all-mods` / `integration-test` | The harness: build Horizon with the mods' mixins, then boot it and run the action plans (exit 3: only Horizon's own problems) |
 | `make horizon-baseline` / `horizon-status` | Build and run Horizon alone at the pinned revision / show whether it is healthy |

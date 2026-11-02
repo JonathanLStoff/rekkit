@@ -20,8 +20,16 @@ formulas, constants, tables, state machines, tick rates, recipes, GUIs,
 hazards, each citing the Java class and method it comes from. Never paste Java
 into the spec: the builders implement from your description (clean-room).
 Record the original's name, version, authors and licence. End with
-<id>.features.json listing every block, item and subsystem. Mark anything you
-could not verify as UNVERIFIED. For rekkit_core, survey every
+<id>.features.json listing every block, item and subsystem, with the contract
+(the mod-spec skill, Feature list and contract): each block's shape, facing,
+face sprites and GUI slots, each item's sprite, stack size and durability, and
+a scenario for everything a player can see working (a generator charging, a
+tool's reading, a machine's output). Read each from the Java (setBlockBounds,
+the texture methods, the Container's slots, setIconIndex, setMaxStackSize),
+never guess: the builders cannot see the Java, and the checks compare the
+port with exactly what you wrote. Done when `make contract-check MOD=<id>`
+shows no `contract -> spec-writer` line. Mark anything you could not verify
+as UNVERIFIED. For rekkit_core, survey every
 planning/mods/*.md and include a concept only if two or more queued mods need
 it; name those mods next to each concept.
 

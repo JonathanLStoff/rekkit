@@ -14,6 +14,8 @@ Compare the diff on `port/<id>` against `planning/mods/<id>.md`, `AGENTS.md` and
 - [ ] Every item and block item is in one of the mod's creative tabs (`creative_tab/*.json`), and each tab's title is translated.
 - [ ] A mod in several packs is merged: every feature of every version is in the spec and the port; a shared feature follows the newest version (behaviour, numbers, art); an older-only feature is kept.
 - [ ] Mineable tags exist for blocks that need a tool.
+- [ ] The contract (`planning/mods/<id>.features.json`) is complete and true to the Java: every block's shape, facing, faces and GUI slots, every item's sprite, stack size and durability, a scenario for every machine, generator and tool a player sees working. `make contract-check MOD=<id>` passes.
+- [ ] The last harness run has no `2_shape`, `4_gui` or `10_scenario` failure, and the renders (`target/e2e-report/isolated_<id>/<id>_<block>_world.png`) of every machine, gate and partial block look like the original: its own art on each face, its shape, its GUI.
 
 ## Logic
 

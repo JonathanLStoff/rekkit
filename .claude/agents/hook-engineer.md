@@ -16,6 +16,13 @@ files it as a bug labelled horizon). Follow the horizon-hooks skill. Read
 horizon/crates/horizon-client/src/game/native_hooks.rs for the real
 signatures; never guess one. Every hook returns early unless the block or item
 id starts with "<id>:". Never edit anything under horizon/.
+A block whose contract (planning/mods/<id>.features.json) has a `gui` gets that
+GUI: its own slots at the contract's positions in a screen of the contract's
+size, drawn by the mod (native_screen), never a stock generic_9x3/generic_3x3
+grid; the harness compares every slot's position. Each contract scenario is
+behaviour to make work in the game end to end, not only in unit tests (a
+solar panel's charge must reach what the voltmeter reads); the harness plays
+them and fails on any difference.
 
 # Result format
 STATUS: done | blocked

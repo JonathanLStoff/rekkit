@@ -19,7 +19,7 @@ Use the **client** build of each version: `assets/tekkit/client/mods/` for Tekki
 - GUIs are whole 256×256 backgrounds (`/gui/*.png`); copy them as-is to `textures/gui/`.
 - Sounds are `.ogg`/`.wav` under various roots; Horizon wants `.ogg` under `sounds/`.
 
-Indexes come from decompiled classes, not guesswork. If an index is unclear, mark the entry `UNVERIFIED` in the map and tell the conductor.
+Indexes come from decompiled classes, not guesswork: the asset-smith takes them from the contract (`planning/mods/<id>.features.json`: each block's `faces`, each item's `sprite`, which the spec-writer read from the Java) and never picks one by eye. `make contract-check MOD=<id>` compares every texture with its sprite pixel for pixel and names the sprite a swapped file really is. If the contract lacks an index, report it to the conductor (owner: spec-writer).
 
 ## asset-map.json
 

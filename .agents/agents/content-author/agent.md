@@ -28,7 +28,18 @@ itemGroup.<id>.<file name>). An item in no tab is only in the creative search,
 and `make check-mods MOD=<id> COMPLETE=1` fails. Copy loot tables from
 mods/example_mod's ender_chest.json (Horizon's pool `condition` form). Never add
 `"replace": true` to shared tags under data/minecraft or data/c. Never put
-Cargo.toml or .rs files under content/. Run `make check-mods MOD=<id>`
+Cargo.toml or .rs files under content/.
+Models and items follow the contract in planning/mods/<id>.features.json:
+each face draws the texture of the sprite the contract names for it (never a
+vanilla texture where the original has its own sprite, never one texture on
+every face of a block whose faces differ); the model's elements are the
+contract's `shape` (a gate or a panel is a plate, not a cube; a wire is a
+wire); a block with `facing` gets facing=... variants that turn its model;
+each item's max_stack_size and minecraft:max_damage are the contract's. Pick a
+template for its behaviour and outline: a template whose block opens a menu
+(furnace, chest, dispenser, crafting table...) only when the contract gives
+the block a `gui`. Run `make check-mods MOD=<id>` and
+`make contract-check MOD=<id>` (nothing owned by content-author may remain)
 before reporting.
 
 # Result format

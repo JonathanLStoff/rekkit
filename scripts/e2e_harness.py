@@ -177,6 +177,14 @@ def discover_mod_spec(mod_dir: Path) -> dict:
         name = tab["id"].split(":", 1)[1]
         tab["label"] = lang.get(f"itemGroup.{mod_id}.{name}") or lang.get(tab["title"]) or tab["title"]
 
+    # The contract (planning/mods/<id>.features.json, from the original's code): each block's shape and
+    # GUI, and behaviour scenarios, checked live below (scripts/contract_check.py checks the rest).
+    contract_path = ROOT / "planning" / "mods" / f"{mod_id}.features.json"
+    contract = json.loads(contract_path.read_text(encoding="utf-8")) if contract_path.is_file() else {}
+    by_name = {c["id"]: c for c in contract.get("blocks", []) if isinstance(c, dict) and "id" in c}
+    for b in blocks:
+        b["contract"] = by_name.get(b["name"], {})
+
     namespaces = [mod_id, *manifest.get("namespaces", [])]
     return {
         "id": mod_id,
@@ -194,6 +202,7 @@ def discover_mod_spec(mod_dir: Path) -> dict:
         "recipes": recipes,
         "loot_tables": loot_tables,
         "loot_drops": loot_drops,
+        "scenarios": contract.get("scenarios", []),
     }
 
 
@@ -274,7 +283,7 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
     # missing and the player falls (forceload takes at most 256 chunks a call).
     for x0 in range(base_x - 2, plot_x2 + 1, 1024):
         steps.append({"stage": "2_forceload_plot", "cmd": "command",
-                      "args": {"command": f"forceload add {x0} {base_z - 4} {min(x0 + 1023, plot_x2)} {base_z + 6}"}})
+                      "args": {"command": f"forceload add {x0} {base_z - 4} {min(x0 + 1023, plot_x2)} {base_z + 13}"}})
     steps.append({"stage": "2_plot_loads", "cmd": "wait", "args": {"ticks": 100}})
     steps.append({"stage": "2_clear_plot", "cmd": "fill",
                   "args": {"box": [base_x - 2, base_y, base_z - 4, plot_x2, base_y + 4, base_z + 6], "block": "minecraft:air"}})
@@ -317,6 +326,10 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "expect_block": b["id"],
             }
         )
+        contract = b.get("contract", {})
+        steps += [{"stage": "2_render_aim", "cmd": "look_at_block", "args": {"x": bx, "y": base_y, "z": bz}},
+                  {"stage": "2_render", "cmd": "screenshot", "args": {"path": f"{mod_id}_{b['name']}_world.png"}}]
+        steps += shape_probe(contract.get("shape"), bx, base_y, bz)
         pz = base_z + 4
         if b["has_item"]:
             # As a player places it: hold the item, look at the floor in front, right-click. From 1.5
@@ -376,7 +389,14 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         )
         steps.append({"stage": "4_right_click_open", "cmd": "mouse", "args": {"button": "right", "action": "click"}})
         steps.append({"stage": "4_wait_ui", "cmd": "wait", "args": {"ticks": 5}})
-        if MENU_TEMPLATE.fullmatch(b["template"]):
+        if isinstance(contract.get("gui"), dict):
+            # The original's GUI: its slots where the original's Container puts them, not a stock grid.
+            steps.append({"stage": "4_gui_layout", "cmd": "ui", "args": {}, "expect_gui": contract["gui"],
+                          "what": "right-clicked"})
+        elif "gui" in contract:
+            steps.append({"stage": "4_gui_none", "cmd": "state", "args": {}, "expect_no_menu": True,
+                          "what": "right-clicked, a block the original gives no GUI"})
+        elif MENU_TEMPLATE.fullmatch(b["template"]):
             # Its template opens a menu (interact.rs OpenMenu): without the mod's own menu the player
             # gets "<block> is not available yet" and nothing opens.
             steps.append({"stage": "4_menu_opens", "cmd": "state", "args": {}, "expect_screen": ["container", "station"],
@@ -444,7 +464,94 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
             step["block"] = b["id"]
     steps.append({"stage": "7_restore_creative", "cmd": "command", "args": {"command": "gamemode creative"}})
 
+    # Stage 10: the contract's behaviour scenarios (what the original does: a solar panel at noon charges,
+    # a voltmeter reads it), each on its own patch of the row behind the plot.
+    for n, scenario in enumerate(spec.get("scenarios", [])):
+        steps += scenario_steps(scenario, base_x + n * 6, base_y, base_z + 10)
     return steps
+
+
+def shape_probe(shape, bx: int, y: int, bz: int) -> list[dict]:
+    """Aim where the original's shape (its default state's outline, in pixels) is or is not, and ask
+    what the crosshair meets. A full block must be hit near the top of the face the player sees. A low
+    one (a gate, a panel, a wire) is aimed at just above its top at the far side of its cell: the ray
+    comes down from the eye above the shape and leaves the cell there, so it must meet something else."""
+    if shape == "full":
+        point, hit = (bx + 0.5, y + 0.85, bz + 0.02), True
+    elif isinstance(shape, list) and len(shape) == 6 and shape[4] / 16 + 0.12 < 0.95:
+        point, hit = (bx + 0.5, y + shape[4] / 16 + 0.12, bz + 0.97), False
+    else:
+        return []
+    return [{"stage": "2_shape_aim", "cmd": "look_at", "args": {"x": point[0], "y": point[1], "z": point[2]}},
+            {"stage": "2_shape_settle", "cmd": "wait", "args": {"ticks": 2}},
+            {"stage": "2_shape_probe", "cmd": "looking_at", "args": {}, "expect_hit": [[bx, y, bz], hit],
+             "what": f"the original's shape is {shape}"}]
+
+
+def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
+    """A contract scenario's steps at origin (ox, oy, oz), on a cleared stone patch. Its steps:
+    {"setblock": [dx, dy, dz, block]}, {"command": text}, {"wait": ticks},
+    {"use": item, "on": [dx, dy, dz]} (right-click the block holding item), {"interact": [dx, dy, dz]},
+    {"expect_message": regex} (chat or action bar), {"expect_block": [dx, dy, dz, regex]} (its state),
+    {"expect_data": [dx, dy, dz, regex]} (`data get block`)."""
+    name = scenario.get("name", "scenario")
+    tag = {"scenario": name, "what": f"scenario {name!r}"}
+    out = [{"stage": "10_scenario_floor", "cmd": "fill", "args": {"box": [ox - 2, oy - 1, oz - 2, ox + 3, oy - 1, oz + 3], "block": "minecraft:stone"}},
+           {"stage": "10_scenario_clear", "cmd": "fill", "args": {"box": [ox - 2, oy, oz - 2, ox + 3, oy + 4, oz + 3], "block": "minecraft:air"}},
+           tp_step("10_scenario_stand", ox + 0.5, oy, oz - 1.5), {"stage": "10_scenario_settle", "cmd": "wait", "args": {"ticks": 5}}]
+
+    def at(rel):
+        return {"x": ox + rel[0], "y": oy + rel[1], "z": oz + rel[2]}
+    for st in scenario.get("steps", []):
+        if "setblock" in st:
+            out += [{"stage": "10_scenario_setblock", "cmd": "setblock", "args": {**at(st["setblock"]), "block": st["setblock"][3]}},
+                    {"stage": "10_scenario_lands", "cmd": "wait", "args": {"ticks": 5}}]
+        elif "command" in st:
+            out.append({"stage": "10_scenario_command", "cmd": "command", "args": {"command": st["command"]}})
+        elif "wait" in st:
+            out.append({"stage": "10_scenario_wait", "cmd": "wait", "args": {"ticks": int(st["wait"])}})
+        elif "use" in st or "interact" in st:
+            pos = at(st.get("on") or st.get("interact"))
+            out += [{"stage": "10_scenario_hand", "cmd": "command", "args": {"command": "clear"}}]
+            if "use" in st:
+                out += [{"stage": "10_scenario_give", "cmd": "give", "args": {"item": st["use"], "count": 1}},
+                        {"stage": "10_scenario_sync", "cmd": "wait", "args": {"ticks": 4}},
+                        {"stage": "10_scenario_select", "cmd": "select", "args": {"slot": st["use"]}}]
+            out += [{"stage": "10_scenario_aim", "cmd": "look_at_block", "args": pos},
+                    {"stage": "10_scenario_click", "cmd": "mouse", "args": {"button": "right", "action": "click"}},
+                    {"stage": "10_scenario_after", "cmd": "wait", "args": {"ticks": 5}}]
+        elif "expect_message" in st:
+            out.append({"stage": "10_scenario_expect", "cmd": "messages", "args": {"n": 10}, "expect_match": st["expect_message"], **tag})
+        elif "expect_block" in st:
+            out.append({"stage": "10_scenario_expect", "cmd": "block", "args": at(st["expect_block"]), "expect_match": st["expect_block"][3], **tag})
+        elif "expect_data" in st:
+            out.append({"stage": "10_scenario_expect", "cmd": "command", "args": {"command": "data get block {x} {y} {z}".format(**at(st["expect_data"]))},
+                        "expect_match": st["expect_data"][3], **tag})
+    out.append({"stage": "10_scenario_close", "cmd": "close", "args": {}, "allow_kinds": ["state"]})
+    for step in out:
+        step.setdefault("scenario", name)
+    return out
+
+
+def gui_problem(gui: dict, ui: dict) -> str | None:
+    """How the open screen differs from the original's GUI: its container slots (300 on) where the
+    original's Container puts them, relative to a screen of the original's size, centred as Minecraft
+    centres it."""
+    want = sorted(tuple(s) for s in gui.get("slots", []))
+    if ui.get("screen") not in ("container", "station"):
+        return f"it opened {ui.get('screen')!r}; the original opens its GUI ({len(want)} slots)"
+    width, height = gui.get("size", [176, 166])
+    left = int((ui.get("gui_size", [0, 0])[0] - width) // 2)
+    top = int((ui.get("gui_size", [0, 0])[1] - height) // 2)
+    got = sorted((round(w["bounds"][0] - left), round(w["bounds"][1] - top)) for w in ui.get("widgets", [])
+                 if w.get("kind") == "slot" and w.get("id", "")[5:].isdigit() and int(w["id"][5:]) >= 300)
+    if len(got) != len(want):
+        return f"its screen has {len(got)} container slots; the original's GUI has {len(want)} (a stock grid?)"
+    off = [(g, w) for g, w in zip(got, want) if abs(g[0] - w[0]) > 1 or abs(g[1] - w[1]) > 1]
+    if off:
+        return (f"{len(off)} slot(s) are not where the original's are (first at {list(off[0][0])}, the original's "
+                f"at {list(off[0][1])}): give it the original's layout (native_screen), not a stock grid")
+    return None
 
 
 def check_cross_mod_compatibility(specs: list[dict]) -> None:
@@ -983,6 +1090,14 @@ def step_words(step: dict, shots: Path) -> list:
         return ["close"]
     if cmd == "state":
         return ["state"]
+    if cmd == "look_at":
+        return ["look-at", a["x"], a["y"], a["z"]]
+    if cmd == "looking_at":
+        return ["looking-at"]
+    if cmd == "ui":
+        return ["ui"]
+    if cmd == "messages":
+        return ["messages", a.get("n", 10)]
     if cmd == "entities":
         return ["entities", a["radius"], a["type"]]
     raise HarnessError(f"action plan uses a command the harness does not map: {cmd}")
@@ -1087,11 +1202,29 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
             entry = {"i": i, "stage": step["stage"], "cmd": " ".join(map(str, words)), "reply": reply}
             if step.get("block"):
                 entry["block"] = step["block"]
+            if step.get("scenario"):
+                entry["scenario"] = step["scenario"]
             problem = None
             if "error" in reply and reply.get("kind") not in step.get("allow_kinds", []):
                 problem = reply
             elif step.get("expect_block") and step["expect_block"] not in json.dumps(reply):
                 problem = f"expected block {step['expect_block']}" + (f" ({step['what']})" if step.get("what") else "")
+            elif step.get("expect_hit"):
+                pos, want_hit = step["expect_hit"]
+                hit = (reply.get("block") or {}).get("pos") == pos
+                if hit != want_hit:
+                    met = (reply.get("block") or {}).get("state") or reply.get("kind")
+                    problem = (f"{step['what']}: the crosshair " + ("missed it" if want_hit else "met it above the original's shape")
+                               + f" (met {met}): its outline is not the original's shape")
+            elif step.get("expect_gui"):
+                problem = gui_problem(step["expect_gui"], reply)
+                problem = problem and f"{step['what']}: {problem}"
+            elif step.get("expect_no_menu") and reply.get("screen") in ("container", "station"):
+                problem = f"{step['what']}: it opened a {reply.get('screen')} screen"
+            elif step.get("expect_match"):
+                text = " | ".join([*(reply.get("chat") or []), reply.get("actionbar") or "", reply.get("state") or ""])
+                if not re.search(step["expect_match"], text):
+                    problem = f"{step['what']}: expected /{step['expect_match']}/, got {text[:300]!r}"
             elif step.get("expect_screen") and reply.get("screen") not in step["expect_screen"]:
                 problem = (f"{step['what']}: it opened {reply.get('screen')!r}, not a menu (the player sees "
                            "'... is not available yet'). If the original has a GUI (the spec's GUIs), give it "

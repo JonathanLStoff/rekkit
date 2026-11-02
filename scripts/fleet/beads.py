@@ -223,19 +223,23 @@ def start(mod: str) -> dict:
     return mod_status(mod)
 
 
-def add_children(mod: str, step: int, entries: list[tuple[str, str, list[str]]]) -> int:
-    """Features (title, type, labels) under a story, skipping titles it already has."""
+def add_children(mod: str, step: int, entries: list[tuple]) -> int:
+    """Features (title, type, labels[, description]) under a story, skipping titles it already has."""
     story = mod_status(mod)["stories"].get(step)
     if not story:
         raise BeadsError(f"{mod} has no step {step} story: run make fleet-start MOD={mod}")
     existing = {i["title"] for i in issues("--parent", story["id"])}
-    todo = [(t, k, ls) for t, k, ls in entries if t not in existing]
+    todo = [(e[0], e[1], e[2], e[3] if len(e) > 3 else "") for e in entries if e[0] not in existing]
     # One graph plan per 200 beads: a single bd call and transaction each, instead of one per bead, so a
     # run cut short (quota, network) loses at most one chunk and a rerun adds only what is missing.
     for start in range(0, len(todo), 200):
         chunk = todo[start:start + 200]
-        plan = {"nodes": [{"key": f"n{n}", "title": t, "type": k, "parent_id": story["id"], "labels": ls}
-                          for n, (t, k, ls) in enumerate(chunk)]}
+        # The story's labels too (mod:<id>, step:<n>...): mod_status finds a mod's beads by them.
+        inherited = [l for l in story.get("labels", []) if l != "story"]
+        plan = {"nodes": [{"key": f"n{n}", "title": t, "type": k, "parent_id": story["id"],
+                           "labels": sorted(set(inherited) | set(ls)),
+                           **({"description": d} if d else {})}
+                          for n, (t, k, ls, d) in enumerate(chunk)]}
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         plan_file = STATE_DIR / f"plan-{story['id']}.json"
         plan_file.write_text(json.dumps(plan), encoding="utf-8")
@@ -282,6 +286,65 @@ def gaps(mod: str) -> str:
     found = json.loads(r.stdout or "[]")
     made = add_children(mod, 6, [(f"{mod}: new asset {g['path']}", "feature", ["asset", "new-asset"]) for g in found])
     return f"{len(found)} missing asset(s), {made} new feature(s) under {mod} step 6."
+
+
+# Where each kind of difference from the original is fixed: (step, role).
+CONTRACT_OWNERS = {"spec-writer": 1, "asset-smith": 5, "content-author": 3, "domain-builder": 3, "hook-engineer": 3}
+LIVE_CONTRACT_STAGES = ("2_shape", "4_gui", "4_menu_opens", "10_scenario")
+
+
+def contract(mod: str) -> str:
+    """One bead per block or item that differs from the original (scripts/contract_check.py, and the
+    live harness's screen, shape and scenario checks in the last target/e2e-report/summary.json),
+    under the step that fixes it. A closed bead whose difference is back is reopened; one whose
+    difference is gone is left for its role to close."""
+    sys.path.insert(0, str(MAIN / "scripts"))
+    import contract_check
+    found = contract_check.check(mod)
+    summary = MAIN / "target" / "e2e-report" / "summary.json"
+    try:
+        sessions = json.loads(summary.read_text(encoding="utf-8")).get("phases", {}).get("isolated", [])
+    except (OSError, ValueError):
+        sessions = []
+    for session in sessions:
+        if mod not in session.get("mods", []):
+            continue
+        for e in session.get("errors", []):
+            if str(e.get("stage", "")).startswith(LIVE_CONTRACT_STAGES):
+                role = "domain-builder" if e["stage"].startswith(("4_", "10_")) else "content-author"
+                found.append({"for": e.get("block") or e.get("scenario") or mod, "kind": "live " + e["stage"],
+                              "owner": role, "why": str(e.get("error"))})
+    grouped: dict[tuple[int, str, str], list[dict]] = {}
+    for p in found:
+        # The spec-writer completes the contract in one pass over the Java: one bead, not one per block.
+        subject = "the contract" if p["owner"] == "spec-writer" else p["for"]
+        grouped.setdefault((CONTRACT_OWNERS.get(p["owner"], 3), p["owner"], subject), []).append(p)
+    made = reopened = 0
+    for step in sorted({k[0] for k in grouped}):
+        entries = []
+        for (s, owner, subject), ps in sorted(grouped.items()):
+            if s != step:
+                continue
+            kinds = ", ".join(sorted({p["kind"] for p in ps}))
+            entries.append((f"{mod}: match the original: {subject} ({owner})", "bug", ["contract", owner],
+                            f"Differs from the original ({kinds}):\n"
+                            + "\n".join(f"- {p['for']}: {p['why']}" if subject == "the contract" else f"- {p['why']}"
+                                        for p in ps[:300])
+                            + "\n\nRecheck: make contract-check MOD=" + mod))
+        made += add_children(mod, step, entries)
+        story = mod_status(mod)["stories"][step]
+        titles = {e[0] for e in entries}
+        closed = [i["id"] for i in issues("--parent", story["id"], "--status", "closed") if i["title"] in titles]
+        for bead in closed:
+            bd("reopen", bead)
+        reopened += len(closed)
+        if entries and story["status"] == "closed":
+            bd("reopen", story["id"])
+    epic = mod_status(mod)["epic"]
+    if found and epic["status"] == "closed":
+        bd("reopen", epic["id"])
+    return (f"{len(found)} difference(s) from the original in {len(grouped)} block(s)/item(s): "
+            f"{made} new bead(s), {reopened} reopened." if found else f"{mod} matches its contract.")
 
 
 def inbox() -> str:
@@ -412,8 +475,8 @@ def seed(board_md: Path) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["status", "start", "features", "gaps", "inbox", "board", "seed",
-                                            "core-need", "core-sync"])
+    parser.add_argument("command", choices=["status", "start", "features", "gaps", "contract", "inbox", "board",
+                                            "seed", "core-need", "core-sync"])
     parser.add_argument("mod", nargs="?")
     parser.add_argument("--title", help="core-need: what core needs")
     parser.add_argument("--why", default="", help="core-need: which mod feature needs it, and why it is shared")
@@ -422,7 +485,7 @@ def main() -> int:
         print("Beads is not set up: run ./setup.sh (it installs bd and runs bd init).", file=sys.stderr)
         return 1
     try:
-        if args.command in ("start", "features", "gaps", "core-need") and not args.mod:
+        if args.command in ("start", "features", "gaps", "contract", "core-need") and not args.mod:
             raise BeadsError(f"{args.command} needs a mod id (MOD=<id>)")
         if args.command == "status":
             if not args.mod:
@@ -442,6 +505,8 @@ def main() -> int:
             print(features(args.mod))
         elif args.command == "gaps":
             print(gaps(args.mod))
+        elif args.command == "contract":
+            print(contract(args.mod))
         elif args.command == "inbox":
             print(inbox())
         elif args.command == "board":
