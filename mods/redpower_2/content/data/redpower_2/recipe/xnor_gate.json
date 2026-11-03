@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "C": "redpower_2:cathode",
+    "A": "redpower_2:anode"
+  },
+  "pattern": [
+    "ACA",
+    "CAC",
+    "WCW"
+  ],
+  "result": {
+    "id": "redpower_2:xnor_gate",
+    "count": 1
+  }
+}

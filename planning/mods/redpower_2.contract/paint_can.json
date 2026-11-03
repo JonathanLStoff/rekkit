@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#26",
+  "max_stack": 1,
+  "durability": 15,
+  "use": "Craft with dry paintbrush to apply 15 brush coatings",
+  "scenarios": [
+    {
+      "name": "paint_can coats dry paint brush with 15 applications of colored paint",
+      "level": 2,
+      "covers": [
+        "coats dry paint brush with 15 applications of colored paint"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:paint_can",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:paint_can"
+        }
+      ]
+    }
+  ]
+}

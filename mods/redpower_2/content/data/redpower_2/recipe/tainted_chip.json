@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "redpower_2:silicon_chip",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "redpower_2:tainted_chip",
+    "count": 1
+  }
+}

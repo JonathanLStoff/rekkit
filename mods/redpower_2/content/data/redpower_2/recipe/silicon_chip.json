@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "redpower_2:red_doped_wafer",
+    "B": "redpower_2:stone_wafer"
+  },
+  "pattern": [
+    " R ",
+    "BBB"
+  ],
+  "result": {
+    "id": "redpower_2:silicon_chip",
+    "count": 3
+  }
+}

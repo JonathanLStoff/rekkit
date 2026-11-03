@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#19",
+  "max_stack": 1,
+  "durability": 640,
+  "use": "Gemstone handsaw for cutting microblocks",
+  "scenarios": [
+    {
+      "name": "ruby_handsaw cuts solid blocks into covers and panels in crafting grid losing durability",
+      "level": 2,
+      "covers": [
+        "cuts solid blocks into covers and panels in crafting grid losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:ruby_handsaw",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:ruby_handsaw"
+        }
+      ]
+    }
+  ]
+}

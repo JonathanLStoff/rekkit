@@ -1,0 +1,57 @@
+{
+  "sprite": [
+    "eloraam/base/items1.png#32",
+    "eloraam/base/items1.png#112"
+  ],
+  "max_stack": 64,
+  "durability": null,
+  "use": null,
+  "scenarios": [
+    {
+      "name": "lumar: comes in 16 dye colours, each its own item",
+      "level": 2,
+      "covers": [
+        "comes in 16 dye colours, each its own item"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:lumar",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:lumar"
+        }
+      ]
+    },
+    {
+      "name": "lumar: crafts into coloured lumar lamps",
+      "level": 3,
+      "covers": [
+        "crafts into coloured lumar lamps"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:lumar",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:lumar"
+        }
+      ]
+    }
+  ]
+}

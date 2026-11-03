@@ -1,0 +1,21 @@
+{
+  "sprite": "eloraam/compat/compat1.png#1",
+  "max_stack": 64,
+  "durability": null,
+  "use": "Crafting ingredient for the Blulectric Engine",
+  "scenarios": [
+    {
+      "name": "brass_gear is held in the inventory as a stackable item",
+      "level": 2,
+      "covers": [],
+      "steps": [
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:brass_gear"
+        }
+      ]
+    }
+  ]
+}

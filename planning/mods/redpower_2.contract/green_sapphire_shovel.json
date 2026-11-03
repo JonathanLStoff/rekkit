@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#49",
+  "max_stack": 1,
+  "durability": 500,
+  "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency",
+  "scenarios": [
+    {
+      "name": "green_sapphire_shovel digs dirt and sand at 8.0 speed losing durability",
+      "level": 2,
+      "covers": [
+        "digs dirt and sand at 8.0 speed losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:green_sapphire_shovel",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "\"damage\": 1"
+        }
+      ]
+    }
+  ]
+}

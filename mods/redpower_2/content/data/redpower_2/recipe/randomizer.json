@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "B": "redpower_2:stone_wafer",
+    "S": "redpower_2:tainted_chip"
+  },
+  "pattern": [
+    "BSB",
+    "WWW",
+    "SWS"
+  ],
+  "result": {
+    "id": "redpower_2:randomizer",
+    "count": 1
+  }
+}

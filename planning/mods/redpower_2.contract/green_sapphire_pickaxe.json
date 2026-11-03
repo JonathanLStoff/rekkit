@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#65",
+  "max_stack": 1,
+  "durability": 500,
+  "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency",
+  "scenarios": [
+    {
+      "name": "green_sapphire_pickaxe mines stone-based blocks at 8.0 speed losing durability",
+      "level": 2,
+      "covers": [
+        "mines stone-based blocks at 8.0 speed losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:green_sapphire_pickaxe",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "\"damage\": 1"
+        }
+      ]
+    }
+  ]
+}

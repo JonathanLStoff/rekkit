@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "minecraft:redstone",
+    "B": "redpower_2:stone_wafer"
+  },
+  "pattern": [
+    "R",
+    "B"
+  ],
+  "result": {
+    "id": "redpower_2:wire_part",
+    "count": 1
+  }
+}

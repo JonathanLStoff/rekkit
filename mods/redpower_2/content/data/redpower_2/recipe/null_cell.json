@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": "redpower_2:stone_wafer",
+    "R": "redpower_2:redwire_part"
+  },
+  "pattern": [
+    "BRB",
+    "RRR",
+    "BRB"
+  ],
+  "result": {
+    "id": "redpower_2:null_cell",
+    "count": 1
+  }
+}

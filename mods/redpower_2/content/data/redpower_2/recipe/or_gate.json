@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:cathode"
+  },
+  "pattern": [
+    "BCB",
+    "WCW",
+    "BWB"
+  ],
+  "result": {
+    "id": "redpower_2:or_gate",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "C": "redpower_2:cathode",
+    "A": "redpower_2:anode",
+    "S": "redpower_2:silicon_chip"
+  },
+  "pattern": [
+    "WCW",
+    "SAS",
+    "WWW"
+  ],
+  "result": {
+    "id": "redpower_2:synchronizer",
+    "count": 1
+  }
+}

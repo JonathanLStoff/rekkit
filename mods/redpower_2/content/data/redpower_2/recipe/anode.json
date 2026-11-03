@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "R": "minecraft:redstone",
+    "B": "redpower_2:stone_wafer"
+  },
+  "pattern": [
+    " R ",
+    "RRR",
+    "BBB"
+  ],
+  "result": {
+    "id": "redpower_2:anode",
+    "count": 3
+  }
+}

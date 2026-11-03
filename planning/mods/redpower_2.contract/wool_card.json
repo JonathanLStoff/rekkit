@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#128",
+  "max_stack": 1,
+  "durability": 63,
+  "use": "Craft with wool block to tease back into 4 string",
+  "scenarios": [
+    {
+      "name": "wool_card teases wool block into 4 string in crafting grid losing durability",
+      "level": 2,
+      "covers": [
+        "teases wool block into 4 string in crafting grid losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:wool_card",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:wool_card"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#54",
+  "max_stack": 64,
+  "durability": null,
+  "use": null,
+  "scenarios": [
+    {
+      "name": "nikolite: crafts into blue alloy and blue-powered parts as an ingredient",
+      "level": 2,
+      "covers": [
+        "crafts into blue alloy and blue-powered parts as an ingredient"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:nikolite",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:nikolite"
+        }
+      ]
+    }
+  ]
+}

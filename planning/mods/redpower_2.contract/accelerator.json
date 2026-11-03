@@ -1,0 +1,56 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#225"
+  },
+  "gui": null,
+  "energy": { "role": "consumer" },
+  "scenarios": [
+    {
+      "name": "accelerator places",
+      "for": ["accelerator"],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:accelerator"] },
+        { "expect_block": [0, 0, 0, "redpower_2:accelerator"] }
+      ]
+    },
+    {
+      "name": "accelerator draws blutricity and feeds a magtube",
+      "for": ["accelerator", "magtube"],
+      "level": 3,
+      "covers": ["consumes blutricity to accelerate item capsules into magtubes"],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:accelerator"] },
+        { "setblock": [0, 0, 1, "redpower_2:magtube"] },
+        { "setblock": [0, 0, -1, "redpower_2:pneumatic_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:accelerator"] }
+      ]
+    },
+    {
+      "name": "accelerator joins magtubes to pneumatic networks",
+      "for": ["accelerator"],
+      "level": 4,
+      "covers": ["connects magtubes to pneumatic tube networks"],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:accelerator"] },
+        { "setblock": [0, 0, 1, "redpower_2:magtube"] },
+        { "setblock": [0, 0, -1, "redpower_2:pneumatic_tube"] },
+        { "expect_block": [0, 0, 1, "redpower_2:magtube"] }
+      ]
+    },
+    {
+      "name": "accelerator keeps its charge across chunk reload",
+      "for": ["accelerator"],
+      "level": 5,
+      "covers": ["keeps its charge when its chunk reloads"],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:accelerator"] },
+        { "wait": 40 },
+        { "expect_block": [0, 0, 0, "redpower_2:accelerator"] }
+      ]
+    }
+  ]
+}

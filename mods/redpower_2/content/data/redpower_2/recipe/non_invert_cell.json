@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:cathode",
+    "P": "redpower_2:plate",
+    "R": "redpower_2:redwire_part"
+  },
+  "pattern": [
+    "BRB",
+    "RPR",
+    "BRC"
+  ],
+  "result": {
+    "id": "redpower_2:non_invert_cell",
+    "count": 1
+  }
+}

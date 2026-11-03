@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#33",
+  "max_stack": 1,
+  "durability": 500,
+  "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)",
+  "scenarios": [
+    {
+      "name": "green_sapphire_sword deals 7 melee attack damage to entities losing durability",
+      "level": 2,
+      "covers": [
+        "deals 7 melee attack damage to entities losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:green_sapphire_sword",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "\"damage\": 1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#22",
+  "max_stack": 1,
+  "durability": 255,
+  "use": "Craft in crafting grid with metal ingots to draw fine wire",
+  "scenarios": [
+    {
+      "name": "diamond drawplate draws ingots into fine wire in crafting grid losing durability",
+      "level": 2,
+      "covers": [
+        "draws metal ingots into fine wire in crafting grid losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:diamond_drawplate",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:diamond_drawplate"
+        }
+      ]
+    }
+  ]
+}

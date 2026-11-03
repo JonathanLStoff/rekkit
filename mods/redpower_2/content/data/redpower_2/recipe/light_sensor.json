@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "B": "redpower_2:stone_wafer",
+    "S": "redpower_2:blue_doped_wafer"
+  },
+  "pattern": [
+    "BWB",
+    "BSB",
+    "BBB"
+  ],
+  "result": {
+    "id": "redpower_2:light_sensor",
+    "count": 1
+  }
+}

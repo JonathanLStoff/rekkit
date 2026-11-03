@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#17",
+  "max_stack": 1,
+  "durability": 320,
+  "use": "Craft with solid blocks in crafting grid to cut into covers and panels",
+  "scenarios": [
+    {
+      "name": "iron_handsaw cuts solid blocks into covers and panels in crafting grid losing durability",
+      "level": 2,
+      "covers": [
+        "cuts solid blocks into covers and panels in crafting grid losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:iron_handsaw",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:iron_handsaw"
+        }
+      ]
+    }
+  ]
+}

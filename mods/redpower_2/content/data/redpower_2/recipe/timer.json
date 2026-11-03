@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:cathode",
+    "A": "redpower_2:anode",
+    "P": "redpower_2:pointer"
+  },
+  "pattern": [
+    "BWB",
+    "WPW",
+    "ACA"
+  ],
+  "result": {
+    "id": "redpower_2:timer",
+    "count": 1
+  }
+}

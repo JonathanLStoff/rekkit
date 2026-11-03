@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": "minecraft:glass",
+    "L": "redpower_2:lumar",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "GLG",
+    "GLG",
+    "GRG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "redpower_2:lamp"
+  }
+}

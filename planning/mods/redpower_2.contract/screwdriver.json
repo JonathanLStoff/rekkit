@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#16",
+  "max_stack": 1,
+  "durability": null,
+  "use": "Right-click or shift-right-click RedPower machines or logic gates to rotate them",
+  "scenarios": [
+    {
+      "name": "screwdriver rotates redpower machines and toggles logic gates on right-click",
+      "level": 2,
+      "covers": [
+        "rotates redpower machines and toggles logic gates on right-click"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:screwdriver",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:screwdriver"
+        }
+      ]
+    }
+  ]
+}

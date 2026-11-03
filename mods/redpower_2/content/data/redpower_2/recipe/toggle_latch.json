@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:wire_part",
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:cathode",
+    "L": "minecraft:lever"
+  },
+  "pattern": [
+    "BCB",
+    "WLW",
+    "BCB"
+  ],
+  "result": {
+    "id": "redpower_2:toggle_latch",
+    "count": 1
+  }
+}

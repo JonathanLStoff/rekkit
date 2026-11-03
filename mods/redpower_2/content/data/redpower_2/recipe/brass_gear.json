@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " B ",
+    "BIB",
+    " B "
+  ],
+  "key": {
+    "B": "redpower_2:brass_ingot",
+    "I": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "redpower_2:brass_gear",
+    "count": 1
+  }
+}

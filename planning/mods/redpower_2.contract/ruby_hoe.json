@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#96",
+  "max_stack": 1,
+  "durability": 500,
+  "use": "Tills dirt or grass into farmland",
+  "scenarios": [
+    {
+      "name": "ruby_hoe tills dirt and grass into farmland on right-click losing durability",
+      "level": 2,
+      "covers": [
+        "tills dirt and grass into farmland on right-click losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:ruby_hoe",
+          "on": [
+            0,
+            -1,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "\"damage\": 1"
+        }
+      ]
+    }
+  ]
+}

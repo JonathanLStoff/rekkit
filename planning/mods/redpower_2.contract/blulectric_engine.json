@@ -1,0 +1,115 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    16,
+    16
+  ],
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/compat/compat1.png#0"
+  },
+  "gui": null,
+  "energy": {
+    "role": "consumer"
+  },
+  "scenarios": [
+    {
+      "name": "place engine",
+      "for": [
+        "blulectric_engine"
+      ],
+      "level": 3,
+      "covers": [
+        "converts blutricity into BuildCraft mechanical power"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "engine beside BuildCraft machine",
+      "for": [
+        "blulectric_engine"
+      ],
+      "level": 4,
+      "covers": [
+        "provides kinetic power to adjacent BuildCraft pipes and machines"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        },
+        {
+          "setblock": [
+            1,
+            0,
+            0,
+            "minecraft:furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "engine persistence",
+      "for": [
+        "blulectric_engine"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its energy and flywheel charge when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        },
+        {
+          "reload_chunk": true
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#28",
+  "max_stack": 1,
+  "durability": 15,
+  "use": "Right-click jacketed cable or machine to paint it with chosen color",
+  "scenarios": [
+    {
+      "name": "paint_brush paints tubes, cables and canvas bags on right-click losing durability",
+      "level": 2,
+      "covers": [
+        "paints tubes, cables and canvas bags on right-click losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:paint_brush",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:paint_brush"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "W": "redpower_2:red_doped_wafer",
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:bundled_wafer"
+  },
+  "pattern": [
+    "CCC",
+    "WBW",
+    "CCC"
+  ],
+  "result": {
+    "id": "redpower_2:bus_transceiver",
+    "count": 1
+  }
+}

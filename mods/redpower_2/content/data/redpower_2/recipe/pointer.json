@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "S": "minecraft:stone",
+    "T": "minecraft:redstone_torch",
+    "B": "redpower_2:stone_wafer"
+  },
+  "pattern": [
+    "S",
+    "T",
+    "B"
+  ],
+  "result": {
+    "id": "redpower_2:pointer",
+    "count": 1
+  }
+}

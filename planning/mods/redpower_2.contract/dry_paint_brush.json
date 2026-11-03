@@ -1,0 +1,30 @@
+{
+  "sprite": "eloraam/base/items1.png#28",
+  "max_stack": 16,
+  "use": "",
+  "scenarios": [
+    {
+      "name": "dry_paint_brush dips into a paint can to become a loaded brush",
+      "level": 2,
+      "covers": [
+        "dips into a paint can to become a loaded brush"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:dry_paint_brush",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:dry_paint_brush"
+        }
+      ]
+    }
+  ]
+}

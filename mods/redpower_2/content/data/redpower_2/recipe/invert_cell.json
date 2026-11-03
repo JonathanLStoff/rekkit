@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": "redpower_2:stone_wafer",
+    "P": "redpower_2:plate",
+    "R": "redpower_2:redwire_part"
+  },
+  "pattern": [
+    "BRB",
+    "RPR",
+    "BRB"
+  ],
+  "result": {
+    "id": "redpower_2:invert_cell",
+    "count": 1
+  }
+}

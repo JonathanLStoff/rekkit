@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#80",
+  "max_stack": 64,
+  "durability": null,
+  "use": "Blue dye extracted from indigo flowers",
+  "scenarios": [
+    {
+      "name": "dye_indigo dyes sheep and wool blue on right-click",
+      "level": 2,
+      "covers": [
+        "dyes sheep and wool blue on right-click"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:dye_indigo",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:dye_indigo"
+        }
+      ]
+    }
+  ]
+}

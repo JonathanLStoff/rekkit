@@ -1,0 +1,32 @@
+{
+  "scenarios": [
+    {
+      "name": "lamp_lit light state",
+      "level": 4,
+      "covers": [
+        "illuminates world when powered"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_lit"
+          ]
+        },
+        {
+          "wait": 10
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "lit=true"
+          ]
+        }
+      ]
+    }
+  ]
+}

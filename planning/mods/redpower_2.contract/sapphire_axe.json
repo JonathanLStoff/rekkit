@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#82",
+  "max_stack": 1,
+  "durability": 500,
+  "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency",
+  "scenarios": [
+    {
+      "name": "sapphire_axe chops wood at 8.0 speed losing durability",
+      "level": 2,
+      "covers": [
+        "chops wood at 8.0 speed losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:sapphire_axe",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "\"damage\": 1"
+        }
+      ]
+    }
+  ]
+}

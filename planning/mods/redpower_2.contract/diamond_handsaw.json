@@ -1,0 +1,31 @@
+{
+  "sprite": "eloraam/base/items1.png#18",
+  "max_stack": 1,
+  "durability": 1280,
+  "use": "Precision handsaw; required for slicing silicon boules into wafers",
+  "scenarios": [
+    {
+      "name": "diamond_handsaw cuts blocks and slices silicon boules into wafers in crafting grid losing durability",
+      "level": 2,
+      "covers": [
+        "cuts blocks and slices silicon boules into wafers in crafting grid losing durability"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:diamond_handsaw",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:diamond_handsaw"
+        }
+      ]
+    }
+  ]
+}

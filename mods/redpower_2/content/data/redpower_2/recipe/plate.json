@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "B": "redpower_2:stone_wafer",
+    "C": "redpower_2:cathode",
+    "R": "redpower_2:red_alloy_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    " B ",
+    "SRS",
+    "BCB"
+  ],
+  "result": {
+    "id": "redpower_2:plate",
+    "count": 1
+  }
+}

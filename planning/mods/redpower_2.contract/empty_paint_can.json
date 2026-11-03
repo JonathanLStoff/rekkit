@@ -1,0 +1,30 @@
+{
+  "sprite": "eloraam/base/items1.png#23",
+  "max_stack": 64,
+  "use": "",
+  "scenarios": [
+    {
+      "name": "empty_paint_can is filled with dye to become a paint can",
+      "level": 2,
+      "covers": [
+        "is filled with dye to become a paint can"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:empty_paint_can",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:empty_paint_can"
+        }
+      ]
+    }
+  ]
+}
