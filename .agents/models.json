@@ -8,7 +8,7 @@
   "first; null = the tool's own default model. agy also uses any other model `agy models` lists, after these.",
   "roles: what the roster's model tiers (pro, flash) become in Claude Code's subagents; inherit = the model",
   "the session runs on, so the roles follow the runner to whichever model has quota left.",
-  "opencode: chain [null] = the model opencode has selected (cloud or local). On a local model the conductor runs `make fleet-local` and starts only as many subagents as the memory holds."
+  "opencode: chain [null] = the model opencode has selected (cloud or local). On a local model the conductor never starts subagents on a local model."
  ],
  "tools": [
   "agy",

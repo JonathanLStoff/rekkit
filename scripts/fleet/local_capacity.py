@@ -188,11 +188,8 @@ def main() -> int:
     elif agents == 1:
         print("Room for one agent: the orchestrator works alone, doing each role itself one at a time (no subagents).")
     else:
-        print(f"Room for {agents} agents: the orchestrator and {agents - 1} subagents at once, all on {name}. "
-              f"Serve them in parallel: OLLAMA_NUM_PARALLEL={agents} OLLAMA_CONTEXT_LENGTH={ctx} ollama serve "
-              "(restart Ollama after changing them).")
-    if best > agents:
-        print(f"With other programs closed, up to {most / GB:.1f} GB: room for {best} agent(s). Run this again then.")
+        print(f"Room for {agents} agents, but local models never run subagents: the orchestrator works alone.")
+    agents = min(agents, 1)  # policy: local models never start subagents
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({"model": selected or name, "local": True, "agents": agents, "subagents": max(agents - 1, 0),
                                "context": ctx, "memory_gb": round(memory / GB, 1), "kind": kind}, indent=2) + "\n",

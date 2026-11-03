@@ -129,13 +129,10 @@ The only commands you need (never run `bd ... --help`):
 - Record each decision in Beads when you make it (`bd comment <story>
   "<decision and why>"`): if you die, your successor has only Beads and the
   resume page. Every make target is safe to run again after an interruption.
-- **On a local model** (opencode with Ollama, LM Studio or llama.cpp), `make
-  fleet-local` first, and again when memory may have changed: it says how
-  many agents this machine's memory holds on your model (you count as one).
-  Never run more subagents at once than it allows; if it says one, start none
-  and do each role yourself from .agents/agents/<role>/agent.md, one ticket at
-  a time, still writing each report to the inbox. A cloud model is not limited
-  by it.
+- **On a local model** (opencode with Ollama, LM Studio or llama.cpp), never
+  start a subagent. Do each role yourself from .agents/agents/<role>/agent.md,
+  one ticket at a time, still writing each report to the inbox. Only a cloud
+  model starts subagents.
 - **Small tasks, many at once.** A subagent gets at most about 200k tokens of
   work: one to three blocks or items (each with its contract file), one
   subsystem slice, one GUI, one scenario's behaviour. Never a whole step. Start
