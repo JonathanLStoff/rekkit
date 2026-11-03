@@ -51,6 +51,7 @@ pub mod ores;
 #[path = "world/stone.rs"]
 pub mod stone;
 pub mod wiring;
+pub use core::conductor::{BlueConductor, BlueGrid};
 pub use core::{Vector3, WorldCoord};
 
 use serde::{Deserialize, Serialize};
