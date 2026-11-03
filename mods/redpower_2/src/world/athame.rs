@@ -316,7 +316,9 @@ mod tests {
         // Incompatible with vanilla damage enchantments
         assert!(!disjunction_can_apply_together("minecraft:sharpness"));
         assert!(!disjunction_can_apply_together("minecraft:smite"));
-        assert!(!disjunction_can_apply_together("minecraft:bane_of_arthropods"));
+        assert!(!disjunction_can_apply_together(
+            "minecraft:bane_of_arthropods"
+        ));
 
         // Compatible with utility / non-damage enchantments
         assert!(disjunction_can_apply_together("minecraft:unbreaking"));

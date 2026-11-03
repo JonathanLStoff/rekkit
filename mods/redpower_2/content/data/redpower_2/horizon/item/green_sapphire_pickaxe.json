@@ -1,5 +1,8 @@
 {
   "template": "minecraft:diamond_pickaxe",
   "max_stack_size": 1,
-  "rarity": "common"
+  "rarity": "common",
+  "components": {
+    "minecraft:max_damage": 500
+  }
 }

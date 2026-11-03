@@ -1,5 +1,5 @@
 {
-  "template": "minecraft:iron_block",
+  "template": "minecraft:piston",
   "properties": {
     "hardness": 3.5,
     "explosion_resistance": 17.5,

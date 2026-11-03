@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "BGB",
-    "GAG",
-    "BMB"
+    "BBB",
+    " G ",
+    "ZMZ"
   ],
   "key": {
     "B": "redpower_2:brass_ingot",
     "G": "minecraft:glass",
-    "A": "redpower_2:brass_gear",
+    "Z": "redpower_2:brass_gear",
     "M": "redpower_2:bl_motor"
   },
   "result": {

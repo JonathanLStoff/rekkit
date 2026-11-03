@@ -8,7 +8,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "redpower_2:lamp_inverted"
+          "name": "redpower_2:lamp_inverted_lit"
         }
       ],
       "rolls": 1

@@ -506,7 +506,9 @@ fn test_blutricity_devices_solar_thermopile_wind_battery_transformer() {
     assert_eq!(ThermopileState::block_temperature("minecraft:ice"), -100);
 
     let mut therm = ThermopileState::new();
-    let (t_cur, _shock) = therm.tick([100, -100, 0, 0, 0, 0], 300);
+    therm.t_hot = 100;
+    therm.t_cold = 100;
+    let (t_cur, _) = therm.tick(|| (100, 100));
     assert!(t_cur > 0.0);
 
     // 3. Wind Turbine: P / 5 W/tick when V <= 130V and brakes released
@@ -842,12 +844,11 @@ fn test_hazard_safety_limits_spec_section_eight() {
 
     // 3. Thermopile thermal meltdown / shock hazard
     let mut therm = ThermopileState::new();
-    // Thot >= 100 and Tcold >= 200 with rng_roll == 0 triggers shock
-    let (_, shock_triggered) = therm.tick([100, -200, 0, 0, 0, 0], 0);
-    assert!(shock_triggered);
-
-    let (_, shock_not_triggered) = therm.tick([100, -200, 0, 0, 0, 0], 1);
-    assert!(!shock_not_triggered);
+    assert!(!therm.lava_cools());
+    therm.t_hot = 100;
+    therm.t_cold = 200;
+    assert!(therm.lava_cools());
+    assert!(therm.melts_neighbors());
 
     // 4. Blutricity over-voltage limits
     assert_eq!(BLUTRICITY_WIND_MAX_VOLTAGE, 130.0);
@@ -1095,7 +1096,7 @@ fn test_native_hooks_api40_lifecycle_and_namespace_isolation() {
 
     let mut fortyfive_slot = None;
     rp.native_block_entity_container("redpower_2:sorting_machine", &mut fortyfive_slot);
-    assert_eq!(fortyfive_slot.unwrap().slots, 45);
+    assert_eq!(fortyfive_slot.unwrap().slots, 40);
 
     let mut foreign_container = None;
     rp.native_block_entity_container("minecraft:chest", &mut foreign_container);
@@ -1109,7 +1110,7 @@ fn test_native_hooks_api40_lifecycle_and_namespace_isolation() {
         data: Vec::new(),
     };
     rp.native_block_entity_tick([0, 64, 0], &mut entity);
-    assert_eq!(entity.data.len(), 2); // elapsed, burn_ticks_remaining
+    assert_eq!(entity.data.len(), 3); // cook_time, burn_time, total_burn
 
     // 6. Custom screen layout
     let mut screen = None;

@@ -38,7 +38,19 @@ pub use rekkit_core::side::{ConnectionMask, Direction};
 pub use rekkit_core::util::{TickTimer, XorShift64};
 pub use rekkit_core::{HORIZON_REVISION, MIXINS_REVISION, NATIVE_HOOKS_API};
 
+#[path = "world/athame.rs"]
+pub mod athame;
 pub mod core;
+#[path = "world/flora.rs"]
+pub mod flora;
+pub mod machine;
+#[path = "world/hooks.rs"]
+pub mod world_hooks;
+#[path = "world/ores.rs"]
+pub mod ores;
+#[path = "world/stone.rs"]
+pub mod stone;
+pub mod wiring;
 pub use core::{Vector3, WorldCoord};
 
 use serde::{Deserialize, Serialize};
@@ -1092,6 +1104,53 @@ impl SolarPanelState {
     }
 }
 
+/// What a solar panel reads from the world each tick: sky light above it, time of day, weather.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SolarEnvironment {
+    pub sky_light: u8,
+    pub day_time: i64,
+    pub rain: f32,
+    pub thunder: f32,
+}
+
+impl SolarEnvironment {
+    /// Open sky: full sky light at the block above (`canBlockSeeSky`).
+    pub fn sees_sky(&self) -> bool {
+        self.sky_light >= 15
+    }
+    /// Daytime: ticks 0..12000 of the 24000-tick day.
+    pub fn is_day(&self) -> bool {
+        self.day_time.rem_euclid(24000) < 12000
+    }
+    /// Any rain or thunder counts as a storm.
+    pub fn is_storm(&self) -> bool {
+        self.rain > 0.2 || self.thunder > 0.2
+    }
+}
+
+impl SolarPanelState {
+    /// Tick against world readings.
+    pub fn tick_env(&mut self, env: &SolarEnvironment) -> f64 {
+        self.tick(env.sees_sky(), env.is_day(), env.is_storm())
+    }
+
+    /// Restore from a block entity's saved strings (chunk reload).
+    pub fn load(nbt: &HashMap<String, String>) -> Self {
+        let mut s = Self::new();
+        let get = |k: &str| nbt.get(k).and_then(|v| v.parse::<f64>().ok());
+        s.conductor.charge = get("charge").unwrap_or(0.0).max(0.0);
+        s.conductor.current = get("current").unwrap_or(0.0);
+        s.conductor.voltage = s.conductor.charge / s.conductor.capacitance;
+        s
+    }
+
+    /// Save into a block entity's strings.
+    pub fn save(&self, nbt: &mut HashMap<String, String>) {
+        nbt.insert("charge".into(), self.conductor.charge.to_string());
+        nbt.insert("current".into(), self.conductor.current.to_string());
+    }
+}
+
 /// Thermopile Blutricity generator: scans 6 faces, generates `0.005 * min(T_hot, T_cold) A` (§2.5).
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ThermopileState {
@@ -1105,63 +1164,86 @@ impl ThermopileState {
     pub fn new() -> Self {
         Self {
             conductor: BluePowerConductor::new(4.0),
-            tick_counter: 19,
+            tick_counter: 0,
             t_hot: 0,
             t_cold: 0,
         }
     }
 
-    /// Temperature ratings from §2.5:
-    /// Air (Nether +1, Overworld -1), Torch (+5), Fire (+3), Lava (+100),
-    /// Burning Furnace (+25), Water (-25), Snow layer (-50), Ice/Snow block (-100).
-    pub fn block_temperature(block_id: &str) -> i32 {
-        if block_id.contains("lava") {
-            100
-        } else if block_id.contains("fire") {
-            3
-        } else if block_id.contains("torch") {
-            5
-        } else if block_id.contains("lit_furnace") || block_id.contains("burning_furnace") {
-            25
-        } else if block_id.contains("ice") || block_id.contains("snow_block") {
-            -100
-        } else if block_id.contains("snow") {
-            -50
-        } else if block_id.contains("water") {
-            -25
-        } else {
-            0
+    /// Heat (`up`, `down`) contributed by one neighbouring block (`TileThermopile.updateTemps`).
+    /// Air counts +1 in the Nether and -1 elsewhere; snow layer -50; snow block and ice -100;
+    /// water -25; lava +100; torch +5; fire +3; burning furnace +25.
+    pub fn block_heat(block_id: &str, nether: bool) -> (i32, i32) {
+        let id = block_id.strip_prefix("minecraft:").unwrap_or(block_id);
+        match id {
+            "air" | "cave_air" | "void_air" => {
+                if nether {
+                    (1, 0)
+                } else {
+                    (0, 1)
+                }
+            }
+            "ice" | "snow_block" => (0, 100),
+            "snow" => (0, 50),
+            "water" | "flowing_water" => (0, 25),
+            "lava" | "flowing_lava" => (100, 0),
+            "torch" | "wall_torch" => (5, 0),
+            "fire" => (3, 0),
+            "lit_furnace" | "burning_furnace" => (25, 0),
+            _ => (0, 0),
         }
     }
 
-    /// Evaluates thermal generation every 20 ticks.
-    /// Returns generated current in Amps and whether thermal shock occurred (§8).
-    pub fn tick(&mut self, neighbor_temps: [i32; 6], rng_roll: u32) -> (f64, bool) {
-        self.tick_counter += 1;
-        if self.tick_counter >= 20 {
-            self.tick_counter = 0;
-            self.t_hot = neighbor_temps
-                .iter()
-                .filter(|&&t| t > 0)
-                .copied()
-                .sum::<i32>();
-            self.t_cold = neighbor_temps
-                .iter()
-                .filter(|&&t| t < 0)
-                .map(|&t| -t)
-                .sum::<i32>();
+    /// Signed rating of a block (hot positive, cold negative), Overworld air as in the original.
+    pub fn block_temperature(block_id: &str) -> i32 {
+        let (up, down) = Self::block_heat(block_id, false);
+        up - down
+    }
+
+    /// Re-scan the six neighbours: new `(t_hot, t_cold)`.
+    pub fn scan(neighbors: &[&str; 6], nether: bool) -> (i32, i32) {
+        neighbors.iter().fold((0, 0), |(u, d), id| {
+            let (a, b) = Self::block_heat(id, nether);
+            (u + a, d + b)
+        })
+    }
+
+    /// Whether lava (with the old temps) may turn to obsidian/stone: needs hot >= 100, cold >= 200.
+    pub fn lava_cools(&self) -> bool {
+        self.t_hot >= 100 && self.t_cold >= 200
+    }
+
+    /// Whether the old temps allow melting snow/ice/water: hot >= 100.
+    pub fn melts_neighbors(&self) -> bool {
+        self.t_hot >= 100
+    }
+
+    /// One game tick. While voltage <= 100 V the counter advances and, past 20, the neighbours are
+    /// rescanned (`neighbors`/`nether` are only read then, via the closure); generation is
+    /// `0.005 * min(hot, cold)` from the temps held before the rescan. Returns
+    /// `(current, rescanned)`; world effects of a rescan use `lava_cools`/`melts_neighbors`
+    /// evaluated by the caller before the call via `will_rescan`.
+    pub fn tick(&mut self, scan: impl FnOnce() -> (i32, i32)) -> (f64, bool) {
+        if self.conductor.voltage > BLUTRICITY_NOMINAL_VOLTAGE {
+            return (0.0, false);
         }
+        self.tick_counter += 1;
+        let mut rescanned = false;
+        if self.tick_counter > 20 {
+            self.tick_counter = 0;
+            let (hot, cold) = scan();
+            self.t_hot = hot;
+            self.t_cold = cold;
+            rescanned = true;
+        }
+        let gen = 0.005 * (self.t_hot.min(self.t_cold) as f64);
+        self.conductor.add_charge(gen);
+        (gen, rescanned)
+    }
 
-        let shock = self.t_hot >= 100 && self.t_cold >= 200 && rng_roll.is_multiple_of(300);
-        let current = if self.conductor.voltage <= BLUTRICITY_NOMINAL_VOLTAGE {
-            let gen = 0.005 * (self.t_hot.min(self.t_cold) as f64);
-            self.conductor.add_charge(gen);
-            gen
-        } else {
-            0.0
-        };
-
-        (current, shock)
+    /// True when the next `tick` will rescan (so the caller can apply melt/cool effects first).
+    pub fn will_rescan(&self) -> bool {
+        self.conductor.voltage <= BLUTRICITY_NOMINAL_VOLTAGE && self.tick_counter + 1 > 20
     }
 }
 
@@ -1206,6 +1288,47 @@ impl WindTurbineState {
     }
 }
 
+pub const BT_BATTERY_EMPTY_ID: &str = "redpower_2:battery_empty";
+pub const BT_BATTERY_POWERED_ID: &str = "redpower_2:battery_powered";
+/// BT Battery durability (`ItemBattery`: `setMaxDamage(1500)`, stack size 1); damage 1 is full.
+pub const BT_BATTERY_MAX_DAMAGE: u16 = 1500;
+/// Largest charge moved per use or tick.
+pub const BT_BATTERY_RATE: u16 = 25;
+
+/// A powered BT Battery stack at the given damage.
+pub fn bt_battery_powered(damage: u16) -> ItemStack {
+    let mut s = ItemStack::new(BT_BATTERY_POWERED_ID, 1).with_max_stack(1);
+    s.damage = damage;
+    s
+}
+
+/// Right-click use of a powered BT Battery (`ItemBattery.onItemRightClick`): the first hotbar
+/// chargeable item (damage > 1, `is_chargeable`) takes up to 25 units. Returns the battery
+/// afterwards; an exhausted battery becomes an empty BT Battery.
+pub fn use_bt_battery(
+    battery: ItemStack,
+    hotbar: &mut [Option<ItemStack>],
+    is_chargeable: impl Fn(&str) -> bool,
+) -> ItemStack {
+    let mut battery = battery;
+    for slot in hotbar.iter_mut().take(9) {
+        if let Some(t) = slot.as_mut() {
+            if is_chargeable(&t.item_id) && t.damage > 1 {
+                let d = (t.damage - 1)
+                    .min(BT_BATTERY_MAX_DAMAGE.saturating_sub(battery.damage))
+                    .min(BT_BATTERY_RATE);
+                battery.damage += d;
+                t.damage -= d;
+                if battery.damage >= BT_BATTERY_MAX_DAMAGE {
+                    return ItemStack::new(BT_BATTERY_EMPTY_ID, 1).with_max_stack(1);
+                }
+                break;
+            }
+        }
+    }
+    battery
+}
+
 /// Battery Box storage unit: stores 6,000 units (~1,200,000 W-t).
 /// Charges when V > 90V; discharges when V < 80V and not redstone powered (§2.5).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1235,7 +1358,42 @@ impl BatteryBoxState {
         }
     }
 
+    /// Item-slot transfer of `TileBatteryBox.g()`: slot 0 charges a BT battery from the box
+    /// (an empty battery becomes a powered one at damage 1500 first), slot 1 drains a powered
+    /// battery into the box (it turns into an empty battery when fully spent). A battery's
+    /// damage is its discharge: 1 is full, 1500 is empty.
+    pub fn tick_slots(&mut self) {
+        let max = BT_BATTERY_MAX_DAMAGE as f64;
+        if self.stored_units >= 1.0 {
+            if let Some(s) = self.battery_slot_0.as_mut() {
+                if s.item_id == BT_BATTERY_EMPTY_ID {
+                    *s = bt_battery_powered(BT_BATTERY_MAX_DAMAGE);
+                }
+                if s.item_id == BT_BATTERY_POWERED_ID {
+                    let n = (s.damage.saturating_sub(1) as f64)
+                        .min(self.stored_units.floor())
+                        .min(Self::MAX_RATE_PER_TICK);
+                    self.stored_units -= n;
+                    s.damage -= n as u16;
+                }
+            }
+        }
+        if let Some(s) = self.battery_slot_1.as_mut() {
+            if s.item_id == BT_BATTERY_POWERED_ID {
+                let n = (max - s.damage as f64)
+                    .min(Self::MAX_STORAGE_UNITS - self.stored_units)
+                    .clamp(0.0, Self::MAX_RATE_PER_TICK);
+                self.stored_units += n;
+                s.damage += n as u16;
+                if s.damage >= BT_BATTERY_MAX_DAMAGE {
+                    *s = ItemStack::new(BT_BATTERY_EMPTY_ID, 1).with_max_stack(1);
+                }
+            }
+        }
+    }
+
     pub fn tick(&mut self, redstone_powered: bool) {
+        self.tick_slots();
         let v = self.conductor.voltage;
         if v > 90.0 && self.stored_units < Self::MAX_STORAGE_UNITS {
             let n = ((v * 10.0 - 900.0) / 10.0).clamp(0.0, 10.0);
@@ -1769,6 +1927,100 @@ pub struct AlloyRecipe {
     pub output: ItemStack,
 }
 
+/// Small table of vanilla smelting results used by the Blulectric Furnace until the host exposes its own.
+pub fn vanilla_smelting_result(item_id: &str) -> Option<ItemStack> {
+    let out = match item_id {
+        "minecraft:iron_ore" => "minecraft:iron_ingot",
+        "minecraft:gold_ore" => "minecraft:gold_ingot",
+        "minecraft:sand" => "minecraft:glass",
+        "minecraft:cobblestone" => "minecraft:stone",
+        "minecraft:clay_ball" => "minecraft:brick",
+        "minecraft:log" => "minecraft:charcoal",
+        "minecraft:porkchop" => "minecraft:cooked_porkchop",
+        "minecraft:beef" => "minecraft:cooked_beef",
+        "minecraft:chicken" => "minecraft:cooked_chicken",
+        "minecraft:fish" => "minecraft:cooked_fish",
+        "minecraft:potato" => "minecraft:baked_potato",
+        "redpower_2:copper_ore" => "redpower_2:copper_ingot",
+        "redpower_2:tin_ore" => "redpower_2:tin_ingot",
+        "redpower_2:silver_ore" => "redpower_2:silver_ingot",
+        "redpower_2:nikolite_ore" => "redpower_2:nikolite",
+        _ => return None,
+    };
+    Some(ItemStack::new(out, 1))
+}
+
+/// Blulectric Furnace (`TileBlueFurnace`): needs >= 60 V, draws 1000 W-t per cooking tick,
+/// finishes an item after 100 ticks (2x vanilla speed). No fuel.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct BlulectricFurnaceState {
+    pub cook_ticks: u32,
+    pub active: bool,
+}
+
+impl BlulectricFurnaceState {
+    pub const SLOT_INPUT: usize = 0;
+    pub const SLOT_OUTPUT: usize = 2;
+    pub const COOK_TICKS: u32 = 100;
+    pub const MIN_VOLTAGE: f64 = 60.0;
+    pub const DRAW_PER_TICK: f64 = 1000.0;
+    /// Side index (D,U,N,S,W,E) of the front face for a fresh block (facing 2).
+    pub const DEFAULT_FACING: usize = 2;
+
+    fn can_smelt(
+        input: &Option<ItemStack>,
+        output: &Option<ItemStack>,
+        recipe: &impl Fn(&str) -> Option<ItemStack>,
+    ) -> Option<ItemStack> {
+        let res = recipe(&input.as_ref()?.item_id)?;
+        match output {
+            None => Some(res),
+            Some(o) => {
+                let total = o.count + res.count;
+                (o.item_id == res.item_id
+                    && o.damage == res.damage
+                    && total <= o.max_stack_size.min(64))
+                .then_some(res)
+            }
+        }
+    }
+
+    /// Advance one tick; returns the power drawn (W-t).
+    pub fn tick(
+        &mut self,
+        voltage: f64,
+        input: &mut Option<ItemStack>,
+        output: &mut Option<ItemStack>,
+        recipe: impl Fn(&str) -> Option<ItemStack>,
+    ) -> f64 {
+        if voltage < Self::MIN_VOLTAGE {
+            self.active = false;
+            return 0.0;
+        }
+        let Some(res) = Self::can_smelt(input, output, &recipe) else {
+            self.active = false;
+            self.cook_ticks = 0;
+            return 0.0;
+        };
+        self.active = true;
+        self.cook_ticks += 1;
+        if self.cook_ticks >= Self::COOK_TICKS {
+            self.cook_ticks = 0;
+            match output {
+                Some(o) => o.count += res.count,
+                None => *output = Some(res),
+            }
+            if let Some(i) = input {
+                i.count -= 1;
+                if i.count == 0 {
+                    *input = None;
+                }
+            }
+        }
+        Self::DRAW_PER_TICK
+    }
+}
+
 /// Alloy Furnace state machine (`redpower_2:alloy_furnace` & `redpower_2:blulectric_alloy_furnace`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AlloyFurnaceState {
@@ -2065,9 +2317,49 @@ pub fn sickle_crop_positions(center: BlockPos) -> Vec<BlockPos> {
     positions
 }
 
+/// What a block counts as for the sickle (ItemSickle: `isLeaves` / plant block other than dead bush).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SickleBlockKind {
+    Leaves,
+    Plant,
+    DeadBush,
+    Other,
+}
+
+/// Positions a sickle swing breaks, given the block kind at the clicked position and a
+/// lookup for any position. Leaves click: every leaf in the 3x3x3 cube. Otherwise: every
+/// plant (not dead bush) in the 5x5 layer at the clicked height. Durability costs 1 per
+/// swing when at least one block was harvested (empty result = no damage, swing not used).
+pub fn sickle_swing_targets(
+    center: BlockPos,
+    kind_at: impl Fn(BlockPos) -> SickleBlockKind,
+) -> Vec<BlockPos> {
+    if kind_at(center) == SickleBlockKind::Leaves {
+        sickle_leaf_positions(center)
+            .into_iter()
+            .filter(|p| kind_at(*p) == SickleBlockKind::Leaves)
+            .collect()
+    } else {
+        sickle_crop_positions(center)
+            .into_iter()
+            .filter(|p| kind_at(*p) == SickleBlockKind::Plant)
+            .collect()
+    }
+}
+
 // ============================================================================
 // HorizonNativeMod Implementation for RedPower 2
 // ============================================================================
+
+/// The shared `CraftLib` with the default alloy recipes registered (once).
+pub fn alloy_craft_lib() -> &'static core::foundation::CraftLib {
+    static LIB: std::sync::OnceLock<core::foundation::CraftLib> = std::sync::OnceLock::new();
+    LIB.get_or_init(|| {
+        let mut lib = core::foundation::CraftLib::default();
+        lib.register_default_alloy_recipes();
+        lib
+    })
+}
 
 #[derive(Default)]
 pub struct RedPower2Mod {
@@ -2075,6 +2367,8 @@ pub struct RedPower2Mod {
     pub gates: HashMap<[i32; 3], LogicGateState>,
     pub alloy_furnaces: HashMap<[i32; 3], AlloyFurnaceState>,
     pub cpus: HashMap<[i32; 3], Cpu6502>,
+    /// Latest world readings for solar panels (`None` until the host supplies them).
+    pub solar_env: Option<SolarEnvironment>,
     pub terminal: DisplayTerminal,
 }
 
@@ -2122,6 +2416,9 @@ impl HorizonNativeMod for RedPower2Mod {
         if !Self::owns_id(block) {
             return;
         }
+        if machine::glue::is_glued(block) {
+            *ticks = true;
+        }
         if matches!(
             block,
             Self::BLOCK_ALLOY_FURNACE
@@ -2160,20 +2457,67 @@ impl HorizonNativeMod for RedPower2Mod {
             | "redpower_2:relay"
             | "redpower_2:retriever"
             | "redpower_2:sortron"
-            | "redpower_2:transposer"
-            | "redpower_2:battery_box" => {
+            | "redpower_2:transposer" => {
                 *container = Some(make_container(9, "minecraft:generic_3x3"));
             }
-            Self::BLOCK_ALLOY_FURNACE
-            | "redpower_2:blulectric_alloy_furnace"
-            | "redpower_2:buffer_chest"
+            Self::BLOCK_ALLOY_FURNACE => {
+                // TileAlloyFurnace: 11 slots (the 27-slot backing menu is drawn by native_screen).
+                // Sided access for the default facing (side 2): top = inputs, front = fuel,
+                // back = output.
+                let mut c = make_container(27, "minecraft:generic_9x3");
+                c.inputs = (0..machine::alloy_furnace::FUEL_SLOT + 1).collect();
+                c.outputs = vec![machine::alloy_furnace::OUTPUT_SLOT];
+                let t = machine::alloy_furnace::TileAlloyFurnace::new(3);
+                c.faces = std::array::from_fn(|side| t.slots_for_side(side as i32));
+                *container = Some(c);
+            }
+            "redpower_2:battery_box" => {
+                // TileBatteryBox: slot 0 charges a battery, slot 1 drains one (native_screen).
+                let mut c = make_container(9, "minecraft:generic_3x3");
+                c.inputs = vec![0, 1];
+                c.outputs = vec![0, 1];
+                c.faces = std::array::from_fn(|_| vec![0, 1]);
+                *container = Some(c);
+            }
+            "redpower_2:buffer_chest" => {
+                // TileBufferChest: 20 slots (27-slot backing menu drawn by native_screen);
+                // sided access by the default facing (rotation 3).
+                let mut c = make_container(27, "minecraft:generic_9x3");
+                let t = BufferChestState::new();
+                c.inputs = (0..BufferChestState::SLOT_COUNT).collect();
+                c.outputs = c.inputs.clone();
+                c.faces = std::array::from_fn(|side| t.side_slots(side as u8));
+                *container = Some(c);
+            }
+            "redpower_2:blulectric_alloy_furnace"
             | "redpower_2:manager"
-            | "redpower_2:project_table"
             | "redpower_2:regulator" => {
                 *container = Some(make_container(27, "minecraft:generic_9x3"));
             }
+            machine::project_table::BLOCK_ID => {
+                // Container order: grid, plan, result, storage; sided access hits storage only.
+                let storage = machine::project_table::sided_container_slots();
+                let mut c = make_container(
+                    machine::project_table::CONTAINER_SLOTS,
+                    "minecraft:generic_9x4",
+                );
+                c.inputs = storage.clone();
+                c.outputs = storage.clone();
+                c.faces = std::array::from_fn(|_| storage.clone());
+                *container = Some(c);
+            }
             "redpower_2:blulectric_furnace" => {
-                *container = Some(make_container(3, "minecraft:furnace"));
+                // Vanilla furnace menu layout: 0 = input, 1 = (unused) fuel, 2 = output.
+                // Sided access (TileBlueFurnace): front face reaches input, back face output.
+                let mut c = make_container(3, "minecraft:furnace");
+                c.inputs = vec![BlulectricFurnaceState::SLOT_INPUT];
+                c.outputs = vec![BlulectricFurnaceState::SLOT_OUTPUT];
+                c.faces = std::array::from_fn(|_| Vec::new());
+                c.faces[BlulectricFurnaceState::DEFAULT_FACING] =
+                    vec![BlulectricFurnaceState::SLOT_INPUT];
+                c.faces[BlulectricFurnaceState::DEFAULT_FACING ^ 1] =
+                    vec![BlulectricFurnaceState::SLOT_OUTPUT];
+                *container = Some(c);
             }
             "redpower_2:charging_bench" => {
                 *container = Some(make_container(18, "minecraft:generic_9x2"));
@@ -2182,7 +2526,10 @@ impl HorizonNativeMod for RedPower2Mod {
                 *container = Some(make_container(36, "minecraft:generic_9x4"));
             }
             "redpower_2:sorting_machine" => {
-                *container = Some(make_container(45, "minecraft:generic_9x5"));
+                *container = Some(make_container(
+                    machine::sorter_gui::SLOT_COUNT,
+                    "redpower_2:sorting_machine",
+                ));
             }
             _ => {}
         }
@@ -2192,24 +2539,66 @@ impl HorizonNativeMod for RedPower2Mod {
         if !Self::owns_id(&entity.id) {
             return;
         }
-        if entity.id == Self::BLOCK_ALLOY_FURNACE {
-            let state = self.alloy_furnaces.entry(pos).or_default();
-            if entity.items.len() >= AlloyFurnaceState::SLOT_COUNT {
-                for (i, slot) in state.inventory.slots.iter_mut().enumerate() {
-                    *slot = entity.items[i].clone();
-                }
+        if entity.id == machine::glue::BREAKER {
+            machine::glue::tick_breaker(entity);
+        } else if entity.id == machine::glue::IGNITER {
+            machine::glue::tick_igniter(entity);
+        } else if entity.id == machine::glue::DEPLOYER {
+            machine::glue::tick_deployer(entity);
+        } else if entity.id == Self::BLOCK_ALLOY_FURNACE {
+            let facing = entity
+                .nbt
+                .get("facing")
+                .and_then(|v| v.parse::<i32>().ok())
+                .unwrap_or(2);
+            let mut tile = machine::alloy_furnace::TileAlloyFurnace::from_parts(
+                &entity.items,
+                &entity.data,
+                facing,
+            );
+            tile.tick(alloy_craft_lib());
+            tile.write_items(&mut entity.items);
+            entity.data = tile.menu_data();
+            entity
+                .nbt
+                .insert("lit".into(), if tile.active { "1" } else { "0" }.into());
+        } else if entity.id == "redpower_2:blulectric_furnace" {
+            if entity.items.len() < 3 {
+                entity.items.resize(3, None);
             }
-            state.tick(false);
-            if entity.items.len() < AlloyFurnaceState::SLOT_COUNT {
-                entity.items.resize(AlloyFurnaceState::SLOT_COUNT, None);
+            let volts = entity
+                .nbt
+                .get("bt_voltage")
+                .and_then(|v| v.parse::<f64>().ok())
+                .unwrap_or(0.0);
+            let mut st = BlulectricFurnaceState {
+                cook_ticks: entity
+                    .nbt
+                    .get("cook")
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(0),
+                active: entity.nbt.get("active").map(|v| v == "1").unwrap_or(false),
+            };
+            let (input, output) = entity.items.split_at_mut(2);
+            let draw = st.tick(
+                volts,
+                &mut input[0],
+                &mut output[0],
+                vanilla_smelting_result,
+            );
+            entity.nbt.insert("cook".into(), st.cook_ticks.to_string());
+            entity
+                .nbt
+                .insert("active".into(), if st.active { "1" } else { "0" }.into());
+            entity.nbt.insert("bt_draw".into(), draw.to_string());
+            entity.data = vec![st.cook_ticks as i32, i32::from(st.active)];
+        } else if entity.id == "redpower_2:solar_panel" {
+            let mut state = SolarPanelState::load(&entity.nbt);
+            if let Some(env) = self.solar_env {
+                state.tick_env(&env);
             }
-            for (i, slot) in state.inventory.slots.iter().enumerate() {
-                entity.items[i] = slot.clone();
-            }
-            entity.data = vec![
-                state.smelt_timer.elapsed as i32,
-                state.burn_ticks_remaining as i32,
-            ];
+            state.save(&mut entity.nbt);
+            entity.data = vec![state.conductor.voltage.round() as i32];
         } else if entity.id == Self::BLOCK_CPU {
             let cpu = self.cpus.entry(pos).or_default();
             let ran = cpu.step_tick(Cpu6502::CYCLES_PER_TICK);
@@ -2221,24 +2610,69 @@ impl HorizonNativeMod for RedPower2Mod {
         if screen.is_some() || !Self::owns_id(block) {
             return;
         }
-        if block == Self::BLOCK_ALLOY_FURNACE {
-            let mut slots = Vec::with_capacity(AlloyFurnaceState::SLOT_COUNT);
-            for row in 0..3 {
-                for col in 0..3 {
-                    slots.push(Some([
-                        48.0 + (col as f32) * 18.0,
-                        17.0 + (row as f32) * 18.0,
-                    ]));
-                }
+        let simple = match block {
+            "redpower_2:buffer_chest" => Some(machine::simple_gui::buffer_layout()),
+            "redpower_2:item_detector" | "redpower_2:filter" => {
+                Some(machine::simple_gui::grid9_layout())
             }
-            slots.push(Some([17.0, 42.0])); // Fuel slot
-            slots.push(Some([141.0, 35.0])); // Output slot
+            "redpower_2:battery_box" => Some(machine::simple_gui::battery_layout()),
+            _ => None,
+        };
+        if let Some(l) = simple {
             *screen = Some(NativeScreen {
-                width: 176.0,
-                height: 166.0,
-                slots,
-                inventory_x: 8.0,
-                inventory_y: 84.0,
+                width: l.size[0],
+                height: l.size[1],
+                slots: l.slots.into_iter().map(Some).collect(),
+                inventory_x: l.inventory[0],
+                inventory_y: l.inventory[1],
+                own_labels: false,
+            });
+        } else if block == "redpower_2:retriever" || block == "redpower_2:regulator" {
+            let l = if block == "redpower_2:retriever" {
+                machine::logistics_gui::retriever_layout()
+            } else {
+                machine::logistics_gui::regulator_layout()
+            };
+            *screen = Some(NativeScreen {
+                width: l.size[0],
+                height: l.size[1],
+                slots: l.slots.into_iter().map(Some).collect(),
+                inventory_x: l.inventory[0],
+                inventory_y: l.inventory[1],
+                own_labels: false,
+            });
+        } else if block == "redpower_2:sorting_machine" {
+            let l = machine::sorter_gui::layout();
+            *screen = Some(NativeScreen {
+                width: l.size[0],
+                height: l.size[1],
+                slots: l.slots.into_iter().map(Some).collect(),
+                inventory_x: l.inventory[0],
+                inventory_y: l.inventory[1],
+                own_labels: false,
+            });
+        } else if block == machine::project_table::BLOCK_ID {
+            *screen = Some(NativeScreen {
+                width: machine::project_table::SIZE[0],
+                height: machine::project_table::SIZE[1],
+                slots: machine::project_table::slot_positions()
+                    .into_iter()
+                    .map(Some)
+                    .collect(),
+                inventory_x: machine::project_table::INVENTORY_ORIGIN[0],
+                inventory_y: machine::project_table::INVENTORY_ORIGIN[1],
+                own_labels: false,
+            });
+        } else if block == Self::BLOCK_ALLOY_FURNACE {
+            *screen = Some(NativeScreen {
+                width: machine::alloy_furnace::GUI_SIZE[0],
+                height: machine::alloy_furnace::GUI_SIZE[1],
+                slots: machine::alloy_furnace::gui_slots()
+                    .into_iter()
+                    .map(Some)
+                    .collect(),
+                inventory_x: machine::alloy_furnace::GUI_INVENTORY[0],
+                inventory_y: machine::alloy_furnace::GUI_INVENTORY[1],
                 own_labels: false,
             });
         }
@@ -2258,7 +2692,11 @@ impl HorizonNativeMod for RedPower2Mod {
         let Some(entity) = entity else {
             return;
         };
-        if stack.item_id == Self::ITEM_SCREWDRIVER {
+        if stack.item_id == Self::ITEM_SCREWDRIVER
+            && machine::base::screwdriver_rotate_nbt(block_at_pos, &mut entity.nbt).is_some()
+        {
+            *claimed = true;
+        } else if stack.item_id == Self::ITEM_SCREWDRIVER {
             let cur = entity
                 .nbt
                 .get("facing")
@@ -2324,12 +2762,43 @@ impl HorizonNativeMod for RedPower2Mod {
     fn native_screen_click(
         &self,
         block: &str,
-        _data: &[i32],
+        data: &[i32],
         at: [f32; 2],
-        _right: bool,
+        right: bool,
         button: &mut Option<i32>,
     ) {
         if button.is_some() || !Self::owns_id(block) {
+            return;
+        }
+        if block == "redpower_2:sorting_machine" {
+            let mode = data.first().copied().unwrap_or(0);
+            *button = machine::sorter_gui::click(at, right, mode);
+            return;
+        }
+        if block == machine::project_table::BLOCK_ID {
+            let b = machine::project_table::PLAN_BUTTON;
+            if at[0] >= b[0] && at[0] <= b[2] && at[1] >= b[1] && at[1] <= b[3] {
+                *button = Some(machine::project_table::EVENT_WRITE_PLAN);
+            }
+            return;
+        }
+        if block == "redpower_2:filter" {
+            *button = machine::simple_gui::filter_click(at, right);
+            return;
+        }
+        if block == "redpower_2:item_detector" {
+            *button = machine::simple_gui::detector_click(at, right);
+            return;
+        }
+        if matches!(block, "redpower_2:buffer_chest" | "redpower_2:battery_box") {
+            return;
+        }
+        if block == "redpower_2:retriever" {
+            *button = machine::logistics_gui::retriever_click(at, right);
+            return;
+        }
+        if block == "redpower_2:regulator" {
+            *button = machine::logistics_gui::regulator_click(at, right);
             return;
         }
         if at[0] >= 10.0 && at[0] <= 100.0 && at[1] >= 10.0 && at[1] <= 40.0 {
@@ -2341,7 +2810,55 @@ impl HorizonNativeMod for RedPower2Mod {
         if !Self::owns_id(&entity.id) {
             return;
         }
-        if entity.id == "redpower_2:timer" {
+        if entity.id == machine::project_table::BLOCK_ID {
+            if id == machine::project_table::EVENT_WRITE_PLAN {
+                use machine::project_table as pt;
+                let mut t = pt::ProjectTable::from_container_items(
+                    &entity.items,
+                    entity.nbt.get("plan").and_then(|p| pt::Plan::decode(p)),
+                );
+                let result =
+                    t.craft_result(|_| entity.items.get(pt::CONTAINER_RESULT).cloned().flatten());
+                if t.write_plan(result) {
+                    t.save(&mut entity.nbt);
+                    entity.items.resize(pt::CONTAINER_SLOTS, None);
+                    entity.items[pt::PLAN_SLOT] = t.inv.slots[pt::PLAN_SLOT].clone();
+                }
+            }
+            return;
+        }
+        if entity.id == "redpower_2:filter" || entity.id == "redpower_2:item_detector" {
+            let key = if entity.id == "redpower_2:filter" { "color" } else { "mode" };
+            let cur = entity
+                .nbt
+                .get(key)
+                .and_then(|v| v.parse::<i32>().ok())
+                .unwrap_or(0);
+            let next = if key == "color" {
+                machine::simple_gui::filter_apply(cur, id)
+            } else {
+                machine::simple_gui::detector_apply(cur, id)
+            };
+            entity.nbt.insert(key.into(), next.to_string());
+            entity.data = vec![next];
+        } else if entity.id == "redpower_2:retriever" || entity.id == "redpower_2:regulator" {
+            let get = |k: &str| {
+                entity
+                    .nbt
+                    .get(k)
+                    .and_then(|v| v.parse::<i32>().ok())
+                    .unwrap_or(0)
+            };
+            let (color, mode) = machine::logistics_gui::apply_button(get("color"), get("mode"), id);
+            entity.nbt.insert("color".into(), color.to_string());
+            entity.nbt.insert("mode".into(), mode.to_string());
+            entity.data = vec![color, mode];
+        } else if entity.id == "redpower_2:sorting_machine" {
+            let mut st = machine::sorter_gui::SorterSettings::from_nbt(&entity.nbt);
+            st.apply(id);
+            st.write_nbt(&mut entity.nbt);
+            entity.data = st.to_data();
+        } else if entity.id == "redpower_2:timer" {
             let gate = self
                 .gates
                 .entry(pos)
@@ -2404,9 +2921,119 @@ impl HorizonNativeMod for RedPower2Mod {
 // Internal Unit Tests for Subsystems
 // ============================================================================
 
+/// Buffer Chest (`redpower_2:buffer_chest`, `TileBufferChest`): 20 slots, partitioned sided access.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BufferChestState {
+    pub inventory: Inventory,
+    /// Facing `0..6` (Down, Up, North, South, West, East); the rear face is the opposite side.
+    pub rotation: u8,
+}
+
+impl Default for BufferChestState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl BufferChestState {
+    pub const SLOT_COUNT: usize = 20;
+    pub const MAX_STACK: u32 = 64;
+
+    pub fn new() -> Self {
+        Self {
+            inventory: Inventory::new(Self::SLOT_COUNT),
+            rotation: 3,
+        }
+    }
+
+    /// Placement facing (`getFacing`): `pitch_rel` is the placer's eye height above the block base
+    /// when within 2 blocks horizontally (`> 2.0` faces down, `< 0.0` faces up); otherwise yaw picks.
+    pub fn facing_from_placement(yaw_deg: f32, near: bool, eye_rel_y: f64) -> u8 {
+        if near {
+            if eye_rel_y > 2.0 {
+                return 0;
+            }
+            if eye_rel_y < 0.0 {
+                return 1;
+            }
+        }
+        match ((yaw_deg * 4.0 / 360.0 + 0.5).floor() as i32) & 3 {
+            0 => 3,
+            1 => 4,
+            2 => 2,
+            _ => 5,
+        }
+    }
+
+    /// `getStartInventorySide`: rear face starts at 0, each other face at `4 * ((5 + (side^1) - rot) % 6)`.
+    pub fn side_start(&self, side: u8) -> usize {
+        let opp = side ^ 1;
+        if opp == self.rotation {
+            0
+        } else {
+            4 * ((5 + opp as usize - self.rotation as usize) % 6)
+        }
+    }
+
+    /// `getSizeInventorySide`: 20 for the rear face, 4 for every other face.
+    pub fn side_size(&self, side: u8) -> usize {
+        if (side ^ 1) == self.rotation {
+            Self::SLOT_COUNT
+        } else {
+            4
+        }
+    }
+
+    pub fn side_slots(&self, side: u8) -> Vec<usize> {
+        let start = self.side_start(side);
+        (start..(start + self.side_size(side)).min(Self::SLOT_COUNT)).collect()
+    }
+
+    pub fn insert_from_side(&mut self, side: u8, stack: ItemStack) -> Option<ItemStack> {
+        let slots = self.side_slots(side);
+        self.inventory.insert_into_slots(stack, &slots)
+    }
+
+    pub fn extract_from_side(&mut self, side: u8, max: u32) -> Option<ItemStack> {
+        let slots = self.side_slots(side);
+        self.inventory.extract_from_slots(max, &slots)
+    }
+
+    /// `setInventorySlotContents`: stacks are clamped to the inventory stack limit (64).
+    pub fn set_slot(&mut self, i: usize, stack: Option<ItemStack>) {
+        if let Some(slot) = self.inventory.slots.get_mut(i) {
+            *slot = stack.map(|mut s| {
+                s.count = s.count.min(Self::MAX_STACK);
+                s
+            });
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_buffer_chest_partitions() {
+        let mut b = BufferChestState::new();
+        b.rotation = 3;
+        assert_eq!(b.side_size(2), 20);
+        assert_eq!(b.side_start(2), 0);
+        assert_eq!(b.side_size(0), 4);
+        let mut seen = vec![];
+        for side in [0u8, 1, 3, 4, 5] {
+            assert_eq!(b.side_size(side), 4);
+            seen.push(b.side_start(side));
+        }
+        seen.sort();
+        assert_eq!(seen, vec![0usize, 4, 8, 12, 16]);
+        let left = b.insert_from_side(0, ItemStack::new("minecraft:dirt", 64 * 5));
+        assert_eq!(left.map(|l| l.count), Some(64));
+        assert!(b.extract_from_side(2, 10).is_some());
+        assert_eq!(BufferChestState::facing_from_placement(0.0, false, 0.0), 3);
+        assert_eq!(BufferChestState::facing_from_placement(0.0, true, 3.0), 0);
+    }
 
     #[test]
     fn test_microblock_thickness_and_recombine() {
@@ -2478,6 +3105,35 @@ mod tests {
     }
 
     #[test]
+    fn test_solar_env_and_persistence() {
+        let day = SolarEnvironment {
+            sky_light: 15,
+            day_time: 6000,
+            rain: 0.0,
+            thunder: 0.0,
+        };
+        let night = SolarEnvironment {
+            day_time: 18000,
+            ..day
+        };
+        let storm = SolarEnvironment { rain: 1.0, ..day };
+        let covered = SolarEnvironment {
+            sky_light: 0,
+            ..day
+        };
+        let mut s = SolarPanelState::new();
+        assert_eq!(s.tick_env(&day), 2.0);
+        assert_eq!(s.tick_env(&night), 0.0);
+        assert_eq!(s.tick_env(&storm), 0.0);
+        assert_eq!(s.tick_env(&covered), 0.0);
+        let mut nbt = HashMap::new();
+        s.save(&mut nbt);
+        let r = SolarPanelState::load(&nbt);
+        assert_eq!(r.conductor.charge, 2.0);
+        assert_eq!(r.conductor.voltage, s.conductor.voltage);
+    }
+
+    #[test]
     fn test_thermopile_and_solar() {
         let mut solar = SolarPanelState::new();
         let gen = solar.tick(true, true, false);
@@ -2485,10 +3141,61 @@ mod tests {
         assert_eq!(solar.conductor.charge, 2.0);
 
         let mut therm = ThermopileState::new();
-        // Lava (+100) vs Ice (-100)
-        let (current, shock) = therm.tick([100, -100, 0, 0, 0, 0], 300);
-        assert!(current > 0.0);
-        assert!(!shock); // Thot < 100 or Tcold < 200 -> no shock
+        therm.t_hot = 100;
+        therm.t_cold = 200;
+        let (current, _) = therm.tick(|| unreachable!());
+        assert!((current - 0.5).abs() < 1e-9);
+        assert!(therm.lava_cools() && therm.melts_neighbors());
+        assert_eq!(ThermopileState::block_heat("minecraft:air", true), (1, 0));
+        assert_eq!(ThermopileState::block_heat("minecraft:air", false), (0, 1));
+        let n = [
+            "minecraft:lava",
+            "minecraft:ice",
+            "minecraft:snow",
+            "minecraft:water",
+            "minecraft:torch",
+            "minecraft:fire",
+        ];
+        assert_eq!(ThermopileState::scan(&n, false), (108, 175));
+        for _ in 0..19 {
+            therm.tick(|| unreachable!());
+        }
+        assert!(therm.will_rescan());
+        let (_, r) = therm.tick(|| (7, 9));
+        assert!(r && therm.t_hot == 7 && therm.t_cold == 9);
+    }
+
+    #[test]
+    fn test_battery_box_item_slots() {
+        let mut bb = BatteryBoxState::new();
+        bb.stored_units = 100.0;
+        bb.battery_slot_0 = Some(ItemStack::new(BT_BATTERY_EMPTY_ID, 1));
+        bb.tick_slots();
+        let s = bb.battery_slot_0.as_ref().unwrap();
+        assert_eq!(s.item_id, BT_BATTERY_POWERED_ID);
+        assert_eq!(s.damage, 1475);
+        assert_eq!(bb.stored_units, 75.0);
+
+        let mut bb = BatteryBoxState::new();
+        bb.battery_slot_1 = Some(bt_battery_powered(1490));
+        bb.tick_slots();
+        assert_eq!(bb.stored_units, 10.0);
+        assert_eq!(
+            bb.battery_slot_1.as_ref().unwrap().item_id,
+            BT_BATTERY_EMPTY_ID
+        );
+    }
+
+    #[test]
+    fn test_bt_battery_use() {
+        let mut tool = ItemStack::new("redpower_2:sonic_screwdriver", 1);
+        tool.damage = 100;
+        let mut hotbar = vec![None, Some(tool)];
+        let b = use_bt_battery(bt_battery_powered(1480), &mut hotbar, |id| {
+            id.contains("screwdriver")
+        });
+        assert_eq!(hotbar[1].as_ref().unwrap().damage, 80);
+        assert_eq!(b.item_id, BT_BATTERY_EMPTY_ID);
     }
 
     #[test]
@@ -2570,6 +3277,31 @@ mod tests {
         let mut read_buf = [0u8; 128];
         assert!(drive.execute_redbus(4, 10, &mut read_buf)); // Read sector 10
         assert_eq!(read_buf[0], 42);
+    }
+
+    #[test]
+    fn blulectric_furnace_smelts_in_100_ticks_at_60v() {
+        let mut st = BlulectricFurnaceState::default();
+        let mut input = Some(ItemStack::new("minecraft:iron_ore", 2));
+        let mut output = None;
+        assert_eq!(
+            st.tick(59.0, &mut input, &mut output, vanilla_smelting_result),
+            0.0
+        );
+        assert_eq!(st.cook_ticks, 0);
+        for _ in 0..99 {
+            assert_eq!(
+                st.tick(60.0, &mut input, &mut output, vanilla_smelting_result),
+                1000.0
+            );
+        }
+        assert!(output.is_none());
+        st.tick(60.0, &mut input, &mut output, vanilla_smelting_result);
+        assert_eq!(output.as_ref().unwrap().count, 1);
+        assert_eq!(input.as_ref().unwrap().count, 1);
+        let mut junk = Some(ItemStack::new("minecraft:dirt", 1));
+        st.tick(60.0, &mut junk, &mut output, vanilla_smelting_result);
+        assert!(!st.active);
     }
 
     #[test]
@@ -2749,6 +3481,29 @@ mod tests {
     }
 
     #[test]
+    fn test_sickle_swing_targets() {
+        let c = BlockPos(0, 64, 0);
+        let leaves = sickle_swing_targets(c, |p| {
+            if p.0.abs() <= 2 && p.2.abs() <= 2 && p.1 == 64 {
+                SickleBlockKind::Leaves
+            } else {
+                SickleBlockKind::Other
+            }
+        });
+        assert_eq!(leaves.len(), 9);
+        let crops = sickle_swing_targets(c, |p| {
+            if p == BlockPos(1, 64, 1) {
+                SickleBlockKind::DeadBush
+            } else if p.1 == 64 {
+                SickleBlockKind::Plant
+            } else {
+                SickleBlockKind::Other
+            }
+        });
+        assert_eq!(crops.len(), 24);
+    }
+
+    #[test]
     fn test_sickle_harvest_radius_and_durabilities() {
         let center = BlockPos(10, 64, 10);
         let leaves = sickle_leaf_positions(center);
@@ -2800,8 +3555,13 @@ mod tests {
             "redpower_2:retriever",
             "redpower_2:sortron",
             "redpower_2:transposer",
-            "redpower_2:battery_box",
         ];
+        let mut bb = None;
+        rp.native_block_entity_container("redpower_2:battery_box", &mut bb);
+        assert_eq!(bb.expect("battery box container").inputs, vec![0, 1]);
+        let mut bc = None;
+        rp.native_block_entity_container("redpower_2:buffer_chest", &mut bc);
+        assert_eq!(bc.expect("buffer chest container").inputs.len(), 20);
         for id in nine_slot_blocks {
             let mut container = None;
             rp.native_block_entity_container(id, &mut container);
@@ -2819,12 +3579,22 @@ mod tests {
             }
         }
 
+        let mut af = None;
+        rp.native_block_entity_container("redpower_2:alloy_furnace", &mut af);
+        let af = af.expect("alloy_furnace container");
+        assert_eq!(af.inputs, (0..10).collect::<Vec<_>>());
+        assert_eq!(af.outputs, vec![10]);
+        assert_eq!(af.faces[1], (0..9).collect::<Vec<_>>());
+        assert_eq!(af.faces[2], vec![9]);
+        assert_eq!(af.faces[3], vec![10]);
+        let mut scr = None;
+        rp.native_screen("redpower_2:alloy_furnace", &mut scr);
+        let scr = scr.expect("alloy_furnace screen");
+        assert_eq!((scr.width, scr.height, scr.slots.len()), (176.0, 166.0, 11));
+
         let twenty_seven_slot_blocks = [
-            "redpower_2:alloy_furnace",
             "redpower_2:blulectric_alloy_furnace",
-            "redpower_2:buffer_chest",
             "redpower_2:manager",
-            "redpower_2:project_table",
             "redpower_2:regulator",
         ];
         for id in twenty_seven_slot_blocks {
@@ -2844,13 +3614,26 @@ mod tests {
             }
         }
 
+        let mut table = None;
+        rp.native_block_entity_container("redpower_2:project_table", &mut table);
+        let c = table.expect("project_table container");
+        assert_eq!(c.slots, 29);
+        assert_eq!(c.inputs, (11..29).collect::<Vec<_>>());
+        let mut scr = None;
+        rp.native_screen("redpower_2:project_table", &mut scr);
+        let scr = scr.expect("project_table screen");
+        assert_eq!((scr.width, scr.height, scr.slots.len()), (176.0, 222.0, 29));
+
         let mut furnace = None;
         rp.native_block_entity_container("redpower_2:blulectric_furnace", &mut furnace);
         let c = furnace.expect("blulectric_furnace container");
         assert_eq!(c.slots, 3);
         assert_eq!(c.menu.as_deref(), Some("minecraft:furnace"));
-        assert_eq!(c.inputs, (0..3).collect::<Vec<_>>());
-        assert_eq!(c.outputs, (0..3).collect::<Vec<_>>());
+        assert_eq!(c.inputs, vec![0]);
+        assert_eq!(c.outputs, vec![2]);
+        assert_eq!(c.faces[2], vec![0]);
+        assert_eq!(c.faces[3], vec![2]);
+        assert!(c.faces[0].is_empty() && c.faces[4].is_empty());
 
         let mut charging = None;
         rp.native_block_entity_container("redpower_2:charging_bench", &mut charging);
@@ -2871,10 +3654,10 @@ mod tests {
         let mut sorting = None;
         rp.native_block_entity_container("redpower_2:sorting_machine", &mut sorting);
         let c = sorting.expect("sorting_machine container");
-        assert_eq!(c.slots, 45);
-        assert_eq!(c.menu.as_deref(), Some("minecraft:generic_9x5"));
-        assert_eq!(c.inputs, (0..45).collect::<Vec<_>>());
-        assert_eq!(c.outputs, (0..45).collect::<Vec<_>>());
+        assert_eq!(c.slots, 40);
+        assert_eq!(c.menu.as_deref(), Some("redpower_2:sorting_machine"));
+        assert_eq!(c.inputs, (0..40).collect::<Vec<_>>());
+        assert_eq!(c.outputs, (0..40).collect::<Vec<_>>());
 
         // Foreign block ID
         let mut foreign = None;

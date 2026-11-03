@@ -586,7 +586,8 @@ impl TileMachine {
         player_eye_offset: f64,
         block_pos: [i32; 3],
     ) {
-        self.rotation = Self::calculate_facing(player_pos, player_yaw, player_eye_offset, block_pos);
+        self.rotation =
+            Self::calculate_facing(player_pos, player_yaw, player_eye_offset, block_pos);
     }
 
     /// Encode state into 2-byte packet payload: `[rotation, ps]`.
@@ -800,6 +801,56 @@ impl FrameSupport for TileMachinePanel {
 
 impl RedstoneConnectable for TileMachinePanel {}
 impl TubeConnectable for TileMachinePanel {}
+
+/// Place-time state for a machine-family block id: writes the `rot`/`ps` tags the
+/// original's tile entities save (`TileMachine.getFacing` / `TileMachinePanel`).
+/// Returns `false` when `block` is not a machine, machine2 or panel block.
+pub fn init_machine_nbt(
+    block: &str,
+    player_pos: [f64; 3],
+    player_yaw: f32,
+    player_eye_offset: f64,
+    block_pos: [i32; 3],
+    nbt: &mut HashMap<String, String>,
+) -> bool {
+    if MachinePanelKind::from_block_id(block).is_some() {
+        let mut t = TileMachinePanel::new(0);
+        t.on_block_placed(player_yaw);
+        t.write_nbt(nbt);
+        true
+    } else if MachineKind::from_block_id(block).is_some()
+        || Machine2Kind::from_block_id(block).is_some()
+    {
+        let mut t = TileMachine::new(0);
+        t.on_block_placed(player_pos, player_yaw, player_eye_offset, block_pos);
+        t.write_nbt(nbt);
+        true
+    } else {
+        false
+    }
+}
+
+/// Screwdriver click on a machine-family block: cycles `rot` (0..=5 machines, 0..=3
+/// panels) as `ItemScrewdriver` does through `IRotatable`. `None` if not a machine block.
+pub fn screwdriver_rotate_nbt(block: &str, nbt: &mut HashMap<String, String>) -> Option<bool> {
+    if MachinePanelKind::from_block_id(block).is_some() {
+        let mut t = TileMachinePanel::new(0);
+        t.read_nbt(nbt);
+        let r = t.rotate_with_screwdriver(0, false);
+        t.write_nbt(nbt);
+        Some(r)
+    } else if MachineKind::from_block_id(block).is_some()
+        || Machine2Kind::from_block_id(block).is_some()
+    {
+        let mut t = TileMachine::new(0);
+        t.read_nbt(nbt);
+        let r = t.rotate_with_screwdriver(0, false);
+        t.write_nbt(nbt);
+        Some(r)
+    } else {
+        None
+    }
+}
 
 // ============================================================================
 // 7. Machine Placement Validation
@@ -1053,15 +1104,30 @@ mod tests {
 
         // Machine placement
         assert!(can_place_machine(pos, MachineKind::Deployer));
-        assert!(!can_place_machine(BlockPos(5, -1, 5), MachineKind::Deployer));
+        assert!(!can_place_machine(
+            BlockPos(5, -1, 5),
+            MachineKind::Deployer
+        ));
 
         // Panel placement: solar panel requires solid base
-        assert!(!can_place_machine_panel(pos, MachinePanelKind::SolarPanel, false));
-        assert!(can_place_machine_panel(pos, MachinePanelKind::SolarPanel, true));
+        assert!(!can_place_machine_panel(
+            pos,
+            MachinePanelKind::SolarPanel,
+            false
+        ));
+        assert!(can_place_machine_panel(
+            pos,
+            MachinePanelKind::SolarPanel,
+            true
+        ));
 
         // Other panels do not require solid base
         assert!(can_place_machine_panel(pos, MachinePanelKind::Pump, false));
-        assert!(can_place_machine_panel(pos, MachinePanelKind::Accelerator, false));
+        assert!(can_place_machine_panel(
+            pos,
+            MachinePanelKind::Accelerator,
+            false
+        ));
 
         // Kinds round trip
         for meta in 0..16u8 {
@@ -1078,5 +1144,34 @@ mod tests {
                 Some(panel)
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod registration_tests {
+    use super::*;
+
+    #[test]
+    fn screwdriver_cycles_machine_and_panel_rot() {
+        let mut nbt = HashMap::new();
+        assert!(init_machine_nbt(
+            "redpower_2:deployer",
+            [0.0; 3],
+            0.0,
+            0.0,
+            [0, 0, 0],
+            &mut nbt
+        ));
+        assert_eq!(nbt["rot"], "3");
+        assert_eq!(
+            screwdriver_rotate_nbt("redpower_2:deployer", &mut nbt),
+            Some(true)
+        );
+        assert_eq!(nbt["rot"], "4");
+        let mut p = HashMap::new();
+        p.insert("rot".to_string(), "3".to_string());
+        screwdriver_rotate_nbt("redpower_2:pump", &mut p);
+        assert_eq!(p["rot"], "0");
+        assert_eq!(screwdriver_rotate_nbt("redpower_2:lamp", &mut p), None);
     }
 }

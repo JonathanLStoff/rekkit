@@ -306,7 +306,9 @@ impl From<BlockPos> for Vector3 {
 /// - `3`: `+Z` (South)
 /// - `4`: `-X` (West)
 /// - `5`: `+X` (East)
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+)]
 pub struct WorldCoord {
     pub x: i32,
     pub y: i32,
@@ -778,9 +780,18 @@ mod tests {
         let c = WorldCoord::new(0, 10, 0);
         assert_eq!(c.coord_step_dir(Direction::Down), WorldCoord::new(0, 9, 0));
         assert_eq!(c.coord_step_dir(Direction::Up), WorldCoord::new(0, 11, 0));
-        assert_eq!(c.coord_step_dir(Direction::North), WorldCoord::new(0, 10, -1));
-        assert_eq!(c.coord_step_dir(Direction::South), WorldCoord::new(0, 10, 1));
-        assert_eq!(c.coord_step_dir(Direction::West), WorldCoord::new(-1, 10, 0));
+        assert_eq!(
+            c.coord_step_dir(Direction::North),
+            WorldCoord::new(0, 10, -1)
+        );
+        assert_eq!(
+            c.coord_step_dir(Direction::South),
+            WorldCoord::new(0, 10, 1)
+        );
+        assert_eq!(
+            c.coord_step_dir(Direction::West),
+            WorldCoord::new(-1, 10, 0)
+        );
         assert_eq!(c.coord_step_dir(Direction::East), WorldCoord::new(1, 10, 0));
     }
 

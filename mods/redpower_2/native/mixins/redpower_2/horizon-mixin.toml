@@ -4,7 +4,7 @@
 
 [mod]
 id = "redpower_2"
-version = "0.1.3"
+version = "0.1.4"
 
 [compatibility]
 horizon_revision = "ed102e0592eded5585c610c205488f771f52ac40"

@@ -1,0 +1,129 @@
+{
+  "scenarios": [
+    {
+      "name": "ejector places",
+      "for": [
+        "ejector"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ejector holds 9 slots",
+      "for": [
+        "ejector"
+      ],
+      "level": 3,
+      "covers": [
+        "holds 9 slots in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ejector feeds a tube",
+      "for": [
+        "ejector"
+      ],
+      "level": 4,
+      "covers": [
+        "ejects 1 item into a tube on each redstone pulse"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        },
+        {
+          "setblock": [
+            0,
+            0,
+            1,
+            "redpower_2:pneumatic_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ejector keeps items across chunk reload",
+      "for": [
+        "ejector"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its items when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
+          ]
+        }
+      ]
+    }
+  ]
+}

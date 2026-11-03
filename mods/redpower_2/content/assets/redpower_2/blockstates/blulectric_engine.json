@@ -1,7 +1,54 @@
 {
   "variants": {
-    "": {
+    "facing=up,extended=false": {
       "model": "redpower_2:block/blulectric_engine"
+    },
+    "facing=up,extended=true": {
+      "model": "redpower_2:block/blulectric_engine"
+    },
+    "facing=down,extended=false": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 180
+    },
+    "facing=down,extended=true": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 180
+    },
+    "facing=north,extended=false": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 270
+    },
+    "facing=north,extended=true": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 270
+    },
+    "facing=south,extended=false": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90
+    },
+    "facing=south,extended=true": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90
+    },
+    "facing=east,extended=false": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90,
+      "y": 90
+    },
+    "facing=east,extended=true": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west,extended=false": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90,
+      "y": 270
+    },
+    "facing=west,extended=true": {
+      "model": "redpower_2:block/blulectric_engine",
+      "x": 90,
+      "y": 270
     }
   }
 }

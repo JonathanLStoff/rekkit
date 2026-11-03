@@ -1,5 +1,8 @@
 {
   "template": "minecraft:bucket",
-  "max_stack_size": 16,
-  "rarity": "common"
+  "max_stack_size": 1,
+  "rarity": "common",
+  "components": {
+    "minecraft:max_damage": 15
+  }
 }

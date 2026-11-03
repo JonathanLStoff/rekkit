@@ -1,5 +1,5 @@
 {
   "template": "minecraft:brush",
-  "max_stack_size": 1,
+  "max_stack_size": 16,
   "rarity": "common"
 }

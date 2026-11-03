@@ -1021,7 +1021,7 @@
     {
       "sheet": "eloraam/base/items1.png",
       "archive": "redpowercore",
-      "index": 24,
+      "index": 23,
       "size": 16,
       "out": "content/assets/redpower_2/textures/item/empty_paint_can.png",
       "for": "redpower_2:empty_paint_can",
@@ -1363,7 +1363,7 @@
     {
       "sheet": "eloraam/base/items1.png",
       "archive": "redpowercore",
-      "index": 23,
+      "index": 24,
       "size": 16,
       "out": "content/assets/redpower_2/textures/item/voltmeter.png",
       "for": "redpower_2:voltmeter",
@@ -1394,6 +1394,60 @@
       "size": 16,
       "out": "content/assets/redpower_2/textures/item/brass_gear.png",
       "for": "redpower_2:brass_gear",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 129,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/sonic_screwdriver.png",
+      "for": "redpower_2:sonic_screwdriver",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/tungsten_ingot.png",
+      "for": "redpower_2:tungsten_ingot",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 176,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wood_sail.png",
+      "for": "redpower_2:wood_sail",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 177,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wood_turbine.png",
+      "for": "redpower_2:wood_turbine",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/base/items1.png",
+      "archive": "redpowercore",
+      "index": 178,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/item/wood_windmill.png",
+      "for": "redpower_2:wood_windmill",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/compat/compat1.png",
+      "archive": "redpowercompat",
+      "index": 0,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/compat1.png",
+      "for": "redpower_2:blulectric_engine",
       "origin": "original"
     }
   ],
@@ -1627,41 +1681,5 @@
       "origin": "original"
     }
   ],
-  "generated": [
-    {
-      "source": "art/textures/item/sonic_screwdriver.pixels",
-      "out": "content/assets/redpower_2/textures/item/sonic_screwdriver.png",
-      "origin": "generated",
-      "size": 16,
-      "palette": "6389 colours from the originals"
-    },
-    {
-      "source": "art/textures/item/tungsten_ingot.pixels",
-      "out": "content/assets/redpower_2/textures/item/tungsten_ingot.png",
-      "origin": "generated",
-      "size": 16,
-      "palette": "6389 colours from the originals"
-    },
-    {
-      "source": "art/textures/item/wood_sail.pixels",
-      "out": "content/assets/redpower_2/textures/item/wood_sail.png",
-      "origin": "generated",
-      "size": 16,
-      "palette": "6389 colours from the originals"
-    },
-    {
-      "source": "art/textures/item/wood_turbine.pixels",
-      "out": "content/assets/redpower_2/textures/item/wood_turbine.png",
-      "origin": "generated",
-      "size": 16,
-      "palette": "6389 colours from the originals"
-    },
-    {
-      "source": "art/textures/item/wood_windmill.pixels",
-      "out": "content/assets/redpower_2/textures/item/wood_windmill.png",
-      "origin": "generated",
-      "size": 16,
-      "palette": "6389 colours from the originals"
-    }
-  ]
+  "generated": []
 }

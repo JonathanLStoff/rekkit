@@ -2,6 +2,7 @@
 
 #[allow(clippy::needless_range_loop, clippy::collapsible_match)]
 pub mod blutricity;
+pub mod hook;
 pub mod network;
 pub mod ribbon;
 pub mod rules;

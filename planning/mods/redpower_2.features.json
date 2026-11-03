@@ -1841,7 +1841,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops ruby when mined with an iron pickaxe or better",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_green_sapphire",
@@ -1854,7 +1857,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops green sapphire when mined with an iron pickaxe or better",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_sapphire",
@@ -1867,7 +1873,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops sapphire when mined with an iron pickaxe or better",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_silver",
@@ -1880,7 +1889,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops itself and smelts to silver ingot in a furnace",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_tin",
@@ -1893,7 +1905,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops itself and smelts to tin ingot in a furnace",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_copper",
@@ -1906,7 +1921,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops itself and smelts to copper ingot in a furnace",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_tungsten",
@@ -1919,7 +1937,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops itself and smelts to tungsten ingot in a furnace",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "ore_nikolite",
@@ -1932,7 +1953,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops several nikolite dust when mined",
+        "L3: generates underground in world generation"
+      ]
     },
     {
       "id": "block_ruby",
@@ -1945,7 +1969,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "block_green_sapphire",
@@ -1958,7 +1984,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "block_sapphire",
@@ -1971,7 +1999,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "block_silver",
@@ -1984,7 +2014,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "block_tin",
@@ -1997,7 +2029,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "block_copper",
@@ -2010,7 +2044,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid block with its own texture"
+      ]
     },
     {
       "id": "marble",
@@ -2023,7 +2059,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "block_marble",
@@ -2036,7 +2074,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "basalt",
@@ -2049,7 +2089,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops basalt cobblestone when mined",
+        "L1: places as a full solid stone block"
+      ]
     },
     {
       "id": "block_basalt",
@@ -2062,7 +2105,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops basalt cobblestone when mined",
+        "L1: places as a full solid stone block"
+      ]
     },
     {
       "id": "marble_brick",
@@ -2075,7 +2121,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "basalt_cobblestone",
@@ -2088,7 +2136,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "basalt_brick",
@@ -2101,7 +2151,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "basalt_chiseled",
@@ -2114,7 +2166,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "basalt_paver",
@@ -2127,7 +2181,9 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a full solid stone block with its own texture"
+      ]
     },
     {
       "id": "flax_crop",
@@ -2155,7 +2211,11 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a thin cross-shaped plant",
+        "L3: drops indigo dye when broken",
+        "L3: generates in world generation"
+      ]
     },
     {
       "id": "rubber_sapling",
@@ -2183,7 +2243,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L3: drops a rubber sapling when broken",
+        "L3: decays when no rubber log is near"
+      ]
     },
     {
       "id": "rubber_log",
@@ -2198,7 +2261,10 @@
       },
       "gui": null,
       "energy": null,
-      "attributes": []
+      "attributes": [
+        "L1: places as a log with end and side textures",
+        "L3: grows as part of rubber trees"
+      ]
     },
     {
       "id": "deployer",
@@ -3799,7 +3865,10 @@
       "max_stack": 64,
       "durability": null,
       "use": null,
-      "attributes": []
+      "attributes": [
+        "L2: comes in 16 dye colours, each its own item",
+        "L3: crafts into coloured lumar lamps"
+      ]
     },
     {
       "id": "ruby",
@@ -3869,7 +3938,9 @@
       "max_stack": 64,
       "durability": null,
       "use": null,
-      "attributes": []
+      "attributes": [
+        "L2: crafts into blue alloy and blue-powered parts as an ingredient"
+      ]
     },
     {
       "id": "tungsten_ingot",
@@ -4700,7 +4771,9 @@
       "max_stack": 16,
       "durability": null,
       "use": null,
-      "attributes": []
+      "attributes": [
+        "L2: dips into a paint can to become a loaded brush"
+      ]
     },
     {
       "id": "paint_brush",
@@ -4722,7 +4795,9 @@
       "max_stack": 64,
       "durability": null,
       "use": null,
-      "attributes": []
+      "attributes": [
+        "L2: is filled with dye to become a paint can"
+      ]
     },
     {
       "id": "paint_can",
@@ -4780,7 +4855,9 @@
       "max_stack": 1,
       "durability": null,
       "use": null,
-      "attributes": []
+      "attributes": [
+        "L2: charges in a battery box to become a full BT battery"
+      ]
     },
     {
       "id": "battery_powered",

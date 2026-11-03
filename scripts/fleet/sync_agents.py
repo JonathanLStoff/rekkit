@@ -123,15 +123,19 @@ import { join } from "node:path";
 
 const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read" };
 
-export const RekkitGuard = async ({ directory }) => ({
-  "tool.execute.before": async (input, output) => {
-    const check = CHECKS[input.tool];
-    if (!check) return;
-    const payload = JSON.stringify({ session_id: input.sessionID, tool_name: input.tool, tool_input: output.args ?? {} });
-    const r = spawnSync("bash", [join(directory, "scripts/fleet/hook.sh"), check, "claude"], { input: payload, encoding: "utf8" });
-    if (r.status === 2) throw new Error((r.stderr || "Blocked by the Rekkit fleet guard").trim());
-  },
-});
+// opencode loads a plugin's default export: an id and a setup function that returns its hooks.
+export default {
+  id: "rekkit-guard",
+  setup: async ({ directory }) => ({
+    "tool.execute.before": async (input, output) => {
+      const check = CHECKS[input.tool];
+      if (!check) return;
+      const payload = JSON.stringify({ session_id: input.sessionID, tool_name: input.tool, tool_input: output.args ?? {} });
+      const r = spawnSync("bash", [join(directory, "scripts/fleet/hook.sh"), check, "claude"], { input: payload, encoding: "utf8" });
+      if (r.status === 2) throw new Error((r.stderr || "Blocked by the Rekkit fleet guard").trim());
+    },
+  }),
+};
 """
 
 
