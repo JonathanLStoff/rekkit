@@ -58,7 +58,7 @@ STATE = MAIN / "target" / "agent-gate"
 STOP_FILE = MAIN / "target" / "fleet.stop"
 ALLOWED_WARNINGS = "planning/harness-allowed-warnings.txt"
 BLOCKED_SHELL = re.compile(
-    r"git push|gh release|minisign|git submodule|git reset --hard|--force|rm -rf|horizon[-_]pull"
+    r"git push|gh release|minisign|git submodule|git reset --hard|--force|rm -rf|horizon[-_]pull|make\s+(?:-[Cf]\s*\S+\s+|-\S+\s+|\w+=\S*\s+)*pull(?![\w-])"
     # Git in the submodule only reads (grep, log, show...); anything else would change it.
     r"|git -C \S*horizon/?\s+(?!(?:grep|log|show|diff|status|rev-parse|ls-files|ls-tree|blame|cat-file|merge-base"
     r"|describe)\b)")

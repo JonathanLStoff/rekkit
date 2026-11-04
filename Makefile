@@ -27,7 +27,7 @@ COMPLETE ?= 0
 export CURSEFORGE_API_KEY
 
 .PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
-	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull
+	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull pull
 
 all: tekkit direwolf20 agrarian
 
@@ -232,6 +232,11 @@ horizon-status:
 horizon-pull:
 	$(PYTHON) scripts/horizon_pull.py $(if $(BRANCH),--branch "$(BRANCH)",)
 
+# A person's: fast-forward this repository from its remote, then horizon-pull. Agents are blocked from it.
+pull:
+	git pull --ff-only
+	$(PYTHON) scripts/horizon_pull.py $(if $(BRANCH),--branch "$(BRANCH)",)
+
 # Printed by make itself: cmd.exe would treat the | and < in it as pipes and redirects.
 define HELP
 make setup [ARGS="--skip-packs --skip-build"]
@@ -311,6 +316,8 @@ make horizon-baseline / horizon-status
                       Build and run Horizon with no mods at the pinned revision / show the result
 make horizon-pull [BRANCH=main]
                       Force the horizon submodule to the remote's newest commit (yours to run)
+make pull [BRANCH=main]
+                      git pull this repository (fast-forward only), then make horizon-pull (yours to run)
 CURSEFORGE_API_KEY is optional for Agrarian Skies 2: without a working key it falls back
                       to the public CurseForge download of pack 2.0.6 (file 3016703).
 endef
