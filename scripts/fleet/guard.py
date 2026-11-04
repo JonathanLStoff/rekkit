@@ -149,7 +149,8 @@ def read_payload() -> dict:
     if sys.stdin.isatty():
         return {}
     try:
-        data = json.loads(sys.stdin.read() or "{}")
+        # Windows decodes stdin with the ANSI code page; the tools send UTF-8.
+        data = json.loads(sys.stdin.buffer.read().decode("utf-8", errors="replace") or "{}")
     except ValueError:
         return {}
     return data if isinstance(data, dict) else {}

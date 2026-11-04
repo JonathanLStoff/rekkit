@@ -10,14 +10,35 @@ block pushing, signing, releasing, submodule changes, force flags and recursive 
 Usage:
   make agy [ARGS="--agent conductor"]
   python3 scripts/fleet/agy.py [agy arguments...]
+
+On Windows it first installs .agents/hooks.windows.json as hooks.json (no bash needed).
 """
 
 import json
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 SETTINGS = {"toolPermission": "always-proceed"}
+HOOKS = Path(__file__).resolve().parents[2] / ".agents"
+
+
+def windows_hooks() -> bool:
+    """On Windows, agy's hooks run in cmd/PowerShell, which cannot start `../scripts/fleet/hook.sh`:
+    put hooks.windows.json (python ../scripts/fleet/hook.py) in place of hooks.json, and keep git from
+    showing it as a change. Elsewhere does nothing. True when hooks.json is right for this OS."""
+    if not sys.platform.startswith("win"):
+        return True
+    src, dst = HOOKS / "hooks.windows.json", HOOKS / "hooks.json"
+    if not src.is_file():
+        return False
+    text = src.read_text(encoding="utf-8")
+    if not dst.is_file() or dst.read_text(encoding="utf-8") != text:
+        dst.write_text(text, encoding="utf-8", newline="\n")
+    subprocess.run(["git", "update-index", "--skip-worktree", ".agents/hooks.json"],
+                   cwd=HOOKS.parent, capture_output=True)
+    return True
 
 
 def command(args: list[str]) -> list[str]:
@@ -25,6 +46,9 @@ def command(args: list[str]) -> list[str]:
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["--install-hooks"]:  # setup: only the hooks swap
+        raise SystemExit(0 if windows_hooks() else 1)
+    windows_hooks()
     if not shutil.which("agy"):
         sys.exit("agy is not installed or not on PATH.")
     raise SystemExit(subprocess.call(command(sys.argv[1:])))

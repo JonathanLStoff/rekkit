@@ -1,0 +1,76 @@
+{
+  "beads-prime": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python ../scripts/fleet/hook.py prime agy",
+        "timeout": 30
+      }
+    ]
+  },
+  "guard-shell": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python ../scripts/fleet/hook.py shell agy",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "guard-paths": {
+    "PreToolUse": [
+      {
+        "matcher": "write_file|edit_file|write_to_file|replace_file_content|multi_replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python ../scripts/fleet/hook.py paths agy",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "guard-read": {
+    "PreToolUse": [
+      {
+        "matcher": "read_file|view_file|view_content_chunk|grep_search|search_in_file|find_by_name|list_dir",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python ../scripts/fleet/hook.py read agy",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "port-gate": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python ../scripts/fleet/hook.py gate agy",
+        "timeout": 900
+      }
+    ]
+  },
+  "journal-spawn": {
+    "PreToolUse": [
+      {
+        "matcher": "invoke_subagent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python ../scripts/fleet/hook.py spawn agy",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

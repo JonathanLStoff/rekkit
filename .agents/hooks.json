@@ -3,7 +3,7 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "../scripts/fleet/hook.sh prime agy",
+        "command": "bash ../scripts/fleet/hook.sh prime agy",
         "timeout": 30
       }
     ]
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "../scripts/fleet/hook.sh shell agy",
+            "command": "bash ../scripts/fleet/hook.sh shell agy",
             "timeout": 10
           }
         ]
@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "../scripts/fleet/hook.sh paths agy",
+            "command": "bash ../scripts/fleet/hook.sh paths agy",
             "timeout": 10
           }
         ]
@@ -43,7 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "../scripts/fleet/hook.sh read agy",
+            "command": "bash ../scripts/fleet/hook.sh read agy",
             "timeout": 10
           }
         ]
@@ -54,7 +54,7 @@
     "Stop": [
       {
         "type": "command",
-        "command": "../scripts/fleet/hook.sh gate agy",
+        "command": "bash ../scripts/fleet/hook.sh gate agy",
         "timeout": 900
       }
     ]
@@ -66,7 +66,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "../scripts/fleet/hook.sh spawn agy",
+            "command": "bash ../scripts/fleet/hook.sh spawn agy",
             "timeout": 10
           }
         ]

@@ -252,6 +252,22 @@ def step_agents(r: Report, check: bool) -> None:
         r.add("agent copies", FAILED, f"`make agents` failed:\n{tail_of(res, 5)}")
 
 
+def step_agy_hooks(r: Report, check: bool) -> None:
+    """Windows: agy's hooks.json must run python (hooks.windows.json), not bash."""
+    if not WINDOWS:
+        return
+    hooks = ROOT / ".agents"
+    ready = (hooks / "hooks.json").read_text(encoding="utf-8") == (hooks / "hooks.windows.json").read_text(encoding="utf-8")
+    if ready:
+        r.add("agy hooks", OK, "hooks.json runs python (Windows)")
+    elif check:
+        r.add("agy hooks", TODO, "hooks.json needs bash: run setup.cmd or `make agy`")
+    else:
+        res = sh([sys.executable, ROOT / "scripts" / "fleet" / "agy.py", "--install-hooks"], capture_output=True)
+        r.add("agy hooks", OK if res.returncode == 0 else FAILED,
+              "hooks.windows.json installed as hooks.json" if res.returncode == 0 else tail_of(res, 5))
+
+
 def step_beads(r: Report, check: bool) -> None:
     """Beads (bd), where the port's progress lives: installed, its database present, every mod an epic."""
     if not shutil.which("bd"):
@@ -445,6 +461,7 @@ def main() -> int:
     if step_submodule(r, args.check):
         step_env(r, args.check)
         step_agents(r, args.check)
+        step_agy_hooks(r, args.check)
         step_beads(r, args.check)
         step_port_tools(r, args.check)
         mods_ok = step_mods(r, args.check)
