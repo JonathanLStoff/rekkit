@@ -1,7 +1,27 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "redpower_2:block/block_breaker",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "redpower_2:block/block_breaker",
+      "x": 270
+    },
+    "facing=north": {
       "model": "redpower_2:block/block_breaker"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/block_breaker",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/block_breaker",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/block_breaker",
+      "y": 90
     }
   }
 }

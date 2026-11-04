@@ -1247,3 +1247,106 @@ fn test_dual_artifact_manifests_and_content_structure() {
     let alloy_recipe = content_dir.join("data/redpower_2/recipe/alloy_red_alloy.json");
     assert!(alloy_recipe.is_file());
 }
+
+#[test]
+fn test_cpu_container_and_gui_debug_controls() {
+    use redpower_2::control::cpu_gui::{
+        ContainerCPU, CpuRegisters, GuiCPU, BTN_DISK_BIT_BASE, BTN_HALT, BTN_RESET, BTN_START,
+        BTN_STEP, EVENT_HALT, EVENT_SET_DISK_ID, EVENT_WARM_BOOT, GUI_HEIGHT, GUI_WIDTH,
+    };
+
+    let mut rp = RedPower2Mod::default();
+
+    // 1. Native screen dimensions
+    let mut scr = None;
+    rp.native_screen("redpower_2:cpu", &mut scr);
+    let s = scr.expect("CPU native screen");
+    assert_eq!(s.width, GUI_WIDTH);
+    assert_eq!(s.height, GUI_HEIGHT);
+    assert!(s.slots.is_empty());
+    assert!(s.own_labels);
+
+    // 2. Native screen click dispatch
+    let data = ContainerCPU::default().to_data();
+    let mut btn = None;
+    rp.native_screen_click("redpower_2:cpu", &data, [90.0, 100.0], false, &mut btn);
+    assert_eq!(btn, Some(BTN_START));
+
+    btn = None;
+    rp.native_screen_click("redpower_2:cpu", &data, [90.0, 115.0], false, &mut btn);
+    assert_eq!(btn, Some(BTN_HALT));
+
+    btn = None;
+    rp.native_screen_click("redpower_2:cpu", &data, [90.0, 128.0], false, &mut btn);
+    assert_eq!(btn, Some(BTN_RESET));
+
+    btn = None;
+    rp.native_screen_click("redpower_2:cpu", &data, [25.0, 105.0], false, &mut btn);
+    assert_eq!(btn, Some(BTN_STEP));
+
+    btn = None;
+    rp.native_screen_click("redpower_2:cpu", &data, [20.0, 60.0], false, &mut btn);
+    assert_eq!(btn, Some(BTN_DISK_BIT_BASE));
+
+    // 3. Native menu button execution on block entity
+    let pos = [10, 64, 20];
+    let mut cpu = Cpu6502::new();
+    // Program: LDA #$55, LDX #$AA, BRK
+    cpu.load_program(0x0400, &[0xA9, 0x55, 0xA2, 0xAA, 0x00]);
+    cpu.halt();
+    rp.cpus.insert(pos, cpu);
+
+    let mut entity = ModBlockEntity {
+        id: "redpower_2:cpu".into(),
+        nbt: HashMap::new(),
+        data: Vec::new(),
+        items: Vec::new(),
+    };
+
+    // Step 1: LDA #$55
+    rp.native_menu_button(pos, &mut entity, BTN_STEP);
+    let live_cpu = rp.cpus.get(&pos).unwrap();
+    assert_eq!(live_cpu.a, 0x55);
+    assert_eq!(live_cpu.pc, 0x0402);
+    let c1 = ContainerCPU::from_data(&entity.data);
+    assert_eq!(c1.registers.a, 0x55);
+    assert_eq!(c1.registers.pc, 0x0402);
+    assert_eq!(c1.registers.format_a(), "A: $55");
+
+    // Step 2: LDX #$AA
+    rp.native_menu_button(pos, &mut entity, BTN_STEP);
+    let live_cpu2 = rp.cpus.get(&pos).unwrap();
+    assert_eq!(live_cpu2.x, 0xAA);
+    assert_eq!(live_cpu2.pc, 0x0404);
+    let c2 = ContainerCPU::from_data(&entity.data);
+    assert_eq!(c2.registers.x, 0xAA);
+    assert_eq!(c2.registers.format_x(), "X: $AA");
+
+    // Reset button
+    rp.native_menu_button(pos, &mut entity, BTN_RESET);
+    let c_reset = ContainerCPU::from_data(&entity.data);
+    assert_eq!(c_reset.registers.a, 0);
+    assert_eq!(c_reset.registers.pc, 0x0400);
+    assert_eq!(c_reset.registers.sp, 0xFD);
+
+    // 4. Packet 212 GUI Event direct handling
+    let mut container = ContainerCPU::default();
+    let p_disk = GuiCPU::send_simple(1, EVENT_SET_DISK_ID, 7);
+    container.handle_gui_event(&p_disk);
+    assert_eq!(container.byte0, 7);
+
+    let p_start = GuiCPU::send_event(1, EVENT_WARM_BOOT);
+    container.handle_gui_event(&p_start);
+    assert!(container.is_running);
+
+    let p_halt = GuiCPU::send_event(1, EVENT_HALT);
+    container.handle_gui_event(&p_halt);
+    assert!(!container.is_running);
+
+    // 5. Status flags NV-BDIZC formatting
+    let mut regs = CpuRegisters::default();
+    regs.status = 0x81; // Negative and Carry
+    assert_eq!(regs.format_flags(), "N------C");
+    assert_eq!(regs.format_status(), "P: $81 [N------C]");
+}
+

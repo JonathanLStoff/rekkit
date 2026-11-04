@@ -1,0 +1,51 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#50",
+    "back": "eloraam/machine/machine1.png#58",
+    "side": "eloraam/machine/machine1.png#59",
+    "top": "eloraam/machine/machine1.png#57",
+    "bottom": "eloraam/machine/machine1.png#58"
+  },
+  "gui": null,
+  "scenarios": [
+    {
+      "name": "transposer placement",
+      "for": [
+        "transposer"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:transposer"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:transposer"]
+        }
+      ]
+    },
+    {
+      "name": "transposer vacuums entities or extracts stack on redstone pulse",
+      "for": [
+        "transposer"
+      ],
+      "level": 4,
+      "covers": [
+        "vacuums ground entities or extracts 1 stack from adjacent inventory on redstone pulse"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:transposer"]
+        },
+        {
+          "setblock": [0, 0, 1, "redpower_2:pneumatic_tube"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:transposer"]
+        }
+      ]
+    }
+  ]
+}

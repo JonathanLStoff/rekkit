@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/dispenser_front"
+    "north": "redpower_2:block/deployer_front",
+    "south": "redpower_2:block/deployer_back",
+    "east": "redpower_2:block/deployer_side",
+    "west": "redpower_2:block/deployer_side",
+    "up": "redpower_2:block/deployer_top",
+    "down": "redpower_2:block/deployer_bottom"
   }
 }

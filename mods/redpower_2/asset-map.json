@@ -1449,6 +1449,306 @@
       "out": "content/assets/redpower_2/textures/block/compat1.png",
       "for": "redpower_2:blulectric_engine",
       "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 28,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/disk_drive_front.png",
+      "for": "redpower_2:disk_drive",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 29,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/disk_drive_top.png",
+      "for": "redpower_2:disk_drive",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 23,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/disk_drive_bottom.png",
+      "for": "redpower_2:disk_drive",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 22,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/disk_drive_side.png",
+      "for": "redpower_2:disk_drive",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 19,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/display_front.png",
+      "for": "redpower_2:display",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 21,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/display_top.png",
+      "for": "redpower_2:display",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 23,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/display_bottom.png",
+      "for": "redpower_2:display",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/control/control1.png",
+      "archive": "redpowermechanical",
+      "index": 20,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/display_side.png",
+      "for": "redpower_2:display",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 56,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/deployer_back.png",
+      "for": "redpower_2:deployer",
+      "face": "back",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 55,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/deployer_side.png",
+      "for": "redpower_2:deployer",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 53,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/deployer_top.png",
+      "for": "redpower_2:deployer",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/deployer_bottom.png",
+      "for": "redpower_2:deployer",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_breaker_back.png",
+      "for": "redpower_2:block_breaker",
+      "face": "back",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_breaker_side.png",
+      "for": "redpower_2:block_breaker",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 51,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_breaker_top.png",
+      "for": "redpower_2:block_breaker",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/block_breaker_bottom.png",
+      "for": "redpower_2:block_breaker",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/transposer_back.png",
+      "for": "redpower_2:transposer",
+      "face": "back",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 59,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/transposer_side.png",
+      "for": "redpower_2:transposer",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 57,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/transposer_top.png",
+      "for": "redpower_2:transposer",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/transposer_bottom.png",
+      "for": "redpower_2:transposer",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 164,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/igniter_front.png",
+      "for": "redpower_2:igniter",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/igniter_back.png",
+      "for": "redpower_2:igniter",
+      "face": "back",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 166,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/igniter_side.png",
+      "for": "redpower_2:igniter",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 167,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/igniter_top.png",
+      "for": "redpower_2:igniter",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 48,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/igniter_bottom.png",
+      "for": "redpower_2:igniter",
+      "face": "bottom",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 89,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/relay_front.png",
+      "for": "redpower_2:relay",
+      "face": "front",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/relay_back.png",
+      "for": "redpower_2:relay",
+      "face": "back",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 90,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/relay_side.png",
+      "for": "redpower_2:relay",
+      "face": "side",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 93,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/relay_top.png",
+      "for": "redpower_2:relay",
+      "face": "top",
+      "origin": "original"
+    },
+    {
+      "sheet": "eloraam/machine/machine1.png",
+      "archive": "redpowermechanical",
+      "index": 58,
+      "size": 16,
+      "out": "content/assets/redpower_2/textures/block/relay_bottom.png",
+      "for": "redpower_2:relay",
+      "face": "bottom",
+      "origin": "original"
     }
   ],
   "copies": [

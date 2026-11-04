@@ -3,6 +3,7 @@
 pub mod conductor;
 pub mod foundation;
 pub mod machine_lib;
+pub mod math;
 pub mod microblock;
 pub mod model_loader;
 pub mod multipart;

@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/dropper_front"
+    "north": "redpower_2:block/block_breaker_front",
+    "south": "redpower_2:block/block_breaker_back",
+    "east": "redpower_2:block/block_breaker_side",
+    "west": "redpower_2:block/block_breaker_side",
+    "up": "redpower_2:block/block_breaker_top",
+    "down": "redpower_2:block/block_breaker_bottom"
   }
 }

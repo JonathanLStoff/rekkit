@@ -1,18 +1,37 @@
 {
   "scenarios": [
     {
+      "name": "restrictor tube places",
+      "for": ["restrictor_tube"],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:restrictor_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:restrictor_tube"] }
+      ]
+    },
+    {
+      "name": "restrictor tube imposes 1000000 routing weight",
+      "for": ["restrictor_tube"],
+      "level": 3,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:restrictor_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:restrictor_tube"] }
+      ]
+    },
+    {
       "name": "restrictor tube provides overflow priority via 1000000 routing weight",
+      "for": ["restrictor_tube"],
       "level": 4,
       "covers": [
         "adds 1000000 virtual routing weight to pneumatic path to create overflow priority"
       ],
       "steps": [
-        {
-          "setblock": [0, 0, 0, "redpower_2:restrictor_tube"]
-        },
-        {
-          "setblock": [0, 0, 1, "minecraft:chest"]
-        }
+        { "setblock": [0, 0, 0, "redpower_2:restrictor_tube"] },
+        { "setblock": [0, 0, 1, "minecraft:chest"] },
+        { "expect_block": [0, 0, 0, "redpower_2:restrictor_tube"] },
+        { "expect_block": [0, 0, 1, "minecraft:chest"] }
       ]
     }
   ]

@@ -1,6 +1,9 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/orientable_with_bottom",
   "textures": {
-    "all": "minecraft:block/black_concrete"
+    "top": "redpower_2:block/display_top",
+    "bottom": "redpower_2:block/display_bottom",
+    "front": "redpower_2:block/display_front",
+    "side": "redpower_2:block/display_side"
   }
 }

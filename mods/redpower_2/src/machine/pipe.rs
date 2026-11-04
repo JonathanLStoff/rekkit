@@ -25,6 +25,10 @@ pub struct FluidBuffer {
 }
 
 impl FluidBuffer {
+    pub fn set_type(&mut self, t: i32) {
+        self.fluid_type = t;
+    }
+
     pub fn max_level(&self) -> i32 {
         PIPE_MAX_LEVEL
     }

@@ -1,7 +1,27 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "redpower_2:block/transposer",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "redpower_2:block/transposer",
+      "x": 270
+    },
+    "facing=north": {
       "model": "redpower_2:block/transposer"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/transposer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/transposer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/transposer",
+      "y": 90
     }
   }
 }

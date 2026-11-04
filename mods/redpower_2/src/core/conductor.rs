@@ -16,6 +16,7 @@
 //! - `BluePowerEndpoint` is a conductor that also keeps a display charge (`Charge = Vcap * 10`)
 //!   and a 32-tick history of "charged" bits (`Flow`), updated after its own iteration.
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Edge-slot index of each of the twelve cube edges (`BluePowerConductor.dirmap`). The value
@@ -45,7 +46,7 @@ pub const INV_CAP_ENDPOINT: f64 = 0.25;
 pub const INV_CAP_PANEL: f64 = 4.0;
 
 /// One Blutricity conductor (`BluePowerConductor`), optionally an endpoint (`BluePowerEndpoint`).
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BlueConductor {
     /// Connection bits: bit 0..2 straight slots per axis, bits 3..14 the twelve cube edges.
     pub imask: u32,
@@ -72,6 +73,8 @@ pub struct BlueConductor {
     /// Endpoint 32-tick "at least 60 V" history (`Flow`).
     pub flow: i32,
 }
+
+pub type BluePowerConductor = BlueConductor;
 
 impl BlueConductor {
     /// A plain conductor with the given inverse capacitance.

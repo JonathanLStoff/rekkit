@@ -17,6 +17,7 @@ pub mod igniter;
 pub mod io_expander;
 pub mod item_detector;
 pub mod logistics_gui;
+pub mod machine_blocks;
 pub mod magtube;
 pub mod pipe;
 pub mod project_table;
@@ -26,3 +27,5 @@ pub mod simple_gui;
 pub mod sorter_gui;
 pub mod tube;
 pub mod tube_flow;
+
+pub use crate::control::cpu_gui;

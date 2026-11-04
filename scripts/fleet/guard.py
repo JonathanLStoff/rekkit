@@ -70,6 +70,7 @@ FLEET_TASK = re.compile(r"(?:make\s+fleet-task|guard\.py\s+task)\s+(?:BEAD=)?['\
 DECOMPILED = "assets/decompiled"
 MAX_IDLE_STOPS = 10
 MAX_JAVA_READ = 200  # lines of decompiled Java one read may take
+MAX_SUBAGENTS = 4  # subagents working tickets at once; the conductor waits for a report before starting more
 WAIT_FOR_REPORTS = 600  # seconds a conductor's turn end waits for running subagents (hook timeout: 900)
 LIVE_WINDOW = 15 * 60  # a session with no tool call for this long is gone (died, out of credits, offline)
 JOURNAL = beads.STATE_DIR / "journal.jsonl"  # every session's commands, writes and subagent launches
@@ -342,6 +343,10 @@ def check_spawn(payload: dict) -> str | None:
     role = args.get("TypeName") or args.get("subagent_type") or args.get("Role") or "subagent"
     session = Session(payload)
     found = sorted(set(BEAD_ID.findall(prompt)))
+    busy = [b for b in running_tasks() if b not in found]
+    if found and len(busy) >= MAX_SUBAGENTS:
+        return (f"{len(busy)} subagents are already working ({', '.join(busy)}); at most {MAX_SUBAGENTS} at once. "
+                "End your turn: the stop hook waits for a report. File it (`make fleet-inbox`), then start the next.")
     PROMPTS.mkdir(parents=True, exist_ok=True)
     for bead in found:
         (PROMPTS / f"{bead}.md").write_text(f"<!-- role: {role}; started {time.strftime('%Y-%m-%dT%H:%M:%S')} -->\n"
@@ -594,6 +599,17 @@ def prime(fmt: str) -> int:
             text = beads.bd("prime", parse=False).strip()
         except beads.BeadsError:
             text = ""
+    # A mod in progress: this is a new, cleared or compacted conductor session. Hand it the resume page
+    # so it carries on at once, without a person.
+    try:
+        mod = beads.active_mod() if beads.available() else None
+        if mod:
+            import resume  # lazy: resume imports this module
+            text += (f"\n\nA mod is in progress: {mod}. You are its conductor; carry on without waiting to be told. "
+                     f"`make fleet-resume MOD={mod}` (below) shows what to file and what to restart.\n\n"
+                     + resume.digest(mod))
+    except Exception:  # noqa: BLE001 (best effort: Beads may be down)
+        pass
     if not text:
         return 0
     if fmt == "agy":
@@ -633,7 +649,7 @@ def main() -> int:
         print(f"You work {args.target}{' as ' + args.role if args.role else ''}. After each piece of work you finish "
               f"(a file, a block, a test passing), append one line saying what is done to {rel}: if you are "
               "interrupted, the next agent continues from it. When you finish (or cannot go on), write "
-              f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself. "
+              f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself. This is one ticket: report everything when it is done and stop; a fresh agent takes the next. "
               f"Your budget is {TASK_TOKENS:,} tokens of context: read narrowly (the spec's sections, then the "
               "Java a method at a time); past it the hooks let you only write your notes and a partial report.")
         earlier = earlier_work(args.target)

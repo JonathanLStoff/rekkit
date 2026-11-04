@@ -1,0 +1,104 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#48",
+    "back": "eloraam/machine/machine1.png#56",
+    "side": "eloraam/machine/machine1.png#55",
+    "top": "eloraam/machine/machine1.png#53",
+    "bottom": "eloraam/machine/machine1.png#48"
+  },
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Deployer",
+    "slots": [
+      [62, 17],
+      [80, 17],
+      [98, 17],
+      [62, 35],
+      [80, 35],
+      [98, 35],
+      [62, 53],
+      [80, 53],
+      [98, 53]
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "deployer placement",
+      "for": [
+        "deployer"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:deployer"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:deployer"]
+        }
+      ]
+    },
+    {
+      "name": "deployer holds 9 slots",
+      "for": [
+        "deployer"
+      ],
+      "level": 3,
+      "covers": [
+        "holds 9 inventory slots for items to deploy"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:deployer"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:deployer"]
+        }
+      ]
+    },
+    {
+      "name": "deployer simulates right-click with held item",
+      "for": [
+        "deployer"
+      ],
+      "level": 4,
+      "covers": [
+        "simulates right-click with held item on redstone pulse"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:deployer"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:deployer"]
+        }
+      ]
+    },
+    {
+      "name": "deployer keeps inventory across reload",
+      "for": [
+        "deployer"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its inventory when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:deployer"]
+        },
+        {
+          "reload_chunk": [0, 0, 0]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:deployer"]
+        }
+      ]
+    }
+  ]
+}

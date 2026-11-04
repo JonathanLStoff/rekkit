@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/hopper_outside"
+    "north": "redpower_2:block/relay_front",
+    "south": "redpower_2:block/relay_back",
+    "east": "redpower_2:block/relay_side",
+    "west": "redpower_2:block/relay_side",
+    "up": "redpower_2:block/relay_top",
+    "down": "redpower_2:block/relay_bottom"
   }
 }

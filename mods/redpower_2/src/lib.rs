@@ -40,7 +40,9 @@ pub use rekkit_core::{HORIZON_REVISION, MIXINS_REVISION, NATIVE_HOOKS_API};
 
 #[path = "world/athame.rs"]
 pub mod athame;
+pub mod control;
 pub mod core;
+pub mod fluid;
 #[path = "world/flora.rs"]
 pub mod flora;
 pub mod machine;
@@ -50,9 +52,12 @@ pub mod world_hooks;
 pub mod ores;
 #[path = "world/stone.rs"]
 pub mod stone;
+pub mod tubes;
 pub mod wiring;
-pub use core::conductor::{BlueConductor, BlueGrid};
+pub use control::cpu_gui::{ContainerCPU, CpuRegisters, GuiCPU};
 pub use core::{Vector3, WorldCoord};
+pub use machine::backplane::{Backplane, MemoryMap};
+pub use tubes::{RedstoneTube, RestrictorTube};
 
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -1588,7 +1593,7 @@ impl Cpu6502 {
             sp: 0xFD,
             pc: 0x0400,
             status: 0x20,
-            halted: false,
+            halted: true,
             ram: vec![0; Self::RAM_SIZE],
             io_expander: BundledSignal::new(),
             cycle_accumulator: 0,
@@ -1623,6 +1628,25 @@ impl Cpu6502 {
         }
     }
 
+    /// Synchronize 6502 address space with Backplane bus MemoryMap.
+    pub fn sync_with_backplane(&mut self, mmap: &machine::backplane::MemoryMap) {
+        let onboard_len = mmap.onboard.len().min(machine::backplane::RAM_BANK_SIZE);
+        self.ram[..onboard_len].copy_from_slice(&mmap.onboard[..onboard_len]);
+        for bank in 0..machine::backplane::MAX_BACKPLANES {
+            let start = (bank + 1) * machine::backplane::RAM_BANK_SIZE;
+            let end = start + machine::backplane::RAM_BANK_SIZE;
+            if let Some(bp) = &mmap.backplanes[bank] {
+                if let Some(mem) = bp.memory() {
+                    self.ram[start..end].copy_from_slice(mem);
+                } else {
+                    self.ram[start..end].fill(machine::backplane::OPEN_BUS);
+                }
+            } else {
+                self.ram[start..end].fill(machine::backplane::OPEN_BUS);
+            }
+        }
+    }
+
     fn update_nz(&mut self, val: u8) {
         if val == 0 {
             self.status |= 0x02;
@@ -1648,6 +1672,218 @@ impl Cpu6502 {
         self.read_u8(addr)
     }
 
+    /// Reset CPU to cold boot state (`TileCPU.coldBootCPU`).
+    pub fn cold_boot(&mut self) {
+        self.a = 0;
+        self.x = 0;
+        self.y = 0;
+        self.sp = 0xFD;
+        self.pc = 0x0400;
+        self.status = 0x20;
+        self.halted = true;
+        self.cycle_accumulator = 0;
+    }
+
+    /// Warm boot / resume CPU execution (`TileCPU.warmBootCPU`).
+    pub fn warm_boot(&mut self) {
+        self.halted = false;
+    }
+
+    /// Halt CPU execution (`TileCPU.haltCPU`).
+    pub fn halt(&mut self) {
+        self.halted = true;
+    }
+
+    /// Check if CPU is actively running (`TileCPU.isRunning()`).
+    pub fn is_running(&self) -> bool {
+        !self.halted
+    }
+
+    /// Execute a single instruction at PC if not halted, returning true if an instruction ran.
+    pub fn execute_one_instruction(&mut self) -> bool {
+        if self.halted {
+            return false;
+        }
+        let op = self.read_u8(self.pc);
+        self.pc = self.pc.wrapping_add(1);
+
+        match op {
+            0x00 => {
+                // BRK
+                self.halted = true;
+            }
+            0xEA => {
+                // NOP
+            }
+            0xA9 => {
+                // LDA #imm
+                let imm = self.read_u8(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                self.a = imm;
+                self.update_nz(self.a);
+            }
+            0xA2 => {
+                // LDX #imm
+                let imm = self.read_u8(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                self.x = imm;
+                self.update_nz(self.x);
+            }
+            0xA0 => {
+                // LDY #imm
+                let imm = self.read_u8(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                self.y = imm;
+                self.update_nz(self.y);
+            }
+            0x8D => {
+                // STA abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.write_u8(lo | hi, self.a);
+            }
+            0x8E => {
+                // STX abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.write_u8(lo | hi, self.x);
+            }
+            0x8C => {
+                // STY abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.write_u8(lo | hi, self.y);
+            }
+            0xAD => {
+                // LDA abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.a = self.read_u8(lo | hi);
+                self.update_nz(self.a);
+            }
+            0xAE => {
+                // LDX abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.x = self.read_u8(lo | hi);
+                self.update_nz(self.x);
+            }
+            0xAC => {
+                // LDY abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = self.pc.wrapping_add(2);
+                self.y = self.read_u8(lo | hi);
+                self.update_nz(self.y);
+            }
+            0xC9 => {
+                // CMP #imm
+                let imm = self.read_u8(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                let diff = (self.a as u16).wrapping_sub(imm as u16);
+                if self.a >= imm {
+                    self.status |= 1;
+                } else {
+                    self.status &= !1;
+                }
+                self.update_nz((diff & 0xFF) as u8);
+            }
+            0x69 => {
+                // ADC #imm
+                let imm = self.read_u8(self.pc);
+                self.pc = self.pc.wrapping_add(1);
+                let sum = (self.a as u16) + (imm as u16) + ((self.status & 1) as u16);
+                if sum > 0xFF {
+                    self.status |= 1;
+                } else {
+                    self.status &= !1;
+                }
+                self.a = (sum & 0xFF) as u8;
+                self.update_nz(self.a);
+            }
+            0xE8 => {
+                // INX
+                self.x = self.x.wrapping_add(1);
+                self.update_nz(self.x);
+            }
+            0xC8 => {
+                // INY
+                self.y = self.y.wrapping_add(1);
+                self.update_nz(self.y);
+            }
+            0xCA => {
+                // DEX
+                self.x = self.x.wrapping_sub(1);
+                self.update_nz(self.x);
+            }
+            0x88 => {
+                // DEY
+                self.y = self.y.wrapping_sub(1);
+                self.update_nz(self.y);
+            }
+            0x4C => {
+                // JMP abs
+                let lo = self.read_u8(self.pc) as u16;
+                let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
+                self.pc = lo | hi;
+            }
+            0x48 => {
+                // PHA
+                self.push_u8(self.a);
+            }
+            0x68 => {
+                // PLA
+                self.a = self.pop_u8();
+                self.update_nz(self.a);
+            }
+            0x18 => {
+                // CLC
+                self.status &= !1;
+            }
+            0x38 => {
+                // SEC
+                self.status |= 1;
+            }
+            0xF0 => {
+                // BEQ rel
+                let offset = self.read_u8(self.pc) as i8;
+                self.pc = self.pc.wrapping_add(1);
+                if (self.status & 0x02) != 0 {
+                    self.pc = ((self.pc as i32) + (offset as i32)) as u16;
+                }
+            }
+            0xD0 => {
+                // BNE rel
+                let offset = self.read_u8(self.pc) as i8;
+                self.pc = self.pc.wrapping_add(1);
+                if (self.status & 0x02) == 0 {
+                    self.pc = ((self.pc as i32) + (offset as i32)) as u16;
+                }
+            }
+            _ => {
+                // Unknown opcode -> halt safely
+                self.halted = true;
+            }
+        }
+        true
+    }
+
+    /// Single-step execution for hardware debugger: executes exactly one instruction.
+    pub fn step_single(&mut self) -> bool {
+        let was_halted = self.halted;
+        self.halted = false;
+        let ok = self.execute_one_instruction();
+        if was_halted {
+            self.halted = true;
+        }
+        ok
+    }
+
     /// Execute up to `max_instructions` (capped at available burst cycle accumulator), returning
     /// the number of instructions executed. Automatically accumulates +1,000 cycles per world tick (§2.7).
     pub fn step_tick(&mut self, max_instructions: usize) -> usize {
@@ -1655,136 +1891,10 @@ impl Cpu6502 {
         let limit = max_instructions.min(self.cycle_accumulator);
         let mut executed = 0;
         while !self.halted && executed < limit {
-            let op = self.read_u8(self.pc);
-            self.pc = self.pc.wrapping_add(1);
-            executed += 1;
-
-            match op {
-                0x00 => {
-                    // BRK
-                    self.halted = true;
-                }
-                0xEA => {
-                    // NOP
-                }
-                0xA9 => {
-                    // LDA #imm
-                    let imm = self.read_u8(self.pc);
-                    self.pc = self.pc.wrapping_add(1);
-                    self.a = imm;
-                    self.update_nz(self.a);
-                }
-                0xA2 => {
-                    // LDX #imm
-                    let imm = self.read_u8(self.pc);
-                    self.pc = self.pc.wrapping_add(1);
-                    self.x = imm;
-                    self.update_nz(self.x);
-                }
-                0xA0 => {
-                    // LDY #imm
-                    let imm = self.read_u8(self.pc);
-                    self.pc = self.pc.wrapping_add(1);
-                    self.y = imm;
-                    self.update_nz(self.y);
-                }
-                0x8D => {
-                    // STA abs
-                    let lo = self.read_u8(self.pc) as u16;
-                    let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
-                    self.pc = self.pc.wrapping_add(2);
-                    self.write_u8(lo | hi, self.a);
-                }
-                0x8E => {
-                    // STX abs
-                    let lo = self.read_u8(self.pc) as u16;
-                    let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
-                    self.pc = self.pc.wrapping_add(2);
-                    self.write_u8(lo | hi, self.x);
-                }
-                0x8C => {
-                    // STY abs
-                    let lo = self.read_u8(self.pc) as u16;
-                    let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
-                    self.pc = self.pc.wrapping_add(2);
-                    self.write_u8(lo | hi, self.y);
-                }
-                0x69 => {
-                    // ADC #imm
-                    let imm = self.read_u8(self.pc);
-                    self.pc = self.pc.wrapping_add(1);
-                    let sum = (self.a as u16) + (imm as u16) + ((self.status & 1) as u16);
-                    if sum > 0xFF {
-                        self.status |= 1;
-                    } else {
-                        self.status &= !1;
-                    }
-                    self.a = (sum & 0xFF) as u8;
-                    self.update_nz(self.a);
-                }
-                0xE8 => {
-                    // INX
-                    self.x = self.x.wrapping_add(1);
-                    self.update_nz(self.x);
-                }
-                0xC8 => {
-                    // INY
-                    self.y = self.y.wrapping_add(1);
-                    self.update_nz(self.y);
-                }
-                0xCA => {
-                    // DEX
-                    self.x = self.x.wrapping_sub(1);
-                    self.update_nz(self.x);
-                }
-                0x88 => {
-                    // DEY
-                    self.y = self.y.wrapping_sub(1);
-                    self.update_nz(self.y);
-                }
-                0x4C => {
-                    // JMP abs
-                    let lo = self.read_u8(self.pc) as u16;
-                    let hi = (self.read_u8(self.pc.wrapping_add(1)) as u16) << 8;
-                    self.pc = lo | hi;
-                }
-                0x48 => {
-                    // PHA
-                    self.push_u8(self.a);
-                }
-                0x68 => {
-                    // PLA
-                    self.a = self.pop_u8();
-                    self.update_nz(self.a);
-                }
-                0x18 => {
-                    // CLC
-                    self.status &= !1;
-                }
-                0x38 => {
-                    // SEC
-                    self.status |= 1;
-                }
-                0xF0 => {
-                    // BEQ rel
-                    let offset = self.read_u8(self.pc) as i8;
-                    self.pc = self.pc.wrapping_add(1);
-                    if (self.status & 0x02) != 0 {
-                        self.pc = ((self.pc as i32) + (offset as i32)) as u16;
-                    }
-                }
-                0xD0 => {
-                    // BNE rel
-                    let offset = self.read_u8(self.pc) as i8;
-                    self.pc = self.pc.wrapping_add(1);
-                    if (self.status & 0x02) == 0 {
-                        self.pc = ((self.pc as i32) + (offset as i32)) as u16;
-                    }
-                }
-                _ => {
-                    // Unknown opcode -> halt safely
-                    self.halted = true;
-                }
+            if self.execute_one_instruction() {
+                executed += 1;
+            } else {
+                break;
             }
         }
         self.cycle_accumulator = self.cycle_accumulator.saturating_sub(executed);
@@ -2376,11 +2486,16 @@ pub struct RedPower2Mod {
 impl RedPower2Mod {
     pub const BLOCK_ALLOY_FURNACE: &'static str = "redpower_2:alloy_furnace";
     pub const BLOCK_PNEUMATIC_TUBE: &'static str = "redpower_2:pneumatic_tube";
+    pub const BLOCK_REDSTONE_TUBE: &'static str = "redpower_2:redstone_tube";
     pub const BLOCK_RESTRICTOR_TUBE: &'static str = "redpower_2:restrictor_tube";
     pub const BLOCK_BUFFER: &'static str = "redpower_2:buffer";
     pub const BLOCK_CPU: &'static str = "redpower_2:cpu";
     pub const ITEM_SCREWDRIVER: &'static str = "redpower_2:screwdriver";
     pub const ITEM_PAINT_BRUSH: &'static str = "redpower_2:paint_brush";
+
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     pub fn owns_id(id: &str) -> bool {
         id.starts_with("redpower_2:")
@@ -2602,8 +2717,17 @@ impl HorizonNativeMod for RedPower2Mod {
             entity.data = vec![state.conductor.voltage.round() as i32];
         } else if entity.id == Self::BLOCK_CPU {
             let cpu = self.cpus.entry(pos).or_default();
-            let ran = cpu.step_tick(Cpu6502::CYCLES_PER_TICK);
-            entity.data = vec![ran as i32, i32::from(cpu.io_expander.to_digital_mask())];
+            let _ran = cpu.step_tick(Cpu6502::CYCLES_PER_TICK);
+            let mut container = control::cpu_gui::ContainerCPU::from_nbt(&entity.nbt);
+            container.sync_from_cpu(cpu);
+            container.write_nbt(&mut entity.nbt);
+            entity.data = container.to_data();
+        } else if entity.id == "redpower_2:io_expander" {
+            let mut io = control::io_expander::IoExpander::default();
+            io.load_nbt(&entity.nbt);
+            io.tick_step();
+            io.save_nbt(&mut entity.nbt);
+            entity.data = io.to_ints().to_vec();
         }
     }
 
@@ -2676,6 +2800,24 @@ impl HorizonNativeMod for RedPower2Mod {
                 inventory_y: machine::alloy_furnace::GUI_INVENTORY[1],
                 own_labels: false,
             });
+        } else if block == Self::BLOCK_CPU {
+            *screen = Some(NativeScreen {
+                width: control::cpu_gui::GUI_WIDTH,
+                height: control::cpu_gui::GUI_HEIGHT,
+                slots: vec![],
+                inventory_x: -1.0,
+                inventory_y: -1.0,
+                own_labels: true,
+            });
+        } else if block == "redpower_2:io_expander" {
+            *screen = Some(NativeScreen {
+                width: control::io_expander::GUI_SIZE[0],
+                height: control::io_expander::GUI_SIZE[1],
+                slots: vec![],
+                inventory_x: -1.0,
+                inventory_y: -1.0,
+                own_labels: true,
+            });
         }
     }
 
@@ -2693,6 +2835,17 @@ impl HorizonNativeMod for RedPower2Mod {
         let Some(entity) = entity else {
             return;
         };
+        if block_at_pos == "redpower_2:io_expander" && stack.item_id == Self::ITEM_SCREWDRIVER {
+            let cur = entity
+                .nbt
+                .get("rot")
+                .and_then(|v| v.parse::<u32>().ok())
+                .unwrap_or(0);
+            let next = (cur + 1) & 3;
+            entity.nbt.insert("rot".into(), next.to_string());
+            *claimed = true;
+            return;
+        }
         if stack.item_id == Self::ITEM_SCREWDRIVER
             && machine::base::screwdriver_rotate_nbt(block_at_pos, &mut entity.nbt).is_some()
         {
@@ -2721,7 +2874,10 @@ impl HorizonNativeMod for RedPower2Mod {
         }
         if matches!(
             block,
-            "redpower_2:item_detector" | "redpower_2:io_expander" | Self::BLOCK_ALLOY_FURNACE
+            "redpower_2:item_detector"
+                | "redpower_2:io_expander"
+                | Self::BLOCK_ALLOY_FURNACE
+                | Self::BLOCK_REDSTONE_TUBE
         ) {
             *source = true;
         }
@@ -2738,8 +2894,24 @@ impl HorizonNativeMod for RedPower2Mod {
             return;
         }
         if let Some(entity) = entity {
-            if let Some(sig) = entity.nbt.get("signal").and_then(|v| v.parse::<i32>().ok()) {
-                *power = (*power).max(sig.clamp(0, 15));
+            if let Some(sig) = entity
+                .nbt
+                .get("signal")
+                .or_else(|| entity.nbt.get("power_state"))
+                .and_then(|v| v.parse::<i32>().ok())
+            {
+                let lvl = if block == Self::BLOCK_REDSTONE_TUBE {
+                    if sig > 15 {
+                        ((sig + 16) / 17).clamp(1, 15)
+                    } else if sig > 0 && !_direct {
+                        1
+                    } else {
+                        0
+                    }
+                } else {
+                    sig.clamp(0, 15)
+                };
+                *power = (*power).max(lvl);
             }
         }
     }
@@ -2802,6 +2974,10 @@ impl HorizonNativeMod for RedPower2Mod {
             *button = machine::logistics_gui::regulator_click(at, right);
             return;
         }
+        if block == Self::BLOCK_CPU {
+            *button = control::cpu_gui::GuiCPU::screen_click_button(at, data);
+            return;
+        }
         if at[0] >= 10.0 && at[0] <= 100.0 && at[1] >= 10.0 && at[1] <= 40.0 {
             *button = Some(1);
         }
@@ -2809,6 +2985,14 @@ impl HorizonNativeMod for RedPower2Mod {
 
     fn native_menu_button(&mut self, pos: [i32; 3], entity: &mut ModBlockEntity, id: i32) {
         if !Self::owns_id(&entity.id) {
+            return;
+        }
+        if entity.id == Self::BLOCK_CPU {
+            let mut container = control::cpu_gui::ContainerCPU::from_nbt(&entity.nbt);
+            let mut cpu = self.cpus.get_mut(&pos);
+            container.apply_menu_button(id, cpu.as_deref_mut());
+            container.write_nbt(&mut entity.nbt);
+            entity.data = container.to_data();
             return;
         }
         if entity.id == machine::project_table::BLOCK_ID {
@@ -3451,6 +3635,46 @@ mod tests {
         assert_eq!(ran, 6);
         assert!(cpu.halted);
         assert_eq!(cpu.a, 0x0F);
+    }
+
+    #[test]
+    fn test_cpu_backplane_ram_expansion_and_bus_io() {
+        let mut mmap = machine::backplane::MemoryMap::new();
+        // Chain 2 RAM modules (banks 0 and 1: 0x2000..0x3FFF and 0x4000..0x5FFF)
+        mmap.refresh(vec![
+            Some(machine::backplane::Backplane::ram(0)),
+            Some(machine::backplane::Backplane::ram(0)),
+        ]);
+        assert_eq!(mmap.ram_size(), 24 * 1024);
+
+        let mut cpu = Cpu6502::new();
+        cpu.sync_with_backplane(&mmap);
+
+        // 6502 Program:
+        // LDA #$42
+        // STA $2050   ; Write to 8K RAM expansion module 1
+        // LDA #$99
+        // STA $4010   ; Write to 8K RAM expansion module 2
+        // LDA $2050   ; Read back from module 1 -> A = $42
+        // LDX $6000   ; Read from unmapped bank 2 (no RAM) -> X = $FF (open bus)
+        // BRK
+        let prog = [
+            0xA9, 0x42,             // LDA #$42
+            0x8D, 0x50, 0x20,       // STA $2050
+            0xA9, 0x99,             // LDA #$99
+            0x8D, 0x10, 0x40,       // STA $4010
+            0xAD, 0x50, 0x20,       // LDA $2050
+            0xAE, 0x00, 0x60,       // LDX $6000
+            0x00,                   // BRK
+        ];
+        cpu.load_program(0x0400, &prog);
+        let ran = cpu.step_tick(100);
+        assert!(ran > 0);
+        assert!(cpu.halted);
+        assert_eq!(cpu.a, 0x42);
+        assert_eq!(cpu.x, machine::backplane::OPEN_BUS);
+        assert_eq!(cpu.read_u8(0x2050), 0x42);
+        assert_eq!(cpu.read_u8(0x4010), 0x99);
     }
 
     #[test]

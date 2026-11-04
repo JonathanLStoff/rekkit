@@ -1,0 +1,99 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "front": "eloraam/control/control1.png#19",
+    "top": "eloraam/control/control1.png#21",
+    "bottom": "eloraam/control/control1.png#23",
+    "side": "eloraam/control/control1.png#20"
+  },
+  "gui": {
+    "size": [
+      350,
+      230
+    ],
+    "title": "Display",
+    "slots": []
+  },
+  "scenarios": [
+    {
+      "name": "monitor placement",
+      "for": [
+        "monitor"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:monitor"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:monitor"]
+        }
+      ]
+    },
+    {
+      "name": "monitor terminal character buffer and blitter",
+      "for": [
+        "monitor"
+      ],
+      "level": 3,
+      "covers": [
+        "displays 80x50 character terminal GUI with cursor and hardware blitter"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:monitor"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:monitor"]
+        }
+      ]
+    },
+    {
+      "name": "monitor connects to CPU over backplane and transmits keyboard input packets",
+      "for": [
+        "monitor"
+      ],
+      "level": 4,
+      "covers": [
+        "connects to CPU over backplane and transmits keyboard input packets"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:cpu"]
+        },
+        {
+          "setblock": [0, 0, 1, "redpower_2:backplane"]
+        },
+        {
+          "setblock": [0, 0, 2, "redpower_2:monitor"]
+        },
+        {
+          "expect_block": [0, 0, 2, "redpower_2:monitor"]
+        }
+      ]
+    },
+    {
+      "name": "monitor keeps screen buffer across chunk reload",
+      "for": [
+        "monitor"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its 4000-byte screen buffer when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:monitor"]
+        },
+        {
+          "reload_chunk": [0, 0, 0]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:monitor"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "front": "eloraam/control/control1.png#24",
+    "top": "eloraam/control/control1.png#21",
+    "bottom": "eloraam/control/control1.png#23",
+    "side": "eloraam/control/control1.png#20"
+  },
+  "gui": {
+    "size": [
+      227,
+      145
+    ],
+    "title": "CPU",
+    "slots": []
+  },
+  "energy": null,
+  "scenarios": [
+    {
+      "name": "cpu placement",
+      "for": [
+        "cpu"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:cpu"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:cpu"]
+        }
+      ]
+    },
+    {
+      "name": "cpu execution and onboard ram",
+      "for": [
+        "cpu"
+      ],
+      "level": 3,
+      "covers": [
+        "executes 6502 machine code at 1000 cycles per tick with 8KB onboard RAM"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:cpu"]
+        },
+        {
+          "wait": 5
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:cpu"]
+        }
+      ]
+    },
+    {
+      "name": "cpu controls peripherals over backplane bus",
+      "for": [
+        "cpu"
+      ],
+      "level": 4,
+      "covers": [
+        "controls peripherals and memory over backplane bus"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:cpu"]
+        },
+        {
+          "setblock": [0, 0, 1, "redpower_2:ribbon_cable"]
+        },
+        {
+          "setblock": [0, 0, 2, "redpower_2:io_expander"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:cpu"]
+        }
+      ]
+    },
+    {
+      "name": "cpu keeps registers and ram across reload",
+      "for": [
+        "cpu"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its 6502 registers and RAM when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:cpu"]
+        },
+        {
+          "reload_chunk": [0, 0, 0]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:cpu"]
+        }
+      ]
+    }
+  ]
+}

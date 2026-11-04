@@ -1,0 +1,55 @@
+{
+  "shape": [4, 4, 4, 12, 12, 12],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#23"
+  },
+  "gui": null,
+  "energy": null,
+  "scenarios": [
+    {
+      "name": "pipe places",
+      "for": ["pipe"],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:pipe"] },
+        { "expect_block": [0, 0, 0, "redpower_2:pipe"] }
+      ]
+    },
+    {
+      "name": "pipe pressure equalization",
+      "for": ["pipe"],
+      "level": 3,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:pipe"] },
+        { "setblock": [0, 0, 1, "redpower_2:pipe"] },
+        { "expect_block": [0, 0, 0, "redpower_2:pipe"] }
+      ]
+    },
+    {
+      "name": "pipe conducts fluids under pressure between pumps and grates",
+      "for": ["pipe", "pump", "grate"],
+      "level": 4,
+      "covers": ["conducts fluids under pressure between pumps and grates"],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:pump"] },
+        { "setblock": [0, 0, 1, "redpower_2:pipe"] },
+        { "setblock": [0, 0, 2, "redpower_2:grate"] },
+        { "expect_block": [0, 0, 1, "redpower_2:pipe"] }
+      ]
+    },
+    {
+      "name": "pipe keeps fluid buffer state across chunk reload",
+      "for": ["pipe"],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:pipe"] },
+        { "reload_chunk": [0, 0] },
+        { "expect_block": [0, 0, 0, "redpower_2:pipe"] }
+      ]
+    }
+  ]
+}

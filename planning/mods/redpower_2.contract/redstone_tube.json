@@ -1,0 +1,38 @@
+{
+  "scenarios": [
+    {
+      "name": "redstone tube places",
+      "for": ["redstone_tube"],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:redstone_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:redstone_tube"] }
+      ]
+    },
+    {
+      "name": "redstone tube conducts redstone signal alongside item transport",
+      "for": ["redstone_tube"],
+      "level": 3,
+      "covers": [],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:redstone_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:redstone_tube"] }
+      ]
+    },
+    {
+      "name": "redstone tube combines pneumatic item transport with redstone signal conduction",
+      "for": ["redstone_tube"],
+      "level": 4,
+      "covers": [
+        "combines pneumatic item transport with redstone signal conduction"
+      ],
+      "steps": [
+        { "setblock": [0, 0, 0, "redpower_2:redstone_tube"] },
+        { "setblock": [0, 0, 1, "redpower_2:pneumatic_tube"] },
+        { "expect_block": [0, 0, 0, "redpower_2:redstone_tube"] },
+        { "expect_block": [0, 0, 1, "redpower_2:pneumatic_tube"] }
+      ]
+    }
+  ]
+}

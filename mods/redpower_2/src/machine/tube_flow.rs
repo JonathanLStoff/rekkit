@@ -80,6 +80,20 @@ impl Tube {
         }
     }
 
+    /// `TileTube.tryPaint`: paint the tube core (part 29) with dye `color` (1..16).
+    pub fn try_paint(&mut self, part: i32, _side: u8, color: u8) -> bool {
+        if part == 29 {
+            if self.paint_color == color {
+                return false;
+            }
+            self.paint_color = color;
+            self.has_changed = true;
+            true
+        } else {
+            false
+        }
+    }
+
     fn colour_ok(&self, ti: &TubeItem) -> bool {
         !(ti.color != 0 && self.paint_color != 0 && ti.color != self.paint_color)
     }

@@ -46,11 +46,11 @@ in pieces (`make java-outline`, `make java-show`).
    assets: the original art and sound, tagged origin original).
 4. Step 3 Code (and the tickets of steps 5 and 6). Loop: `make fleet-ready
    MOD=<id>` lists the tickets whose predecessors are closed; start one
-   subagent per ready ticket, of the ticket's role, all at once (up to ~10),
+   subagent per ready ticket, of the ticket's role, all at once (at most 4 subagents at a time; the hook refuses a fifth),
    each prompt the ticket's id and `make fleet-task BEAD=<id> ROLE=<role>`
    (the ticket's description is its brief). End your turn while they work;
    `make fleet-inbox` files the reports (follow-ups become new beads); run
-   `make fleet-ready` again. A partial report (the 200k budget ran out) means a
+   `make fleet-ready` again. A partial report (that subagent's 200k budget ran out) means a
    fresh subagent on the same ticket. Repeat until no ticket is open.
 5. Step 4 Check. `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings,
    tests, check-mods, harness dry run) and `parity-critic` in Check mode (the
@@ -135,10 +135,27 @@ The only commands you need (never run `bd ... --help`):
 - **Small tasks, many at once.** A subagent gets at most about 200k tokens of
   work: one to three blocks or items (each with its contract file), one
   subsystem slice, one GUI, one scenario's behaviour. Never a whole step. Start
-  as many as have independent work (6-10 at a time is fine): they write
+  as many as have independent work, at most 4 at a time (the hook refuses more): they write
   different files. The hooks stop a subagent at 200k tokens of context; it
   writes its progress notes and a partial report, and you start a fresh one on
   what is left (`make fleet-task` shows it the earlier work).
+- **The 200k limit is a subagent's, never yours.** It is the context of the
+  agent working one ticket. That agent does the ticket, writes its full report
+  and ends; it is never asked to carry on into another ticket. A fresh subagent
+  (empty context) takes the next ready ticket, so no worker nears 200k. You
+  keep nothing a ticket needs in your head: its brief is in Beads, its report
+  in the inbox, its notes in target/fleet/progress/. Do not wrap up, stop or
+  hand back to the human because of 200k.
+- **Your own context.** File each report as it arrives (`make fleet-inbox`),
+  record each decision in Beads, and read narrowly. When your context is
+  getting full (your tool says so, or compaction is near), do not start
+  new subagents: wait until every in-flight subagent has reported and its
+  report is filed, `bd comment` the epic with where you are and what is next,
+  then clear or compact your session (Claude Code: `/compact`; agy and
+  others: their clear command) and carry on at once with `make fleet-resume
+  MOD=<id>`, then step 4's loop. Never ask the human to restart you.
+  On a local model (no subagents), do the same after every ticket: file its
+  report, then clear before the next.
 - While subagents work, end your turn: the stop hook waits for their reports.
   Do not send status messages, read files or set short timers to pass the
   time: each check is a whole turn paid again. A long command (`make

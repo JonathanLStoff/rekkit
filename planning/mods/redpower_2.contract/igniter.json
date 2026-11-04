@@ -1,0 +1,48 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#164",
+    "back": "eloraam/machine/machine1.png#48",
+    "side": "eloraam/machine/machine1.png#166",
+    "top": "eloraam/machine/machine1.png#167",
+    "bottom": "eloraam/machine/machine1.png#48"
+  },
+  "gui": null,
+  "scenarios": [
+    {
+      "name": "igniter placement",
+      "for": [
+        "igniter"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:igniter"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:igniter"]
+        }
+      ]
+    },
+    {
+      "name": "igniter creates fire in front on pulse and extinguishes when unpowered",
+      "for": [
+        "igniter"
+      ],
+      "level": 4,
+      "covers": [
+        "creates fire in front on redstone pulse and extinguishes it when unpowered"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:igniter"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:igniter"]
+        }
+      ]
+    }
+  ]
+}

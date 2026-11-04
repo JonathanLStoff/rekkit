@@ -1,0 +1,51 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#49",
+    "back": "eloraam/machine/machine1.png#58",
+    "side": "eloraam/machine/machine1.png#51",
+    "top": "eloraam/machine/machine1.png#51",
+    "bottom": "eloraam/machine/machine1.png#58"
+  },
+  "gui": null,
+  "scenarios": [
+    {
+      "name": "block breaker placement",
+      "for": [
+        "block_breaker"
+      ],
+      "level": 1,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:block_breaker"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:block_breaker"]
+        }
+      ]
+    },
+    {
+      "name": "block breaker breaks adjacent block on pulse and ejects into tube",
+      "for": [
+        "block_breaker"
+      ],
+      "level": 4,
+      "covers": [
+        "breaks adjacent block on redstone pulse and ejects into tube"
+      ],
+      "steps": [
+        {
+          "setblock": [0, 0, 0, "redpower_2:block_breaker"]
+        },
+        {
+          "setblock": [0, 0, 1, "redpower_2:pneumatic_tube"]
+        },
+        {
+          "expect_block": [0, 0, 0, "redpower_2:block_breaker"]
+        }
+      ]
+    }
+  ]
+}

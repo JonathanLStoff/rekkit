@@ -1,6 +1,11 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/dispenser_front"
+    "north": "redpower_2:block/igniter_front",
+    "south": "redpower_2:block/igniter_back",
+    "east": "redpower_2:block/igniter_side",
+    "west": "redpower_2:block/igniter_side",
+    "up": "redpower_2:block/igniter_top",
+    "down": "redpower_2:block/igniter_bottom"
   }
 }
