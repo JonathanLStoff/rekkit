@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "indigo_dye",
+  "sprite": "eloraam/base/items1.png#13",
+  "max_stack": 64
+}

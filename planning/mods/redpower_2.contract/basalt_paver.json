@@ -1,0 +1,37 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#22"
+  },
+  "scenarios": [
+    {
+      "name": "places as a full solid stone block with its own texture",
+      "for": [
+        "basalt_paver"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a full solid stone block with its own texture"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt_paver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt_paver"
+          ]
+        }
+      ]
+    }
+  ]
+}

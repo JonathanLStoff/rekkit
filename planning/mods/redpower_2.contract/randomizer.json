@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#192",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "clock pulse randomly activates 1 of 3 outputs with 33% probability",
+      "for": [
+        "randomizer"
+      ],
+      "level": 4,
+      "covers": [
+        "clock pulse randomly activates 1 of 3 outputs with 33% probability"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:randomizer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:randomizer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "clock pulse randomly activates 1 of 3 outputs with 33% probability",
+      "for": [
+        "randomizer"
+      ],
+      "level": 1,
+      "covers": [
+        "clock pulse randomly activates 1 of 3 outputs with 33% probability"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:randomizer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:randomizer"
+          ]
+        }
+      ]
+    }
+  ]
+}

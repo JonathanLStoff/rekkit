@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/redstone_torch"
-  }
+    "up": "redpower_2:block/array1_001",
+    "down": "redpower_2:block/logic1_000",
+    "north": "redpower_2:block/logic1_000",
+    "south": "redpower_2:block/logic1_000",
+    "east": "redpower_2:block/logic1_000",
+    "west": "redpower_2:block/logic1_000",
+    "particle": "redpower_2:block/array1_001"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/array1_001"
 }

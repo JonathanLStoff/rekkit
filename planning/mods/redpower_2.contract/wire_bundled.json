@@ -1,0 +1,136 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    4,
+    16
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#2"
+  },
+  "scenarios": [
+    {
+      "name": "multiplexes 16 insulated redstone channels into a single cable",
+      "for": [
+        "wire_bundled"
+      ],
+      "level": 4,
+      "covers": [
+        "multiplexes 16 insulated redstone channels into a single cable"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "multiplexes 16 insulated redstone channels into a single cable",
+      "for": [
+        "wire_bundled"
+      ],
+      "level": 3,
+      "covers": [
+        "multiplexes 16 insulated redstone channels into a single cable"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wire_bundled keeps state across chunk reload",
+      "for": [
+        "wire_bundled"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "multiplexes 16 insulated redstone channels into a single cable",
+      "for": [
+        "wire_bundled"
+      ],
+      "level": 1,
+      "covers": [
+        "multiplexes 16 insulated redstone channels into a single cable"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_bundled"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

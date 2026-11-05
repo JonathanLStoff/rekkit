@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic2.png#240",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "delays signal by 1 tick and isolates inputs to prevent backflow",
+      "for": [
+        "buffer_gate"
+      ],
+      "level": 4,
+      "covers": [
+        "delays signal by 1 tick and isolates inputs to prevent backflow"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:buffer_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:buffer_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "delays signal by 1 tick and isolates inputs to prevent backflow",
+      "for": [
+        "buffer_gate"
+      ],
+      "level": 1,
+      "covers": [
+        "delays signal by 1 tick and isolates inputs to prevent backflow"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:buffer_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:buffer_gate"
+          ]
+        }
+      ]
+    }
+  ]
+}

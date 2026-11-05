@@ -35,7 +35,9 @@ pub enum Backplane {
 impl Backplane {
     /// Create a bare backplane (`TileBackplane`, meta 0).
     pub fn bare(rotation: u8) -> Self {
-        Self::Bare { rotation: rotation & 3 }
+        Self::Bare {
+            rotation: rotation & 3,
+        }
     }
 
     /// Create an 8K RAM module (`TileRAM`, meta 1).
@@ -204,11 +206,7 @@ impl Backplane {
 
     /// Decode from Horizon block entity NBT string map.
     pub fn from_nbt_map(is_ram: bool, map: &HashMap<String, String>) -> Self {
-        let rot: u8 = map
-            .get("rot")
-            .and_then(|s| s.parse().ok())
-            .unwrap_or(0)
-            & 3;
+        let rot: u8 = map.get("rot").and_then(|s| s.parse().ok()).unwrap_or(0) & 3;
 
         if is_ram {
             let memory = if let Some(hex) = map.get("ram") {
@@ -410,7 +408,9 @@ impl MemoryMap {
     /// Check if backplane bank `bank` (0..7) has an active RAM module.
     pub fn is_bank_ram(&self, bank: usize) -> bool {
         if bank < MAX_BACKPLANES {
-            self.backplanes[bank].as_ref().map_or(false, Backplane::is_ram)
+            self.backplanes[bank]
+                .as_ref()
+                .is_some_and(Backplane::is_ram)
         } else {
             false
         }

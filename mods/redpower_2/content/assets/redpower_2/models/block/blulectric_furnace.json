@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/furnace_side"
-  }
+    "up": "redpower_2:block/machine1_083",
+    "down": "redpower_2:block/machine1_084",
+    "north": "redpower_2:block/machine1_081",
+    "south": "redpower_2:block/machine1_080",
+    "east": "redpower_2:block/machine1_080",
+    "west": "redpower_2:block/machine1_080",
+    "particle": "redpower_2:block/machine1_083"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_083"
 }

@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "programmed_plan",
+  "sprite": "eloraam/base/items1.png#21",
+  "max_stack": 1
+}

@@ -536,10 +536,10 @@ mod tests {
     #[test]
     fn eight_covers_make_hollow() {
         let mut grid = g();
-        for i in 0..3 {
-            for j in 0..3 {
+        for (i, row) in grid.iter_mut().enumerate() {
+            for (j, cell) in row.iter_mut().enumerate() {
                 if (i, j) != (1, 1) {
-                    grid[i][j] = plate(0);
+                    *cell = plate(0);
                 }
             }
         }

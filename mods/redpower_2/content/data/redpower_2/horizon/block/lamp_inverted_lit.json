@@ -6,5 +6,18 @@
     "light": 15,
     "sounds": "minecraft:glass"
   },
-  "item": true
+  "item": true,
+  "state_properties": {
+    "facing": {
+      "type": "enum",
+      "values": [
+        "down",
+        "east",
+        "north",
+        "south",
+        "up",
+        "west"
+      ]
+    }
+  }
 }

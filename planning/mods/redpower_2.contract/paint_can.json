@@ -5,7 +5,10 @@
   "use": "Craft with dry paintbrush to apply 15 brush coatings",
   "scenarios": [
     {
-      "name": "paint_can coats dry paint brush with 15 applications of colored paint",
+      "name": "coats dry paint brush with 15 applications of colored paint",
+      "for": [
+        "paint_can"
+      ],
       "level": 2,
       "covers": [
         "coats dry paint brush with 15 applications of colored paint"

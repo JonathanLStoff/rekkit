@@ -1,0 +1,65 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#227"
+  },
+  "scenarios": [
+    {
+      "name": "sucks liquid blocks from world under suction or places liquids under pressure",
+      "for": [
+        "grate"
+      ],
+      "level": 4,
+      "covers": [
+        "sucks liquid blocks from world under suction or places liquids under pressure"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:grate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:grate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sucks liquid blocks from world under suction or places liquids under pressure",
+      "for": [
+        "grate"
+      ],
+      "level": 1,
+      "covers": [
+        "sucks liquid blocks from world under suction or places liquids under pressure"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:grate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:grate"
+          ]
+        }
+      ]
+    }
+  ]
+}

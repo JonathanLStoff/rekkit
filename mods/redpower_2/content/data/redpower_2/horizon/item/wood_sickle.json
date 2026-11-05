@@ -1,5 +1,8 @@
 {
-  "template": "minecraft:shears",
+  "template": "minecraft:oak_log",
   "max_stack_size": 1,
-  "rarity": "common"
+  "rarity": "common",
+  "components": {
+    "minecraft:max_damage": 59
+  }
 }

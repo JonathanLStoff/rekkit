@@ -1,0 +1,37 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#18"
+  },
+  "scenarios": [
+    {
+      "name": "places as a full solid stone block with its own texture",
+      "for": [
+        "marble_brick"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a full solid stone block with its own texture"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:marble_brick"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:marble_brick"
+          ]
+        }
+      ]
+    }
+  ]
+}

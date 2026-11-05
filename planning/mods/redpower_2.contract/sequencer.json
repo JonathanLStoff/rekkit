@@ -1,0 +1,138 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#3",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "configurable rotation interval via GUI",
+      "for": [
+        "sequencer"
+      ],
+      "level": 3,
+      "covers": [
+        "configurable rotation interval via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sequentially pulses 4 outputs in continuous rotation",
+      "for": [
+        "sequencer"
+      ],
+      "level": 4,
+      "covers": [
+        "sequentially pulses 4 outputs in continuous rotation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps sequence state and interval when its chunk reloads",
+      "for": [
+        "sequencer"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps sequence state and interval when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "configurable rotation interval via GUI",
+      "for": [
+        "sequencer"
+      ],
+      "level": 1,
+      "covers": [
+        "configurable rotation interval via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sequencer"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      228,
+      82
+    ],
+    "title": "Sequencer",
+    "slots": []
+  }
+}

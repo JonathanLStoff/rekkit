@@ -1,0 +1,63 @@
+{
+  "shape": "cross",
+  "facing": "none",
+  "faces": {},
+  "scenarios": [
+    {
+      "name": "grows through stages on farmland to yield string and seeds",
+      "for": [
+        "flax_crop"
+      ],
+      "level": 3,
+      "covers": [
+        "grows through stages on farmland to yield string and seeds"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "grows through stages on farmland to yield string and seeds",
+      "for": [
+        "flax_crop"
+      ],
+      "level": 1,
+      "covers": [
+        "grows through stages on farmland to yield string and seeds"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:flax_crop"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#151",
+    "back": "eloraam/machine/machine1.png#150",
+    "side": "eloraam/machine/machine1.png#155",
+    "top": "eloraam/machine/machine1.png#155",
+    "bottom": "eloraam/machine/machine1.png#150"
+  },
+  "scenarios": [
+    {
+      "name": "draws blutricity to move connected frame assemblies",
+      "for": [
+        "frame_motor"
+      ],
+      "level": 3,
+      "covers": [
+        "draws blutricity to move connected frame assemblies"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "moves connected support frame structures by 1 block on redstone pulse consuming blutricity",
+      "for": [
+        "frame_motor"
+      ],
+      "level": 4,
+      "covers": [
+        "moves connected support frame structures by 1 block on redstone pulse consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its energy and motor state when its chunk reloads",
+      "for": [
+        "frame_motor"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its energy and motor state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "draws blutricity to move connected frame assemblies",
+      "for": [
+        "frame_motor"
+      ],
+      "level": 1,
+      "covers": [
+        "draws blutricity to move connected frame assemblies"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_motor"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "consumer"
+  }
+}

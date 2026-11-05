@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#7"
+  },
+  "scenarios": [
+    {
+      "name": "drops several nikolite dust when mined",
+      "for": [
+        "ore_nikolite"
+      ],
+      "level": 3,
+      "covers": [
+        "drops several nikolite dust when mined"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates underground in world generation",
+      "for": [
+        "ore_nikolite"
+      ],
+      "level": 3,
+      "covers": [
+        "generates underground in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops several nikolite dust when mined",
+      "for": [
+        "ore_nikolite"
+      ],
+      "level": 1,
+      "covers": [
+        "drops several nikolite dust when mined"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_nikolite"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "redpower_2:block/ore_tin"
-  }
+    "all": "redpower_2:block/world1_004",
+    "north": "redpower_2:block/world1_004",
+    "south": "redpower_2:block/world1_004",
+    "east": "redpower_2:block/world1_004",
+    "west": "redpower_2:block/world1_004",
+    "up": "redpower_2:block/world1_004",
+    "down": "redpower_2:block/world1_004"
+  },
+  "particle": "redpower_2:block/world1_004"
 }

@@ -5,7 +5,10 @@
   "use": "Craft with wool block to tease back into 4 string",
   "scenarios": [
     {
-      "name": "wool_card teases wool block into 4 string in crafting grid losing durability",
+      "name": "teases wool block into 4 string in crafting grid losing durability",
+      "for": [
+        "wool_card"
+      ],
       "level": 2,
       "covers": [
         "teases wool block into 4 string in crafting grid losing durability"

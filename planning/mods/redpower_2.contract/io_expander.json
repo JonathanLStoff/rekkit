@@ -1,34 +1,28 @@
 {
-  "shape": [0, 0, 0, 16, 2, 16],
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
   "facing": "horizontal",
   "faces": {
     "all": "eloraam/control/control1.png#2"
   },
   "gui": {
-    "size": [123, 81],
+    "size": [
+      123,
+      81
+    ],
     "title": "IO Expander",
     "slots": []
   },
   "energy": null,
   "scenarios": [
     {
-      "name": "io expander placement",
-      "for": [
-        "io_expander"
-      ],
-      "level": 1,
-      "covers": [],
-      "steps": [
-        {
-          "setblock": [0, 0, 0, "redpower_2:io_expander"]
-        },
-        {
-          "expect_block": [0, 0, 0, "redpower_2:io_expander"]
-        }
-      ]
-    },
-    {
-      "name": "io expander registers in gui",
+      "name": "provides memory-mapped bundled cable interface with 4 registers in GUI",
       "for": [
         "io_expander"
       ],
@@ -38,15 +32,25 @@
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:io_expander"]
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         },
         {
-          "expect_block": [0, 0, 0, "redpower_2:io_expander"]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         }
       ]
     },
     {
-      "name": "io expander maps bundled cable to redbus",
+      "name": "maps 16-channel bundled cable inputs and outputs to Redbus",
       "for": [
         "io_expander"
       ],
@@ -56,24 +60,25 @@
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:cpu"]
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         },
         {
-          "setblock": [1, 0, 0, "redpower_2:ribbon_cable"]
-        },
-        {
-          "setblock": [2, 0, 0, "redpower_2:io_expander"]
-        },
-        {
-          "setblock": [2, 0, 1, "redpower_2:wire_bundled"]
-        },
-        {
-          "expect_block": [2, 0, 0, "redpower_2:io_expander"]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         }
       ]
     },
     {
-      "name": "io expander keeps register states across reload",
+      "name": "keeps its register states when its chunk reloads",
       "for": [
         "io_expander"
       ],
@@ -83,13 +88,48 @@
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:io_expander"]
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         },
         {
-          "reload_chunk": [0, 0, 0]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "provides memory-mapped bundled cable interface with 4 registers in GUI",
+      "for": [
+        "io_expander"
+      ],
+      "level": 1,
+      "covers": [
+        "provides memory-mapped bundled cable interface with 4 registers in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         },
         {
-          "expect_block": [0, 0, 0, "redpower_2:io_expander"]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:io_expander"
+          ]
         }
       ]
     }

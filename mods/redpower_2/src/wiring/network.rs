@@ -310,8 +310,8 @@ impl WireWorld {
     /// Neighbours queued by `addSearchBlocks` (direct sides first, then corner links).
     fn search_blocks(p: WorldCoord, cons: u32, indcon: u32) -> Vec<WorldCoord> {
         let mut out = Vec::new();
-        for d in 0..6 {
-            if cons & CON_DIR_MASKS[d] > 0 {
+        for (d, &mask) in CON_DIR_MASKS.iter().enumerate() {
+            if cons & mask > 0 {
                 out.push(step6(p, d as i32));
             }
         }

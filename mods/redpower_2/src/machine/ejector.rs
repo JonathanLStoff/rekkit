@@ -258,7 +258,10 @@ mod tests {
     #[test]
     fn rear_bounce_and_sides() {
         let mut e = TileEjector::new(Direction::North);
-        let it = BufferedItem { item: stack("a", 1), color: None };
+        let it = BufferedItem {
+            item: stack("a", 1),
+            color: None,
+        };
         assert!(!e.tube_item_enter(Direction::South, 2, it.clone()));
         assert!(e.tube_item_enter(Direction::North, 2, it));
         assert_eq!(e.tube_weight(Direction::North, 2), 1);

@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "redpower_2:block/bus_transceiver"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/bus_transceiver",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/bus_transceiver",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/bus_transceiver",
+      "y": 90
     }
   }
 }

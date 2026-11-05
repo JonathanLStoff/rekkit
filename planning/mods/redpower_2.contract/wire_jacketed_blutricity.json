@@ -1,0 +1,136 @@
+{
+  "shape": [
+    4,
+    0,
+    4,
+    12,
+    16,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#7"
+  },
+  "scenarios": [
+    {
+      "name": "freestanding rigid blutricity conduit that does not require surface support",
+      "for": [
+        "wire_jacketed_blutricity"
+      ],
+      "level": 4,
+      "covers": [
+        "freestanding rigid blutricity conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid blutricity conduit that does not require surface support",
+      "for": [
+        "wire_jacketed_blutricity"
+      ],
+      "level": 3,
+      "covers": [
+        "freestanding rigid blutricity conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wire_jacketed_blutricity keeps state across chunk reload",
+      "for": [
+        "wire_jacketed_blutricity"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid blutricity conduit that does not require surface support",
+      "for": [
+        "wire_jacketed_blutricity"
+      ],
+      "level": 1,
+      "covers": [
+        "freestanding rigid blutricity conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed_blutricity"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

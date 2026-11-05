@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#6"
+  },
+  "scenarios": [
+    {
+      "name": "drops itself and smelts to tungsten ingot in a furnace",
+      "for": [
+        "ore_tungsten"
+      ],
+      "level": 3,
+      "covers": [
+        "drops itself and smelts to tungsten ingot in a furnace"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates underground in world generation",
+      "for": [
+        "ore_tungsten"
+      ],
+      "level": 3,
+      "covers": [
+        "generates underground in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops itself and smelts to tungsten ingot in a furnace",
+      "for": [
+        "ore_tungsten"
+      ],
+      "level": 1,
+      "covers": [
+        "drops itself and smelts to tungsten ingot in a furnace"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_tungsten"
+          ]
+        }
+      ]
+    }
+  ]
+}

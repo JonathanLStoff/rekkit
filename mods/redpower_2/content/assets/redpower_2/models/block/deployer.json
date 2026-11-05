@@ -1,11 +1,47 @@
 {
   "parent": "minecraft:block/cube",
   "textures": {
-    "north": "redpower_2:block/deployer_front",
-    "south": "redpower_2:block/deployer_back",
-    "east": "redpower_2:block/deployer_side",
-    "west": "redpower_2:block/deployer_side",
-    "up": "redpower_2:block/deployer_top",
-    "down": "redpower_2:block/deployer_bottom"
-  }
+    "north": "redpower_2:block/machine1_048",
+    "south": "redpower_2:block/machine1_056",
+    "east": "redpower_2:block/machine1_055",
+    "west": "redpower_2:block/machine1_055",
+    "up": "redpower_2:block/machine1_053",
+    "down": "redpower_2:block/machine1_048",
+    "particle": "redpower_2:block/machine1_048"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_048"
 }

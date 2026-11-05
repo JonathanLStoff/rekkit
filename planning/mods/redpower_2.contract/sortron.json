@@ -1,0 +1,128 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#197",
+    "back": "eloraam/machine/machine1.png#198",
+    "side": "eloraam/machine/machine1.png#201",
+    "top": "eloraam/machine/machine1.png#199",
+    "bottom": "eloraam/machine/machine1.png#198"
+  },
+  "scenarios": [
+    {
+      "name": "draws blutricity to operate Redbus sorting interface",
+      "for": [
+        "sortron"
+      ],
+      "level": 3,
+      "covers": [
+        "draws blutricity to operate Redbus sorting interface"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory-mapped redbus sorting interface for 6502 computer",
+      "for": [
+        "sortron"
+      ],
+      "level": 4,
+      "covers": [
+        "memory-mapped redbus sorting interface for 6502 computer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its sorting registers when its chunk reloads",
+      "for": [
+        "sortron"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its sorting registers when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "draws blutricity to operate Redbus sorting interface",
+      "for": [
+        "sortron"
+      ],
+      "level": 1,
+      "covers": [
+        "draws blutricity to operate Redbus sorting interface"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sortron"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "consumer"
+  }
+}

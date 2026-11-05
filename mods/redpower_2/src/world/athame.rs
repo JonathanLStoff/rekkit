@@ -188,11 +188,7 @@ impl Athame {
 
     /// Remaining durability uses before breaking.
     pub const fn remaining_uses(&self) -> u32 {
-        if self.damage as u32 >= ATHAME_DURABILITY {
-            0
-        } else {
-            ATHAME_DURABILITY - (self.damage as u32)
-        }
+        ATHAME_DURABILITY.saturating_sub(self.damage as u32)
     }
 
     /// Deal damage against an entity, calculating total damage dealt and incrementing tool wear.

@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#52"
+  },
+  "scenarios": [
+    {
+      "name": "drops a rubber sapling when broken",
+      "for": [
+        "rubber_leaves"
+      ],
+      "level": 3,
+      "covers": [
+        "drops a rubber sapling when broken"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "decays when no rubber log is near",
+      "for": [
+        "rubber_leaves"
+      ],
+      "level": 3,
+      "covers": [
+        "decays when no rubber log is near"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops a rubber sapling when broken",
+      "for": [
+        "rubber_leaves"
+      ],
+      "level": 1,
+      "covers": [
+        "drops a rubber sapling when broken"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_leaves"
+          ]
+        }
+      ]
+    }
+  ]
+}

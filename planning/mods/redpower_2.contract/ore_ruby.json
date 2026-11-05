@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "drops ruby when mined with an iron pickaxe or better",
+      "for": [
+        "ore_ruby"
+      ],
+      "level": 3,
+      "covers": [
+        "drops ruby when mined with an iron pickaxe or better"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates underground in world generation",
+      "for": [
+        "ore_ruby"
+      ],
+      "level": 3,
+      "covers": [
+        "generates underground in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops ruby when mined with an iron pickaxe or better",
+      "for": [
+        "ore_ruby"
+      ],
+      "level": 1,
+      "covers": [
+        "drops ruby when mined with an iron pickaxe or better"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_ruby"
+          ]
+        }
+      ]
+    }
+  ]
+}

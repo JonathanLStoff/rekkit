@@ -5,7 +5,10 @@
   "use": "deals 25 damage against endermen and the ender dragon losing durability",
   "scenarios": [
     {
-      "name": "athame deals 25 damage against endermen and the ender dragon losing durability",
+      "name": "deals 25 damage against endermen and the ender dragon losing durability",
+      "for": [
+        "athame"
+      ],
       "level": 2,
       "covers": [
         "deals 25 damage against endermen and the ender dragon losing durability"
@@ -13,11 +16,17 @@
       "steps": [
         {
           "use": "redpower_2:athame",
-          "on": [0, 0, 0]
+          "on": [
+            0,
+            0,
+            0
+          ]
         },
         {
-          "ctl": ["inventory"],
-          "expect": "\"damage\": 1"
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:athame"
         }
       ]
     }

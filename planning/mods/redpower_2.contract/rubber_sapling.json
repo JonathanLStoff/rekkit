@@ -1,0 +1,63 @@
+{
+  "shape": "cross",
+  "facing": "none",
+  "faces": {},
+  "scenarios": [
+    {
+      "name": "grows into a rubber tree when planted on dirt and given light or bonemeal",
+      "for": [
+        "rubber_sapling"
+      ],
+      "level": 3,
+      "covers": [
+        "grows into a rubber tree when planted on dirt and given light or bonemeal"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_sapling"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_sapling"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "grows into a rubber tree when planted on dirt and given light or bonemeal",
+      "for": [
+        "rubber_sapling"
+      ],
+      "level": 1,
+      "covers": [
+        "grows into a rubber tree when planted on dirt and given light or bonemeal"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_sapling"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_sapling"
+          ]
+        }
+      ]
+    }
+  ]
+}

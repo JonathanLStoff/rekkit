@@ -1,6 +1,7 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cross",
   "textures": {
-    "all": "minecraft:block/cornflower"
-  }
+    "cross": "redpower_2:block/world1_054"
+  },
+  "particle": "redpower_2:block/world1_054"
 }

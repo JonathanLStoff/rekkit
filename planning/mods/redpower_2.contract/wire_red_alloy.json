@@ -1,0 +1,136 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#97"
+  },
+  "scenarios": [
+    {
+      "name": "transmits redstone signals up to 256 blocks with analog strength",
+      "for": [
+        "wire_red_alloy"
+      ],
+      "level": 4,
+      "covers": [
+        "transmits redstone signals up to 256 blocks with analog strength"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "transmits redstone signals up to 256 blocks with analog strength",
+      "for": [
+        "wire_red_alloy"
+      ],
+      "level": 3,
+      "covers": [
+        "transmits redstone signals up to 256 blocks with analog strength"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wire_red_alloy keeps state across chunk reload",
+      "for": [
+        "wire_red_alloy"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "transmits redstone signals up to 256 blocks with analog strength",
+      "for": [
+        "wire_red_alloy"
+      ],
+      "level": 1,
+      "covers": [
+        "transmits redstone signals up to 256 blocks with analog strength"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_red_alloy"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

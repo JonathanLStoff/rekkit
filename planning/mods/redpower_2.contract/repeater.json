@@ -1,0 +1,130 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic2.png#237",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "configurable redstone delay from 2 to 256 ticks via GUI",
+      "for": [
+        "repeater"
+      ],
+      "level": 3,
+      "covers": [
+        "configurable redstone delay from 2 to 256 ticks via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "delays redstone signal by configured tick interval",
+      "for": [
+        "repeater"
+      ],
+      "level": 4,
+      "covers": [
+        "delays redstone signal by configured tick interval"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps delay setting when its chunk reloads",
+      "for": [
+        "repeater"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps delay setting when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "configurable redstone delay from 2 to 256 ticks via GUI",
+      "for": [
+        "repeater"
+      ],
+      "level": 1,
+      "covers": [
+        "configurable redstone delay from 2 to 256 ticks via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:repeater"
+          ]
+        }
+      ]
+    }
+  ]
+}

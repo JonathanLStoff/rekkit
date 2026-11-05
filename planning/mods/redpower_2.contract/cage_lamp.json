@@ -1,0 +1,72 @@
+{
+  "shape": [
+    3,
+    0,
+    3,
+    13,
+    12,
+    13
+  ],
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/lighting/lighting1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "industrial cage lamp that illuminates when powered by redstone",
+      "for": [
+        "cage_lamp"
+      ],
+      "level": 4,
+      "covers": [
+        "industrial cage lamp that illuminates when powered by redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "industrial cage lamp that illuminates when powered by redstone",
+      "for": [
+        "cage_lamp"
+      ],
+      "level": 1,
+      "covers": [
+        "industrial cage lamp that illuminates when powered by redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp"
+          ]
+        }
+      ]
+    }
+  ]
+}

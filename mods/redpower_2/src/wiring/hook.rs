@@ -3,9 +3,7 @@
 
 use crate::core::spatial::WorldCoord;
 use crate::wiring::network::{Tile, WireWorld, CHANNELS};
-use crate::wiring::rules::{
-    self, offset, BlockKind, Connectable, PowerClasses, RuleWorld,
-};
+use crate::wiring::rules::{self, offset, BlockKind, Connectable, PowerClasses, RuleWorld};
 
 /// `RedPowerWiring.initialize`: the compatible connect-class pairs (0 vanilla, 1 red alloy,
 /// 2..=17 insulated colours, 18 cable, 19..=34 coloured cable, 64/65/67 gates and bus).

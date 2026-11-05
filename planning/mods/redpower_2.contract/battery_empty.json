@@ -1,0 +1,33 @@
+{
+  "sprite": "eloraam/base/items1.png#25",
+  "max_stack": 1,
+  "durability": null,
+  "scenarios": [
+    {
+      "name": "charges in a battery box to become a full BT battery",
+      "for": [
+        "battery_empty"
+      ],
+      "level": 2,
+      "covers": [
+        "charges in a battery box to become a full BT battery"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:battery_empty",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:battery_empty"
+        }
+      ]
+    }
+  ]
+}

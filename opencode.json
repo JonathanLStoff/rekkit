@@ -1,33 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/qwen3-coder-64k",
+  "model": "omniroute/auto/coding",
   "provider": {
-    "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama (local)",
-      "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
+    "omniroute": {
       "models": {
-        "qwen3-coder-64k": {
-          "name": "Qwen3-Coder 30B-A3B 64k (local)",
+        "auto/coding": {
+          "name": "auto/coding",
           "limit": {
             "context": 65536,
-            "output": 16384
-          }
-        },
-        "qwopus-coder-64k": {
-          "name": "Qwopus Coder 64k (local)",
-          "limit": {
-            "context": 65536,
-            "output": 16384
-          }
-        },
-        "hf.co/Jackrong/Qwopus3.8-27B-Coder-Flash-GGUF:Q4_K_M": {
-          "name": "Qwopus3.8 27B Coder Flash (local)",
-          "limit": {
-            "context": 65536,
-            "output": 16384
+            "output": 8192
           }
         }
       }

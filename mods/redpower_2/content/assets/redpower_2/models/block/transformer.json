@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/copper_block"
-  }
+    "all": "redpower_2:block/machine1_226",
+    "north": "redpower_2:block/machine1_226",
+    "south": "redpower_2:block/machine1_226",
+    "east": "redpower_2:block/machine1_226",
+    "west": "redpower_2:block/machine1_226",
+    "up": "redpower_2:block/machine1_226",
+    "down": "redpower_2:block/machine1_226"
+  },
+  "particle": "redpower_2:block/machine1_226"
 }

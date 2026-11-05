@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#208",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "passes data while clock is high and latches state when clock falls",
+      "for": [
+        "transparent_latch"
+      ],
+      "level": 4,
+      "covers": [
+        "passes data while clock is high and latches state when clock falls"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transparent_latch"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transparent_latch"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "passes data while clock is high and latches state when clock falls",
+      "for": [
+        "transparent_latch"
+      ],
+      "level": 1,
+      "covers": [
+        "passes data while clock is high and latches state when clock falls"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transparent_latch"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transparent_latch"
+          ]
+        }
+      ]
+    }
+  ]
+}

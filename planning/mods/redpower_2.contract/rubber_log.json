@@ -1,0 +1,67 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "side": "eloraam/world/world1.png#50",
+    "top": "eloraam/world/world1.png#51",
+    "bottom": "eloraam/world/world1.png#51"
+  },
+  "scenarios": [
+    {
+      "name": "places as a log with end and side textures",
+      "for": [
+        "rubber_log"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a log with end and side textures"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_log"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_log"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "grows as part of rubber trees",
+      "for": [
+        "rubber_log"
+      ],
+      "level": 3,
+      "covers": [
+        "grows as part of rubber trees"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_log"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rubber_log"
+          ]
+        }
+      ]
+    }
+  ]
+}

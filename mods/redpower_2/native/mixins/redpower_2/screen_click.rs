@@ -1,10 +1,4 @@
-fn screen_click(
-    block: &str,
-    data: &[i32],
-    at: [f32; 2],
-    right: bool,
-    button: &mut Option<i32>,
-) {
+fn screen_click(block: &str, data: &[i32], at: [f32; 2], right: bool, button: &mut Option<i32>) {
     let _ = (data, right);
     if button.is_some() || !block.starts_with("redpower_2:") {
         return;

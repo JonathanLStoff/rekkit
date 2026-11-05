@@ -1,7 +1,10 @@
 {
   "scenarios": [
     {
-      "name": "lamp_lit light state",
+      "name": "illuminates world when powered",
+      "for": [
+        "lamp_lit"
+      ],
       "level": 4,
       "covers": [
         "illuminates world when powered"
@@ -16,14 +19,39 @@
           ]
         },
         {
-          "wait": 10
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_lit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "illuminates world when powered",
+      "for": [
+        "lamp_lit"
+      ],
+      "level": 1,
+      "covers": [
+        "illuminates world when powered"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_lit"
+          ]
         },
         {
           "expect_block": [
             0,
             0,
             0,
-            "lit=true"
+            "redpower_2:lamp_lit"
           ]
         }
       ]

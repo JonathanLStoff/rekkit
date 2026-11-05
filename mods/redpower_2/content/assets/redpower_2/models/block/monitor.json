@@ -1,9 +1,47 @@
 {
-  "parent": "minecraft:block/orientable_with_bottom",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "top": "redpower_2:block/display_top",
-    "bottom": "redpower_2:block/display_bottom",
-    "front": "redpower_2:block/display_front",
-    "side": "redpower_2:block/display_side"
-  }
+    "north": "redpower_2:block/control1_019",
+    "up": "redpower_2:block/control1_021",
+    "down": "redpower_2:block/control1_023",
+    "south": "redpower_2:block/control1_020",
+    "east": "redpower_2:block/control1_020",
+    "west": "redpower_2:block/control1_020",
+    "particle": "redpower_2:block/control1_019"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/control1_019"
 }

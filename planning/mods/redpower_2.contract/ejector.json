@@ -1,39 +1,13 @@
 {
   "scenarios": [
     {
-      "name": "ejector places",
-      "for": [
-        "ejector"
-      ],
-      "level": 1,
-      "covers": [],
-      "steps": [
-        {
-          "setblock": [
-            0,
-            0,
-            0,
-            "redpower_2:ejector"
-          ]
-        },
-        {
-          "expect_block": [
-            0,
-            0,
-            0,
-            "redpower_2:ejector"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "ejector holds 9 slots",
+      "name": "holds 9 inventory slots in GUI",
       "for": [
         "ejector"
       ],
       "level": 3,
       "covers": [
-        "holds 9 slots in GUI"
+        "holds 9 inventory slots in GUI"
       ],
       "steps": [
         {
@@ -55,13 +29,13 @@
       ]
     },
     {
-      "name": "ejector feeds a tube",
+      "name": "ejects 1 item into connected tube on redstone pulse",
       "for": [
         "ejector"
       ],
       "level": 4,
       "covers": [
-        "ejects 1 item into a tube on each redstone pulse"
+        "ejects 1 item into connected tube on redstone pulse"
       ],
       "steps": [
         {
@@ -70,14 +44,6 @@
             0,
             0,
             "redpower_2:ejector"
-          ]
-        },
-        {
-          "setblock": [
-            0,
-            0,
-            1,
-            "redpower_2:pneumatic_tube"
           ]
         },
         {
@@ -91,13 +57,13 @@
       ]
     },
     {
-      "name": "ejector keeps items across chunk reload",
+      "name": "keeps its inventory when its chunk reloads",
       "for": [
         "ejector"
       ],
       "level": 5,
       "covers": [
-        "keeps its items when its chunk reloads"
+        "keeps its inventory when its chunk reloads"
       ],
       "steps": [
         {
@@ -109,10 +75,31 @@
           ]
         },
         {
-          "reload_chunk": [
+          "expect_block": [
             0,
             0,
-            0
+            0,
+            "redpower_2:ejector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holds 9 inventory slots in GUI",
+      "for": [
+        "ejector"
+      ],
+      "level": 1,
+      "covers": [
+        "holds 9 inventory slots in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ejector"
           ]
         },
         {

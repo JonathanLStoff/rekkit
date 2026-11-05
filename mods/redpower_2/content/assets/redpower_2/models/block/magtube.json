@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/obsidian"
-  }
+    "north": "redpower_2:block/machine1_025",
+    "south": "redpower_2:block/machine1_025",
+    "east": "redpower_2:block/machine1_025",
+    "west": "redpower_2:block/machine1_025",
+    "up": "redpower_2:block/machine1_025",
+    "down": "redpower_2:block/machine1_025",
+    "particle": "redpower_2:block/machine1_025"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_025"
 }

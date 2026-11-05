@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "redpower_2:block/rubber_leaves"
-  }
+    "all": "redpower_2:block/world1_052",
+    "north": "redpower_2:block/world1_052",
+    "south": "redpower_2:block/world1_052",
+    "east": "redpower_2:block/world1_052",
+    "west": "redpower_2:block/world1_052",
+    "up": "redpower_2:block/world1_052",
+    "down": "redpower_2:block/world1_052"
+  },
+  "particle": "redpower_2:block/world1_052"
 }

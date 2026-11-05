@@ -1,14 +1,9 @@
-fn use_item_on(
-    stack: &ItemStack,
-    pos: [i32; 3],
-    face: [i32; 3],
-    claimed: &mut bool,
-) {
+fn use_item_on(stack: &ItemStack, pos: [i32; 3], face: [i32; 3], claimed: &mut bool) {
     let _ = (pos, face);
-    if *claimed || !stack.id.starts_with("redpower_2:") {
+    if *claimed || !stack.item.starts_with("redpower_2:") {
         return;
     }
-    match stack.id.as_str() {
+    match stack.item.as_ref() {
         "redpower_2:screwdriver" | "redpower_2:sonic_screwdriver" => {
             *claimed = true;
         }

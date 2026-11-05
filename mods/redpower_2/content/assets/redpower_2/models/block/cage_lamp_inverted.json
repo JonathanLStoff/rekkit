@@ -1,6 +1,48 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/lantern"
-  }
+    "all": "redpower_2:block/lighting1_032",
+    "north": "redpower_2:block/lighting1_032",
+    "south": "redpower_2:block/lighting1_032",
+    "east": "redpower_2:block/lighting1_032",
+    "west": "redpower_2:block/lighting1_032",
+    "up": "redpower_2:block/lighting1_032",
+    "down": "redpower_2:block/lighting1_032",
+    "particle": "redpower_2:block/lighting1_032"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/lighting1_032"
 }

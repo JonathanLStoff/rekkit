@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#2"
+  },
+  "scenarios": [
+    {
+      "name": "drops sapphire when mined with an iron pickaxe or better",
+      "for": [
+        "ore_sapphire"
+      ],
+      "level": 3,
+      "covers": [
+        "drops sapphire when mined with an iron pickaxe or better"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates underground in world generation",
+      "for": [
+        "ore_sapphire"
+      ],
+      "level": 3,
+      "covers": [
+        "generates underground in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops sapphire when mined with an iron pickaxe or better",
+      "for": [
+        "ore_sapphire"
+      ],
+      "level": 1,
+      "covers": [
+        "drops sapphire when mined with an iron pickaxe or better"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_sapphire"
+          ]
+        }
+      ]
+    }
+  ]
+}

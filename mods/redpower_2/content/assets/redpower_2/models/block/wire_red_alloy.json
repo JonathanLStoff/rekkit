@@ -1,6 +1,48 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "redpower_2:block/wire_red_alloy"
-  }
+    "all": "redpower_2:block/redpower1_097",
+    "north": "redpower_2:block/redpower1_097",
+    "south": "redpower_2:block/redpower1_097",
+    "east": "redpower_2:block/redpower1_097",
+    "west": "redpower_2:block/redpower1_097",
+    "up": "redpower_2:block/redpower1_097",
+    "down": "redpower_2:block/redpower1_097",
+    "particle": "redpower_2:block/redpower1_097"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/redpower1_097"
 }

@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#128",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "outputs high when an even number of active inputs are high",
+      "for": [
+        "xnor_gate"
+      ],
+      "level": 4,
+      "covers": [
+        "outputs high when an even number of active inputs are high"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:xnor_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:xnor_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "outputs high when an even number of active inputs are high",
+      "for": [
+        "xnor_gate"
+      ],
+      "level": 1,
+      "covers": [
+        "outputs high when an even number of active inputs are high"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:xnor_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:xnor_gate"
+          ]
+        }
+      ]
+    }
+  ]
+}

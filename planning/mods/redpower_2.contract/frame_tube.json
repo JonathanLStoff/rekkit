@@ -1,0 +1,65 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#2"
+  },
+  "scenarios": [
+    {
+      "name": "structural support frame with integrated pneumatic tube routing",
+      "for": [
+        "frame_tube"
+      ],
+      "level": 4,
+      "covers": [
+        "structural support frame with integrated pneumatic tube routing"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_tube"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "structural support frame with integrated pneumatic tube routing",
+      "for": [
+        "frame_tube"
+      ],
+      "level": 1,
+      "covers": [
+        "structural support frame with integrated pneumatic tube routing"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame_tube"
+          ]
+        }
+      ]
+    }
+  ]
+}

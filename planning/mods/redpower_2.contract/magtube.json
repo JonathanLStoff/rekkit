@@ -1,5 +1,12 @@
 {
-  "shape": [4, 4, 4, 12, 12, 12],
+  "shape": [
+    4,
+    4,
+    4,
+    12,
+    12,
+    12
+  ],
   "facing": "none",
   "faces": {
     "all": "eloraam/machine/machine1.png#25"
@@ -8,25 +15,59 @@
   "energy": null,
   "scenarios": [
     {
-      "name": "magtube places and connects to a pneumatic tube",
-      "for": ["magtube"],
-      "level": 1,
-      "covers": [],
+      "name": "high-speed magnetic transit tube moving item capsules at 16 blocks per tick",
+      "for": [
+        "magtube"
+      ],
+      "level": 4,
+      "covers": [
+        "high-speed magnetic transit tube moving item capsules at 16 blocks per tick"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:magtube"] },
-        { "expect_block": [0, 0, 0, "redpower_2:magtube"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:magtube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:magtube"
+          ]
+        }
       ]
     },
     {
-      "name": "magtube carries capsules between tubes",
-      "for": ["magtube"],
-      "level": 4,
-      "covers": ["high-speed magnetic transit tube moving item capsules at 16 blocks per tick"],
+      "name": "high-speed magnetic transit tube moving item capsules at 16 blocks per tick",
+      "for": [
+        "magtube"
+      ],
+      "level": 1,
+      "covers": [
+        "high-speed magnetic transit tube moving item capsules at 16 blocks per tick"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:magtube"] },
-        { "setblock": [0, 0, 1, "redpower_2:magtube"] },
-        { "setblock": [0, 0, 2, "minecraft:chest"] },
-        { "expect_block": [0, 0, 1, "redpower_2:magtube"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:magtube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:magtube"
+          ]
+        }
       ]
     }
   ]

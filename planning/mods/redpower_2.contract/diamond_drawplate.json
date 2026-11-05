@@ -5,7 +5,10 @@
   "use": "Craft in crafting grid with metal ingots to draw fine wire",
   "scenarios": [
     {
-      "name": "diamond drawplate draws ingots into fine wire in crafting grid losing durability",
+      "name": "draws metal ingots into fine wire in crafting grid losing durability",
+      "for": [
+        "diamond_drawplate"
+      ],
       "level": 2,
       "covers": [
         "draws metal ingots into fine wire in crafting grid losing durability"

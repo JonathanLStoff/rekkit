@@ -1,0 +1,6 @@
+{
+  "block.example_mod.frequency_chest": "Ender Frequency Chest",
+  "item.example_mod.frequency_pouch": "Ender Frequency Pouch",
+  "tooltip.example_mod.owner": "Owner: %s",
+  "tooltip.example_mod.public": "Public Channel"
+}

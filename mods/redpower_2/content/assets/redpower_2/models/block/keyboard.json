@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/gray_concrete"
-  }
+    "up": "redpower_2:block/control1_021",
+    "down": "redpower_2:block/control1_023",
+    "north": "redpower_2:block/control1_022",
+    "south": "redpower_2:block/control1_022",
+    "east": "redpower_2:block/control1_022",
+    "west": "redpower_2:block/control1_022",
+    "particle": "redpower_2:block/control1_021"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/control1_021"
 }

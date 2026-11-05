@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic2.png#184",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "inverts input signal with 1 input and 3 outputs",
+      "for": [
+        "not_gate"
+      ],
+      "level": 4,
+      "covers": [
+        "inverts input signal with 1 input and 3 outputs"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:not_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:not_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "inverts input signal with 1 input and 3 outputs",
+      "for": [
+        "not_gate"
+      ],
+      "level": 1,
+      "covers": [
+        "inverts input signal with 1 input and 3 outputs"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:not_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:not_gate"
+          ]
+        }
+      ]
+    }
+  ]
+}

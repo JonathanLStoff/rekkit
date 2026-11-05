@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/daylight_detector_top"
-  }
+    "up": "redpower_2:block/machine1_230",
+    "down": "redpower_2:block/machine1_084",
+    "north": "redpower_2:block/machine1_231",
+    "south": "redpower_2:block/machine1_231",
+    "east": "redpower_2:block/machine1_231",
+    "west": "redpower_2:block/machine1_231",
+    "particle": "redpower_2:block/machine1_230"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        4,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_230"
 }

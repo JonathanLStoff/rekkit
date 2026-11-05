@@ -77,7 +77,9 @@ class Report:
 
 
 def sh(cmd: list, **kw) -> subprocess.CompletedProcess:
-    return subprocess.run([str(c) for c in cmd], cwd=kw.pop("cwd", ROOT), text=True, encoding="utf-8",
+    args = [str(c) for c in cmd]
+    args[0] = shutil.which(args[0]) or args[0]  # resolves Windows .cmd/.bat shims such as npm's bd
+    return subprocess.run(args, cwd=kw.pop("cwd", ROOT), text=True, encoding="utf-8",
                           errors="replace", **kw)
 
 

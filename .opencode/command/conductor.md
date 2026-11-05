@@ -106,6 +106,16 @@ The only commands you need (never run `bd ... --help`):
 - Blocked: `bd update <epic> --status blocked`, then
   `bd comment <epic> "<what the person must do>"`.
 - Reports and the board: `make fleet-inbox`, `make board`.
+- Do not guess flags. `bd list` takes no epic argument (`bd list rk-qst` and
+  `bd list --epic` both fail). Use the commands above, or `make fleet-ready
+  MOD=<id>` for the ready tickets, `make fleet-context MOD=<id>` for the state.
+- **On opencode without subagents** (a local model, or the task tool blocked),
+  the loop is: `make fleet-resume MOD=<id>`, then `make fleet-ready MOD=<id>`,
+  then for the first ticket: `make fleet-task BEAD=<id> ROLE=<role>`, read
+  `.agents/agents/<role>/agent.md`, do the work yourself, write its report to
+  `target/fleet/inbox/<bead>.json`, `make fleet-inbox`, close the bead. Repeat
+  with the next ticket. Never run `make fleet-next` in opencode: it launches
+  agy, not opencode.
 
 # Rules
 - Do not stop until step 9 is closed. Never end a turn to report progress,

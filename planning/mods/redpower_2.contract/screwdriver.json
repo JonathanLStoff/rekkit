@@ -5,7 +5,10 @@
   "use": "Right-click or shift-right-click RedPower machines or logic gates to rotate them",
   "scenarios": [
     {
-      "name": "screwdriver rotates redpower machines and toggles logic gates on right-click",
+      "name": "rotates redpower machines and toggles logic gates on right-click",
+      "for": [
+        "screwdriver"
+      ],
       "level": 2,
       "covers": [
         "rotates redpower machines and toggles logic gates on right-click"

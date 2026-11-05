@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/base/items1.png#25",
+  "max_stack": 1,
+  "durability": 1500,
+  "scenarios": [
+    {
+      "name": "discharges 1500 units of blutricity into handheld tools or battery box",
+      "for": [
+        "battery_powered"
+      ],
+      "level": 2,
+      "covers": [
+        "discharges 1500 units of blutricity into handheld tools or battery box"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:battery_powered",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:battery_powered"
+        }
+      ]
+    }
+  ],
+  "use": "Stores 1500 J of blulectric charge; right-click in inventory to charge handheld tools"
+}

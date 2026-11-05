@@ -455,7 +455,7 @@ mod tests {
         assert_eq!(inv[0].as_ref().unwrap().count, 64);
         assert_eq!(s.count, 36);
         assert!(!add_to_inventory(
-            &mut vec![st("b", 1)],
+            &mut [st("b", 1)],
             &mut ItemStack::new("a", 1),
             all(1),
             64,

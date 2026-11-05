@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#160",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "latches two input pulses and emits joint output pulse only when both have arrived",
+      "for": [
+        "synchronizer"
+      ],
+      "level": 4,
+      "covers": [
+        "latches two input pulses and emits joint output pulse only when both have arrived"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:synchronizer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:synchronizer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "latches two input pulses and emits joint output pulse only when both have arrived",
+      "for": [
+        "synchronizer"
+      ],
+      "level": 1,
+      "covers": [
+        "latches two input pulses and emits joint output pulse only when both have arrived"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:synchronizer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:synchronizer"
+          ]
+        }
+      ]
+    }
+  ]
+}

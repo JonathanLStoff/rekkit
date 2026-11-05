@@ -1,0 +1,136 @@
+{
+  "shape": [
+    4,
+    0,
+    4,
+    12,
+    16,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#5"
+  },
+  "scenarios": [
+    {
+      "name": "freestanding rigid redstone conduit that does not require surface support",
+      "for": [
+        "wire_jacketed"
+      ],
+      "level": 4,
+      "covers": [
+        "freestanding rigid redstone conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid redstone conduit that does not require surface support",
+      "for": [
+        "wire_jacketed"
+      ],
+      "level": 3,
+      "covers": [
+        "freestanding rigid redstone conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wire_jacketed keeps state across chunk reload",
+      "for": [
+        "wire_jacketed"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid redstone conduit that does not require surface support",
+      "for": [
+        "wire_jacketed"
+      ],
+      "level": 1,
+      "covers": [
+        "freestanding rigid redstone conduit that does not require surface support"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_jacketed"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

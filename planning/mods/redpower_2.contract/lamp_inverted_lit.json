@@ -1,7 +1,10 @@
 {
   "scenarios": [
     {
-      "name": "lamp_inverted_lit light state",
+      "name": "emits light in inverted state",
+      "for": [
+        "lamp_inverted_lit"
+      ],
       "level": 4,
       "covers": [
         "emits light in inverted state"
@@ -16,14 +19,39 @@
           ]
         },
         {
-          "wait": 10
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_inverted_lit"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "emits light in inverted state",
+      "for": [
+        "lamp_inverted_lit"
+      ],
+      "level": 1,
+      "covers": [
+        "emits light in inverted state"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_inverted_lit"
+          ]
         },
         {
           "expect_block": [
             0,
             0,
             0,
-            "lit=true"
+            "redpower_2:lamp_inverted_lit"
           ]
         }
       ]

@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "knowledge_book",
+  "sprite": "eloraam/base/items1.png#15",
+  "max_stack": 1
+}

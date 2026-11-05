@@ -8,7 +8,10 @@
   "use": null,
   "scenarios": [
     {
-      "name": "lumar: comes in 16 dye colours, each its own item",
+      "name": "comes in 16 dye colours, each its own item",
+      "for": [
+        "lumar"
+      ],
       "level": 2,
       "covers": [
         "comes in 16 dye colours, each its own item"
@@ -31,7 +34,10 @@
       ]
     },
     {
-      "name": "lumar: crafts into coloured lumar lamps",
+      "name": "crafts into coloured lumar lamps",
+      "for": [
+        "lumar"
+      ],
       "level": 3,
       "covers": [
         "crafts into coloured lumar lamps"

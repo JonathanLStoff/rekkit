@@ -1,8 +1,4 @@
-fn is_signal_source(
-    level: &GameLevel<'_>,
-    state: BlockStateId,
-    source: &mut bool,
-) {
+fn is_signal_source(level: &GameLevel<'_>, state: BlockStateId, source: &mut bool) {
     let Some(block_name) = level.registry.state(state).map(|s| &*s.name) else {
         return;
     };

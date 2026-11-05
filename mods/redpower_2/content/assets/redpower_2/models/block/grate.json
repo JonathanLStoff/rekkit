@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/iron_bars"
-  }
+    "all": "redpower_2:block/machine1_227",
+    "north": "redpower_2:block/machine1_227",
+    "south": "redpower_2:block/machine1_227",
+    "east": "redpower_2:block/machine1_227",
+    "west": "redpower_2:block/machine1_227",
+    "up": "redpower_2:block/machine1_227",
+    "down": "redpower_2:block/machine1_227"
+  },
+  "particle": "redpower_2:block/machine1_227"
 }

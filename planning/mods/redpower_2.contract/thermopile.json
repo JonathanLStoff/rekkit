@@ -1,0 +1,128 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "top": "eloraam/machine/machine1.png#140",
+    "bottom": "eloraam/machine/machine1.png#140",
+    "side": "eloraam/machine/machine1.png#139",
+    "front": "eloraam/machine/machine1.png#138",
+    "back": "eloraam/machine/machine1.png#138"
+  },
+  "scenarios": [
+    {
+      "name": "generates blutricity from temperature differential between adjacent blocks",
+      "for": [
+        "thermopile"
+      ],
+      "level": 3,
+      "covers": [
+        "generates blutricity from temperature differential between adjacent blocks"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conducts blutricity to adjacent conductors",
+      "for": [
+        "thermopile"
+      ],
+      "level": 4,
+      "covers": [
+        "conducts blutricity to adjacent conductors"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its power state when its chunk reloads",
+      "for": [
+        "thermopile"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its power state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates blutricity from temperature differential between adjacent blocks",
+      "for": [
+        "thermopile"
+      ],
+      "level": 1,
+      "covers": [
+        "generates blutricity from temperature differential between adjacent blocks"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:thermopile"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "producer"
+  }
+}

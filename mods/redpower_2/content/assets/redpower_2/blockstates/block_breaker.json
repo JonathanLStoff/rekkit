@@ -1,13 +1,5 @@
 {
   "variants": {
-    "facing=down": {
-      "model": "redpower_2:block/block_breaker",
-      "x": 90
-    },
-    "facing=up": {
-      "model": "redpower_2:block/block_breaker",
-      "x": 270
-    },
     "facing=north": {
       "model": "redpower_2:block/block_breaker"
     },

@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "ender_pouch",
+  "sprite": "eloraam/base/items1.png#6",
+  "max_stack": 1
+}

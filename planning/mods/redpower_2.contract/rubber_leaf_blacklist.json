@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "rubber_leaf_blacklist",
+  "sprite": "eloraam/base/items1.png#26",
+  "max_stack": 64
+}

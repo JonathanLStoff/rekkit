@@ -3640,7 +3640,7 @@
       ],
       "facing": "horizontal",
       "faces": {
-        "all": "eloraam/control/control1.png#0"
+        "all": "eloraam/control/control1.png#18"
       },
       "gui": null,
       "energy": null,
@@ -3657,12 +3657,12 @@
         0,
         0,
         16,
-        2,
+        16,
         16
       ],
       "facing": "horizontal",
       "faces": {
-        "all": "eloraam/control/control1.png#1"
+        "all": "eloraam/control/control1.png#34"
       },
       "gui": null,
       "energy": null,
@@ -4973,6 +4973,156 @@
       "max_stack": 64,
       "durability": null,
       "use": null,
+      "attributes": []
+    },
+    {
+      "id": "ash",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "bag",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "brick_clay",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "brush",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "emitter",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "empty_cell",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "ender_pouch",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "energy_cell",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "filled_cell",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "flax_fiber",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "flute",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "glass_box_cutter",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "gold_nugget",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "indigo_dye",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "jack_hammer",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "knowledge_book",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "logic_processor",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "mixing_stick",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "paintbrush",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "paper",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "printer",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "programmed_plan",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "receiver",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "reeder",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "rope_arrow",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "rubber",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "rubber_leaf_blacklist",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "ruby_lens",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "sapphire_lens",
+      "type": "item",
+      "attributes": []
+    },
+    {
+      "id": "wrench",
+      "type": "item",
       "attributes": []
     }
   ],

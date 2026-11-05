@@ -1,6 +1,48 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/blue_wool"
-  }
+    "all": "redpower_2:block/redpower1_099",
+    "north": "redpower_2:block/redpower1_099",
+    "south": "redpower_2:block/redpower1_099",
+    "east": "redpower_2:block/redpower1_099",
+    "west": "redpower_2:block/redpower1_099",
+    "up": "redpower_2:block/redpower1_099",
+    "down": "redpower_2:block/redpower1_099",
+    "particle": "redpower_2:block/redpower1_099"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        4,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/redpower1_099"
 }

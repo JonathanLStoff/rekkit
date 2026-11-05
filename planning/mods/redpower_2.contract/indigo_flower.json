@@ -1,0 +1,91 @@
+{
+  "shape": "cross",
+  "facing": "none",
+  "faces": {},
+  "scenarios": [
+    {
+      "name": "places as a thin cross-shaped plant",
+      "for": [
+        "indigo_flower"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a thin cross-shaped plant"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops indigo dye when broken",
+      "for": [
+        "indigo_flower"
+      ],
+      "level": 3,
+      "covers": [
+        "drops indigo dye when broken"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates in world generation",
+      "for": [
+        "indigo_flower"
+      ],
+      "level": 3,
+      "covers": [
+        "generates in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:indigo_flower"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/base/base1.png#19",
+    "bottom": "eloraam/base/base1.png#16",
+    "front": "eloraam/base/base1.png#17",
+    "side": "eloraam/base/base1.png#16"
+  },
+  "scenarios": [
+    {
+      "name": "smelts alloys from a 3x3 input with solid fuel",
+      "for": [
+        "alloy_furnace"
+      ],
+      "level": 3,
+      "covers": [
+        "smelts alloys from a 3x3 input with solid fuel"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its items and progress when its chunk reloads",
+      "for": [
+        "alloy_furnace"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its items and progress when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "takes inputs from the top and fuel from the front",
+      "for": [
+        "alloy_furnace"
+      ],
+      "level": 6,
+      "covers": [
+        "takes inputs from the top and fuel from the front"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "smelts alloys from a 3x3 input with solid fuel",
+      "for": [
+        "alloy_furnace"
+      ],
+      "level": 1,
+      "covers": [
+        "smelts alloys from a 3x3 input with solid fuel"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:alloy_furnace"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Alloy Furnace",
+    "slots": [
+      [
+        48,
+        17
+      ],
+      [
+        66,
+        17
+      ],
+      [
+        84,
+        17
+      ],
+      [
+        48,
+        35
+      ],
+      [
+        66,
+        35
+      ],
+      [
+        84,
+        35
+      ],
+      [
+        48,
+        53
+      ],
+      [
+        66,
+        53
+      ],
+      [
+        84,
+        53
+      ],
+      [
+        17,
+        42
+      ],
+      [
+        141,
+        35
+      ]
+    ]
+  }
+}

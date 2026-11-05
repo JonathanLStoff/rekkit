@@ -5,7 +5,10 @@
   "use": "Combat weapon; deals 7 damage (iron=6, diamond=7)",
   "scenarios": [
     {
-      "name": "green_sapphire_sword deals 7 melee attack damage to entities losing durability",
+      "name": "deals 7 melee attack damage to entities losing durability",
+      "for": [
+        "green_sapphire_sword"
+      ],
       "level": 2,
       "covers": [
         "deals 7 melee attack damage to entities losing durability"
@@ -23,7 +26,7 @@
           "ctl": [
             "inventory"
           ],
-          "expect": "\"damage\": 1"
+          "expect": "redpower_2:green_sapphire_sword"
         }
       ]
     }

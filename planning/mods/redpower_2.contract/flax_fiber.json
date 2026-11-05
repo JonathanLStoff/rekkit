@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "flax_fiber",
+  "sprite": "eloraam/base/items1.png#9",
+  "max_stack": 64
+}

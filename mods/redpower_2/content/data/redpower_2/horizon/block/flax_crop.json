@@ -5,5 +5,18 @@
     "explosion_resistance": 0.0,
     "sounds": "minecraft:wheat"
   },
-  "item": false
+  "item": false,
+  "state_properties": {
+    "facing": {
+      "type": "enum",
+      "values": [
+        "down",
+        "east",
+        "north",
+        "south",
+        "up",
+        "west"
+      ]
+    }
+  }
 }

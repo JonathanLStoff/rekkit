@@ -61,10 +61,11 @@ impl RedstoneTube {
 
     /// Creates a Redstone Tube with an initial paint dye color (1..=16).
     pub fn new_painted(paint_color: u8) -> Self {
-        let mut t = Tube::default();
-        t.paint_color = paint_color;
         Self {
-            tube: t,
+            tube: Tube {
+                paint_color,
+                ..Default::default()
+            },
             power_state: 0,
             con_mask: -1,
         }
@@ -173,12 +174,10 @@ impl RedstoneTube {
     /// `getCurrentStrength(cons, ch)`: returns current strength on channel 0.
     /// Channel 0 is Red Alloy wire; other channels return -1.
     pub fn get_current_strength(&self, cons: u32, ch: usize) -> i32 {
-        if ch != 0 {
-            -1
-        } else if (cons & self.get_connectable_mask()) == 0 {
-            -1
-        } else {
+        if ch == 0 && (cons & self.get_connectable_mask()) != 0 {
             self.power_state as i32
+        } else {
+            -1
         }
     }
 

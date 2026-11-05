@@ -1,0 +1,133 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    4,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/machine/machine1.png#230",
+    "bottom": "eloraam/machine/machine1.png#84",
+    "side": "eloraam/machine/machine1.png#231"
+  },
+  "scenarios": [
+    {
+      "name": "generates blutricity in daylight",
+      "for": [
+        "solar_panel"
+      ],
+      "level": 3,
+      "covers": [
+        "generates blutricity in daylight"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conducts blutricity to adjacent conductors",
+      "for": [
+        "solar_panel"
+      ],
+      "level": 4,
+      "covers": [
+        "conducts blutricity to adjacent conductors"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its power state when its chunk reloads",
+      "for": [
+        "solar_panel"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its power state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates blutricity in daylight",
+      "for": [
+        "solar_panel"
+      ],
+      "level": 1,
+      "covers": [
+        "generates blutricity in daylight"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:solar_panel"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "producer"
+  }
+}

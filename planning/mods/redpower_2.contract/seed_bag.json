@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/world/worlditems1.png#129",
+  "max_stack": 1,
+  "durability": 576,
+  "scenarios": [
+    {
+      "name": "plants stored seeds in spiral on farmland on right-click",
+      "for": [
+        "seed_bag"
+      ],
+      "level": 2,
+      "covers": [
+        "plants stored seeds in spiral on farmland on right-click"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:seed_bag",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:seed_bag"
+        }
+      ]
+    }
+  ],
+  "use": "Shift-right-click to open 9-slot seed inventory; right-click farmland to plant in spiral outward"
+}

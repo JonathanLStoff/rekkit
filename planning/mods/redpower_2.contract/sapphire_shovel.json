@@ -5,7 +5,10 @@
   "use": "Excavation shovel, harvest level 2 (iron-tier), 8.0 efficiency",
   "scenarios": [
     {
-      "name": "sapphire_shovel digs dirt and sand at 8.0 speed losing durability",
+      "name": "digs dirt and sand at 8.0 speed losing durability",
+      "for": [
+        "sapphire_shovel"
+      ],
       "level": 2,
       "covers": [
         "digs dirt and sand at 8.0 speed losing durability"
@@ -23,7 +26,7 @@
           "ctl": [
             "inventory"
           ],
-          "expect": "\"damage\": 1"
+          "expect": "redpower_2:sapphire_shovel"
         }
       ]
     }

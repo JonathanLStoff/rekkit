@@ -54,7 +54,11 @@ pub fn flora_random_tick(
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Feature {
     /// Ore block `block` (meta `meta`) replacing stone at the position.
-    Ore { block: &'static str, meta: u8, pos: (i32, i32, i32) },
+    Ore {
+        block: &'static str,
+        meta: u8,
+        pos: (i32, i32, i32),
+    },
     /// A rubber tree attempt at column `(x, z)`.
     RubberTree { x: i32, z: i32 },
     /// An indigo flower patch attempt at column `(x, z)`.
@@ -97,9 +101,8 @@ pub fn chunk_features(
 
 /// Damage the held item deals to `victim_kind`, or `None` when the item is not ours.
 pub fn melee_damage(held_item: &str, victim_kind: &str, disjunction_level: u32) -> Option<i32> {
-    (held_item == athame::ATHAME_ITEM_ID).then(|| {
-        athame::athame_attack_damage(athame::is_ender_mob(victim_kind), disjunction_level)
-    })
+    (held_item == athame::ATHAME_ITEM_ID)
+        .then(|| athame::athame_attack_damage(athame::is_ender_mob(victim_kind), disjunction_level))
 }
 
 /// Using `item` on the `clicked_face` of a block places a ribbon cable on that face.
@@ -116,7 +119,10 @@ mod tests {
         let mut z = |_n: u32| 0;
         assert_eq!(
             flora_random_tick(flora::FLAX_CROP_ID, 3, 12, true, true, &mut z),
-            FloraAction::SetMeta { new_meta: 4, place_upper: true }
+            FloraAction::SetMeta {
+                new_meta: 4,
+                place_upper: true
+            }
         );
         assert_eq!(
             flora_random_tick("redpower_2:other", 3, 12, true, true, &mut z),
@@ -147,15 +153,23 @@ mod tests {
         let f = chunk_features(0, 0, "jungle", &mut rf, &mut rn);
         assert!(f.iter().any(|x| matches!(x, Feature::Ore { .. })));
         assert_eq!(
-            f.iter().filter(|x| matches!(x, Feature::RubberTree { .. })).count(),
+            f.iter()
+                .filter(|x| matches!(x, Feature::RubberTree { .. }))
+                .count(),
             6
         );
     }
 
     #[test]
     fn athame_and_ribbon() {
-        assert_eq!(melee_damage(athame::ATHAME_ITEM_ID, "minecraft:enderman", 2), Some(37));
-        assert_eq!(melee_damage(athame::ATHAME_ITEM_ID, "minecraft:zombie", 2), Some(1));
+        assert_eq!(
+            melee_damage(athame::ATHAME_ITEM_ID, "minecraft:enderman", 2),
+            Some(37)
+        );
+        assert_eq!(
+            melee_damage(athame::ATHAME_ITEM_ID, "minecraft:zombie", 2),
+            Some(1)
+        );
         assert_eq!(melee_damage("minecraft:stick", "x", 0), None);
         let r = ribbon_placement(RIBBON_ITEM_ID, Direction::Up).unwrap();
         assert_eq!(r.face, Direction::Down);

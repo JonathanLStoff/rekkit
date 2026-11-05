@@ -1,0 +1,136 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    4,
+    16
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#99"
+  },
+  "scenarios": [
+    {
+      "name": "conducts 100V DC blutricity with insulation preventing bridging",
+      "for": [
+        "wire_blutricity_insulated"
+      ],
+      "level": 4,
+      "covers": [
+        "conducts 100V DC blutricity with insulation preventing bridging"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conducts 100V DC blutricity with insulation preventing bridging",
+      "for": [
+        "wire_blutricity_insulated"
+      ],
+      "level": 3,
+      "covers": [
+        "conducts 100V DC blutricity with insulation preventing bridging"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wire_blutricity_insulated keeps state across chunk reload",
+      "for": [
+        "wire_blutricity_insulated"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conducts 100V DC blutricity with insulation preventing bridging",
+      "for": [
+        "wire_blutricity_insulated"
+      ],
+      "level": 1,
+      "covers": [
+        "conducts 100V DC blutricity with insulation preventing bridging"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wire_blutricity_insulated"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

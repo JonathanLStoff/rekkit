@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/base/items1.png#24",
+  "max_stack": 1,
+  "durability": null,
+  "scenarios": [
+    {
+      "name": "reads voltage and current on right-click of blutricity blocks",
+      "for": [
+        "voltmeter"
+      ],
+      "level": 2,
+      "covers": [
+        "reads voltage and current on right-click of blutricity blocks"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:voltmeter",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:voltmeter"
+        }
+      ]
+    }
+  ],
+  "use": "Right-click blulectric block or pipe to read voltage, current, power or pressure in chat"
+}

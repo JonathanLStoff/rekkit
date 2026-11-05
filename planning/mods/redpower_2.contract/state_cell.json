@@ -1,0 +1,138 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#48",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "configurable active duration via GUI",
+      "for": [
+        "state_cell"
+      ],
+      "level": 3,
+      "covers": [
+        "configurable active duration via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "monostable pulse timer emitting signal for set duration after trigger pulse",
+      "for": [
+        "state_cell"
+      ],
+      "level": 4,
+      "covers": [
+        "monostable pulse timer emitting signal for set duration after trigger pulse"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps timer configuration and state when its chunk reloads",
+      "for": [
+        "state_cell"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps timer configuration and state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "configurable active duration via GUI",
+      "for": [
+        "state_cell"
+      ],
+      "level": 1,
+      "covers": [
+        "configurable active duration via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:state_cell"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      228,
+      82
+    ],
+    "title": "State Cell",
+    "slots": []
+  }
+}

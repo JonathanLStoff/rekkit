@@ -1,0 +1,144 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/machine/machine1.png#128",
+    "bottom": "eloraam/machine/machine1.png#84",
+    "front": "eloraam/machine/machine1.png#54",
+    "side": "eloraam/machine/machine1.png#54"
+  },
+  "scenarios": [
+    {
+      "name": "stores blutricity up to 6000 units and charges batteries in slot",
+      "for": [
+        "battery_box"
+      ],
+      "level": 3,
+      "covers": [
+        "stores blutricity up to 6000 units and charges batteries in slot"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "connects to blutricity network",
+      "for": [
+        "battery_box"
+      ],
+      "level": 4,
+      "covers": [
+        "connects to blutricity network"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its stored energy and battery items when its chunk reloads",
+      "for": [
+        "battery_box"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its stored energy and battery items when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stores blutricity up to 6000 units and charges batteries in slot",
+      "for": [
+        "battery_box"
+      ],
+      "level": 1,
+      "covers": [
+        "stores blutricity up to 6000 units and charges batteries in slot"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:battery_box"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      170
+    ],
+    "title": "Battery Box",
+    "slots": [
+      [
+        120,
+        27
+      ],
+      [
+        120,
+        55
+      ]
+    ]
+  },
+  "energy": {
+    "role": "storage"
+  }
+}

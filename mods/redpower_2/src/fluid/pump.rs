@@ -92,7 +92,9 @@ impl TilePump {
             let max_out = (PIPE_MAX_LEVEL - self.outbuf.level).max(0);
             let mut lv = self.inbuf.level.min(max_out);
             lv = lv.min(self.inbuf.level + self.inbuf.delta);
-            if lv > 0 && (self.inbuf.fluid_type == self.outbuf.fluid_type || self.outbuf.fluid_type == 0) {
+            if lv > 0
+                && (self.inbuf.fluid_type == self.outbuf.fluid_type || self.outbuf.fluid_type == 0)
+            {
                 let ftype = self.inbuf.fluid_type;
                 self.outbuf.add_level(ftype, lv);
                 self.inbuf.add_level(ftype, -lv);

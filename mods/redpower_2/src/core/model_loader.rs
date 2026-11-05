@@ -692,7 +692,7 @@ impl RenderModel {
         let mut groups: Vec<Vec<[i32; 2]>> =
             ml.grcnt.iter().map(|&l| vec![[0, 0]; l as usize]).collect();
         let (mut lgs, mut lgmn, mut lgsn) = (-1i32, 0usize, 0usize);
-        for t in ml.groups.chunks_exact(3) {
+        for t in ml.groups.as_chunks::<3>().0 {
             if lgs >= 0 {
                 groups[lgmn][lgsn] = [lgs, t[2]];
             }

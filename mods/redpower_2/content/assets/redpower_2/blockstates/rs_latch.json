@@ -1,7 +1,23 @@
 {
   "variants": {
-    "": {
-      "model": "redpower_2:block/rs_latch"
+    "facing=north": {
+      "model": "redpower_2:block/rs_latch",
+      "weight": 1
+    },
+    "facing=south": {
+      "model": "redpower_2:block/rs_latch",
+      "y": 180,
+      "weight": 1
+    },
+    "facing=east": {
+      "model": "redpower_2:block/rs_latch",
+      "y": 90,
+      "weight": 1
+    },
+    "facing=west": {
+      "model": "redpower_2:block/rs_latch",
+      "y": 270,
+      "weight": 1
     }
   }
 }

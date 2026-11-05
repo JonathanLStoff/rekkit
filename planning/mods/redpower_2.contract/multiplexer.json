@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#144",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "routes input A or B to output based on selector input state",
+      "for": [
+        "multiplexer"
+      ],
+      "level": 4,
+      "covers": [
+        "routes input A or B to output based on selector input state"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:multiplexer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:multiplexer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "routes input A or B to output based on selector input state",
+      "for": [
+        "multiplexer"
+      ],
+      "level": 1,
+      "covers": [
+        "routes input A or B to output based on selector input state"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:multiplexer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:multiplexer"
+          ]
+        }
+      ]
+    }
+  ]
+}

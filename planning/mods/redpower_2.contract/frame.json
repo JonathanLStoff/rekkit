@@ -1,0 +1,65 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#2"
+  },
+  "scenarios": [
+    {
+      "name": "binds adjacent blocks into structural bodies moved by frame motors",
+      "for": [
+        "frame"
+      ],
+      "level": 4,
+      "covers": [
+        "binds adjacent blocks into structural bodies moved by frame motors"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "binds adjacent blocks into structural bodies moved by frame motors",
+      "for": [
+        "frame"
+      ],
+      "level": 1,
+      "covers": [
+        "binds adjacent blocks into structural bodies moved by frame motors"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:frame"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:frame"
+          ]
+        }
+      ]
+    }
+  ]
+}

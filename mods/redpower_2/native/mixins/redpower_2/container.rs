@@ -176,6 +176,23 @@ fn block_entity_container(block: &str, container: &mut Option<ModContainer>) {
                 faces: std::array::from_fn(|_| slots.clone()),
             });
         }
+        "redpower_2:counter"
+        | "redpower_2:cpu"
+        | "redpower_2:disk_drive"
+        | "redpower_2:display"
+        | "redpower_2:io_expander"
+        | "redpower_2:monitor"
+        | "redpower_2:sequencer"
+        | "redpower_2:state_cell"
+        | "redpower_2:timer" => {
+            *container = Some(ModContainer {
+                slots: 0,
+                menu: None,
+                inputs: vec![],
+                outputs: vec![],
+                faces: std::array::from_fn(|_| vec![]),
+            });
+        }
         _ => {}
     }
 }

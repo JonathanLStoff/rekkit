@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/array1.png#0",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "bidirectional 16-channel bundled cable transceiver with direction control",
+      "for": [
+        "bus_transceiver"
+      ],
+      "level": 4,
+      "covers": [
+        "bidirectional 16-channel bundled cable transceiver with direction control"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:bus_transceiver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:bus_transceiver"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bidirectional 16-channel bundled cable transceiver with direction control",
+      "for": [
+        "bus_transceiver"
+      ],
+      "level": 1,
+      "covers": [
+        "bidirectional 16-channel bundled cable transceiver with direction control"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:bus_transceiver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:bus_transceiver"
+          ]
+        }
+      ]
+    }
+  ]
+}

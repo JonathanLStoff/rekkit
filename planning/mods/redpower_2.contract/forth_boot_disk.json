@@ -5,24 +5,28 @@
   "use": "Operating system boot disk containing RedPower Forth for the 6502 CPU",
   "scenarios": [
     {
-      "name": "insert forth boot disk into disk drive",
+      "name": "boots RedPower Forth operating system when inserted in disk drive",
+      "for": [
+        "forth_boot_disk"
+      ],
       "level": 2,
       "covers": [
         "boots RedPower Forth operating system when inserted in disk drive"
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:disk_drive"]
-        },
-        {
           "use": "redpower_2:forth_boot_disk",
-          "on": [0, 0, 0]
+          "on": [
+            0,
+            0,
+            0
+          ]
         },
         {
-          "wait": 10
-        },
-        {
-          "expect_block": [0, 0, 0, "redpower_2:disk_drive"]
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:forth_boot_disk"
         }
       ]
     }

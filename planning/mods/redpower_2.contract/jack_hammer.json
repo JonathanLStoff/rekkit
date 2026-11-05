@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "jack_hammer",
+  "sprite": "eloraam/base/items1.png#14",
+  "max_stack": 1
+}

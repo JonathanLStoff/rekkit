@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "redpower_2:block/regulator"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/regulator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/regulator",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/regulator",
+      "y": 90
     }
   }
 }

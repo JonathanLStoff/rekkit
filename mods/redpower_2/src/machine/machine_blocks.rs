@@ -108,7 +108,12 @@ impl BlockMachineRegistry {
     /// Replicate `BlockMachine.isFireSource(world, x, y, z, md, face)`:
     /// Returns true only for Igniter (`md == 12`) when active and facing `Down` (rotation 0,
     /// so the front face and fire are on the top face).
-    pub fn is_fire_source(metadata: u8, rotation: Direction, active: bool, face: Direction) -> bool {
+    pub fn is_fire_source(
+        metadata: u8,
+        rotation: Direction,
+        active: bool,
+        face: Direction,
+    ) -> bool {
         if metadata != 12 {
             return false;
         }
@@ -133,7 +138,8 @@ pub fn get_block_texture_from_side_and_metadata(
     flags: MachineFlags,
 ) -> Option<u32> {
     let kind = MachineKind::from_meta(metadata)?;
-    let unrotated = kind.unrotated_texture_indices(flags.active, flags.powered, flags.delay, flags.charged);
+    let unrotated =
+        kind.unrotated_texture_indices(flags.active, flags.powered, flags.delay, flags.charged);
     let oriented = orient_textures(rotation, unrotated);
     let side_idx = match side {
         Direction::Down => 0,
@@ -163,21 +169,24 @@ impl ItemRenderMachine {
 
     /// Return the 6 face texture indices `[bottom, top, north, south, west, east]`
     /// for inventory display, exactly matching `RenderMachine.renderInvBlock`.
-    pub fn inventory_texture_indices(metadata: u8, battery_charge: Option<u32>) -> Option<[u32; 6]> {
+    pub fn inventory_texture_indices(
+        metadata: u8,
+        battery_charge: Option<u32>,
+    ) -> Option<[u32; 6]> {
         match metadata {
-            0 => Some([48, 53, 56, 56, 55, 55]),      // Deployer
-            1 => Some([58, 57, 61, 61, 61, 61]),      // Block Breaker
-            2 => Some([58, 57, 59, 59, 59, 59]),      // Transposer
-            4 => Some([102, 103, 98, 98, 96, 96]),    // Item Detector
-            5 => Some([113, 112, 117, 117, 117, 117]),// Sorting Machine
+            0 => Some([48, 53, 56, 56, 55, 55]),       // Deployer
+            1 => Some([58, 57, 61, 61, 61, 61]),       // Block Breaker
+            2 => Some([58, 57, 59, 59, 59, 59]),       // Transposer
+            4 => Some([102, 103, 98, 98, 96, 96]),     // Item Detector
+            5 => Some([113, 112, 117, 117, 117, 117]), // Sorting Machine
             6 => {
                 let tx = Self::battery_box_texture_index(battery_charge.unwrap_or(0));
-                Some([84, 128, tx, tx, tx, tx])       // Battery Box
+                Some([84, 128, tx, tx, tx, tx]) // Battery Box
             }
-            8 => Some([124, 125, 120, 120, 120, 120]),// Retriever
-            10 => Some([102, 103, 106, 106, 104, 104]),// Regulator
+            8 => Some([124, 125, 120, 120, 120, 120]), // Retriever
+            10 => Some([102, 103, 106, 106, 104, 104]), // Regulator
             12 => Some([48, 164, 167, 167, 166, 166]), // Igniter
-            13 => Some([172, 168, 171, 171, 170, 170]),// Assembler
+            13 => Some([172, 168, 171, 171, 170, 170]), // Assembler
             14 => Some([58, 89, 91, 91, 90, 90]),      // Ejector
             15 => Some([58, 89, 93, 93, 90, 90]),      // Relay
             _ => {
@@ -217,8 +226,8 @@ impl EntityPlayerFake {
     /// replicating Java `EntityPlayerFake` constructor lines 8-10.
     pub fn new() -> Self {
         let mut inv: Vec<Option<ItemStack>> = vec![None; 36];
-        for i in 9..36 {
-            inv[i] = Some(ItemStack::new(FAKE_PLAYER_DUMMY_ITEM, 1));
+        for item in inv.iter_mut().skip(9).take(27) {
+            *item = Some(ItemStack::new(FAKE_PLAYER_DUMMY_ITEM, 1));
         }
         Self {
             pos: [0.0, 0.0, 0.0],
@@ -358,7 +367,10 @@ mod tests {
             assert_eq!(def.metadata, meta);
             assert_eq!(def.hardness, BLOCK_MACHINE_HARDNESS);
             assert_eq!(def.explosion_resistance, BLOCK_MACHINE_RESISTANCE);
-            assert_eq!(BlockMachineRegistry::get_by_block_id(def.block_id), Some(def.clone()));
+            assert_eq!(
+                BlockMachineRegistry::get_by_block_id(def.block_id),
+                Some(def.clone())
+            );
 
             // Self drop check
             let drop = BlockMachineRegistry::get_block_dropped(meta, 0).unwrap();
@@ -417,16 +429,34 @@ mod tests {
         // Test on_block_placed_by
         let block_pos = [0, 64, 0];
         let p_above = [0.5, 68.0, 0.5];
-        assert_eq!(on_block_placed_by(p_above, 0.0, 1.62, block_pos), Direction::Down);
+        assert_eq!(
+            on_block_placed_by(p_above, 0.0, 1.62, block_pos),
+            Direction::Down
+        );
 
         let p_below = [0.5, 62.0, 0.5];
-        assert_eq!(on_block_placed_by(p_below, 0.0, 1.62, block_pos), Direction::Up);
+        assert_eq!(
+            on_block_placed_by(p_below, 0.0, 1.62, block_pos),
+            Direction::Up
+        );
 
         let p_level = [0.5, 64.5, 0.5];
-        assert_eq!(on_block_placed_by(p_level, 0.0, 1.62, block_pos), Direction::South);
-        assert_eq!(on_block_placed_by(p_level, 90.0, 1.62, block_pos), Direction::West);
-        assert_eq!(on_block_placed_by(p_level, 180.0, 1.62, block_pos), Direction::North);
-        assert_eq!(on_block_placed_by(p_level, 270.0, 1.62, block_pos), Direction::East);
+        assert_eq!(
+            on_block_placed_by(p_level, 0.0, 1.62, block_pos),
+            Direction::South
+        );
+        assert_eq!(
+            on_block_placed_by(p_level, 90.0, 1.62, block_pos),
+            Direction::West
+        );
+        assert_eq!(
+            on_block_placed_by(p_level, 180.0, 1.62, block_pos),
+            Direction::North
+        );
+        assert_eq!(
+            on_block_placed_by(p_level, 270.0, 1.62, block_pos),
+            Direction::East
+        );
     }
 
     #[test]
@@ -476,16 +506,23 @@ mod tests {
 
         // Deployer (0) facing Down (0):
         // Bottom is front (48), Top is top (53), Sides are side (55)
-        let tex_bottom = get_block_texture_from_side_and_metadata(Direction::Down, 0, Direction::Down, flags);
+        let tex_bottom =
+            get_block_texture_from_side_and_metadata(Direction::Down, 0, Direction::Down, flags);
         assert_eq!(tex_bottom, Some(48));
 
-        let tex_top = get_block_texture_from_side_and_metadata(Direction::Up, 0, Direction::Down, flags);
+        let tex_top =
+            get_block_texture_from_side_and_metadata(Direction::Up, 0, Direction::Down, flags);
         assert_eq!(tex_top, Some(53));
 
         // When active, top changes from 53 to 54
         let mut active_flags = MachineFlags::NONE;
         active_flags.active = true;
-        let tex_top_active = get_block_texture_from_side_and_metadata(Direction::Up, 0, Direction::Down, active_flags);
+        let tex_top_active = get_block_texture_from_side_and_metadata(
+            Direction::Up,
+            0,
+            Direction::Down,
+            active_flags,
+        );
         assert_eq!(tex_top_active, Some(54));
     }
 
@@ -537,9 +574,12 @@ mod tests {
         assert!(!EntityPlayerFake::can_harvest_block(-1.0));
         assert!(EntityPlayerFake::can_harvest_block(0.0));
         assert!(EntityPlayerFake::can_harvest_block(2.0));
-        assert!(fake.simulate_break_block(-1.0, vec![ItemStack::new("minecraft:bedrock", 1)]).is_none());
+        assert!(fake
+            .simulate_break_block(-1.0, vec![ItemStack::new("minecraft:bedrock", 1)])
+            .is_none());
 
-        let stone_drops = fake.simulate_break_block(1.5, vec![ItemStack::new("minecraft:cobblestone", 1)]);
+        let stone_drops =
+            fake.simulate_break_block(1.5, vec![ItemStack::new("minecraft:cobblestone", 1)]);
         assert_eq!(stone_drops.unwrap()[0].item_id, "minecraft:cobblestone");
 
         // Pitch & yaw setup for machine

@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/sensor1.png#1",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "emits redstone signal based on ambient light level",
+      "for": [
+        "light_sensor"
+      ],
+      "level": 4,
+      "covers": [
+        "emits redstone signal based on ambient light level"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:light_sensor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:light_sensor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "emits redstone signal based on ambient light level",
+      "for": [
+        "light_sensor"
+      ],
+      "level": 1,
+      "covers": [
+        "emits redstone signal based on ambient light level"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:light_sensor"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:light_sensor"
+          ]
+        }
+      ]
+    }
+  ]
+}

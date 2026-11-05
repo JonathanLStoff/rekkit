@@ -1,0 +1,65 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#17"
+  },
+  "scenarios": [
+    {
+      "name": "drops basalt cobblestone when mined",
+      "for": [
+        "basalt"
+      ],
+      "level": 3,
+      "covers": [
+        "drops basalt cobblestone when mined"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "places as a full solid stone block",
+      "for": [
+        "basalt"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a full solid stone block"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:basalt"
+          ]
+        }
+      ]
+    }
+  ]
+}

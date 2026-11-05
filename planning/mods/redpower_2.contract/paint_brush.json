@@ -5,7 +5,10 @@
   "use": "Right-click jacketed cable or machine to paint it with chosen color",
   "scenarios": [
     {
-      "name": "paint_brush paints tubes, cables and canvas bags on right-click losing durability",
+      "name": "paints tubes, cables and canvas bags on right-click losing durability",
+      "for": [
+        "paint_brush"
+      ],
       "level": 2,
       "covers": [
         "paints tubes, cables and canvas bags on right-click losing durability"

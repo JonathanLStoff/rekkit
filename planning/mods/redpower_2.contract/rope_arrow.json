@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "rope_arrow",
+  "sprite": "eloraam/base/items1.png#24",
+  "max_stack": 64
+}

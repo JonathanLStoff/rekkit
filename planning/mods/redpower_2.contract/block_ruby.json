@@ -1,0 +1,37 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#80"
+  },
+  "scenarios": [
+    {
+      "name": "places as a full solid block with its own texture",
+      "for": [
+        "block_ruby"
+      ],
+      "level": 1,
+      "covers": [
+        "places as a full solid block with its own texture"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:block_ruby"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:block_ruby"
+          ]
+        }
+      ]
+    }
+  ]
+}

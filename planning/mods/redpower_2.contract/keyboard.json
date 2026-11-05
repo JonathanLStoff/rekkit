@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/control/control1.png#21",
+    "side": "eloraam/control/control1.png#22",
+    "bottom": "eloraam/control/control1.png#23"
+  },
+  "scenarios": [
+    {
+      "name": "input peripheral sending keystrokes to CPU terminal buffer",
+      "for": [
+        "keyboard"
+      ],
+      "level": 4,
+      "covers": [
+        "input peripheral sending keystrokes to CPU terminal buffer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:keyboard"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:keyboard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "input peripheral sending keystrokes to CPU terminal buffer",
+      "for": [
+        "keyboard"
+      ],
+      "level": 1,
+      "covers": [
+        "input peripheral sending keystrokes to CPU terminal buffer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:keyboard"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:keyboard"
+          ]
+        }
+      ]
+    }
+  ]
+}

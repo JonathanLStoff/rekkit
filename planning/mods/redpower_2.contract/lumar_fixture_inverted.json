@@ -1,0 +1,72 @@
+{
+  "shape": [
+    2,
+    0,
+    2,
+    14,
+    8,
+    14
+  ],
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/lighting/lighting1.png#32"
+  },
+  "scenarios": [
+    {
+      "name": "wall-mounted light fixture that illuminates by default and turns off with redstone",
+      "for": [
+        "lumar_fixture_inverted"
+      ],
+      "level": 4,
+      "covers": [
+        "wall-mounted light fixture that illuminates by default and turns off with redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lumar_fixture_inverted"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:lumar_fixture_inverted"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wall-mounted light fixture that illuminates by default and turns off with redstone",
+      "for": [
+        "lumar_fixture_inverted"
+      ],
+      "level": 1,
+      "covers": [
+        "wall-mounted light fixture that illuminates by default and turns off with redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lumar_fixture_inverted"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:lumar_fixture_inverted"
+          ]
+        }
+      ]
+    }
+  ]
+}

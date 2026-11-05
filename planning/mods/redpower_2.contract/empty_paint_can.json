@@ -4,7 +4,10 @@
   "use": "",
   "scenarios": [
     {
-      "name": "empty_paint_can is filled with dye to become a paint can",
+      "name": "is filled with dye to become a paint can",
+      "for": [
+        "empty_paint_can"
+      ],
       "level": 2,
       "covers": [
         "is filled with dye to become a paint can"

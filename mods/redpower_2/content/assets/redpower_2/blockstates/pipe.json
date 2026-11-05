@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "redpower_2:block/pipe"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/pipe",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/pipe",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/pipe",
+      "y": 90
     }
   }
 }

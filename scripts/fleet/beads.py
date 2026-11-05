@@ -43,7 +43,12 @@ def main_checkout() -> Path:
     here = Path(__file__).resolve().parents[2]
     r = subprocess.run(["git", "-C", str(here), "rev-parse", "--path-format=absolute", "--git-common-dir"],
                        capture_output=True, text=True)
-    return Path(r.stdout.strip()).parent if r.returncode == 0 and r.stdout.strip() else here
+    common = r.stdout.strip()
+    if r.returncode == 0 and common:
+        if sys.platform.startswith("win"):
+            common = re.sub(r"^/([A-Za-z])/", r"\1:/", common)  # Git Bash-style /c/... paths, from git on PowerShell
+        return Path(common).parent
+    return here
 
 
 MAIN = main_checkout()
@@ -66,7 +71,8 @@ class BeadsError(Exception):
 
 def bd(*args: str, parse: bool = True):
     env = dict(os.environ, BEADS_DIR=str(BEADS_DIR), BD_NON_INTERACTIVE="1")
-    r = subprocess.run(["bd", *args, *(["--json"] if parse else [])], cwd=MAIN, env=env,
+    exe = shutil.which("bd") or "bd"  # on Windows bd is an npm .cmd shim, which subprocess will not run by bare name
+    r = subprocess.run([exe, *args, *(["--json"] if parse else [])], cwd=MAIN, env=env,
                        capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode:
         raise BeadsError(f"bd {' '.join(args)}: {(r.stderr or r.stdout).strip()[-500:]}")

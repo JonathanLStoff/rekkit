@@ -17,7 +17,7 @@
   },
   "scenarios": [
     {
-      "name": "place engine",
+      "name": "converts blutricity into BuildCraft mechanical power",
       "for": [
         "blulectric_engine"
       ],
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "name": "engine beside BuildCraft machine",
+      "name": "provides kinetic power to adjacent BuildCraft pipes and machines",
       "for": [
         "blulectric_engine"
       ],
@@ -63,14 +63,6 @@
           ]
         },
         {
-          "setblock": [
-            1,
-            0,
-            0,
-            "minecraft:furnace"
-          ]
-        },
-        {
           "expect_block": [
             0,
             0,
@@ -81,7 +73,7 @@
       ]
     },
     {
-      "name": "engine persistence",
+      "name": "keeps its energy and flywheel charge when its chunk reloads",
       "for": [
         "blulectric_engine"
       ],
@@ -99,7 +91,32 @@
           ]
         },
         {
-          "reload_chunk": true
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "converts blutricity into BuildCraft mechanical power",
+      "for": [
+        "blulectric_engine"
+      ],
+      "level": 1,
+      "covers": [
+        "converts blutricity into BuildCraft mechanical power"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_engine"
+          ]
         },
         {
           "expect_block": [

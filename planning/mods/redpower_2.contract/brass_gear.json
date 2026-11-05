@@ -5,10 +5,23 @@
   "use": "Crafting ingredient for the Blulectric Engine",
   "scenarios": [
     {
-      "name": "brass_gear is held in the inventory as a stackable item",
+      "name": "Crafting ingredient for the Blulectric Engine",
+      "for": [
+        "brass_gear"
+      ],
       "level": 2,
-      "covers": [],
+      "covers": [
+        "Crafting ingredient for the Blulectric Engine"
+      ],
       "steps": [
+        {
+          "use": "redpower_2:brass_gear",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
         {
           "ctl": [
             "inventory"

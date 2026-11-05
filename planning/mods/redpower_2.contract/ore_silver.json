@@ -1,0 +1,93 @@
+{
+  "shape": "full",
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/world/world1.png#3"
+  },
+  "scenarios": [
+    {
+      "name": "drops itself and smelts to silver ingot in a furnace",
+      "for": [
+        "ore_silver"
+      ],
+      "level": 3,
+      "covers": [
+        "drops itself and smelts to silver ingot in a furnace"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates underground in world generation",
+      "for": [
+        "ore_silver"
+      ],
+      "level": 3,
+      "covers": [
+        "generates underground in world generation"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "drops itself and smelts to silver ingot in a furnace",
+      "for": [
+        "ore_silver"
+      ],
+      "level": 1,
+      "covers": [
+        "drops itself and smelts to silver ingot in a furnace"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ore_silver"
+          ]
+        }
+      ]
+    }
+  ]
+}

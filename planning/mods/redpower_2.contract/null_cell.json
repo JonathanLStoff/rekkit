@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/array1.png#0",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "passive pass-through cell for array logic",
+      "for": [
+        "null_cell"
+      ],
+      "level": 4,
+      "covers": [
+        "passive pass-through cell for array logic"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:null_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:null_cell"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "passive pass-through cell for array logic",
+      "for": [
+        "null_cell"
+      ],
+      "level": 1,
+      "covers": [
+        "passive pass-through cell for array logic"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:null_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:null_cell"
+          ]
+        }
+      ]
+    }
+  ]
+}

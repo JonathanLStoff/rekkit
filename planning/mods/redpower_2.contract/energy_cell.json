@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "energy_cell",
+  "sprite": "eloraam/base/items1.png#7",
+  "max_stack": 64
+}

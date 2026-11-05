@@ -109,8 +109,10 @@ pub fn tick_breaker(e: &mut ModBlockEntity) {
     } else {
         e.nbt.insert("buffer".into(), encode_stacks(buf.iter()));
     }
-    e.nbt
-        .insert("plugged".into(), if t.buffer.plugged { "1" } else { "0" }.into());
+    e.nbt.insert(
+        "plugged".into(),
+        if t.buffer.plugged { "1" } else { "0" }.into(),
+    );
     save_common(&mut e.nbt, t.flags, t.scheduled_tick);
     e.data = vec![i32::from(t.flags.active)];
 }
@@ -178,10 +180,11 @@ mod tests {
     use super::*;
 
     fn ent(id: &str) -> ModBlockEntity {
-        let mut e = ModBlockEntity::default();
-        e.id = id.into();
-        e.nbt.insert("facing".into(), "2".into());
-        e
+        ModBlockEntity {
+            id: id.into(),
+            nbt: [("facing".into(), "2".into())].into(),
+            ..Default::default()
+        }
     }
 
     #[test]
@@ -203,7 +206,8 @@ mod tests {
     fn breaker_requests_break_and_buffers_when_blocked() {
         let mut e = ent(BREAKER);
         e.nbt.insert("powered".into(), "1".into());
-        e.nbt.insert("front_drops".into(), "minecraft:dirt*1".into());
+        e.nbt
+            .insert("front_drops".into(), "minecraft:dirt*1".into());
         tick_breaker(&mut e);
         assert_eq!(e.nbt["front_action"], "break");
         assert_eq!(e.nbt["buffer"], "minecraft:dirt*1");

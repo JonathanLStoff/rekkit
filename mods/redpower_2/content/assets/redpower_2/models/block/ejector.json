@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/dropper_front"
-  }
+    "up": "redpower_2:block/machine1_091",
+    "down": "redpower_2:block/machine1_058",
+    "north": "redpower_2:block/machine1_089",
+    "south": "redpower_2:block/machine1_058",
+    "east": "redpower_2:block/machine1_090",
+    "west": "redpower_2:block/machine1_090",
+    "particle": "redpower_2:block/machine1_091"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_091"
 }

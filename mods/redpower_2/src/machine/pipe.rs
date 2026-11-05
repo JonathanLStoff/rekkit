@@ -316,7 +316,7 @@ mod tests {
     fn buffer_defers_delta_to_next_tick() {
         let mut b = FluidBuffer::default();
         b.add_level(1, 10);
-        assert_eq!(b.get_level(0), 0 + 0); // same tick as last_tick=0: unchanged
+        assert_eq!(b.get_level(0), 0); // same tick as last_tick=0: unchanged
         assert_eq!(b.get_level(1), 10);
         b.add_level(1, -10);
         assert_eq!(b.get_level(2), 0);
@@ -325,11 +325,16 @@ mod tests {
 
     #[test]
     fn covers_block_connections() {
-        let mut p = Pipe::default();
-        p.cover_sides = 1;
-        p.covers[0] = 2 << 8;
+        let p = Pipe {
+            cover_sides: 1,
+            covers: [2 << 8, 0, 0, 0, 0, 0],
+            ..Default::default()
+        };
         assert_eq!(p.connectable_sides(), 62);
-        p.covers[0] = 3 << 8;
+        let p = Pipe {
+            covers: [3 << 8, 0, 0, 0, 0, 0],
+            ..Default::default()
+        };
         assert_eq!(p.connectable_sides(), 63);
     }
 
@@ -388,10 +393,15 @@ mod tests {
     #[test]
     fn pressure_pushes_fluid_up() {
         let mut w = PipeWorld::default();
-        let mut pa = Pipe::default();
-        pa.pressure = 1000;
-        pa.buffer.fluid_type = 1;
-        pa.buffer.level = 4;
+        let pa = Pipe {
+            pressure: 1000,
+            buffer: FluidBuffer {
+                fluid_type: 1,
+                level: 4,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
         w.pipes.insert(wc(0), pa);
         w.pipes.insert(wc(1), Pipe::default());
         w.move_liquid(wc(0), w.connections(wc(0)), 1);

@@ -239,8 +239,8 @@ impl IoExpander {
     /// Convert to `Connectable` for wiring graph integration.
     pub fn as_connectable(&self) -> Connectable {
         let mut connect_class = [0i32; 6];
-        for side in 0..6 {
-            connect_class[side] = self.connect_class(side as i32);
+        for (side, val) in connect_class.iter_mut().enumerate() {
+            *val = self.connect_class(side as i32);
         }
         let mut powering_mask = Vec::with_capacity(17);
         powering_mask.push(0); // ch 0
@@ -557,7 +557,8 @@ mod tests {
 
         // Map IO expander read register 0 to CPU address $E000
         cpu.load_program(0x0400, &prog);
-        cpu.io_expander = rekkit_core::frequency::BundledSignal::from_digital_mask(io.rb_read(0) as u16);
+        cpu.io_expander =
+            rekkit_core::frequency::BundledSignal::from_digital_mask(io.rb_read(0) as u16);
 
         cpu.step_tick(20);
 

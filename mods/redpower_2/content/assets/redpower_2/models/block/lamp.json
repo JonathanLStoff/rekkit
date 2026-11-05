@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/redstone_lamp"
-  }
+    "all": "redpower_2:block/lighting1_000",
+    "north": "redpower_2:block/lighting1_000",
+    "south": "redpower_2:block/lighting1_000",
+    "east": "redpower_2:block/lighting1_000",
+    "west": "redpower_2:block/lighting1_000",
+    "up": "redpower_2:block/lighting1_000",
+    "down": "redpower_2:block/lighting1_000"
+  },
+  "particle": "redpower_2:block/lighting1_000"
 }

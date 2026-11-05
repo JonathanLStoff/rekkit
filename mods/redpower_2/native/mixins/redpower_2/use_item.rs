@@ -1,8 +1,8 @@
 fn use_item(stack: &ItemStack, claimed: &mut bool) {
-    if *claimed || !stack.id.starts_with("redpower_2:") {
+    if *claimed || !stack.item.starts_with("redpower_2:") {
         return;
     }
-    match stack.id.as_str() {
+    match stack.item.as_ref() {
         "redpower_2:canvas_bag" | "redpower_2:seed_bag" => {
             *claimed = true;
         }

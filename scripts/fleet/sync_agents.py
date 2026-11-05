@@ -124,10 +124,10 @@ import { join } from "node:path";
 // Local models never run subagents: the task tool is blocked unless REKKIT_ALLOW_SUBAGENTS=1 (cloud model).
 const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read" };
 
-// opencode loads a plugin's default export: an id and a setup function that returns its hooks.
+// opencode loads a plugin's default export: an id and a server function that returns its hooks.
 export default {
   id: "rekkit-guard",
-  setup: async ({ directory }) => ({
+  server: async ({ directory }) => ({
     "tool.execute.before": async (input, output) => {
       if (input.tool === "task" && process.env.REKKIT_ALLOW_SUBAGENTS !== "1")
         throw new Error("Subagents are off on local models: do the role yourself, one ticket at a time (AGENTS.md).");

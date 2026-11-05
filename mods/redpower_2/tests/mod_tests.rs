@@ -1344,9 +1344,10 @@ fn test_cpu_container_and_gui_debug_controls() {
     assert!(!container.is_running);
 
     // 5. Status flags NV-BDIZC formatting
-    let mut regs = CpuRegisters::default();
-    regs.status = 0x81; // Negative and Carry
-    assert_eq!(regs.format_flags(), "N------C");
-    assert_eq!(regs.format_status(), "P: $81 [N------C]");
+    let regs = CpuRegisters {
+        status: 0x81,
+        ..Default::default()
+    };
+    assert_eq!(regs.format_flags(), "N- ----C");
+    assert_eq!(regs.format_status(), "P: $81 [N- ----C]");
 }
-

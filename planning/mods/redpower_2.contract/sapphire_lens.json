@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "sapphire_lens",
+  "sprite": "eloraam/base/items1.png#28",
+  "max_stack": 64
+}

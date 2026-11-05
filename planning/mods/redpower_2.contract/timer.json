@@ -1,0 +1,138 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#16",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "configurable interval from 4 to 200 ticks via GUI",
+      "for": [
+        "timer"
+      ],
+      "level": 3,
+      "covers": [
+        "configurable interval from 4 to 200 ticks via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "emits periodic redstone pulse at configured interval",
+      "for": [
+        "timer"
+      ],
+      "level": 4,
+      "covers": [
+        "emits periodic redstone pulse at configured interval"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps interval setting and timer state when its chunk reloads",
+      "for": [
+        "timer"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps interval setting and timer state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "configurable interval from 4 to 200 ticks via GUI",
+      "for": [
+        "timer"
+      ],
+      "level": 1,
+      "covers": [
+        "configurable interval from 4 to 200 ticks via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:timer"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      228,
+      82
+    ],
+    "title": "Timer",
+    "slots": []
+  }
+}

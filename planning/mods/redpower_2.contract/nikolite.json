@@ -5,7 +5,10 @@
   "use": null,
   "scenarios": [
     {
-      "name": "nikolite: crafts into blue alloy and blue-powered parts as an ingredient",
+      "name": "crafts into blue alloy and blue-powered parts as an ingredient",
+      "for": [
+        "nikolite"
+      ],
       "level": 2,
       "covers": [
         "crafts into blue alloy and blue-powered parts as an ingredient"

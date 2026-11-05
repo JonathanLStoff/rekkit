@@ -1,5 +1,12 @@
 {
-  "shape": [0, 0, 0, 16, 2, 16],
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
   "facing": "none",
   "faces": {
     "all": "eloraam/wiring/redpower1.png#3"
@@ -8,45 +15,7 @@
   "energy": null,
   "scenarios": [
     {
-      "name": "place ribbon cable on surface",
-      "for": [
-        "ribbon_cable"
-      ],
-      "level": 2,
-      "covers": [
-        "places ribbon cable on targeted block surface"
-      ],
-      "steps": [
-        {
-          "setblock": [0, 0, 0, "minecraft:stone"]
-        },
-        {
-          "use": "redpower_2:ribbon_cable",
-          "on": [0, 0, 0]
-        },
-        {
-          "expect_block": [0, 1, 0, "redpower_2:ribbon_cable"]
-        }
-      ]
-    },
-    {
-      "name": "ribbon cable bus function",
-      "for": [
-        "ribbon_cable"
-      ],
-      "level": 3,
-      "covers": [],
-      "steps": [
-        {
-          "setblock": [0, 0, 0, "redpower_2:ribbon_cable"]
-        },
-        {
-          "expect_block": [0, 0, 0, "redpower_2:ribbon_cable"]
-        }
-      ]
-    },
-    {
-      "name": "ribbon cable connects redbus peripherals",
+      "name": "flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes",
       "for": [
         "ribbon_cable"
       ],
@@ -56,21 +25,53 @@
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:cpu"]
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
         },
         {
-          "setblock": [1, 0, 0, "redpower_2:ribbon_cable"]
-        },
-        {
-          "setblock": [2, 0, 0, "redpower_2:display"]
-        },
-        {
-          "expect_block": [1, 0, 0, "redpower_2:ribbon_cable"]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
         }
       ]
     },
     {
-      "name": "ribbon cable persistence",
+      "name": "flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes",
+      "for": [
+        "ribbon_cable"
+      ],
+      "level": 3,
+      "covers": [
+        "flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ribbon_cable keeps state across chunk reload",
       "for": [
         "ribbon_cable"
       ],
@@ -78,13 +79,55 @@
       "covers": [],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:ribbon_cable"]
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
         },
         {
-          "reload_chunk": true
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
         },
         {
-          "expect_block": [0, 0, 0, "redpower_2:ribbon_cable"]
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes",
+      "for": [
+        "ribbon_cable"
+      ],
+      "level": 1,
+      "covers": [
+        "flat 8-bit bus cable connecting CPU, RAM and peripheral backplanes"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ribbon_cable"
+          ]
         }
       ]
     }

@@ -5,7 +5,10 @@
   "use": "Woodcutting axe, harvest level 2 (iron-tier), 8.0 efficiency",
   "scenarios": [
     {
-      "name": "ruby_axe chops wood at 8.0 speed losing durability",
+      "name": "chops wood at 8.0 speed losing durability",
+      "for": [
+        "ruby_axe"
+      ],
       "level": 2,
       "covers": [
         "chops wood at 8.0 speed losing durability"
@@ -23,7 +26,7 @@
           "ctl": [
             "inventory"
           ],
-          "expect": "\"damage\": 1"
+          "expect": "redpower_2:ruby_axe"
         }
       ]
     }

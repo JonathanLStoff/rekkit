@@ -22,7 +22,12 @@ impl Default for Quat {
 }
 
 impl Quat {
-    pub const IDENTITY: Self = Self { x: 0.0, y: 0.0, z: 0.0, s: 1.0 };
+    pub const IDENTITY: Self = Self {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        s: 1.0,
+    };
 
     pub const fn new(s: f64, x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z, s }
@@ -96,9 +101,15 @@ pub struct Matrix3 {
 
 impl Matrix3 {
     pub const IDENTITY: Self = Self {
-        xx: 1.0, xy: 0.0, xz: 0.0,
-        yx: 0.0, yy: 1.0, yz: 0.0,
-        zx: 0.0, zy: 0.0, zz: 1.0,
+        xx: 1.0,
+        xy: 0.0,
+        xz: 0.0,
+        yx: 0.0,
+        yy: 1.0,
+        yz: 0.0,
+        zx: 0.0,
+        zy: 0.0,
+        zz: 1.0,
     };
 
     pub fn from_quat(q: &Quat) -> Self {
@@ -170,7 +181,12 @@ fn tables() -> &'static ([Quat; 24], [Matrix3; 24]) {
         for i in 0..4usize {
             let k = ((i >> 1) | (i << 1)) & 3;
             let mut q2 = Quat::around_axis(0.0, 0.0, 1.0, PI / 2.0);
-            q2.multiply(&Quat::around_axis(0.0, 1.0, 0.0, (PI / 2.0) * (k + 1) as f64));
+            q2.multiply(&Quat::around_axis(
+                0.0,
+                1.0,
+                0.0,
+                (PI / 2.0) * (k + 1) as f64,
+            ));
             for j in 0..4 {
                 let mut q1 = qs[j];
                 q1.multiply(&q2);
@@ -255,7 +271,11 @@ mod tests {
                 let mut b = a;
                 orient_quat(d, r).rotate(&mut a);
                 orient_matrix(d, r).rotate(&mut b);
-                assert!((a.x - b.x).abs() < 1e-9 && (a.y - b.y).abs() < 1e-9 && (a.z - b.z).abs() < 1e-9);
+                assert!(
+                    (a.x - b.x).abs() < 1e-9
+                        && (a.y - b.y).abs() < 1e-9
+                        && (a.z - b.z).abs() < 1e-9
+                );
             }
         }
     }

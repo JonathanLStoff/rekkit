@@ -1,0 +1,172 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "bottom": "eloraam/machine/machine1.png#180",
+    "top": "eloraam/machine/machine1.png#176",
+    "front": "eloraam/machine/machine1.png#181",
+    "side": "eloraam/machine/machine1.png#178"
+  },
+  "scenarios": [
+    {
+      "name": "recharges portable blutricity items across 16 slots with 3000-unit buffer",
+      "for": [
+        "charging_bench"
+      ],
+      "level": 3,
+      "covers": [
+        "recharges portable blutricity items across 16 slots with 3000-unit buffer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its charging items and energy buffer when its chunk reloads",
+      "for": [
+        "charging_bench"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its charging items and energy buffer when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "recharges portable blutricity items across 16 slots with 3000-unit buffer",
+      "for": [
+        "charging_bench"
+      ],
+      "level": 1,
+      "covers": [
+        "recharges portable blutricity items across 16 slots with 3000-unit buffer"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:charging_bench"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      186
+    ],
+    "title": "Charging Bench",
+    "slots": [
+      [
+        80,
+        18
+      ],
+      [
+        98,
+        18
+      ],
+      [
+        116,
+        18
+      ],
+      [
+        134,
+        18
+      ],
+      [
+        80,
+        36
+      ],
+      [
+        98,
+        36
+      ],
+      [
+        116,
+        36
+      ],
+      [
+        134,
+        36
+      ],
+      [
+        80,
+        54
+      ],
+      [
+        98,
+        54
+      ],
+      [
+        116,
+        54
+      ],
+      [
+        134,
+        54
+      ],
+      [
+        80,
+        72
+      ],
+      [
+        98,
+        72
+      ],
+      [
+        116,
+        72
+      ],
+      [
+        134,
+        72
+      ]
+    ]
+  },
+  "energy": {
+    "role": "storage"
+  }
+}

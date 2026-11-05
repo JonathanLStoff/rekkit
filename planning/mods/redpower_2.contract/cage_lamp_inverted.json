@@ -1,0 +1,72 @@
+{
+  "shape": [
+    3,
+    0,
+    3,
+    13,
+    12,
+    13
+  ],
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/lighting/lighting1.png#32"
+  },
+  "scenarios": [
+    {
+      "name": "industrial cage lamp that illuminates by default and turns off with redstone",
+      "for": [
+        "cage_lamp_inverted"
+      ],
+      "level": 4,
+      "covers": [
+        "industrial cage lamp that illuminates by default and turns off with redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp_inverted"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp_inverted"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "industrial cage lamp that illuminates by default and turns off with redstone",
+      "for": [
+        "cage_lamp_inverted"
+      ],
+      "level": 1,
+      "covers": [
+        "industrial cage lamp that illuminates by default and turns off with redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp_inverted"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cage_lamp_inverted"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#5",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "emits an exact 1-tick pulse on rising edge of input signal",
+      "for": [
+        "pulse_former"
+      ],
+      "level": 4,
+      "covers": [
+        "emits an exact 1-tick pulse on rising edge of input signal"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:pulse_former"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:pulse_former"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "emits an exact 1-tick pulse on rising edge of input signal",
+      "for": [
+        "pulse_former"
+      ],
+      "level": 1,
+      "covers": [
+        "emits an exact 1-tick pulse on rising edge of input signal"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:pulse_former"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:pulse_former"
+          ]
+        }
+      ]
+    }
+  ]
+}

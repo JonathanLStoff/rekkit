@@ -205,7 +205,12 @@ impl GratePathfinder {
     }
 
     /// `tryDumpFluid`: returns the part of `level` still unplaced (0 = all placed).
-    pub fn try_dump_fluid(&mut self, world: &mut dyn GrateWorld, mut level: i32, tries: usize) -> i32 {
+    pub fn try_dump_fluid(
+        &mut self,
+        world: &mut dyn GrateWorld,
+        mut level: i32,
+        tries: usize,
+    ) -> i32 {
         for _ in 0..tries {
             let Some(nc) = self.work_poll() else {
                 self.restart = true;
@@ -385,10 +390,14 @@ impl TileGrate {
         if other.fluid_type != 0 && other.fluid_type != f1.fluid_type {
             return;
         }
-        let qty = (if p1 > other_pressure { PRESSURE_FLOW } else { 0 })
-            .max((l1 - l2) / 2)
-            .min(other.max_level() - l2)
-            .min(l1);
+        let qty = (if p1 > other_pressure {
+            PRESSURE_FLOW
+        } else {
+            0
+        })
+        .max((l1 - l2) / 2)
+        .min(other.max_level() - l2)
+        .min(l1);
         if qty <= 0 {
             return;
         }
@@ -398,7 +407,12 @@ impl TileGrate {
     }
 
     /// `onTileTick` for a grate at `pos` (every [`GRATE_TICK_DELAY`] ticks): start, advance or finish a search.
-    pub fn on_tile_tick_at(&mut self, pos: WorldCoord, world: &mut dyn GrateWorld, world_tick: i64) {
+    pub fn on_tile_tick_at(
+        &mut self,
+        pos: WorldCoord,
+        world: &mut dyn GrateWorld,
+        world_tick: i64,
+    ) {
         let sides: u8 = 63 ^ (1 << self.rotation);
         if self.pressure == 0 {
             self.restart_path();
@@ -423,7 +437,9 @@ impl TileGrate {
                 self.search = Some(s);
             }
             if self.state == SearchState::Mapping {
-                let Some(s) = self.search.as_mut() else { return };
+                let Some(s) = self.search.as_mut() else {
+                    return;
+                };
                 if !s.try_map_fluid(world, MAP_TRIES) {
                     return;
                 }
@@ -457,7 +473,9 @@ impl TileGrate {
                 self.search = Some(s);
             }
             if self.state == SearchState::Pouring {
-                let Some(s) = self.search.as_mut() else { return };
+                let Some(s) = self.search.as_mut() else {
+                    return;
+                };
                 let fr = s.try_dump_fluid(world, fq, DUMP_TRIES);
                 if s.restart {
                     self.restart_path();
@@ -485,7 +503,11 @@ mod tests {
     }
     impl GrateWorld for W {
         fn liquid_id(&self, p: WorldCoord) -> i32 {
-            if self.liquid.contains_key(&p) { WATER } else { 0 }
+            if self.liquid.contains_key(&p) {
+                WATER
+            } else {
+                0
+            }
         }
         fn fluid_id_at(&self, _f: i32, p: WorldCoord) -> i32 {
             self.liquid_id(p)
@@ -497,17 +519,27 @@ mod tests {
             if self.solid.contains(&p) {
                 return false;
             }
-            if l <= 0 { self.liquid.remove(&p); } else { self.liquid.insert(p, l); }
+            if l <= 0 {
+                self.liquid.remove(&p);
+            } else {
+                self.liquid.insert(p, l);
+            }
             true
         }
-        fn quanta(&self, _f: i32) -> i32 { 1000 }
+        fn quanta(&self, _f: i32) -> i32 {
+            1000
+        }
         fn is_air(&self, p: WorldCoord) -> bool {
             !self.liquid.contains_key(&p) && !self.solid.contains(&p)
         }
-        fn remove_block(&mut self, p: WorldCoord) { self.liquid.remove(&p); }
+        fn remove_block(&mut self, p: WorldCoord) {
+            self.liquid.remove(&p);
+        }
     }
 
-    fn pos() -> WorldCoord { WorldCoord::new(0, 10, 0) }
+    fn pos() -> WorldCoord {
+        WorldCoord::new(0, 10, 0)
+    }
 
     #[test]
     fn suck_drains_source_in_front() {

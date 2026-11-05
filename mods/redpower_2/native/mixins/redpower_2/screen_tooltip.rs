@@ -1,9 +1,4 @@
-fn screen_tooltip(
-    block: &str,
-    data: &[i32],
-    at: [f32; 2],
-    lines: &mut Vec<String>,
-) {
+fn screen_tooltip(block: &str, data: &[i32], at: [f32; 2], lines: &mut Vec<String>) {
     if !block.starts_with("redpower_2:") {
         return;
     }

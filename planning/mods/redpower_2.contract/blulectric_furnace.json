@@ -1,0 +1,144 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "bottom": "eloraam/machine/machine1.png#84",
+    "top": "eloraam/machine/machine1.png#83",
+    "front": "eloraam/machine/machine1.png#81",
+    "side": "eloraam/machine/machine1.png#80"
+  },
+  "scenarios": [
+    {
+      "name": "smelts vanilla recipes at double speed consuming blutricity",
+      "for": [
+        "blulectric_furnace"
+      ],
+      "level": 3,
+      "covers": [
+        "smelts vanilla recipes at double speed consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its items and progress when its chunk reloads",
+      "for": [
+        "blulectric_furnace"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its items and progress when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "accepts input from top and extracts from sides",
+      "for": [
+        "blulectric_furnace"
+      ],
+      "level": 6,
+      "covers": [
+        "accepts input from top and extracts from sides"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "smelts vanilla recipes at double speed consuming blutricity",
+      "for": [
+        "blulectric_furnace"
+      ],
+      "level": 1,
+      "covers": [
+        "smelts vanilla recipes at double speed consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_furnace"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Blulectric Furnace",
+    "slots": [
+      [
+        62,
+        35
+      ],
+      [
+        126,
+        35
+      ]
+    ]
+  },
+  "energy": {
+    "role": "consumer"
+  }
+}

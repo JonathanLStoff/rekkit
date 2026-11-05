@@ -1,6 +1,13 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/observer_front"
-  }
+    "north": "redpower_2:block/machine1_225",
+    "south": "redpower_2:block/machine1_225",
+    "east": "redpower_2:block/machine1_225",
+    "west": "redpower_2:block/machine1_225",
+    "up": "redpower_2:block/machine1_225",
+    "down": "redpower_2:block/machine1_225",
+    "all": "redpower_2:block/machine1_225"
+  },
+  "particle": "redpower_2:block/machine1_225"
 }

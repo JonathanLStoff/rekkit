@@ -1,0 +1,176 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "bottom": "eloraam/machine/machine1.png#84",
+    "top": "eloraam/machine/machine1.png#163",
+    "front": "eloraam/machine/machine1.png#161",
+    "side": "eloraam/machine/machine1.png#160"
+  },
+  "scenarios": [
+    {
+      "name": "smelts alloy recipes without fuel consuming blutricity",
+      "for": [
+        "blulectric_alloy_furnace"
+      ],
+      "level": 3,
+      "covers": [
+        "smelts alloy recipes without fuel consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its items and progress when its chunk reloads",
+      "for": [
+        "blulectric_alloy_furnace"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its items and progress when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "accepts inputs from top and extracts from back",
+      "for": [
+        "blulectric_alloy_furnace"
+      ],
+      "level": 6,
+      "covers": [
+        "accepts inputs from top and extracts from back"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "smelts alloy recipes without fuel consuming blutricity",
+      "for": [
+        "blulectric_alloy_furnace"
+      ],
+      "level": 1,
+      "covers": [
+        "smelts alloy recipes without fuel consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:blulectric_alloy_furnace"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Blulectric Alloy Furnace",
+    "slots": [
+      [
+        48,
+        17
+      ],
+      [
+        66,
+        17
+      ],
+      [
+        84,
+        17
+      ],
+      [
+        48,
+        35
+      ],
+      [
+        66,
+        35
+      ],
+      [
+        84,
+        35
+      ],
+      [
+        48,
+        53
+      ],
+      [
+        66,
+        53
+      ],
+      [
+        84,
+        53
+      ],
+      [
+        141,
+        35
+      ]
+    ]
+  },
+  "energy": {
+    "role": "consumer"
+  }
+}

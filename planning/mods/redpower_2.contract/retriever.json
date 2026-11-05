@@ -1,0 +1,173 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#120",
+    "back": "eloraam/machine/machine1.png#124",
+    "side": "eloraam/machine/machine1.png#120",
+    "top": "eloraam/machine/machine1.png#125",
+    "bottom": "eloraam/machine/machine1.png#124"
+  },
+  "scenarios": [
+    {
+      "name": "holds 9 filter slots and blutricity buffer in GUI",
+      "for": [
+        "retriever"
+      ],
+      "level": 3,
+      "covers": [
+        "holds 9 filter slots and blutricity buffer in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pulls matching items across entire tube network on redstone pulse consuming blutricity",
+      "for": [
+        "retriever"
+      ],
+      "level": 4,
+      "covers": [
+        "pulls matching items across entire tube network on redstone pulse consuming blutricity"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its filter slots and charge when its chunk reloads",
+      "for": [
+        "retriever"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its filter slots and charge when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holds 9 filter slots and blutricity buffer in GUI",
+      "for": [
+        "retriever"
+      ],
+      "level": 1,
+      "covers": [
+        "holds 9 filter slots and blutricity buffer in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:retriever"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Retriever",
+    "slots": [
+      [
+        62,
+        17
+      ],
+      [
+        80,
+        17
+      ],
+      [
+        98,
+        17
+      ],
+      [
+        62,
+        35
+      ],
+      [
+        80,
+        35
+      ],
+      [
+        98,
+        35
+      ],
+      [
+        62,
+        53
+      ],
+      [
+        80,
+        53
+      ],
+      [
+        98,
+        53
+      ]
+    ]
+  },
+  "energy": {
+    "role": "consumer"
+  }
+}

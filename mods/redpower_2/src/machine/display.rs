@@ -260,13 +260,15 @@ mod tests {
 
     #[test]
     fn blitter_fill_invert_copy() {
-        let mut d = Display::default();
-        d.blit_xd = 70;
-        d.blit_yd = 48;
-        d.blit_w = 20;
-        d.blit_h = 10;
-        d.blit_xs = b'x';
-        d.blit_mode = 1;
+        let mut d = Display {
+            blit_xd: 70,
+            blit_yd: 48,
+            blit_w: 20,
+            blit_h: 10,
+            blit_xs: b'x',
+            blit_mode: 1,
+            ..Default::default()
+        };
         assert!(d.tick());
         assert_eq!(d.blit_mode, 0);
         assert_eq!(d.screen[48 * 80 + 79], b'x');

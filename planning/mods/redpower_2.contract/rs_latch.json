@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#25",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "bistable flip-flop with set and reset inputs",
+      "for": [
+        "rs_latch"
+      ],
+      "level": 4,
+      "covers": [
+        "bistable flip-flop with set and reset inputs"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rs_latch"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rs_latch"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bistable flip-flop with set and reset inputs",
+      "for": [
+        "rs_latch"
+      ],
+      "level": 1,
+      "covers": [
+        "bistable flip-flop with set and reset inputs"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:rs_latch"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:rs_latch"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -47,7 +47,7 @@ MANIFEST_KEYS = {
 }
 NATIVE_JSON_KEYS = {"schema", "id", "version", "game", "horizon", "mixins", "hooks"}
 REGISTRY_TOML_KEYS = {"name", "summary", "description", "authors", "license"}
-BLOCK_FILE_KEYS = {"template", "properties", "shapes", "default_state", "item", "components"}
+BLOCK_FILE_KEYS = {"template", "properties", "shapes", "collision_shapes", "default_state", "state_properties", "connects_to", "thickness", "wood_type", "wall_block", "item", "components"}
 BLOCK_PROP_KEYS = {
     "hardness",
     "explosion_resistance",
@@ -133,6 +133,22 @@ def validate_block_json(rel_path: str, data: dict) -> bool:
     if components and not has_item:
         raise ValidationError(f"{rel_path}: components requires item = true")
     validate_components(rel_path, components, allow_stack_and_rarity=True)
+    sp = data.get("state_properties", {})
+    if sp and not isinstance(sp, dict):
+        raise ValidationError(f"{rel_path}: state_properties must be an object")
+    for name, prop in sp.items():
+        if not isinstance(name, str) or not re.match(r"^[a-z0-9_]+$", name):
+            raise ValidationError(f"{rel_path}: state property name {name!r} is invalid")
+        if not isinstance(prop, dict) or set(prop.keys()) - {"type", "values"}:
+            raise ValidationError(f"{rel_path}: state property {name!r} must have type and optional values")
+        if prop.get("type") == "boolean":
+            continue
+        elif prop.get("type") == "enum":
+            values = prop.get("values", [])
+            if not values or not all(isinstance(v, str) and re.match(r"^[a-z0-9_]+$", v) for v in values):
+                raise ValidationError(f"{rel_path}: state property {name!r} enum values must be non-empty list of valid names")
+        else:
+            raise ValidationError(f"{rel_path}: state property {name!r} unknown type {prop.get('type')!r}")
     return has_item
 
 

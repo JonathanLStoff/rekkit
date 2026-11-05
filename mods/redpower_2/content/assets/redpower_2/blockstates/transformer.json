@@ -1,7 +1,27 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "redpower_2:block/transformer",
+      "x": 90
+    },
+    "facing=up": {
+      "model": "redpower_2:block/transformer",
+      "x": 270
+    },
+    "facing=north": {
       "model": "redpower_2:block/transformer"
+    },
+    "facing=south": {
+      "model": "redpower_2:block/transformer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "redpower_2:block/transformer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "redpower_2:block/transformer",
+      "y": 90
     }
   }
 }

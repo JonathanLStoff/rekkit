@@ -17,7 +17,9 @@ fn menu_button(pos: [i32; 3], entity: &mut ModBlockEntity, id: i32) {
                 _ => {}
             }
             entity.data[1] = interval;
-            entity.nbt.insert("interval".into(), horizon_world::nbt::Tag::Int(interval));
+            entity
+                .nbt
+                .insert("interval".into(), horizon_world::nbt::Tag::Int(interval));
         }
         "redpower_2:counter" => {
             if entity.data.len() < 2 {
@@ -30,7 +32,9 @@ fn menu_button(pos: [i32; 3], entity: &mut ModBlockEntity, id: i32) {
                 _ => {}
             }
             entity.data[1] = count;
-            entity.nbt.insert("count".into(), horizon_world::nbt::Tag::Int(count));
+            entity
+                .nbt
+                .insert("count".into(), horizon_world::nbt::Tag::Int(count));
         }
         _ => {}
     }

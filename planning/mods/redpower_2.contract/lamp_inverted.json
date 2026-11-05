@@ -1,7 +1,10 @@
 {
   "scenarios": [
     {
-      "name": "lamp_inverted light state",
+      "name": "illuminates by default and turns off when powered by redstone signal",
+      "for": [
+        "lamp_inverted"
+      ],
       "level": 4,
       "covers": [
         "illuminates by default and turns off when powered by redstone signal"
@@ -16,22 +19,39 @@
           ]
         },
         {
-          "setblock": [
-            1,
+          "expect_block": [
             0,
             0,
-            "minecraft:redstone_block"
+            0,
+            "redpower_2:lamp_inverted"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "illuminates by default and turns off when powered by redstone signal",
+      "for": [
+        "lamp_inverted"
+      ],
+      "level": 1,
+      "covers": [
+        "illuminates by default and turns off when powered by redstone signal"
+      ],
+      "steps": [
         {
-          "wait": 10
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp_inverted"
+          ]
         },
         {
           "expect_block": [
             0,
             0,
             0,
-            "lit=false"
+            "redpower_2:lamp_inverted"
           ]
         }
       ]

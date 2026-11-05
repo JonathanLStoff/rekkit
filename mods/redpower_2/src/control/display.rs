@@ -343,8 +343,8 @@ impl Display {
                 self.blit_mode = BLIT_MODE_IDLE;
             }
             m => {
-                let w = (w as i32).min(COLS as i32 - self.blit_xs as i32);
-                let h = (h as i32).min(ROWS as i32 - self.blit_ys as i32);
+                let w = w.min(COLS as i32 - self.blit_xs as i32);
+                let h = h.min(ROWS as i32 - self.blit_ys as i32);
                 if w < 0 || h < 0 {
                     self.blit_mode = BLIT_MODE_IDLE;
                 } else if m == BLIT_MODE_COPY {
@@ -403,7 +403,9 @@ impl Display {
             map.get(k).and_then(|s| s.parse::<u8>().ok()).unwrap_or(def)
         };
         let get_i32 = |k: &str, def: i32| -> i32 {
-            map.get(k).and_then(|s| s.parse::<i32>().ok()).unwrap_or(def)
+            map.get(k)
+                .and_then(|s| s.parse::<i32>().ok())
+                .unwrap_or(def)
         };
 
         d.rotation = get_i32("rot", 0) & 3;
@@ -450,11 +452,10 @@ impl Display {
     pub fn get_display_rle(&self, prev_screen: &mut [u8]) -> Option<Vec<u8>> {
         let mut rle = RleCompressor::new();
         let len = SCREEN_SIZE.min(prev_screen.len());
-        for i in 0..len {
-            let cur = self.screen[i];
-            let diff = cur != prev_screen[i];
-            rle.add_byte(cur, diff);
-            prev_screen[i] = cur;
+        for (i, cur) in prev_screen.iter_mut().enumerate().take(len) {
+            let diff = self.screen[i] != *cur;
+            rle.add_byte(self.screen[i], diff);
+            *cur = self.screen[i];
         }
         rle.flush();
         rle.get_bytes()

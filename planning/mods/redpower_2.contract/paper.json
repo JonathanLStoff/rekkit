@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "paper",
+  "sprite": "eloraam/base/items1.png#19",
+  "max_stack": 64
+}

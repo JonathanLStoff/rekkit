@@ -5,7 +5,10 @@
   "use": "Blue dye extracted from indigo flowers",
   "scenarios": [
     {
-      "name": "dye_indigo dyes sheep and wool blue on right-click",
+      "name": "dyes sheep and wool blue on right-click",
+      "for": [
+        "dye_indigo"
+      ],
       "level": 2,
       "covers": [
         "dyes sheep and wool blue on right-click"

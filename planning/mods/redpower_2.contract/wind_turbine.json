@@ -1,0 +1,141 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#157",
+    "back": "eloraam/machine/machine1.png#157",
+    "side": "eloraam/machine/machine1.png#156",
+    "top": "eloraam/machine/machine1.png#158",
+    "bottom": "eloraam/machine/machine1.png#150"
+  },
+  "scenarios": [
+    {
+      "name": "generates blutricity from mounted turbine rotor based on unobstructed wind clearance",
+      "for": [
+        "wind_turbine"
+      ],
+      "level": 3,
+      "covers": [
+        "generates blutricity from mounted turbine rotor based on unobstructed wind clearance"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "engages mechanical brake halting generation when powered by redstone",
+      "for": [
+        "wind_turbine"
+      ],
+      "level": 4,
+      "covers": [
+        "engages mechanical brake halting generation when powered by redstone"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its rotor item and power state when its chunk reloads",
+      "for": [
+        "wind_turbine"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its rotor item and power state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "generates blutricity from mounted turbine rotor based on unobstructed wind clearance",
+      "for": [
+        "wind_turbine"
+      ],
+      "level": 1,
+      "covers": [
+        "generates blutricity from mounted turbine rotor based on unobstructed wind clearance"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:wind_turbine"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      167
+    ],
+    "title": "Wind Turbine",
+    "slots": [
+      [
+        80,
+        35
+      ]
+    ]
+  },
+  "energy": {
+    "role": "producer"
+  }
+}

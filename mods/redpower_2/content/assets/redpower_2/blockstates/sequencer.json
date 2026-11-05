@@ -1,7 +1,23 @@
 {
   "variants": {
-    "": {
-      "model": "redpower_2:block/sequencer"
+    "facing=north": {
+      "model": "redpower_2:block/sequencer",
+      "weight": 1
+    },
+    "facing=south": {
+      "model": "redpower_2:block/sequencer",
+      "y": 180,
+      "weight": 1
+    },
+    "facing=east": {
+      "model": "redpower_2:block/sequencer",
+      "y": 90,
+      "weight": 1
+    },
+    "facing=west": {
+      "model": "redpower_2:block/sequencer",
+      "y": 270,
+      "weight": 1
     }
   }
 }

@@ -6,5 +6,18 @@
     "requires_tool": true,
     "sounds": "minecraft:iron_block"
   },
-  "item": true
+  "item": true,
+  "state_properties": {
+    "facing": {
+      "type": "enum",
+      "values": [
+        "down",
+        "east",
+        "north",
+        "south",
+        "up",
+        "west"
+      ]
+    }
+  }
 }

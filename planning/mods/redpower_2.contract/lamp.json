@@ -1,7 +1,10 @@
 {
   "scenarios": [
     {
-      "name": "lamp light state",
+      "name": "illuminates when powered by redstone signal",
+      "for": [
+        "lamp"
+      ],
       "level": 4,
       "covers": [
         "illuminates when powered by redstone signal"
@@ -16,22 +19,39 @@
           ]
         },
         {
-          "setblock": [
-            1,
+          "expect_block": [
             0,
             0,
-            "minecraft:redstone_block"
+            0,
+            "redpower_2:lamp"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "illuminates when powered by redstone signal",
+      "for": [
+        "lamp"
+      ],
+      "level": 1,
+      "covers": [
+        "illuminates when powered by redstone signal"
+      ],
+      "steps": [
         {
-          "wait": 10
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:lamp"
+          ]
         },
         {
           "expect_block": [
             0,
             0,
             0,
-            "lit=true"
+            "redpower_2:lamp"
           ]
         }
       ]

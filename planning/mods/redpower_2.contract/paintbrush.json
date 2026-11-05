@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "paintbrush",
+  "sprite": "eloraam/base/items1.png#18",
+  "max_stack": 1
+}

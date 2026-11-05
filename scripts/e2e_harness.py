@@ -659,8 +659,9 @@ def ensure_submodule(fetch: bool) -> dict:
 
 
 def have_commit(rev: str) -> bool:
-    return subprocess.run(["git", "-C", str(HORIZON_ROOT), "cat-file", "-e", f"{rev}^{{commit}}"],
-                          capture_output=True).returncode == 0
+    # `cat-file -t` rather than `-e rev^{commit}`: the braces get mangled by some Windows git builds.
+    r = subprocess.run(["git", "-C", str(HORIZON_ROOT), "cat-file", "-t", rev], capture_output=True, text=True)
+    return r.returncode == 0 and r.stdout.strip() == "commit"
 
 
 def commit_time(rev: str) -> int:

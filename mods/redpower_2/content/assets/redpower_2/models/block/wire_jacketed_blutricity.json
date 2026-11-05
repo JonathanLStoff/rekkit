@@ -1,6 +1,48 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/stone"
-  }
+    "all": "redpower_2:block/redpower1_007",
+    "north": "redpower_2:block/redpower1_007",
+    "south": "redpower_2:block/redpower1_007",
+    "east": "redpower_2:block/redpower1_007",
+    "west": "redpower_2:block/redpower1_007",
+    "up": "redpower_2:block/redpower1_007",
+    "down": "redpower_2:block/redpower1_007",
+    "particle": "redpower_2:block/redpower1_007"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        4
+      ],
+      "to": [
+        12,
+        16,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        },
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/redpower1_007"
 }

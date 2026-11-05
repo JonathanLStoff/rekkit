@@ -1,0 +1,249 @@
+{
+  "shape": "full",
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/base/base1.png#32",
+    "front": "eloraam/base/base1.png#33",
+    "side": "eloraam/base/base1.png#34",
+    "bottom": "eloraam/base/base1.png#35"
+  },
+  "scenarios": [
+    {
+      "name": "provides persistent 3x3 crafting grid with plan slot and 18 storage slots",
+      "for": [
+        "project_table"
+      ],
+      "level": 3,
+      "covers": [
+        "provides persistent 3x3 crafting grid with plan slot and 18 storage slots"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its crafting matrix and storage contents when its chunk reloads",
+      "for": [
+        "project_table"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its crafting matrix and storage contents when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "allows sided insertion and extraction to internal storage",
+      "for": [
+        "project_table"
+      ],
+      "level": 6,
+      "covers": [
+        "allows sided insertion and extraction to internal storage"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "provides persistent 3x3 crafting grid with plan slot and 18 storage slots",
+      "for": [
+        "project_table"
+      ],
+      "level": 1,
+      "covers": [
+        "provides persistent 3x3 crafting grid with plan slot and 18 storage slots"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:project_table"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      222
+    ],
+    "title": "Project Table",
+    "slots": [
+      [
+        48,
+        18
+      ],
+      [
+        66,
+        18
+      ],
+      [
+        84,
+        18
+      ],
+      [
+        48,
+        36
+      ],
+      [
+        66,
+        36
+      ],
+      [
+        84,
+        36
+      ],
+      [
+        48,
+        54
+      ],
+      [
+        66,
+        54
+      ],
+      [
+        84,
+        54
+      ],
+      [
+        17,
+        36
+      ],
+      [
+        143,
+        36
+      ],
+      [
+        8,
+        90
+      ],
+      [
+        26,
+        90
+      ],
+      [
+        44,
+        90
+      ],
+      [
+        62,
+        90
+      ],
+      [
+        80,
+        90
+      ],
+      [
+        98,
+        90
+      ],
+      [
+        116,
+        90
+      ],
+      [
+        134,
+        90
+      ],
+      [
+        152,
+        90
+      ],
+      [
+        8,
+        108
+      ],
+      [
+        26,
+        108
+      ],
+      [
+        44,
+        108
+      ],
+      [
+        62,
+        108
+      ],
+      [
+        80,
+        108
+      ],
+      [
+        98,
+        108
+      ],
+      [
+        116,
+        108
+      ],
+      [
+        134,
+        108
+      ],
+      [
+        152,
+        108
+      ]
+    ]
+  }
+}

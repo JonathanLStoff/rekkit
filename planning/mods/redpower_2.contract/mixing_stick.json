@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "mixing_stick",
+  "sprite": "eloraam/base/items1.png#17",
+  "max_stack": 1
+}

@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "logic_processor",
+  "sprite": "eloraam/base/items1.png#16",
+  "max_stack": 64
+}

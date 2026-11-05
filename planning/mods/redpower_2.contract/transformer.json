@@ -1,0 +1,124 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#226"
+  },
+  "scenarios": [
+    {
+      "name": "steps voltage between 100V low voltage and 10000V high voltage",
+      "for": [
+        "transformer"
+      ],
+      "level": 3,
+      "covers": [
+        "steps voltage between 100V low voltage and 10000V high voltage"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "conducts blutricity across voltage boundaries",
+      "for": [
+        "transformer"
+      ],
+      "level": 4,
+      "covers": [
+        "conducts blutricity across voltage boundaries"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its electrical state when its chunk reloads",
+      "for": [
+        "transformer"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its electrical state when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "steps voltage between 100V low voltage and 10000V high voltage",
+      "for": [
+        "transformer"
+      ],
+      "level": 1,
+      "covers": [
+        "steps voltage between 100V low voltage and 10000V high voltage"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:transformer"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

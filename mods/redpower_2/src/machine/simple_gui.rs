@@ -46,7 +46,11 @@ pub fn battery_layout() -> Layout {
 /// `GuiFilter.a(int,int,int)`: colour square x118..129, y55..66.
 pub fn filter_click(at: [f32; 2], right: bool) -> Option<i32> {
     if (118.0..=129.0).contains(&at[0]) && (55.0..=66.0).contains(&at[1]) {
-        Some(if right { BTN_COLOR_PREV } else { BTN_COLOR_NEXT })
+        Some(if right {
+            BTN_COLOR_PREV
+        } else {
+            BTN_COLOR_NEXT
+        })
     } else {
         None
     }

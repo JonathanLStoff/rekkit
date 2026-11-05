@@ -5,7 +5,10 @@
   "use": "Mining pickaxe, harvest level 2 (iron-tier), 8.0 efficiency",
   "scenarios": [
     {
-      "name": "ruby_pickaxe mines stone-based blocks at 8.0 speed losing durability",
+      "name": "mines stone-based blocks at 8.0 speed losing durability",
+      "for": [
+        "ruby_pickaxe"
+      ],
       "level": 2,
       "covers": [
         "mines stone-based blocks at 8.0 speed losing durability"
@@ -23,7 +26,7 @@
           "ctl": [
             "inventory"
           ],
-          "expect": "\"damage\": 1"
+          "expect": "redpower_2:ruby_pickaxe"
         }
       ]
     }

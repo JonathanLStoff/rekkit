@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic2.png#88",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "outputs high unless all active inputs are high",
+      "for": [
+        "nand_gate"
+      ],
+      "level": 4,
+      "covers": [
+        "outputs high unless all active inputs are high"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:nand_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:nand_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "outputs high unless all active inputs are high",
+      "for": [
+        "nand_gate"
+      ],
+      "level": 1,
+      "covers": [
+        "outputs high unless all active inputs are high"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:nand_gate"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:nand_gate"
+          ]
+        }
+      ]
+    }
+  ]
+}

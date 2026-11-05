@@ -5,5 +5,30 @@
     "explosion_resistance": 0.5,
     "sounds": "minecraft:white_wool"
   },
-  "item": false
+  "item": false,
+  "state_properties": {
+    "facing": {
+      "type": "enum",
+      "values": [
+        "down",
+        "east",
+        "north",
+        "south",
+        "up",
+        "west"
+      ]
+    }
+  },
+  "shapes": {
+    "default": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.1875,
+        1.0
+      ]
+    ]
+  }
 }

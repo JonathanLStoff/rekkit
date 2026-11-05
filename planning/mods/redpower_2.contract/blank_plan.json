@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/base/items1.png#81",
+  "max_stack": 64,
+  "durability": null,
+  "scenarios": [
+    {
+      "name": "encodes crafting recipe when written in project table plan slot",
+      "for": [
+        "blank_plan"
+      ],
+      "level": 2,
+      "covers": [
+        "encodes crafting recipe when written in project table plan slot"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:blank_plan",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:blank_plan"
+        }
+      ]
+    }
+  ],
+  "use": "Place in project table plan slot and click write button to create a crafting plan"
+}

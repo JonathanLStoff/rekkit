@@ -1,0 +1,136 @@
+{
+  "shape": [
+    4,
+    0,
+    4,
+    12,
+    16,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/wiring/redpower1.png#6"
+  },
+  "scenarios": [
+    {
+      "name": "freestanding rigid bundled cable conduit carrying 16 channels",
+      "for": [
+        "cable_jacketed"
+      ],
+      "level": 4,
+      "covers": [
+        "freestanding rigid bundled cable conduit carrying 16 channels"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid bundled cable conduit carrying 16 channels",
+      "for": [
+        "cable_jacketed"
+      ],
+      "level": 3,
+      "covers": [
+        "freestanding rigid bundled cable conduit carrying 16 channels"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cable_jacketed keeps state across chunk reload",
+      "for": [
+        "cable_jacketed"
+      ],
+      "level": 5,
+      "covers": [],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        },
+        {
+          "reload_chunk": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "freestanding rigid bundled cable conduit carrying 16 channels",
+      "for": [
+        "cable_jacketed"
+      ],
+      "level": 1,
+      "covers": [
+        "freestanding rigid bundled cable conduit carrying 16 channels"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:cable_jacketed"
+          ]
+        }
+      ]
+    }
+  ],
+  "energy": {
+    "role": "conductor"
+  }
+}

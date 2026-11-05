@@ -42,18 +42,18 @@ pub use rekkit_core::{HORIZON_REVISION, MIXINS_REVISION, NATIVE_HOOKS_API};
 pub mod athame;
 pub mod control;
 pub mod core;
-pub mod fluid;
 #[path = "world/flora.rs"]
 pub mod flora;
+pub mod fluid;
 pub mod machine;
-#[path = "world/hooks.rs"]
-pub mod world_hooks;
 #[path = "world/ores.rs"]
 pub mod ores;
 #[path = "world/stone.rs"]
 pub mod stone;
 pub mod tubes;
 pub mod wiring;
+#[path = "world/hooks.rs"]
+pub mod world_hooks;
 pub use control::cpu_gui::{ContainerCPU, CpuRegisters, GuiCPU};
 pub use core::{Vector3, WorldCoord};
 pub use machine::backplane::{Backplane, MemoryMap};
@@ -2989,8 +2989,8 @@ impl HorizonNativeMod for RedPower2Mod {
         }
         if entity.id == Self::BLOCK_CPU {
             let mut container = control::cpu_gui::ContainerCPU::from_nbt(&entity.nbt);
-            let mut cpu = self.cpus.get_mut(&pos);
-            container.apply_menu_button(id, cpu.as_deref_mut());
+            let cpu = self.cpus.get_mut(&pos);
+            container.apply_menu_button(id, cpu);
             container.write_nbt(&mut entity.nbt);
             entity.data = container.to_data();
             return;
@@ -3013,7 +3013,11 @@ impl HorizonNativeMod for RedPower2Mod {
             return;
         }
         if entity.id == "redpower_2:filter" || entity.id == "redpower_2:item_detector" {
-            let key = if entity.id == "redpower_2:filter" { "color" } else { "mode" };
+            let key = if entity.id == "redpower_2:filter" {
+                "color"
+            } else {
+                "mode"
+            };
             let cur = entity
                 .nbt
                 .get(key)
@@ -3659,13 +3663,13 @@ mod tests {
         // LDX $6000   ; Read from unmapped bank 2 (no RAM) -> X = $FF (open bus)
         // BRK
         let prog = [
-            0xA9, 0x42,             // LDA #$42
-            0x8D, 0x50, 0x20,       // STA $2050
-            0xA9, 0x99,             // LDA #$99
-            0x8D, 0x10, 0x40,       // STA $4010
-            0xAD, 0x50, 0x20,       // LDA $2050
-            0xAE, 0x00, 0x60,       // LDX $6000
-            0x00,                   // BRK
+            0xA9, 0x42, // LDA #$42
+            0x8D, 0x50, 0x20, // STA $2050
+            0xA9, 0x99, // LDA #$99
+            0x8D, 0x10, 0x40, // STA $4010
+            0xAD, 0x50, 0x20, // LDA $2050
+            0xAE, 0x00, 0x60, // LDX $6000
+            0x00, // BRK
         ];
         cpu.load_program(0x0400, &prog);
         let ran = cpu.step_tick(100);

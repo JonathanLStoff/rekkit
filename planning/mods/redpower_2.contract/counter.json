@@ -1,0 +1,138 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/logic1.png#224",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "configurable maximum count, increment and decrement values via GUI",
+      "for": [
+        "counter"
+      ],
+      "level": 3,
+      "covers": [
+        "configurable maximum count, increment and decrement values via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "counts up and down pulses and outputs signals at minimum and maximum count",
+      "for": [
+        "counter"
+      ],
+      "level": 4,
+      "covers": [
+        "counts up and down pulses and outputs signals at minimum and maximum count"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps count value and configuration when its chunk reloads",
+      "for": [
+        "counter"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps count value and configuration when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "configurable maximum count, increment and decrement values via GUI",
+      "for": [
+        "counter"
+      ],
+      "level": 1,
+      "covers": [
+        "configurable maximum count, increment and decrement values via GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:counter"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      228,
+      117
+    ],
+    "title": "Counter",
+    "slots": []
+  }
+}

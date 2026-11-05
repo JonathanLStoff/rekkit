@@ -5,7 +5,10 @@
   "use": "Precision handsaw; required for slicing silicon boules into wafers",
   "scenarios": [
     {
-      "name": "diamond_handsaw cuts blocks and slices silicon boules into wafers in crafting grid losing durability",
+      "name": "cuts blocks and slices silicon boules into wafers in crafting grid losing durability",
+      "for": [
+        "diamond_handsaw"
+      ],
       "level": 2,
       "covers": [
         "cuts blocks and slices silicon boules into wafers in crafting grid losing durability"

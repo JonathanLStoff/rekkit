@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/base/items1.png#129",
+  "max_stack": 1,
+  "durability": 400,
+  "scenarios": [
+    {
+      "name": "wirelessly rotates and configures RedPower machines from distance using charge",
+      "for": [
+        "sonic_screwdriver"
+      ],
+      "level": 2,
+      "covers": [
+        "wirelessly rotates and configures RedPower machines from distance using charge"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:sonic_screwdriver",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:sonic_screwdriver"
+        }
+      ]
+    }
+  ],
+  "use": "Rechargeable sonic tool that rotates machines wirelessly from a distance"
+}

@@ -1,0 +1,34 @@
+{
+  "sprite": "eloraam/base/items1.png#177",
+  "max_stack": 1,
+  "durability": 1000,
+  "scenarios": [
+    {
+      "name": "mounts into wind turbine machine to generate blutricity losing durability from wind wear",
+      "for": [
+        "wood_turbine"
+      ],
+      "level": 2,
+      "covers": [
+        "mounts into wind turbine machine to generate blutricity losing durability from wind wear"
+      ],
+      "steps": [
+        {
+          "use": "redpower_2:wood_turbine",
+          "on": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:wood_turbine"
+        }
+      ]
+    }
+  ],
+  "use": "Vertical axis wind turbine rotor; place inside wind turbine machine"
+}

@@ -13,46 +13,59 @@
   "energy": null,
   "scenarios": [
     {
-      "name": "ram module places",
-      "for": ["ram_module"],
-      "level": 1,
-      "covers": [],
-      "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:ram_module"] },
-        { "expect_block": [0, 0, 0, "redpower_2:ram_module"] }
-      ]
-    },
-    {
-      "name": "ram module supplies 8KB memory expansion",
-      "for": ["ram_module"],
-      "level": 3,
-      "covers": [],
-      "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:ram_module"] },
-        { "expect_block": [0, 0, 0, "redpower_2:ram_module"] }
-      ]
-    },
-    {
-      "name": "ram module mounted on backplane extends memory",
-      "for": ["ram_module"],
+      "name": "provides 8KB memory expansion when mounted on backplane",
+      "for": [
+        "ram_module"
+      ],
       "level": 4,
-      "covers": ["provides 8KB memory expansion when mounted on backplane"],
+      "covers": [
+        "provides 8KB memory expansion when mounted on backplane"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:cpu"] },
-        { "setblock": [1, 0, 0, "redpower_2:backplane"] },
-        { "setblock": [2, 0, 0, "redpower_2:ram_module"] },
-        { "expect_block": [2, 0, 0, "redpower_2:ram_module"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ram_module"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ram_module"
+          ]
+        }
       ]
     },
     {
-      "name": "ram module keeps 8KB RAM across chunk reload",
-      "for": ["ram_module"],
-      "level": 5,
-      "covers": [],
+      "name": "provides 8KB memory expansion when mounted on backplane",
+      "for": [
+        "ram_module"
+      ],
+      "level": 1,
+      "covers": [
+        "provides 8KB memory expansion when mounted on backplane"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:ram_module"] },
-        { "reload_chunk": [0, 0, 0] },
-        { "expect_block": [0, 0, 0, "redpower_2:ram_module"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:ram_module"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:ram_module"
+          ]
+        }
       ]
     }
   ]

@@ -1,0 +1,74 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "horizontal",
+  "faces": {
+    "top": "eloraam/logic/array1.png#1",
+    "side": "eloraam/logic/logic1.png#0",
+    "bottom": "eloraam/logic/logic1.png#0"
+  },
+  "scenarios": [
+    {
+      "name": "inverting pass-through cell for array logic",
+      "for": [
+        "invert_cell"
+      ],
+      "level": 4,
+      "covers": [
+        "inverting pass-through cell for array logic"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:invert_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:invert_cell"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "inverting pass-through cell for array logic",
+      "for": [
+        "invert_cell"
+      ],
+      "level": 1,
+      "covers": [
+        "inverting pass-through cell for array logic"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:invert_cell"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:invert_cell"
+          ]
+        }
+      ]
+    }
+  ]
+}

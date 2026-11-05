@@ -257,15 +257,19 @@ impl DiskStore for FloppyDisk {
         }
         match self.disk_type {
             FloppyDiskType::Blank => {
-                let bytes = self.sectors.get(&sector).and_then(|v| {
-                    let mut arr = [0u8; SECTOR_SIZE];
-                    if v.len() == SECTOR_SIZE {
-                        arr.copy_from_slice(v);
-                        Some(arr)
-                    } else {
-                        None
-                    }
-                }).unwrap_or([0u8; SECTOR_SIZE]);
+                let bytes = self
+                    .sectors
+                    .get(&sector)
+                    .and_then(|v| {
+                        let mut arr = [0u8; SECTOR_SIZE];
+                        if v.len() == SECTOR_SIZE {
+                            arr.copy_from_slice(v);
+                            Some(arr)
+                        } else {
+                            None
+                        }
+                    })
+                    .unwrap_or([0u8; SECTOR_SIZE]);
                 Some(bytes)
             }
             FloppyDiskType::ForthBoot => Some(read_system_image_sector(REDFORTH_IMG, sector)),
@@ -548,7 +552,6 @@ pub fn on_item_use_first(disk: FloppyDisk, drive: &mut DiskDrive) -> bool {
 mod tests {
     use super::*;
 
-
     #[test]
     fn test_drive_default_placement_level1() {
         let drive = DiskDrive::new();
@@ -672,13 +675,17 @@ mod tests {
         drive.tick_self();
         assert_eq!(drive.rb_read(130), 0);
 
-        let ser1 = std::str::from_utf8(&drive.databuf[..16]).unwrap().to_string();
+        let ser1 = std::str::from_utf8(&drive.databuf[..16])
+            .unwrap()
+            .to_string();
         assert_eq!(ser1.len(), 16);
 
         // Repeated read returns identical serial
         drive.rb_write(130, 3);
         drive.tick_self();
-        let ser2 = std::str::from_utf8(&drive.databuf[..16]).unwrap().to_string();
+        let ser2 = std::str::from_utf8(&drive.databuf[..16])
+            .unwrap()
+            .to_string();
         assert_eq!(ser1, ser2);
     }
 
@@ -785,7 +792,8 @@ mod tests {
         let serialized = serde_json::to_string(&drive).expect("serialization failed");
 
         // Deserialize drive (simulating chunk reload)
-        let mut loaded: DiskDrive = serde_json::from_str(&serialized).expect("deserialization failed");
+        let mut loaded: DiskDrive =
+            serde_json::from_str(&serialized).expect("deserialization failed");
 
         assert!(loaded.has_disk);
         assert_eq!(loaded.rbaddr, 2);

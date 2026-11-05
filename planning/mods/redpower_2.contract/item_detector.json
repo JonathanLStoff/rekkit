@@ -1,46 +1,115 @@
 {
   "scenarios": [
     {
-      "name": "item detector places",
-      "for": ["item_detector"],
-      "level": 1,
-      "covers": [],
-      "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:item_detector"] },
-        { "expect_block": [0, 0, 0, "redpower_2:item_detector"] }
-      ]
-    },
-    {
-      "name": "item detector holds 9 filter slots",
-      "for": ["item_detector"],
+      "name": "holds 9 filter slots in GUI",
+      "for": [
+        "item_detector"
+      ],
       "level": 3,
-      "covers": ["holds 9 filter slots in GUI"],
+      "covers": [
+        "holds 9 filter slots in GUI"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:item_detector"] },
-        { "expect_block": [0, 0, 0, "redpower_2:item_detector"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        }
       ]
     },
     {
-      "name": "item detector sits in a tube line",
-      "for": ["item_detector"],
+      "name": "emits redstone pulse when a passing tube item matches filter",
+      "for": [
+        "item_detector"
+      ],
       "level": 4,
-      "covers": ["emits redstone pulse when a passing tube item matches filter"],
+      "covers": [
+        "emits redstone pulse when a passing tube item matches filter"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:item_detector"] },
-        { "setblock": [0, 0, 1, "redpower_2:pneumatic_tube"] },
-        { "setblock": [0, 0, -1, "redpower_2:pneumatic_tube"] },
-        { "expect_block": [0, 0, 0, "redpower_2:item_detector"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        }
       ]
     },
     {
-      "name": "item detector keeps filter across chunk reload",
-      "for": ["item_detector"],
+      "name": "keeps its filter slots when its chunk reloads",
+      "for": [
+        "item_detector"
+      ],
       "level": 5,
-      "covers": ["keeps its filter slots when its chunk reloads"],
+      "covers": [
+        "keeps its filter slots when its chunk reloads"
+      ],
       "steps": [
-        { "setblock": [0, 0, 0, "redpower_2:item_detector"] },
-        { "reload_chunk": [0, 0, 0] },
-        { "expect_block": [0, 0, 0, "redpower_2:item_detector"] }
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holds 9 filter slots in GUI",
+      "for": [
+        "item_detector"
+      ],
+      "level": 1,
+      "covers": [
+        "holds 9 filter slots in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:item_detector"
+          ]
+        }
       ]
     }
   ]

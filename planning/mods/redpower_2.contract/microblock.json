@@ -1,0 +1,72 @@
+{
+  "shape": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    16
+  ],
+  "facing": "all",
+  "faces": {
+    "all": "eloraam/world/world1.png#16"
+  },
+  "scenarios": [
+    {
+      "name": "sub-voxel multipart container holding covers, panels, wires and tubes",
+      "for": [
+        "microblock"
+      ],
+      "level": 4,
+      "covers": [
+        "sub-voxel multipart container holding covers, panels, wires and tubes"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:microblock"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:microblock"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sub-voxel multipart container holding covers, panels, wires and tubes",
+      "for": [
+        "microblock"
+      ],
+      "level": 1,
+      "covers": [
+        "sub-voxel multipart container holding covers, panels, wires and tubes"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:microblock"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:microblock"
+          ]
+        }
+      ]
+    }
+  ]
+}

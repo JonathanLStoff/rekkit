@@ -156,12 +156,7 @@ pub fn pick_frame<W: MoveWorld>(
 }
 
 /// `TileMotor.dropFrame`: re-instantiate every carried block, one step on if `fw`.
-pub fn drop_frame<W: MoveWorld>(
-    world: &mut W,
-    motor: &mut MotorState,
-    pos: WorldCoord,
-    fw: bool,
-) {
+pub fn drop_frame<W: MoveWorld>(world: &mut W, motor: &mut MotorState, pos: WorldCoord, fw: bool) {
     let set = {
         let mut fs = FrameSolver::new(&*world, pos.coord_step(motor.frame_side()), pos, -1);
         if !fs.solve() {
@@ -175,7 +170,11 @@ pub fn drop_frame<W: MoveWorld>(
         let Some(mf) = world.placeholder(sp) else {
             continue;
         };
-        let dest = if fw { sp.coord_step(motor.move_dir) } else { sp };
+        let dest = if fw {
+            sp.coord_step(motor.move_dir)
+        } else {
+            sp
+        };
         if mf.block_id != 0 {
             world.place_block(dest, mf.block_id, mf.meta, mf.tile);
         }
@@ -295,7 +294,13 @@ mod tests {
             w.blocks.insert(WorldCoord::new(x, 64, 0), (7, true));
         }
         let mut m = MotorState::new(4 << 2);
-        assert!(!pick_frame(&mut w, &mut m, WorldCoord::new(0, 64, 0), 3, false));
+        assert!(!pick_frame(
+            &mut w,
+            &mut m,
+            WorldCoord::new(0, 64, 0),
+            3,
+            false
+        ));
         assert!(w.holders.is_empty() && !m.active);
     }
 }

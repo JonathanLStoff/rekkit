@@ -1,0 +1,7 @@
+{
+  "type": "item",
+  "test_level": 1,
+  "id": "brick_clay",
+  "sprite": "eloraam/base/items1.png#2",
+  "max_stack": 64
+}

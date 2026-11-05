@@ -5,7 +5,10 @@
   "use": "Tills dirt or grass into farmland",
   "scenarios": [
     {
-      "name": "ruby_hoe tills dirt and grass into farmland on right-click losing durability",
+      "name": "tills dirt and grass into farmland on right-click losing durability",
+      "for": [
+        "ruby_hoe"
+      ],
       "level": 2,
       "covers": [
         "tills dirt and grass into farmland on right-click losing durability"
@@ -15,7 +18,7 @@
           "use": "redpower_2:ruby_hoe",
           "on": [
             0,
-            -1,
+            0,
             0
           ]
         },
@@ -23,7 +26,7 @@
           "ctl": [
             "inventory"
           ],
-          "expect": "\"damage\": 1"
+          "expect": "redpower_2:ruby_hoe"
         }
       ]
     }

@@ -51,11 +51,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
             });
         }
         "redpower_2:blulectric_furnace" => {
-            let slots = vec![
-                Some([62.0, 35.0]),
-                Some([126.0, 35.0]),
-                None,
-            ];
+            let slots = vec![Some([62.0, 35.0]), Some([126.0, 35.0]), None];
             *screen = Some(NativeScreen {
                 width: 176.0,
                 height: 166.0,

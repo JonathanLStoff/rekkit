@@ -1,0 +1,297 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#53",
+    "back": "eloraam/machine/machine1.png#113",
+    "side": "eloraam/machine/machine1.png#117",
+    "top": "eloraam/machine/machine1.png#112",
+    "bottom": "eloraam/machine/machine1.png#113"
+  },
+  "scenarios": [
+    {
+      "name": "provides 40 filter slots across 8 color channels with mode selection GUI",
+      "for": [
+        "sorting_machine"
+      ],
+      "level": 3,
+      "covers": [
+        "provides 40 filter slots across 8 color channels with mode selection GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "routes passing tube items to color channels according to selected mode",
+      "for": [
+        "sorting_machine"
+      ],
+      "level": 4,
+      "covers": [
+        "routes passing tube items to color channels according to selected mode"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its filter slots and channel settings when its chunk reloads",
+      "for": [
+        "sorting_machine"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its filter slots and channel settings when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "provides 40 filter slots across 8 color channels with mode selection GUI",
+      "for": [
+        "sorting_machine"
+      ],
+      "level": 1,
+      "covers": [
+        "provides 40 filter slots across 8 color channels with mode selection GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:sorting_machine"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      222
+    ],
+    "title": "Sorting Machine",
+    "slots": [
+      [
+        26,
+        18
+      ],
+      [
+        44,
+        18
+      ],
+      [
+        62,
+        18
+      ],
+      [
+        80,
+        18
+      ],
+      [
+        98,
+        18
+      ],
+      [
+        116,
+        18
+      ],
+      [
+        134,
+        18
+      ],
+      [
+        152,
+        18
+      ],
+      [
+        26,
+        36
+      ],
+      [
+        44,
+        36
+      ],
+      [
+        62,
+        36
+      ],
+      [
+        80,
+        36
+      ],
+      [
+        98,
+        36
+      ],
+      [
+        116,
+        36
+      ],
+      [
+        134,
+        36
+      ],
+      [
+        152,
+        36
+      ],
+      [
+        26,
+        54
+      ],
+      [
+        44,
+        54
+      ],
+      [
+        62,
+        54
+      ],
+      [
+        80,
+        54
+      ],
+      [
+        98,
+        54
+      ],
+      [
+        116,
+        54
+      ],
+      [
+        134,
+        54
+      ],
+      [
+        152,
+        54
+      ],
+      [
+        26,
+        72
+      ],
+      [
+        44,
+        72
+      ],
+      [
+        62,
+        72
+      ],
+      [
+        80,
+        72
+      ],
+      [
+        98,
+        72
+      ],
+      [
+        116,
+        72
+      ],
+      [
+        134,
+        72
+      ],
+      [
+        152,
+        72
+      ],
+      [
+        26,
+        90
+      ],
+      [
+        44,
+        90
+      ],
+      [
+        62,
+        90
+      ],
+      [
+        80,
+        90
+      ],
+      [
+        98,
+        90
+      ],
+      [
+        116,
+        90
+      ],
+      [
+        134,
+        90
+      ],
+      [
+        152,
+        90
+      ]
+    ]
+  },
+  "energy": {
+    "role": "consumer"
+  }
+}

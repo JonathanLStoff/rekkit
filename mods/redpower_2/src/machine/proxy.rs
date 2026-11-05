@@ -204,7 +204,10 @@ mod tests {
 
     #[test]
     fn renderers() {
-        assert_eq!(machine_renderer(MachineKind::BatteryBox), RendererKind::BatteryBox);
+        assert_eq!(
+            machine_renderer(MachineKind::BatteryBox),
+            RendererKind::BatteryBox
+        );
         assert_eq!(machine_renderer(MachineKind::Filter), RendererKind::Machine);
         assert_eq!(appliance_renderer(3), None);
         assert_eq!(micro_high_renderer(9), Some(RendererKind::RedstoneTube));

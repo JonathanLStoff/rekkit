@@ -1,0 +1,170 @@
+{
+  "shape": "full",
+  "facing": "all",
+  "faces": {
+    "front": "eloraam/machine/machine1.png#51",
+    "back": "eloraam/machine/machine1.png#58",
+    "side": "eloraam/machine/machine1.png#61",
+    "top": "eloraam/machine/machine1.png#57",
+    "bottom": "eloraam/machine/machine1.png#58"
+  },
+  "scenarios": [
+    {
+      "name": "holds 9 ghost filter slots and configured color tag in GUI",
+      "for": [
+        "filter"
+      ],
+      "level": 3,
+      "covers": [
+        "holds 9 ghost filter slots and configured color tag in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "extracts 1 stack matching filter on pulse and applies color tag to passing items",
+      "for": [
+        "filter"
+      ],
+      "level": 4,
+      "covers": [
+        "extracts 1 stack matching filter on pulse and applies color tag to passing items"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "keeps its filter slots and color tag when its chunk reloads",
+      "for": [
+        "filter"
+      ],
+      "level": 5,
+      "covers": [
+        "keeps its filter slots and color tag when its chunk reloads"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holds 9 ghost filter slots and configured color tag in GUI",
+      "for": [
+        "filter"
+      ],
+      "level": 1,
+      "covers": [
+        "holds 9 ghost filter slots and configured color tag in GUI"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:filter"
+          ]
+        }
+      ]
+    }
+  ],
+  "gui": {
+    "size": [
+      176,
+      166
+    ],
+    "title": "Filter",
+    "slots": [
+      [
+        62,
+        17
+      ],
+      [
+        80,
+        17
+      ],
+      [
+        98,
+        17
+      ],
+      [
+        62,
+        35
+      ],
+      [
+        80,
+        35
+      ],
+      [
+        98,
+        35
+      ],
+      [
+        62,
+        53
+      ],
+      [
+        80,
+        53
+      ],
+      [
+        98,
+        53
+      ]
+    ]
+  }
+}

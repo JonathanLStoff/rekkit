@@ -1,6 +1,8 @@
 {
-  "template": "minecraft:iron_pickaxe",
+  "template": "minecraft:stick",
   "max_stack_size": 1,
   "rarity": "common",
-  "crafting_remainder": "redpower_2:screwdriver"
+  "components": {
+    "minecraft:max_damage": 400
+  }
 }

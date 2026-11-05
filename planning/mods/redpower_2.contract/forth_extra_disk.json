@@ -5,24 +5,28 @@
   "use": "Extended utility library disk for RedPower Forth",
   "scenarios": [
     {
-      "name": "insert forth extra disk into disk drive",
+      "name": "provides extended Forth utility libraries when inserted in disk drive",
+      "for": [
+        "forth_extra_disk"
+      ],
       "level": 2,
       "covers": [
         "provides extended Forth utility libraries when inserted in disk drive"
       ],
       "steps": [
         {
-          "setblock": [0, 0, 0, "redpower_2:disk_drive"]
-        },
-        {
           "use": "redpower_2:forth_extra_disk",
-          "on": [0, 0, 0]
+          "on": [
+            0,
+            0,
+            0
+          ]
         },
         {
-          "wait": 10
-        },
-        {
-          "expect_block": [0, 0, 0, "redpower_2:disk_drive"]
+          "ctl": [
+            "inventory"
+          ],
+          "expect": "redpower_2:forth_extra_disk"
         }
       ]
     }

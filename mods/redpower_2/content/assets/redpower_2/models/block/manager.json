@@ -1,6 +1,47 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
   "textures": {
-    "all": "minecraft:block/crafter_north"
-  }
+    "up": "redpower_2:block/machine1_210",
+    "down": "redpower_2:block/machine1_209",
+    "north": "redpower_2:block/machine1_208",
+    "south": "redpower_2:block/machine1_209",
+    "east": "redpower_2:block/machine1_210",
+    "west": "redpower_2:block/machine1_210",
+    "particle": "redpower_2:block/machine1_210"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#up"
+        },
+        "down": {
+          "texture": "#down"
+        },
+        "north": {
+          "texture": "#north"
+        },
+        "south": {
+          "texture": "#south"
+        },
+        "east": {
+          "texture": "#east"
+        },
+        "west": {
+          "texture": "#west"
+        }
+      }
+    }
+  ],
+  "particle": "redpower_2:block/machine1_210"
 }

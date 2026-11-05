@@ -140,7 +140,7 @@ impl CpuRegisters {
             "{}{}{}{}{}{}{}{}",
             if self.flag_n() { 'N' } else { '-' },
             if self.flag_v() { 'V' } else { '-' },
-            if self.flag_unused() { '-' } else { '-' },
+            if self.flag_unused() { '-' } else { ' ' },
             if self.flag_b() { 'B' } else { '-' },
             if self.flag_d() { 'D' } else { '-' },
             if self.flag_i() { 'I' } else { '-' },
@@ -216,7 +216,13 @@ impl Default for ContainerCPU {
 }
 
 impl ContainerCPU {
-    pub fn new(byte0: u8, byte1: u8, rbaddr: u8, is_running: bool, registers: CpuRegisters) -> Self {
+    pub fn new(
+        byte0: u8,
+        byte1: u8,
+        rbaddr: u8,
+        is_running: bool,
+        registers: CpuRegisters,
+    ) -> Self {
         Self {
             byte0,
             byte1,
@@ -432,7 +438,7 @@ impl ContainerCPU {
         match button_id {
             BTN_START => {
                 let pkt = GuiCPU::send_event(0, EVENT_WARM_BOOT);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -440,7 +446,7 @@ impl ContainerCPU {
             }
             BTN_HALT => {
                 let pkt = GuiCPU::send_event(0, EVENT_HALT);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -448,7 +454,7 @@ impl ContainerCPU {
             }
             BTN_RESET => {
                 let pkt = GuiCPU::send_event(0, EVENT_COLD_BOOT);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -456,7 +462,7 @@ impl ContainerCPU {
             }
             BTN_STEP => {
                 let pkt = GuiCPU::send_event(0, EVENT_STEP);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -464,7 +470,7 @@ impl ContainerCPU {
             }
             BTN_TOGGLE_RUN => {
                 let pkt = GuiCPU::send_event(0, EVENT_TOGGLE_RUN);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -474,7 +480,7 @@ impl ContainerCPU {
                 let bit = (b - BTN_DISK_BIT_BASE) as u8;
                 let new_val = self.byte0 ^ (1 << bit);
                 let pkt = GuiCPU::send_simple(0, EVENT_SET_DISK_ID, new_val);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -484,7 +490,7 @@ impl ContainerCPU {
                 let bit = (b - BTN_CONSOLE_BIT_BASE) as u8;
                 let new_val = self.byte1 ^ (1 << bit);
                 let pkt = GuiCPU::send_simple(0, EVENT_SET_CONSOLE_ID, new_val);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -494,7 +500,7 @@ impl ContainerCPU {
                 let bit = (b - BTN_BUS_BIT_BASE) as u8;
                 let new_val = self.rbaddr ^ (1 << bit);
                 let pkt = GuiCPU::send_simple(0, EVENT_SET_BUS_ID, new_val);
-                if let Some(c) = cpu.as_deref_mut() {
+                if let Some(c) = cpu.as_mut() {
                     self.handle_gui_event_on_cpu(c, &pkt);
                 } else {
                     self.handle_gui_event(&pkt);
@@ -833,7 +839,7 @@ mod tests {
         assert_eq!(custom.format_flags(), "NV-BDIZC");
 
         custom.status = 0b10000001; // N and C
-        assert_eq!(custom.format_flags(), "N------C");
+        assert_eq!(custom.format_flags(), "N- ----C");
         assert_eq!(custom.format_a(), "A: $00");
         assert_eq!(custom.format_sp(), "SP: $FD");
         assert_eq!(custom.format_pc(), "PC: $0400");
@@ -856,10 +862,7 @@ mod tests {
         let mut container = ContainerCPU::default();
 
         let updates = container.detect_changes(5, 1, 0, false);
-        assert_eq!(
-            updates,
-            vec![ProgressBarUpdate { id: 0, val: 5 }]
-        );
+        assert_eq!(updates, vec![ProgressBarUpdate { id: 0, val: 5 }]);
         assert_eq!(container.byte0, 5);
 
         let updates2 = container.detect_changes(5, 7, 3, true);
@@ -960,7 +963,12 @@ mod tests {
         // Disk ID bit 0 click (x: 14..=26, y: 57..=89)
         let click1 = GuiCPU::click([20.0, 60.0], 2, 1, 0);
         match click1 {
-            Some(GuiCpuAction::SetDiskId { new_val, bit, button_id, .. }) => {
+            Some(GuiCpuAction::SetDiskId {
+                new_val,
+                bit,
+                button_id,
+                ..
+            }) => {
                 assert_eq!(bit, 0);
                 assert_eq!(new_val, 3); // 2 ^ 1 = 3
                 assert_eq!(button_id, BTN_DISK_BIT_BASE);
@@ -971,7 +979,12 @@ mod tests {
         // Console ID bit 2 click (x: 118 + 2*12 = 142..=154, y: 57..=89)
         let click2 = GuiCPU::click([145.0, 70.0], 2, 1, 0);
         match click2 {
-            Some(GuiCpuAction::SetConsoleId { new_val, bit, button_id, .. }) => {
+            Some(GuiCpuAction::SetConsoleId {
+                new_val,
+                bit,
+                button_id,
+                ..
+            }) => {
                 assert_eq!(bit, 2);
                 assert_eq!(new_val, 5); // 1 ^ 4 = 5
                 assert_eq!(button_id, BTN_CONSOLE_BIT_BASE + 2);
@@ -982,7 +995,12 @@ mod tests {
         // Bus ID bit 1 click (x: 118 + 1*12 = 130..=142, y: 101..=133)
         let click3 = GuiCPU::click([135.0, 110.0], 2, 1, 0);
         match click3 {
-            Some(GuiCpuAction::SetBusId { new_val, bit, button_id, .. }) => {
+            Some(GuiCpuAction::SetBusId {
+                new_val,
+                bit,
+                button_id,
+                ..
+            }) => {
                 assert_eq!(bit, 1);
                 assert_eq!(new_val, 2); // 0 ^ 2 = 2
                 assert_eq!(button_id, BTN_BUS_BIT_BASE + 1);
