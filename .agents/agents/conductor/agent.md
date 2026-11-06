@@ -110,7 +110,7 @@ The only commands you need (never run `bd ... --help`):
 - Do not guess flags. `bd list` takes no epic argument (`bd list rk-qst` and
   `bd list --epic` both fail). Use the commands above, or `make fleet-ready
   MOD=<id>` for the ready tickets, `make fleet-context MOD=<id>` for the state.
-- **On opencode without subagents** (a local model, or the task tool blocked),
+- **On opencode without subagents** (opencode always: its subagent tool is blocked),
   the loop is: `make fleet-resume MOD=<id>`, then `make fleet-ready MOD=<id>`,
   then for the first ticket: `make fleet-task BEAD=<id> ROLE=<role>`, read
   `.agents/agents/<role>/agent.md`, do the work yourself, write its report to
