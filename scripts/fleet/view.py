@@ -8,19 +8,24 @@
   html            target/fleet/board.html: every mod, and the mod in progress as one column per step
   serve           that page live at http://127.0.0.1:8765, rebuilt from Beads on every refresh (the page
                   reloads itself every 30 seconds); opens your browser
+  tickets-live    Jira-style ticket page at http://127.0.0.1:8766: every Beads ticket, filter by mod, step,
+                  status, type and text; click one to read its wording, parent, blockers and comments
 
 Reads only: safe while agents work.
 
 Usage:
   make tasks [MOD=<id>]   make watch [MOD=<id>]   make board-html   make board-live
+  make tickets-live
 """
 
 from __future__ import annotations
 
 import html
 import http.server
+import json
 import os
 import sys
+import tempfile
 import threading
 import time
 import webbrowser
@@ -216,7 +221,7 @@ def page(live: bool) -> str:
 REBUILD = 15  # seconds between rebuilds of the live page (one takes a few seconds of bd calls)
 
 
-def serve() -> None:
+def serve(build=None, port: int = PORT, name: str = "board", command: str = "make board-live") -> None:
     """The page live: a background thread rebuilds it from Beads every REBUILD seconds and requests get
     the latest copy at once, so a slow rebuild never keeps the browser waiting (or hanging up)."""
     latest = {"body": b"", "code": 200}
@@ -225,7 +230,7 @@ def serve() -> None:
     def rebuild() -> None:
         while True:
             try:
-                latest["body"], latest["code"] = page(live=True).encode(), 200
+                latest["body"], latest["code"] = (build() if build else page(live=True)).encode(), 200
             except beads.BeadsError as exc:
                 latest["body"], latest["code"] = f"<pre>[beads] {esc(exc)}</pre>".encode(), 500
             except Exception as exc:  # keep serving the last good page; show what broke
@@ -255,14 +260,14 @@ def serve() -> None:
             pass
 
     try:
-        server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+        server = http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler)
     except OSError:
-        sys.exit(f"Port {PORT} is busy: another `make board-live` is running (open http://127.0.0.1:{PORT}), "
+        sys.exit(f"Port {port} is busy: another `{command}` is running (open http://127.0.0.1:{port}), "
                  "or stop whatever uses it.")
     server.daemon_threads = True
     threading.Thread(target=rebuild, daemon=True).start()
-    url = f"http://127.0.0.1:{PORT}"
-    print(f"The board is live at {url}, rebuilt every {REBUILD} s (Ctrl+C stops).", flush=True)
+    url = f"http://127.0.0.1:{port}"
+    print(f"The {name} is live at {url}, rebuilt every {REBUILD} s (Ctrl+C stops).", flush=True)
     webbrowser.open(url)
     try:
         server.serve_forever()
@@ -272,12 +277,188 @@ def serve() -> None:
         server.server_close()
 
 
+TICKET_PORT = int(os.environ.get("TICKETS_PORT", "8766"))  # TICKETS_PORT=<n> make tickets-live for another port
+
+
+def ticket_data() -> dict:
+    """Every Beads issue with what the ticket page shows. bd export takes seconds; the list view has no text."""
+    fd, name = tempfile.mkstemp(suffix=".jsonl", dir=beads.STATE_DIR)
+    os.close(fd)
+    try:
+        beads.bd("export", "-o", name, parse=False)
+        with open(name, encoding="utf-8") as fh:
+            raw = [json.loads(line) for line in fh if line.strip()]
+    finally:
+        os.unlink(name)
+    issues = []
+    for r in raw:
+        if r.get("_type", "issue") != "issue":
+            continue
+        deps = r.get("dependencies") or []
+        parent = next((d["depends_on_id"] for d in deps if d.get("type") == "parent-child"), None)
+        issues.append({
+            "id": r["id"], "title": r.get("title", ""), "description": r.get("description") or "",
+            "status": r.get("status", ""), "type": r.get("issue_type", ""), "priority": r.get("priority"),
+            "labels": r.get("labels") or [], "parent": parent,
+            "deps": [[d["depends_on_id"], d.get("type", "")] for d in deps if d.get("type") != "parent-child"],
+            "updated": r.get("updated_at", ""), "closeReason": r.get("close_reason") or "",
+            "comments": [c.get("text", "") for c in (r.get("comments") or []) if c.get("text")],
+        })
+    issues.sort(key=lambda i: id_key(i["id"]))
+    return {"issues": issues, "generated": time.strftime("%a %H:%M:%S")}
+
+
+TICKETS_CSS = """
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2330;--muted:#667085;--line:#e3e6ec;--sel:#eaf0ff;--done:#2e9e6b;
+--work:#d98c1a;--block:#d0453b;--open:#8a94a6;--accent:#3c64d8}
+@media (prefers-color-scheme:dark){:root{--bg:#12151b;--card:#1b2029;--ink:#e6e9ef;--muted:#98a2b3;--line:#2a3140;
+--sel:#243052;--done:#4cc38a;--work:#f0a83a;--block:#ef6a60;--open:#6b7588;--accent:#7b9cff}}
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;background:var(--card);
+border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+header h1{font-size:16px;margin:0 12px 0 0}
+select,input{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input{min-width:220px;flex:1}
+.muted{color:var(--muted);font-size:12px}
+.count{font-size:12px;color:var(--muted)}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);height:calc(100vh - 56px)}
+@media (max-width:820px){.wrap{grid-template-columns:1fr;height:auto}}
+#list{overflow:auto;border-right:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--muted);position:sticky;top:0;background:var(--card)}
+tr.row{cursor:pointer}tr.row:hover,tr.row.on{background:var(--sel)}
+td.key{white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--accent)}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;color:#fff;background:var(--open);white-space:nowrap}
+.closed{background:var(--done)}.in_progress{background:var(--work)}.blocked{background:var(--block)}
+#detail{overflow:auto;padding:16px 18px;background:var(--card)}
+#detail h2{font-size:17px;margin:6px 0 10px}
+#detail .k{font-family:ui-monospace,Consolas,monospace;color:var(--accent)}
+dl{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;margin:12px 0;font-size:13px}
+dt{color:var(--muted)}dd{margin:0}
+a{color:var(--accent);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}
+.desc{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+padding:10px 12px;font-size:13px;margin:4px 0}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 6px;
+margin:2px 4px 2px 0;font-size:11px;color:var(--muted)}
+h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:18px 0 4px}
+"""
+
+TICKETS_JS = r"""
+const D = JSON.parse(document.getElementById('data').textContent);
+const ISSUES = D.issues, BY = Object.fromEntries(ISSUES.map(i => [i.id, i]));
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const modOf = i => (i.labels.find(l => l.startsWith('mod:')) || '').slice(4) || '(no mod)';
+const stepOf = i => { const l = i.labels.find(l => /^step:\d+$/.test(l)); return l ? +l.slice(5) : null; };
+const ORDER = {in_progress:0, blocked:1, open:2, deferred:3, closed:4};
+const pill = s => `<span class="pill ${esc(s)}">${esc(String(s).replace('_', ' '))}</span>`;
+
+// Default: the mod with an epic in progress, else all mods.
+const mods = [...new Set(ISSUES.map(modOf))].sort();
+const active = ISSUES.find(i => i.type === 'epic' && i.status === 'in_progress');
+const defMod = active ? modOf(active) : '';
+$('mod').innerHTML = '<option value="">All mods</option>' + mods.map(m => `<option>${esc(m)}</option>`).join('');
+$('mod').value = mods.includes(defMod) ? defMod : '';
+const steps = [...new Set(ISSUES.map(stepOf).filter(s => s !== null))].sort((a, b) => a - b);
+$('step').innerHTML = '<option value="">All steps</option>' + steps.map(s => `<option value="${s}">Step ${s}</option>`).join('');
+$('status').innerHTML = '<option value="">Any status</option>' + ['open','in_progress','blocked','deferred','closed']
+  .map(s => `<option value="${s}">${s.replace('_', ' ')}</option>`).join('');
+$('status').value = 'open';
+const types = [...new Set(ISSUES.map(i => i.type))].sort();
+$('type').innerHTML = '<option value="">All types</option>' + types.map(t => `<option>${esc(t)}</option>`).join('');
+['mod','step','status','type'].forEach(id => $(id).onchange = render);
+$('q').oninput = render;
+
+let current = null;
+
+function visible() {
+  const q = $('q').value.trim().toLowerCase(), m = $('mod').value, s = $('step').value,
+        st = $('status').value, t = $('type').value;
+  return ISSUES.filter(i => (!m || modOf(i) === m) && (!s || String(stepOf(i)) === s)
+    && (!st || i.status === st) && (!t || i.type === t)
+    && (!q || (i.id + ' ' + i.title + ' ' + i.description).toLowerCase().includes(q)))
+    .sort((a, b) => (ORDER[a.status] ?? 9) - (ORDER[b.status] ?? 9)
+      || a.id.localeCompare(b.id, undefined, {numeric: true}));
+}
+
+function render() {
+  const rows = visible();
+  $('count').textContent = `${rows.length} of ${ISSUES.length} tickets · data ${D.generated}`;
+  $('rows').innerHTML = rows.map(i => `<tr class="row${i.id === current ? ' on' : ''}" data-id="${esc(i.id)}">
+    <td class="key">${esc(i.id)}</td><td>${pill(i.status)}</td><td class="muted">${esc(i.type)}</td>
+    <td class="muted">${stepOf(i) ?? ''}</td><td>${esc(i.title)}</td></tr>`).join('') ||
+    '<tr><td colspan="5" class="muted">No tickets match.</td></tr>';
+  document.querySelectorAll('tr.row').forEach(tr => tr.onclick = () => open(tr.dataset.id));
+}
+
+function link(id) {
+  const t = BY[id];
+  return t ? `<a data-go="${esc(id)}">${esc(id)}</a> ${pill(t.status)} <span class="muted">${esc(t.title)}</span>`
+           : `<span class="k">${esc(id)}</span>`;
+}
+
+function open(id) {
+  const i = BY[id];
+  if (!i) return;
+  current = id;
+  history.replaceState(null, '', '#' + id);
+  const kids = ISSUES.filter(k => k.parent === id);
+  const blockedBy = i.deps.filter(([, t]) => t === 'blocks').map(([d]) => d);
+  const blocks = ISSUES.filter(k => k.deps.some(([d, t]) => d === id && t === 'blocks')).map(k => k.id);
+  const step = stepOf(i);
+  $('detail').innerHTML = `
+    <div class="muted">${esc(modOf(i))} · ${esc(i.type)} · priority ${esc(i.priority ?? '-')}${step !== null ? ' · step ' + step : ''}</div>
+    <h2><span class="k">${esc(i.id)}</span> ${esc(i.title)}</h2>
+    <div>${pill(i.status)}${i.closeReason ? ` <span class="muted">closed: ${esc(i.closeReason)}</span>` : ''}</div>
+    <dl>
+      <dt>Parent</dt><dd>${i.parent ? link(i.parent) : '<span class="muted">none</span>'}</dd>
+      <dt>Blocked by</dt><dd>${blockedBy.map(link).join('<br>') || '<span class="muted">nothing</span>'}</dd>
+      <dt>Blocks</dt><dd>${blocks.map(link).join('<br>') || '<span class="muted">nothing</span>'}</dd>
+      <dt>Updated</dt><dd>${esc(i.updated)}</dd>
+    </dl>
+    <h3>Wording</h3>
+    <div class="desc">${esc(i.description) || '<span class="muted">(no description)</span>'}</div>
+    ${kids.length ? `<h3>Children (${kids.length})</h3>` + kids.map(k => `<div style="margin:4px 0">${link(k.id)}</div>`).join('') : ''}
+    ${i.comments.length ? `<h3>Comments (${i.comments.length})</h3>` + i.comments.map(c => `<div class="desc">${esc(c)}</div>`).join('') : ''}
+    <h3>Labels</h3>${i.labels.map(l => `<span class="tag">${esc(l)}</span>`).join('') || '<span class="muted">none</span>'}`;
+  $('detail').querySelectorAll('[data-go]').forEach(a => a.onclick = () => {
+    $('mod').value = ''; $('status').value = ''; $('step').value = ''; $('type').value = ''; $('q').value = '';
+    open(a.dataset.go);
+  });
+  render();
+}
+
+render();
+const fromHash = location.hash.slice(1);
+if (BY[fromHash]) open(fromHash);
+else if (visible()[0]) open(visible()[0].id);
+"""
+
+
+def tickets_page() -> str:
+    data = json.dumps(ticket_data()).replace("</", "<\\/")  # the data sits in a script tag
+    return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
+            f'content="width=device-width,initial-scale=1"><title>Rekkit tickets</title><style>{TICKETS_CSS}</style>'
+            f'</head><body><header><h1>Rekkit tickets</h1><select id="mod"></select><select id="step"></select>'
+            f'<select id="status"></select><select id="type"></select><input id="q" type="search" '
+            f'placeholder="Search id, title or wording"><span class="count" id="count"></span></header>'
+            f'<div class="wrap"><div id="list"><table><thead><tr><th>Key</th><th>Status</th><th>Type</th>'
+            f'<th>Step</th><th>Title</th></tr></thead><tbody id="rows"></tbody></table></div>'
+            f'<div id="detail"></div></div>'
+            f'<script id="data" type="application/json">{data}</script>'
+            f'<script>{TICKETS_JS}</script></body></html>')
+
+
 def main() -> int:
     cmd = sys.argv[1] if len(sys.argv) > 1 else "tasks"
     mod = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] else None
     try:
         if cmd == "tasks":
             print(tasks(mod))
+        elif cmd == "tickets-live":
+            serve(tickets_page, TICKET_PORT, "tickets", "make tickets-live")
         elif cmd == "watch":
             while True:
                 text = tasks(mod)

@@ -26,7 +26,7 @@ COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live fleet-stop \
+.PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live tickets-live fleet-stop \
 	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull pull
 
 all: tekkit direwolf20 agrarian
@@ -202,6 +202,10 @@ board-html:
 board-live:
 	$(PYTHON) scripts/fleet/view.py serve
 
+# Every Beads ticket in a web page (filter, search, read the wording), like Jira.
+tickets-live:
+	$(PYTHON) scripts/fleet/view.py tickets-live
+
 decompile:
 	$(PYTHON) scripts/decompile.py --jar "$(JAR)" $(ARGS)
 
@@ -302,6 +306,7 @@ make tasks [MOD=<id>] / make watch [MOD=<id>]
 make board-live / make board-html
                       The board in your browser: every mod, and the current mod as a column per step
                       (live: http://127.0.0.1:8765, refreshes itself)
+make tickets-live     Every ticket in a Jira-style page (http://127.0.0.1:8766): filter, search, read the wording
 make fleet-resume MOD=<id>
                       Where the mod's run stands after a crash or lost credits: what to restart, what is waiting
 make fleet-context MOD=<id>
