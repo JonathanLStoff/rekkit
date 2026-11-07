@@ -1,0 +1,149 @@
+[
+ {
+  "step": "S0",
+  "id": "s0-start",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. Main-session start: read AGENTS.md and .agents/start.md and run step 1 (`make doctor`) only. Skip bd. Stop after the doctor summary."
+ },
+ {
+  "step": "C1",
+  "id": "c1-conductor",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the conductor: read .agents/agents/conductor/agent.md, then run `make fleet-context MOD=buildcraft` and `make fleet-ready MOD=buildcraft` (read-only) and say what the next step is. Do not start any subagent."
+ },
+ {
+  "step": "S1b",
+  "id": "s1b-outline",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the spec-writer subagent: follow .agents/agents/spec-writer/agent.md and the skills it lists. Mod buildcraft, part01 (target/fleet/parts/buildcraft/part01.txt). Task: gap-check ONLY section 3.1 Quarry of planning/mods/buildcraft.md against the decompiled Java (assets/decompiled/buildcraft-2.2.14-mcpc1.2.5-r8, class TileQuarry) and write its attributes for planning/mods/buildcraft.features.json (Quarry only). One block only."
+ },
+ {
+  "step": "S1c",
+  "id": "s1c-tickets",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the spec-writer subagent: follow .agents/agents/spec-writer/agent.md and the skills it lists. Mod buildcraft, part01. Task: write ONE ticket file planning/mods/buildcraft.tickets/part01.json containing a single ticket for the Quarry block (shape per the spec-writer role file). Run `make fleet-tickets MOD=buildcraft CHECK=1` to validate; do not file it."
+ },
+ {
+  "step": "S3a",
+  "id": "s3-content-author",
+  "agent": null,
+  "max_billed": 500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the content-author subagent: follow .agents/agents/content-author/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write the content data (block JSON, blockstate, model, lang, item) for the Mining Well block only, under mods/buildcraft/content/, and its contract file planning/mods/buildcraft.contract/mining_well.json from the Java (BlockMiningWell, TileMiningWell). If mods/buildcraft does not exist, copy the shape of mods/example_mod for content/ only."
+ },
+ {
+  "step": "S3b",
+  "id": "s3-domain-builder",
+  "agent": null,
+  "max_billed": 500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the domain-builder subagent: follow .agents/agents/domain-builder/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: in a new crate mods/buildcraft, implement only the Mining Well's energy use and depth-advance state machine (pure Rust, from TileMiningWell) with 2 unit tests; run `cargo test` for that crate once."
+ },
+ {
+  "step": "S3c",
+  "id": "s3-hook-engineer",
+  "agent": null,
+  "max_billed": 500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the hook-engineer subagent: follow .agents/agents/hook-engineer/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write the native mixin bundle skeleton and the single block-entity tick hook for the Mining Well only, with the namespace guard (buildcraft:)."
+ },
+ {
+  "step": "S3d",
+  "id": "s3-test-smith",
+  "agent": null,
+  "max_billed": 500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the test-smith subagent: follow .agents/agents/test-smith/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write tests/e2e_actions.json entries and one domain unit test for the Mining Well only."
+ },
+ {
+  "step": "S4a",
+  "id": "s4-agent-gate",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. Run `make agent-gate MOD=example_mod` once and say pass or fail with the first error. (Proxy: example_mod.)"
+ },
+ {
+  "step": "S4b",
+  "id": "s4-parity-critic",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the parity-critic subagent: follow .agents/agents/parity-critic/agent.md and the skills it lists. Mod redpower_2 (proxy). Check ONE block of your choice from planning/mods/redpower_2.md against mods/redpower_2 and report its differences. One block only."
+ },
+ {
+  "step": "S5",
+  "id": "s5-asset-smith",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the asset-smith subagent: follow .agents/agents/asset-smith/agent.md and the skills it lists. Mod redpower_2 (proxy). Map the original texture(s) for ONE block that has none yet, if any; otherwise verify one block's mapping. One block only."
+ },
+ {
+  "step": "S6",
+  "id": "s6-new-assets",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the asset-smith subagent: follow .agents/agents/asset-smith/agent.md and the skills it lists. Mod redpower_2 (proxy). Run `make fleet-gaps MOD=redpower_2` read-only if it does not write Beads; otherwise just list the missing assets with `make check-mods MOD=redpower_2 COMPLETE=1 2>&1 | tail -40`. Do not create art."
+ },
+ {
+  "step": "S7",
+  "id": "s7-recheck",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the parity-critic subagent: follow .agents/agents/parity-critic/agent.md and the skills it lists. Mod redpower_2 (proxy). Recheck: run `make contract-check MOD=redpower_2 2>&1 | tail -40` and summarise the first three differences."
+ },
+ {
+  "step": "S8",
+  "id": "s8-harness",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the test-smith subagent: follow .agents/agents/test-smith/agent.md and the skills it lists. Mod example_mod (proxy). Run `make e2e-mod MOD=example_mod 2>&1 | tail -60` once and summarise pass or fail. If the game cannot start here, say so and stop."
+ },
+ {
+  "step": "S9",
+  "id": "s9-package",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the release-clerk subagent: follow .agents/agents/release-clerk/agent.md and the skills it lists. Mod example_mod (proxy). Run `make pack-mods MOD=example_mod 2>&1 | tail -20` only; do not commit or bump versions."
+ },
+ {
+  "step": "S3a+",
+  "id": "s3a-full",
+  "agent": null,
+  "max_billed": 1500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the content-author subagent: follow .agents/agents/content-author/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write the content data (block JSON, blockstate, model, lang, item) for the Mining Well block only, under mods/buildcraft/content/, and its contract file planning/mods/buildcraft.contract/mining_well.json from the Java (BlockMiningWell, TileMiningWell). If mods/buildcraft does not exist, copy the shape of mods/example_mod for content/ only."
+ },
+ {
+  "step": "S3b+",
+  "id": "s3b-full",
+  "agent": null,
+  "max_billed": 1500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the domain-builder subagent: follow .agents/agents/domain-builder/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: in a new crate mods/buildcraft, implement only the Mining Well's energy use and depth-advance state machine (pure Rust, from TileMiningWell) with 2 unit tests; run `cargo test` for that crate once."
+ },
+ {
+  "step": "S3c+",
+  "id": "s3c-full",
+  "agent": null,
+  "max_billed": 1500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the hook-engineer subagent: follow .agents/agents/hook-engineer/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write the native mixin bundle skeleton and the single block-entity tick hook for the Mining Well only, with the namespace guard (buildcraft:)."
+ },
+ {
+  "step": "S3d+",
+  "id": "s3d-full",
+  "agent": null,
+  "max_billed": 1500000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. Do exactly the one small task below, then stop and give a two-line answer. You are the test-smith subagent: follow .agents/agents/test-smith/agent.md and the skills it lists. Mod buildcraft. Smallest ticket: write tests/e2e_actions.json entries and one domain unit test for the Mining Well only."
+ },
+ {
+  "step": "C2",
+  "id": "c2-conductor-loop",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`, never run `make fleet-inbox` or `make board` (they write Beads). You are the conductor: read .agents/agents/conductor/agent.md. Then act out three report-ingestion events on the finished mod redpower_2, read-only: for each of the first 3 files in target/fleet/inbox/ (or planning/mods/redpower_2.tickets/ if the inbox is empty), read the report, run `make fleet-resume MOD=redpower_2`, `make fleet-ready MOD=redpower_2` and `make fleet-status MOD=redpower_2`, and write one line saying what you would file and what you would start next. Then stop."
+ },
+ {
+  "step": "S8c",
+  "id": "s8c-live",
+  "agent": null,
+  "max_billed": 3000000,
+  "prompt": "AUDIT RUN, throwaway checkout: never run `bd`, never commit, never push, never run `make fleet-start`. You are the test-smith subagent: follow .agents/agents/test-smith/agent.md. Mod example_mod (proxy). Run the live harness once with `make e2e-mod MOD=example_mod` (Minecraft 26.3 is installed and Horizon's prepared game resources are linked in). Summarise pass or fail and the first WARN/ERROR if any. Keep long output to the last 60 lines."
+ }
+]

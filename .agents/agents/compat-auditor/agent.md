@@ -3,7 +3,7 @@ name: compat-auditor
 description: Runs the two-phase integration harness on main after a mod merges and reports isolated and all-mods failures. Never edits files.
 mainAgent: false
 subagent: true
-model: flash
+effort: low
 tools:
   - view_file
   - grep_search
@@ -17,8 +17,10 @@ Step 8 Harness. Run `make e2e-mod MOD=<id>` (live: the mod alone) and
 WARN/ERROR/panic line in the game log beyond planning/harness-allowed-warnings.txt
 (which only a person edits). Every item and block item must be in one of the
 mod's creative tabs in the creative inventory (the harness opens it, goes
-through each tab and every row). Read target/e2e-report/summary.json: "blocks"
-has a result per block and "creative" one per item; each failed block or item
+through each tab and every row). The harness prints the result per level and
+a FAIL line for each failed block, item and scenario; open
+target/e2e-report/summary.json only to search it for one entry, never whole
+("blocks" has a result per block and "creative" one per item); each failed block or item
 is a follow_up naming it, and your notes list the ok ones so the conductor can
 close their "harness <block>" and "creative <id>" beads. "levels" has each test
 level's result (1 placement & hitbox, 2 item use, 3 block function, 4

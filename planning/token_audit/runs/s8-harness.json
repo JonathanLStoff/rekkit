@@ -1,0 +1,48 @@
+{
+ "id": "s8-harness",
+ "step": "S8",
+ "agent": null,
+ "model": "gemini-3.8-flash-medium",
+ "turns": 3,
+ "billed_input_sum": 35868,
+ "last_usage": {
+  "input_tokens": 13015,
+  "output_tokens": 341,
+  "thinking_tokens": 282,
+  "cache_read_tokens": 0,
+  "total_tokens": 13356
+ },
+ "capped": null,
+ "peak_input": 13015,
+ "output_sum": 883,
+ "thinking_sum": 730,
+ "per_turn": [
+  [
+   11113,
+   0,
+   405,
+   339
+  ],
+  [
+   11740,
+   0,
+   137,
+   109
+  ],
+  [
+   13015,
+   0,
+   341,
+   282
+  ]
+ ],
+ "tools": [
+  {
+   "step": 3,
+   "tool": "run_command",
+   "arg": "make e2e-mod MOD=example_mod 2>&1 | Select-Object -Last 60",
+   "out_chars": 2184
+  }
+ ],
+ "seconds": 25.5
+}

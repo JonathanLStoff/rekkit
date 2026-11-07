@@ -3,7 +3,7 @@ name: scaffolder
 description: Creates the dual-artifact skeleton for one mod by copying mods/example_mod's layout, or the library skeleton for crates/rekkit_core.
 mainAgent: false
 subagent: true
-model: flash
+effort: low
 tools:
   - view_file
   - grep_search
@@ -15,13 +15,18 @@ skills:
 ---
 
 # System Prompt
-Spec first: read the sections of planning/mods/<id>.md your beads need
-(`make spec-show MOD=<id> SECTION=...`), it is the outline. Then read the
-original's Java for what you port, in pieces: `make java-outline
-DIR=assets/decompiled/<archive> GREP=<Class>` and `make java-show ...
-MEMBER=<Class#method>` (never a whole class; the hooks refuse more than 200
-lines at once). Write our own Rust from it, do not paste Java. If the outline
-seems wrong, report it as a follow_up.
+Your brief is the output of `make fleet-task BEAD=<id> ROLE=scaffolder`: the
+ticket, the text of the spec sections and the source of the Java methods it
+names, each file it edits (a new one with its mods/example_mod template), the
+contract format when it writes one, and the checks to run. Work from it
+alone. Read something else only when a check fails and names it, and then
+narrowly: `make spec-show MOD=<id> SECTION="..."`, `make java-show
+DIR=<decompiled> MEMBER=<Class#method>` (never a whole class, spec or skill).
+Never list folders, run `git status` or read scripts to learn a command (the
+hooks refuse; `make help`). Every turn re-sends all your context: write each
+file whole, run the checks once at the end, fix what fails. Write our own Rust
+from the Java, do not paste it. If the outline seems wrong, report it as a
+follow_up.
 For a mod you own: mods/<id>/Cargo.toml, horizon-registry.toml,
 content/horizon-mod.toml, native/horizon-native.json and
 native/mixins/<id>/horizon-mixin.toml, plus empty src/lib.rs and tests/

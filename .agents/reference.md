@@ -16,9 +16,9 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 
 | # | Step | Done when |
 |---|---|---|
-| 1 | **Spec and tickets from the Java**: an outline with attributes and test levels, then one spec-writer per part of the code writing ≤200k-token tickets with their order | tickets filed (`make fleet-tickets`) |
+| 1 | **Spec and tickets from the Java**: a map of the mod (registry, systems), then one spec-writer per part of the code reading it once and writing its outline, attributes with test levels and tickets (aimed at 200k tokens, at most 6 files and 8 reads) with their order | tickets filed (`make fleet-tickets`) |
 | 2 | **Scaffold** the three parts above | it builds; check-mods passes |
-| 3 | **Code**: one subagent per ready ticket, many at once; spec first, then the Java; each block's contract file first | every ticket closed |
+| 3 | **Code**: `make fleet-dispatch`, a fresh agent per ready ticket, 2 at a time, each working from its brief (`make fleet-task`); each block's contract file first | every ticket closed |
 | 4 | **Check** syntax and logic: `make agent-gate`, parity-critic against spec and Java | clean |
 | 5 | **Extract assets**: the original's art and sound from a client build, `origin: original`, credited | every block and item mapped |
 | 6 | **New assets**: only what 26.3 needs and the original never had, at its size and palette (`make fleet-gaps`, `make art`) | `make check-mods COMPLETE=1` passes |
@@ -35,7 +35,8 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 | `./setup.sh` / `setup.cmd` / `make setup` | Set up a fresh clone end to end; `--check` / `make doctor` reports only |
 | `make test-mods` | `cargo test` for every crate under `mods/` |
 | `make check-mods [MOD=<id>] [COMPLETE=1]` | Validate `.hmod` content and `.hnmod` manifests against Horizon's rules; `COMPLETE=1` also fails on any asset 26.3 needs that is missing, and on any contract difference |
-| `make contract-check MOD=<id>` | The port against its contract (`planning/mods/<id>.features.json`): shapes, facing, each face's and icon's sprite pixel for pixel, stack sizes, durability |
+| `make contract-check MOD=<id> [OWNER=<role>] [VERBOSE=1]` / `SCHEMA=1` | The port against its contract (`planning/mods/<id>.features.json`): shapes, facing, each face's and icon's sprite pixel for pixel, stack sizes, durability (40 lines; one role's; all) / the contract file's format |
+| `make content-gen MOD=<id> [NAME=a,b]` / `e2e-gen MOD=<id>` | Blockstates, block and item models, loot tables, lang and creative tab from the contract / a `tests/e2e_actions.json` draft |
 | `make fleet-contract MOD=<id>` | File each contract difference (static and the last harness run's GUI, shape and scenario failures) as a bug under its step, reopening what it touches |
 | `make pack-mods [MOD=<id>]` | Build deterministic `.hmod` and `.hnmod` in `mods/<id>/target/horizon-mod/` |
 | `make e2e-setup` / `e2e-mod` / `e2e-all-mods` / `integration-test` | The harness: build Horizon with the mods' mixins, then boot it and run the action plans (exit 3: only Horizon's own problems) |
@@ -45,18 +46,20 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 | `make art MOD=<id>` | New art from `mods/<id>/art/` at the original's size and palette |
 | `make agent-gate [MOD=<id>]` | rustfmt, clippy `-D warnings`, tests, check-mods and dry run of what you changed (what the stop gate runs) |
 | `make agents` / `make agents-check` | Regenerate / check each tool's copy of `.agents/` |
-| `make fleet-next [AGENT=…] [MOD=<id>]` | A headless conductor run on one mod, relaunched until it is complete, on the next model whenever one hits a limit |
-| `make fleet-models [ARGS=--clear]` | The model chain (`.agents/models.json`) and which models are resting after a limit |
+| `make fleet-next [AGENT=…] [MOD=<id>] [FALLBACK=1]` | A headless conductor run on one mod, relaunched until it is complete, on the model the tool is on; a quota stops it (`FALLBACK=1`: on to the next model) |
+| `make fleet-dispatch MOD=<id> [MAX=2] [BUDGET=…] [FALLBACK=1] [CONDUCTOR=1]` | The ticket loop without an LLM: a fresh headless agent per ready ticket, a role's first alone, reports filed, tokens in `target/fleet/usage.jsonl`; exit 2: the conductor is needed, 3: a person |
+| `make fleet-models [ARGS=--clear]` | The `FALLBACK=1` model chain (`.agents/models.json`) and which models are resting after a limit |
 | `make fleet-start MOD=<id>` / `fleet-stop` | Start a mod (claim, stories, Horizon check) / let every fleet agent stop |
-| `make fleet-task BEAD=<id> ROLE=<role>` / `fleet-inbox` | A subagent takes a bead / the conductor files the reports |
+| `make fleet-task BEAD=<id> ROLE=<role>` / `fleet-inbox` | A subagent takes a bead and gets its whole brief (spec sections, Java members, templates, checks) / the conductor files the reports (a ticket partial twice: labelled needs-split) |
 | `make fleet-local [ARGS=...]` | Local models only: how many agents the machine's VRAM (or unified memory, or RAM) holds on the selected model, and the Ollama settings to serve them (`target/fleet/local.json`) |
 | `make fleet-parts MOD=<id>` | The decompiled code in ~200k-token parts, one spec-writer each (lists in `target/fleet/parts/<id>/`) |
-| `make fleet-tickets MOD=<id> [CHECK=1]` | Validate the spec-writers' tickets (sizes, roles, order, shared files, coverage) and file them with their order |
-| `make fleet-ready MOD=<id>` | Tickets whose predecessors are all closed: one subagent each |
+| `make fleet-tickets MOD=<id> [CHECK=1]` / `SCHEMA=1` / `spec-merge MOD=<id>` | Merge the part files, validate the spec-writers' tickets (sizes, files, reads, roles, order, shared files, coverage) and file them with their order / their format / only the merge |
+| `make fleet-ready MOD=<id>` | Tickets whose predecessors are all closed (not needs-split): one agent each |
 | `make fleet-features MOD=<id>` / `fleet-gaps MOD=<id>` / `fleet-status [MOD=<id>]` / `board` | Beads: features from the spec / from missing assets / progress / regenerate the board |
 | `make tasks [MOD=<id>]` / `watch` / `board-live` / `board-html` | Look at progress: the mod in progress on one screen / redrawn every 30 s / the board in your browser, live or as a file |
 | `make fleet-resume MOD=<id>` | Where a run stands after a crash, lost credits or a network drop: interrupted subagents, waiting reports, the last actions |
-| `make fleet-context MOD=<id>` / `spec-toc` / `spec-show` / `java-outline` / `java-show` / `java-find` | Read narrowly: one page per mod, a spec by section, decompiled Java by member |
+| `make fleet-context MOD=<id>` / `spec-toc` / `spec-show` / `skill-toc` / `skill-show` / `conductor-step` / `java-outline` / `java-show` / `java-find` | Read narrowly: one page per mod, a spec or skill by section, the conductor's step, decompiled Java by member |
+| `make token-audit [SAMPLES=…] [N=2] [MODEL=…]` | Re-run the token-audit samples on agy and compare with the first audit (`planning/token_audit/after.md`) |
 | `make agy` / `make fleet-models` | agy with its sandbox off / the model chain and which models are resting |
 | `make tekkit` / `direwolf20` / `agrarian` / `all` | Download the modpacks into `assets/` (Agrarian Skies 2 falls back to the public 2.0.6 without `CURSEFORGE_API_KEY`) |
 | `make extract-jar JAR=<path> [EXTRACT_OUT=<dir>]` / `make extract-assets [DIR=<dir>]` | Extract textures, sprites, audio, models and scripts from mod archives |

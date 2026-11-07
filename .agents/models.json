@@ -1,14 +1,15 @@
 {
  "_doc": [
-  "The models the fleet may run on, best first. Headless runs (make fleet-next) take the first one that is",
-  "installed, offered by its CLI and not out of quota; when a run hits a quota, usage or rate limit, that model",
-  "rests until its reset time (target/fleet/models.json) and the next one takes over, in any tool. A run waits",
-  "only when every model is resting. `make fleet-models` shows the chain and what is resting.",
-  "tools: the order tools are tried in (AGENT=<tool> puts that one first). chain: that tool's models, best",
-  "first; null = the tool's own default model. agy also uses any other model `agy models` lists, after these.",
-  "roles: what the roster's model tiers (pro, flash) become in Claude Code's subagents; inherit = the model",
-  "the session runs on, so the roles follow the runner to whichever model has quota left.",
-  "opencode: chain [null] = the model opencode has selected (cloud or local). On a local model the conductor never starts subagents on a local model."
+  "Every agent runs on the model its tool is already on: the person starts the session on the model they want",
+  "(flash to start up: flash it is), and every role and headless run uses that one. No role names a model; a",
+  "role only sets its thinking level (`effort:` in .agents/agents/<role>/agent.md, where the tool has one).",
+  "A quota, usage or rate limit stops a headless run (make fleet-next, make fleet-dispatch) and says when the",
+  "model is back. Only with FALLBACK=1 do they go down the chains below: the first model that is installed,",
+  "offered by its CLI and not out of quota; a model that hits a limit rests until its reset",
+  "(target/fleet/models.json) and the next one takes over, in any tool. `make fleet-models` shows them.",
+  "tools: the order tools are tried in (AGENT=<tool> puts that one first). chain: that tool's models for",
+  "FALLBACK=1, best first; null = the tool's own default model. agy also uses any other model `agy models` lists.",
+  "opencode: chain [null] = the model opencode has selected (cloud or local). On a local model nothing ever starts subagents."
  ],
  "tools": [
   "agy",
@@ -31,11 +32,7 @@
    "sonnet",
    "fable",
    "haiku"
-  ],
-  "roles": {
-   "pro": "inherit",
-   "flash": "sonnet"
-  }
+  ]
  },
  "codex": {
   "chain": [

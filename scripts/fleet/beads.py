@@ -52,6 +52,9 @@ def main_checkout() -> Path:
 
 
 MAIN = main_checkout()
+# This checkout: the planning files a spec-writer writes (outline, tickets) are read where it wrote them,
+# also in a worktree (Beads, the inbox and the board stay the main checkout's).
+WORK = Path(__file__).resolve().parents[2]
 BEADS_DIR = MAIN / ".beads"
 STATE_DIR = MAIN / "target" / "fleet"  # the fleet's local state: inbox, journal, prompts, progress notes
 INBOX = STATE_DIR / "inbox"
@@ -257,7 +260,7 @@ def add_children(mod: str, step: int, entries: list[tuple]) -> int:
 
 def features(mod: str) -> str:
     """Code, Extract assets and Harness features from the spec's feature list."""
-    path = MAIN / "planning" / "mods" / f"{mod}.features.json"
+    path = WORK / "planning" / "mods" / f"{mod}.features.json"
     if not path.is_file():
         raise BeadsError(f"{path.relative_to(MAIN)} is missing: the spec-writer writes it at the end of step 1")
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -384,16 +387,40 @@ def contract(mod: str) -> str:
 
 TICKET_ROLES = {"content-author", "domain-builder", "domain-builder-pro", "hook-engineer", "test-smith",
                 "asset-smith", "scaffolder", "scribe"}
-TICKET_BUDGET_K = 200  # thousand tokens of work a ticket may need: one agent, one context
+TICKET_BUDGET_K = 200  # thousand tokens of work a ticket is aimed at: one agent, one context
+# What makes a ticket's turns (planning/token_audit/fix-plan.md B2): every file written and every spec
+# section or Java member read is about a turn, and each turn re-sends all the context before it.
+TICKET_MAX_FILES = 6
+TICKET_MAX_READS = 8
 # Files many tickets add a line or entry to: sharing them does not need an order between tickets.
 SHARED_FILES = re.compile(r"/lang/[^/]+\.json$|/creative_tab/|/data/minecraft/tags/|/data/c/tags/|Cargo\.lock$")
+TICKET_SCHEMA = f"""planning/mods/<id>.tickets/<part>.json, one file per part (keys unique across parts):
+
+{{"tickets": [{{
+  "key": "part12-solar-panel",                 # <part>-<name>, unique
+  "title": "Solar panel: model, generation, storage",
+  "role": "domain-builder-pro",                # {', '.join(sorted(TICKET_ROLES))}
+  "step": 3,                                   # the story it is under (3 Code; 5, 6 assets)
+  "effort_k": 120,                             # aimed at <= {TICKET_BUDGET_K} (thousand tokens, reading included)
+  "covers": ["solar_panel"],                   # outline ids (blocks, items, features) it makes work
+  "files": ["mods/redpower_2/src/blutricity/solar.rs",
+            "planning/mods/redpower_2.contract/solar_panel.json"],   # at most {TICKET_MAX_FILES}
+  "spec": ["2.5 Blutricity Power Grid"],       # spec headings; spec + java at most {TICKET_MAX_READS}
+  "java": ["TileSolarPanel#updateEntity", "BlockMachinePanel#getBlockTexture"],
+  "after": ["part12-bluewire-grid"],           # keys that must be closed first
+  "description": "What to build and how it behaves. Done: make contract-check clean for solar_panel; its level 1, 3 and 5 scenarios pass."
+}}]}}
+
+`make fleet-task` prints each ticket's spec sections and Java members in full for its agent, so name only
+what it needs. Bigger work is several tickets in order (`after`). Two tickets editing one file are ordered
+(lang, creative tab and tag files excepted)."""
 
 
 def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
     """The spec-writers' tickets (planning/mods/<id>.tickets/*.json, one file per part of the decompiled
     code) and what is wrong with them: sizes, roles, unknown or circular `after`, two tickets that edit
     the same file with no order between them, and blocks, items or attributes no ticket covers."""
-    folder = MAIN / "planning" / "mods" / f"{mod}.tickets"
+    folder = WORK / "planning" / "mods" / f"{mod}.tickets"
     tickets: list[dict] = []
     problems: list[str] = []
     for f in sorted(folder.glob("*.json")) if folder.is_dir() else []:
@@ -406,7 +433,7 @@ def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
             t["_file"] = f.name
             tickets.append(t)
     if not tickets:
-        return [], [f"no tickets in {folder.relative_to(MAIN)}/ (the spec-writers write them in step 1)"]
+        return [], [f"no tickets in {folder.relative_to(WORK)}/ (the spec-writers write them in step 1)"]
     keys: dict[str, dict] = {}
     for t in tickets:
         where = f"{t['_file']}: {t.get('key', '?')}"
@@ -420,6 +447,12 @@ def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
             problems.append(f"{where}: role {t['role']!r} is not one of {', '.join(sorted(TICKET_ROLES))}")
         if isinstance(t.get("effort_k"), (int, float)) and t["effort_k"] > TICKET_BUDGET_K:
             problems.append(f"{where}: {t['effort_k']}k tokens of work; split it into tickets of at most {TICKET_BUDGET_K}k")
+        if len(t.get("files", [])) > TICKET_MAX_FILES:
+            problems.append(f"{where}: {len(t['files'])} files; at most {TICKET_MAX_FILES} a ticket (split it)")
+        reads = len(t.get("spec", [])) + len(t.get("java", []))
+        if reads > TICKET_MAX_READS:
+            problems.append(f"{where}: {reads} spec sections and Java members to read; at most {TICKET_MAX_READS} "
+                            "(name only what it needs, or split it)")
         if int(t.get("step", 3)) not in STEPS:
             problems.append(f"{where}: no step {t.get('step')}")
     for t in tickets:
@@ -451,7 +484,7 @@ def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
             if same and a["key"] not in before(b["key"]) and b["key"] not in before(a["key"]):
                 problems.append(f"{a['key']} and {b['key']} both edit {', '.join(sorted(same))} with no order: "
                                 f"put one after the other (or split the file)")
-    outline_path = MAIN / "planning" / "mods" / f"{mod}.features.json"
+    outline_path = WORK / "planning" / "mods" / f"{mod}.features.json"
     try:
         outline = json.loads(outline_path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -466,13 +499,16 @@ def ticket_plan(mod: str) -> tuple[list[dict], list[str]]:
 
 def tickets(mod: str, check_only: bool = False) -> str:
     """File the spec-writers' tickets under their steps, with their order as Beads dependencies (a ticket is
-    ready when every ticket it is after is closed). Refuses a plan with problems; files only new keys."""
+    ready when every ticket it is after is closed). Refuses a plan with problems; files only new keys.
+    The spec-writers' part outlines and attributes are merged into the spec and outline first."""
+    import spec_merge
+    merged = spec_merge.merge(mod)
     plan, problems = ticket_plan(mod)
     if problems:
         raise BeadsError(f"{len(problems)} problem(s) in {mod}'s tickets (send them back to the spec-writer):\n"
                          + "\n".join(f"- {p}" for p in problems[:80]))
     if check_only:
-        return f"{len(plan)} tickets for {mod}: sizes, roles, order, shared files and coverage are fine."
+        return f"{merged}\n{len(plan)} tickets for {mod}: sizes, roles, order, shared files and coverage are fine."
     st = mod_status(mod)
     filed = {label_value(i, "key"): i["id"] for i in issues("--label", "ticket", "--label", f"mod:{mod}")
              if label_value(i, "key")}
@@ -511,10 +547,32 @@ def tickets(mod: str, check_only: bool = False) -> str:
     return f"{len(new)} new ticket(s) filed for {mod} ({len(plan) - len(new)} already filed)."
 
 
+SPLIT = "needs-split"  # a ticket two agents could not finish: split it, never start a third (fix-plan B3)
+
+
 def ready(mod: str) -> list[dict]:
-    """Open tickets of the mod whose every predecessor is closed: one subagent each."""
+    """Open tickets of the mod whose every predecessor is closed: one subagent each. A ticket labelled
+    needs-split waits for its spec-writer instead."""
     out = bd("ready", "--json", "--limit", "0", "--label", "ticket", "--label", f"mod:{mod}")
-    return [i for i in out if i.get("status") == "open"] if isinstance(out, list) else []
+    return [i for i in out if i.get("status") == "open" and SPLIT not in (i.get("labels") or [])] \
+        if isinstance(out, list) else []
+
+
+def partials_before(bead: str) -> int:
+    """Partial reports already filed for a bead."""
+    n = 0
+    for f in (INBOX / "done").glob(f"{bead}-*.json"):
+        try:
+            n += json.loads(f.read_text(encoding="utf-8")).get("status") == "partial"
+        except (OSError, ValueError):
+            continue
+    return n
+
+
+def progressed(bead: str) -> bool:
+    """Whether the bead's progress notes record any finished piece."""
+    notes = STATE_DIR / "progress" / f"{bead}.md"
+    return notes.is_file() and any(ln.strip() for ln in notes.read_text(encoding="utf-8", errors="replace").splitlines())
 
 
 def inbox() -> str:
@@ -559,6 +617,14 @@ def inbox() -> str:
                 bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
             elif status == "blocked":
                 bd("update", bead, "--status", "blocked")
+            elif status == "partial" and "ticket" in (issue.get("labels") or []) and \
+                    (partials_before(bead) >= 1 or not progressed(bead)):
+                # A restart pays the floor and the brief again and stops where the last one did.
+                bd("update", bead, "--status", "open", "--add-label", SPLIT)
+                bd("comment", bead, "Two agents could not finish this ticket (or one finished nothing): split it "
+                                    "into smaller tickets (a spec-writer in split mode), then close this one.",
+                   parse=False)
+                notes.append(f"{bead}: partial again (or no progress); labelled {SPLIT}, not restarted")
             else:
                 bd("update", bead, "--status", "open")
         except BeadsError as exc:
@@ -661,12 +727,15 @@ def seed(board_md: Path) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["status", "start", "features", "gaps", "contract", "tickets",
-                                            "tickets-check", "ready", "inbox", "board", "seed", "core-need",
-                                            "core-sync"])
+                                            "tickets-check", "tickets-schema", "ready", "inbox", "board", "seed",
+                                            "core-need", "core-sync"])
     parser.add_argument("mod", nargs="?")
     parser.add_argument("--title", help="core-need: what core needs")
     parser.add_argument("--why", default="", help="core-need: which mod feature needs it, and why it is shared")
     args = parser.parse_args()
+    if args.command == "tickets-schema":  # needs no Beads
+        print(TICKET_SCHEMA)
+        return 0
     if not available():
         print("Beads is not set up: run ./setup.sh (it installs bd and runs bd init).", file=sys.stderr)
         return 1
@@ -700,8 +769,9 @@ def main() -> int:
             rows = ready(args.mod)
             for i in rows:
                 print(f"{i['id']:14} {label_value(i, 'role') or '?':20} {i['title']}")
-            print(f"{len(rows)} ticket(s) ready for {args.mod}: start one subagent for each (its role), "
-                  "`make fleet-task BEAD=<id> ROLE=<role>` first." if rows else f"No ticket of {args.mod} is ready.")
+            print(f"{len(rows)} ticket(s) ready for {args.mod}: `make fleet-dispatch MOD={args.mod}` works them "
+                  "(or one subagent each, its role, `make fleet-task BEAD=<id> ROLE=<role>` first)."
+                  if rows else f"No ticket of {args.mod} is ready.")
         elif args.command == "inbox":
             print(inbox())
         elif args.command == "board":

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 676" font-family="system-ui,sans-serif" font-size="12">
+<style>.t{fill:#222}.g{stroke:#ddd}@media(prefers-color-scheme:dark){.t{fill:#ddd}.g{stroke:#444}rect.bg{fill:#111}}</style>
+<rect class="bg" width="100%" height="100%" fill="#fff"/>
+<text class="t" x="16" y="24" font-size="15" font-weight="600">Billed input tokens per sampled step (1 sample each, gemini-3.8-flash-medium)</text>
+<rect x="190" y="36" width="12" height="12" fill="#c0392b"/><text class="t" x="208" y="46">fresh input</text>
+<rect x="290" y="36" width="12" height="12" fill="#e8a09a"/><text class="t" x="308" y="46">cache read</text>
+<rect x="400" y="36" width="12" height="12" fill="#2c3e50"/><text class="t" x="418" y="46">weighted cost (in 0.1x cache, 5x output)</text>
+<text class="t" x="182" y="75" text-anchor="end">S0 session start</text>
+<rect x="190" y="62" width="11.8" height="9" fill="#c0392b"/>
+<rect x="201.8" y="62" width="0.0" height="9" fill="#e8a09a"/>
+<rect x="190" y="73" width="13.3" height="6" fill="#2c3e50"/>
+<text class="t" x="207.8" y="71">39.7k / 3 turns</text>
+<text class="t" x="182" y="101" text-anchor="end">C1 conductor boot</text>
+<rect x="190" y="88" width="13.8" height="9" fill="#c0392b"/>
+<rect x="203.8" y="88" width="4.4" height="9" fill="#e8a09a"/>
+<rect x="190" y="99" width="15.4" height="6" fill="#2c3e50"/>
+<text class="t" x="214.1" y="97">61.1k / 4 turns</text>
+<text class="t" x="182" y="127" text-anchor="end">C2 conductor loop (3 events)</text>
+<rect x="190" y="114" width="23.5" height="9" fill="#c0392b"/>
+<rect x="213.5" y="114" width="80.1" height="9" fill="#e8a09a"/>
+<rect x="190" y="125" width="40.8" height="6" fill="#2c3e50"/>
+<text class="t" x="299.6" y="123">349.5k / 17 turns</text>
+<text class="t" x="182" y="153" text-anchor="end">S1b outline (1 block)</text>
+<rect x="190" y="140" width="34.0" height="9" fill="#c0392b"/>
+<rect x="224.0" y="140" width="207.9" height="9" fill="#e8a09a"/>
+<rect x="190" y="151" width="70.1" height="6" fill="#2c3e50"/>
+<text class="t" x="437.9" y="149">816.3k / 30 turns</text>
+<text class="t" x="182" y="179" text-anchor="end">S1c tickets (1 ticket)</text>
+<rect x="190" y="166" width="53.4" height="9" fill="#c0392b"/>
+<rect x="243.4" y="166" width="586.6" height="9" fill="#e8a09a"/>
+<rect x="190" y="177" width="155.7" height="6" fill="#2c3e50"/>
+<text class="t" x="836.0" y="175">2.16M / 50 turns</text>
+<text class="t" x="182" y="205" text-anchor="end">S3 content-author*</text>
+<rect x="190" y="192" width="25.5" height="9" fill="#c0392b"/>
+<rect x="215.5" y="192" width="124.5" height="9" fill="#e8a09a"/>
+<rect x="190" y="203" width="42.2" height="6" fill="#2c3e50"/>
+<text class="t" x="346.0" y="201">506.2k / 20 turns</text>
+<text class="t" x="182" y="231" text-anchor="end">S3 content-author, 1.5M cap</text>
+<rect x="190" y="218" width="54.8" height="9" fill="#c0392b"/>
+<rect x="244.8" y="218" width="392.6" height="9" fill="#e8a09a"/>
+<rect x="190" y="229" width="103.9" height="6" fill="#2c3e50"/>
+<text class="t" x="643.5" y="227">1.51M / 42 turns</text>
+<text class="t" x="182" y="257" text-anchor="end">S3 domain-builder*</text>
+<rect x="190" y="244" width="42.3" height="9" fill="#c0392b"/>
+<rect x="232.3" y="244" width="106.3" height="9" fill="#e8a09a"/>
+<rect x="190" y="255" width="64.6" height="6" fill="#2c3e50"/>
+<text class="t" x="344.7" y="253">501.6k / 24 turns</text>
+<text class="t" x="182" y="283" text-anchor="end">S3 domain-builder, 1.5M cap</text>
+<rect x="190" y="270" width="70.7" height="9" fill="#c0392b"/>
+<rect x="260.7" y="270" width="374.5" height="9" fill="#e8a09a"/>
+<rect x="190" y="281" width="126.4" height="6" fill="#2c3e50"/>
+<text class="t" x="641.3" y="279">1.50M / 46 turns</text>
+<text class="t" x="182" y="309" text-anchor="end">S3 hook-engineer*</text>
+<rect x="190" y="296" width="37.5" height="9" fill="#c0392b"/>
+<rect x="227.5" y="296" width="111.6" height="9" fill="#e8a09a"/>
+<rect x="190" y="307" width="54.9" height="6" fill="#2c3e50"/>
+<text class="t" x="345.1" y="305">503.1k / 22 turns</text>
+<text class="t" x="182" y="335" text-anchor="end">S3 hook-engineer, 1.5M cap</text>
+<rect x="190" y="322" width="62.3" height="9" fill="#c0392b"/>
+<rect x="252.3" y="322" width="349.5" height="9" fill="#e8a09a"/>
+<rect x="190" y="333" width="115.0" height="6" fill="#2c3e50"/>
+<text class="t" x="607.8" y="331">1.39M / 44 turns</text>
+<text class="t" x="182" y="361" text-anchor="end">S3 test-smith*</text>
+<rect x="190" y="348" width="39.8" height="9" fill="#c0392b"/>
+<rect x="229.8" y="348" width="110.9" height="9" fill="#e8a09a"/>
+<rect x="190" y="359" width="55.1" height="6" fill="#2c3e50"/>
+<text class="t" x="346.8" y="357">508.7k / 23 turns</text>
+<text class="t" x="182" y="387" text-anchor="end">S3 test-smith, 1.5M cap</text>
+<rect x="190" y="374" width="59.4" height="9" fill="#c0392b"/>
+<rect x="249.4" y="374" width="390.6" height="9" fill="#e8a09a"/>
+<rect x="190" y="385" width="108.2" height="6" fill="#2c3e50"/>
+<text class="t" x="646.0" y="383">1.52M / 50 turns</text>
+<text class="t" x="182" y="413" text-anchor="end">S4 agent-gate</text>
+<rect x="190" y="400" width="10.2" height="9" fill="#c0392b"/>
+<rect x="200.2" y="400" width="0.0" height="9" fill="#e8a09a"/>
+<rect x="190" y="411" width="10.9" height="6" fill="#2c3e50"/>
+<text class="t" x="206.2" y="409">34.5k / 3 turns</text>
+<text class="t" x="182" y="439" text-anchor="end">S4 parity-critic</text>
+<rect x="190" y="426" width="51.3" height="9" fill="#c0392b"/>
+<rect x="241.3" y="426" width="309.3" height="9" fill="#e8a09a"/>
+<rect x="190" y="437" width="96.0" height="6" fill="#2c3e50"/>
+<text class="t" x="556.6" y="435">1.22M / 34 turns</text>
+<text class="t" x="182" y="465" text-anchor="end">S5 asset-smith</text>
+<rect x="190" y="452" width="26.8" height="9" fill="#c0392b"/>
+<rect x="216.8" y="452" width="8.9" height="9" fill="#e8a09a"/>
+<rect x="190" y="463" width="30.4" height="6" fill="#2c3e50"/>
+<text class="t" x="231.8" y="461">120.6k / 8 turns</text>
+<text class="t" x="182" y="491" text-anchor="end">S6 new assets</text>
+<rect x="190" y="478" width="10.4" height="9" fill="#c0392b"/>
+<rect x="200.4" y="478" width="0.0" height="9" fill="#e8a09a"/>
+<rect x="190" y="489" width="11.6" height="6" fill="#2c3e50"/>
+<text class="t" x="206.4" y="487">35.0k / 3 turns</text>
+<text class="t" x="182" y="517" text-anchor="end">S7 recheck</text>
+<rect x="190" y="504" width="31.7" height="9" fill="#c0392b"/>
+<rect x="221.7" y="504" width="69.9" height="9" fill="#e8a09a"/>
+<rect x="190" y="515" width="43.4" height="6" fill="#2c3e50"/>
+<text class="t" x="297.6" y="513">342.8k / 16 turns</text>
+<text class="t" x="182" y="543" text-anchor="end">S8 harness</text>
+<rect x="190" y="530" width="10.6" height="9" fill="#c0392b"/>
+<rect x="200.6" y="530" width="0.0" height="9" fill="#e8a09a"/>
+<rect x="190" y="541" width="11.9" height="6" fill="#2c3e50"/>
+<text class="t" x="206.6" y="539">35.9k / 3 turns</text>
+<text class="t" x="182" y="569" text-anchor="end">S8 live harness (real)</text>
+<rect x="190" y="556" width="29.7" height="9" fill="#c0392b"/>
+<rect x="219.7" y="556" width="69.6" height="9" fill="#e8a09a"/>
+<rect x="190" y="567" width="42.4" height="6" fill="#2c3e50"/>
+<text class="t" x="295.4" y="565">335.2k / 12 turns</text>
+<text class="t" x="182" y="595" text-anchor="end">S9 package</text>
+<rect x="190" y="582" width="6.7" height="9" fill="#c0392b"/>
+<rect x="196.7" y="582" width="0.0" height="9" fill="#e8a09a"/>
+<rect x="190" y="593" width="7.8" height="6" fill="#2c3e50"/>
+<text class="t" x="202.7" y="591">22.8k / 2 turns</text>
+<text class="t" x="16" y="636">* stopped by the 500k billed cap before finishing: a lower bound.  S4a/S6/S8/S9 were one-command prompts, so they show the floor only.</text></svg>

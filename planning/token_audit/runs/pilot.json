@@ -1,0 +1,11 @@
+{
+ "id": "pilot",
+ "step": "S0",
+ "agent": null,
+ "model": "gemini-3.8-flash-medium",
+ "turns": 0,
+ "billed_input_sum": 0,
+ "last_usage": {},
+ "capped": null,
+ "seconds": 20.1
+}

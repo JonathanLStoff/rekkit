@@ -12,10 +12,12 @@ Checkpoints: everything a relaunched conductor needs survives the crash (Beads, 
 saved subagent prompts, progress notes): `make fleet-start` prints it (scripts/fleet/resume.py). When
 the network drops, the run waits for it to return instead of counting stalled runs.
 
-Models: each run uses the first model of .agents/models.json that is installed, offered and not
-resting (scripts/fleet/models.py). A run that ends on a quota, usage or rate limit rests that model
-until its reset and the next run continues the mod on the next model, in any tool; when every model
-is resting, it waits for the first reset. Runs cut short by a limit do not count as stalled.
+Models: each run uses the model the tool is already on (no --model; the person picked it), and a run
+that ends on a quota, usage or rate limit stops the loop and says when that model is back (exit 3).
+With FALLBACK=1 (--fallback) it uses the first model of .agents/models.json that is installed, offered
+and not resting (scripts/fleet/models.py) instead: a limit rests that model until its reset and the
+next run continues on the next model, in any tool; when every model is resting, it waits for the first
+reset. Runs cut short by a limit do not count as stalled.
 
 Agents (--agent, or AGENT): the tool to try first (default: the order in .agents/models.json)
   agy     agy -p PROMPT --model M, its terminal sandbox off (scripts/fleet/agy.py)
@@ -39,6 +41,7 @@ from __future__ import annotations
 import argparse
 import os
 import shlex
+import shutil
 import subprocess
 import sys
 import time
@@ -120,6 +123,9 @@ def main() -> int:
     parser.add_argument("--agent-cmd", default=os.environ.get("AGENT_CMD") or None,
                         help="Any other agent CLI and its flags; the prompt is appended")
     parser.add_argument("--max-runs", type=int, default=30, help="Agent launches at most (default 30)")
+    parser.add_argument("--fallback", action="store_true", default=os.environ.get("FALLBACK") == "1",
+                        help="On a quota or rate limit, go on with the next model of .agents/models.json "
+                             "(default: stop and say when the model is back)")
     args = parser.parse_args()
 
     try:
@@ -133,7 +139,13 @@ def main() -> int:
     except beads.BeadsError as exc:
         sys.exit(f"[beads] {exc}")
     custom = models.Candidate(args.agent_cmd, None) if args.agent_cmd else None
-    chain = [custom] if custom else models.candidates(args.agent)
+    if custom:
+        chain = [custom]
+    elif args.fallback:
+        chain = models.candidates(args.agent)
+    else:  # the model the tool is already on: the person picked it (FALLBACK=1 goes down the chain)
+        tool = next((t for t in ([args.agent] if args.agent else models.config()["tools"]) if t and shutil.which(t)), None)
+        chain = [models.Candidate(tool, None)] if tool else []
     if not chain:
         sys.exit("No agent CLI from .agents/models.json is installed (agy, claude, codex, opencode); "
                  "install one or give --agent-cmd \"<cli and flags>\".")
@@ -179,6 +191,12 @@ def main() -> int:
                 except OSError:
                     tool_text = ""
                 hit = models.limit_in(tail, tool_text)
+                if hit and not args.fallback and not custom:
+                    until = models.rest(cand, *hit)
+                    print(f"{cand.key} ran out: {hit[0]}\nIt resets about {models.when(until)}. Run `make fleet-next` "
+                          "again then, or with FALLBACK=1 to go on with the next model of .agents/models.json.",
+                          flush=True)
+                    return 3
                 if hit:
                     until = models.rest(cand, *hit)
                     nxt = models.first_ready(chain)

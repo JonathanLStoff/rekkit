@@ -1,0 +1,48 @@
+{
+ "id": "s4-agent-gate",
+ "step": "S4a",
+ "agent": null,
+ "model": "gemini-3.8-flash-medium",
+ "turns": 3,
+ "billed_input_sum": 34526,
+ "last_usage": {
+  "input_tokens": 11925,
+  "output_tokens": 132,
+  "thinking_tokens": 115,
+  "cache_read_tokens": 0,
+  "total_tokens": 12057
+ },
+ "capped": null,
+ "peak_input": 11925,
+ "output_sum": 455,
+ "thinking_sum": 372,
+ "per_turn": [
+  [
+   11081,
+   0,
+   192,
+   146
+  ],
+  [
+   11520,
+   0,
+   131,
+   111
+  ],
+  [
+   11925,
+   0,
+   132,
+   115
+  ]
+ ],
+ "tools": [
+  {
+   "step": 3,
+   "tool": "run_command",
+   "arg": "make agent-gate MOD=example_mod",
+   "out_chars": 132
+  }
+ ],
+ "seconds": 29.0
+}

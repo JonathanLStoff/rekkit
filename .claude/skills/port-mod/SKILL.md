@@ -6,7 +6,7 @@ description: "Checklist for porting one Java mod (or the shared rekkit_core crat
 
 # port-mod
 
-What a builder (scaffolder, domain-builder, content-author, test-smith) needs. Read the spec sections your prompt names first (`make spec-show MOD=<id> SECTION="<heading>"`): it is an outline. Then read the original's Java for what you port, a method at a time (`make java-outline`, `make java-show`), and write the block's or item's contract file (`planning/mods/<id>.contract/<name>.json`, the mod-spec skill) before building it.
+What a builder (scaffolder, domain-builder, content-author, test-smith) needs. Your brief (`make fleet-task BEAD=<id> ROLE=<role>`) already holds the spec sections and Java methods your ticket names, your files with their templates and the contract format: work from it, and read anything else a section or a method at a time (`make spec-show`, `make java-show`). Write the block's or item's contract file (`planning/mods/<id>.contract/<name>.json`, the mod-spec skill) before building it.
 
 ## Layout of a mod
 
@@ -45,7 +45,10 @@ Use core types (energy units, stacks, tanks, grids, side config, multiblock patt
 
 | What | Command |
 |---|---|
-| The spec sections you need | `make spec-toc MOD=<id>`, `make spec-show MOD=<id> SECTION="<heading>"` |
+| The spec sections you need (beyond your brief) | `make spec-toc MOD=<id>`, `make spec-show MOD=<id> SECTION="<heading>"` |
+| Content from the contract (content-author) | `make content-gen MOD=<id> NAME=<a,b>`: blockstates, models, item models, loot tables, lang, creative tab |
+| A draft of tests/e2e_actions.json (test-smith) | `make e2e-gen MOD=<id>` |
+| One role's contract problems | `make contract-check MOD=<id> OWNER=<role>` |
 | Unit tests for one crate | `cargo test --manifest-path mods/<id>/Cargo.toml` |
 | Manifest + content validation | `make check-mods MOD=<id>` |
 | Everything the stop gate checks | `make agent-gate MOD=<id>` (rustfmt, clippy -D warnings, tests, check-mods, harness dry run) |

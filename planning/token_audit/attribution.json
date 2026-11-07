@@ -1,0 +1,632 @@
+{
+ "c1-conductor": {
+  "by_class": {
+   "read_file": 4635,
+   "make spec/context": 539,
+   "other make": 109
+  },
+  "calls": {
+   "read_file": 1,
+   "make spec/context": 1,
+   "other make": 1
+  },
+  "worst": [
+   [
+    4635,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-c1-conductor\\.agents\\agents\\co"
+   ],
+   [
+    539,
+    "make spec/context",
+    "make fleet-context MOD=buildcraft"
+   ],
+   [
+    109,
+    "other make",
+    "make fleet-ready MOD=buildcraft"
+   ]
+  ]
+ },
+ "c2-conductor-loop": {
+  "by_class": {
+   "read_file": 10714,
+   "dir listing sweep": 206,
+   "other command": 514,
+   "other make": 1134
+  },
+  "calls": {
+   "read_file": 5,
+   "dir listing sweep": 2,
+   "other command": 3,
+   "other make": 6
+  },
+  "worst": [
+   [
+    4635,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-c2-conductor-loop\\.agents\\agen"
+   ],
+   [
+    2604,
+    "read_file",
+    "0 254 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-c2-conductor-loop\\planni"
+   ],
+   [
+    1589,
+    "read_file",
+    "0 100 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-c2-conductor-loop\\planni"
+   ]
+  ]
+ },
+ "s0-start": {
+  "by_class": {
+   "read_file": 2119,
+   "other make": 1039
+  },
+  "calls": {
+   "read_file": 1,
+   "other make": 1
+  },
+  "worst": [
+   [
+    2119,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s0-start\\.agents\\start.md"
+   ],
+   [
+    1039,
+    "other make",
+    "make doctor"
+   ]
+  ]
+ },
+ "s1b-outline": {
+  "by_class": {
+   "read_file": 5906,
+   "text search": 2022,
+   "model/system (no tool)": 170,
+   "dir listing sweep": 822,
+   "make java-outline": 2212,
+   "make java-show": 12771,
+   "write/edit": 199
+  },
+  "calls": {
+   "read_file": 5,
+   "text search": 1,
+   "dir listing sweep": 2,
+   "make java-outline": 1,
+   "make java-show": 16,
+   "write/edit": 2
+  },
+  "worst": [
+   [
+    3537,
+    "read_file",
+    "100 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s1b-outline/.agents/skills"
+   ],
+   [
+    3084,
+    "make java-show",
+    "make java-show DIR=assets/decompiled/buildcraft-2.2.14-mcpc1.2.5-r8 MEMBER=Build"
+   ],
+   [
+    2212,
+    "make java-outline",
+    "make java-outline DIR=assets/decompiled/buildcraft-2.2.14-mcpc1.2.5-r8 GREP=Quar"
+   ]
+  ]
+ },
+ "s1c-tickets": {
+  "by_class": {
+   "read_file": 14132,
+   "git inspect": 3889,
+   "dir listing sweep": 6994,
+   "text search": 5729,
+   "other command": 736,
+   "other make": 1561,
+   "make java-outline": 937,
+   "write/edit": 76
+  },
+  "calls": {
+   "read_file": 12,
+   "git inspect": 3,
+   "dir listing sweep": 11,
+   "text search": 7,
+   "other command": 7,
+   "other make": 7,
+   "make java-outline": 1,
+   "write/edit": 1
+  },
+  "worst": [
+   [
+    4392,
+    "dir listing sweep",
+    "Get-ChildItem -Path planning/mods -Recurse -Filter \"*.json\""
+   ],
+   [
+    3584,
+    "git inspect",
+    "git log -n 5 -p scripts/fleet/beads.py"
+   ],
+   [
+    3537,
+    "read_file",
+    "100 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s1c-tickets\\.agents\\skills"
+   ]
+  ]
+ },
+ "s3-content-author": {
+  "by_class": {
+   "read_file": 10489,
+   "dir listing sweep": 10620,
+   "text search": 635
+  },
+  "calls": {
+   "read_file": 7,
+   "dir listing sweep": 10,
+   "text search": 2
+  },
+  "worst": [
+   [
+    4420,
+    "dir listing sweep",
+    "Get-ChildItem -Path planning/mods/redpower_2.contract"
+   ],
+   [
+    4013,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s3-content-author\\.agents\\skil"
+   ],
+   [
+    2543,
+    "dir listing sweep",
+    "Get-ChildItem -Recurse -Path mods/example_mod/content"
+   ]
+  ]
+ },
+ "s3-domain-builder": {
+  "by_class": {
+   "read_file": 7808,
+   "dir listing sweep": 4833,
+   "text search": 4651,
+   "model/system (no tool)": 85,
+   "build/test/gate": 318,
+   "other command": 87
+  },
+  "calls": {
+   "read_file": 9,
+   "dir listing sweep": 9,
+   "text search": 2,
+   "build/test/gate": 1,
+   "other command": 1
+  },
+  "worst": [
+   [
+    3942,
+    "text search",
+    "Select-String -Path crates\\rekkit_core\\src\\lib.rs -Pattern \"energy|mj|eu|power\" "
+   ],
+   [
+    3129,
+    "dir listing sweep",
+    "Get-ChildItem mods\\example_mod -Recurse"
+   ],
+   [
+    1522,
+    "read_file",
+    "150 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s3-domain-builder/assets/d"
+   ]
+  ]
+ },
+ "s3-hook-engineer": {
+  "by_class": {
+   "read_file": 5201,
+   "dir listing sweep": 5409,
+   "text search": 6872,
+   "build/test/gate": 1679,
+   "other command": 327,
+   "git inspect": 102
+  },
+  "calls": {
+   "read_file": 6,
+   "dir listing sweep": 7,
+   "text search": 4,
+   "build/test/gate": 1,
+   "other command": 2,
+   "git inspect": 1
+  },
+  "worst": [
+   [
+    3134,
+    "dir listing sweep",
+    "Get-ChildItem -Path mods/example_mod -Recurse"
+   ],
+   [
+    2824,
+    "text search",
+    "Select-String -Path scripts/pack_mod.py -Pattern \"mixins\" -Context 2,10"
+   ],
+   [
+    1941,
+    "text search",
+    "Select-String -Path \"mods/redpower_2/native/mixins/redpower_2/horizon-mixin.toml"
+   ]
+  ]
+ },
+ "s3-test-smith": {
+  "by_class": {
+   "read_file": 10041,
+   "dir listing sweep": 5383,
+   "git inspect": 102,
+   "text search": 87,
+   "model/system (no tool)": 404,
+   "other command": 183
+  },
+  "calls": {
+   "read_file": 5,
+   "dir listing sweep": 12,
+   "git inspect": 1,
+   "text search": 1,
+   "other command": 2
+  },
+  "worst": [
+   [
+    4054,
+    "read_file",
+    "0 100 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s3-test-smith\\planning\\h"
+   ],
+   [
+    3158,
+    "dir listing sweep",
+    "Get-ChildItem -Path mods/example_mod -Recurse"
+   ],
+   [
+    2150,
+    "read_file",
+    "0 205 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s3-test-smith\\planning\\m"
+   ]
+  ]
+ },
+ "s3a-full": {
+  "by_class": {
+   "read_file": 27555,
+   "dir listing sweep": 9598,
+   "text search": 1082,
+   "other command": 1137,
+   "build/test/gate": 316
+  },
+  "calls": {
+   "read_file": 21,
+   "dir listing sweep": 12,
+   "text search": 2,
+   "other command": 5,
+   "build/test/gate": 1
+  },
+  "worst": [
+   [
+    4429,
+    "dir listing sweep",
+    "dir planning/mods/redpower_2.contract"
+   ],
+   [
+    4013,
+    "read_file",
+    "0 200 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s3a-full/.agents/skills/"
+   ],
+   [
+    2505,
+    "dir listing sweep",
+    "Get-ChildItem -Recurse mods/example_mod/content"
+   ]
+  ]
+ },
+ "s3b-full": {
+  "by_class": {
+   "read_file": 13572,
+   "model/system (no tool)": 726,
+   "dir listing sweep": 7808,
+   "other command": 308,
+   "text search": 5446,
+   "build/test/gate": 1156,
+   "write/edit": 1065
+  },
+  "calls": {
+   "read_file": 15,
+   "dir listing sweep": 10,
+   "other command": 3,
+   "text search": 8,
+   "build/test/gate": 4,
+   "write/edit": 2
+  },
+  "worst": [
+   [
+    3176,
+    "dir listing sweep",
+    "Get-ChildItem -Path mods\\example_mod -Recurse"
+   ],
+   [
+    2562,
+    "read_file",
+    "668 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s3b-full/scripts/pack_mod."
+   ],
+   [
+    1996,
+    "dir listing sweep",
+    "dir"
+   ]
+  ]
+ },
+ "s3c-full": {
+  "by_class": {
+   "read_file": 16137,
+   "dir listing sweep": 2413,
+   "text search": 11312,
+   "other command": 301,
+   "build/test/gate": 1061,
+   "git inspect": 102,
+   "write/edit": 304
+  },
+  "calls": {
+   "read_file": 13,
+   "dir listing sweep": 7,
+   "text search": 13,
+   "other command": 3,
+   "build/test/gate": 2,
+   "git inspect": 1,
+   "write/edit": 4
+  },
+  "worst": [
+   [
+    4355,
+    "text search",
+    "rg -n -C 5 \"updateEntity|update\\(\" assets/decompiled/buildcraft-2.2.14-mcpc1.2.5"
+   ],
+   [
+    3418,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s3c-full\\mods\\redpower_2\\nativ"
+   ],
+   [
+    2889,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s3c-full\\mods\\redpower_2\\nativ"
+   ]
+  ]
+ },
+ "s3d-full": {
+  "by_class": {
+   "read_file": 12998,
+   "dir listing sweep": 7130,
+   "text search": 3323,
+   "build/test/gate": 4991,
+   "git inspect": 269,
+   "other make": 1697,
+   "other command": 1274,
+   "make spec/context": 550
+  },
+  "calls": {
+   "read_file": 12,
+   "dir listing sweep": 13,
+   "text search": 6,
+   "build/test/gate": 13,
+   "git inspect": 2,
+   "other make": 1,
+   "other command": 1,
+   "make spec/context": 1
+  },
+  "worst": [
+   [
+    3176,
+    "dir listing sweep",
+    "Get-ChildItem -Recurse mods\\example_mod"
+   ],
+   [
+    3054,
+    "read_file",
+    "120 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s3d-full/planning/harness."
+   ],
+   [
+    1778,
+    "build/test/gate",
+    "Select-String -Path scripts\\e2e_harness.py -Pattern \"def \""
+   ]
+  ]
+ },
+ "s4-agent-gate": {
+  "by_class": {
+   "build/test/gate": 247,
+   "model/system (no tool)": 274
+  },
+  "calls": {
+   "build/test/gate": 1
+  },
+  "worst": [
+   [
+    247,
+    "build/test/gate",
+    "make agent-gate MOD=example_mod"
+   ]
+  ]
+ },
+ "s4-parity-critic": {
+  "by_class": {
+   "read_file": 10549,
+   "text search": 12237,
+   "dir listing sweep": 8705,
+   "other command": 174
+  },
+  "calls": {
+   "read_file": 12,
+   "text search": 9,
+   "dir listing sweep": 10,
+   "other command": 2
+  },
+  "worst": [
+   [
+    3878,
+    "text search",
+    "powershell -Command \"Select-String -Path planning/mods/redpower_2.md -Pattern '#"
+   ],
+   [
+    3871,
+    "dir listing sweep",
+    "powershell -Command \"Get-ChildItem -Path mods/redpower_2/content/data/redpower_2"
+   ],
+   [
+    3738,
+    "text search",
+    "powershell -Command \"Select-String -Path planning/mods/redpower_2.md -Pattern 'a"
+   ]
+  ]
+ },
+ "s5-asset-smith": {
+  "by_class": {
+   "read_file": 4606,
+   "build/test/gate": 113,
+   "other command": 87,
+   "dir listing sweep": 160
+  },
+  "calls": {
+   "read_file": 4,
+   "build/test/gate": 1,
+   "other command": 1,
+   "dir listing sweep": 1
+  },
+  "worst": [
+   [
+    1497,
+    "read_file",
+    "100 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s5-asset-smith/mods/redpow"
+   ],
+   [
+    1434,
+    "read_file",
+    "100 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s5-asset-smith/.agents/ski"
+   ],
+   [
+    1080,
+    "read_file",
+    "C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s5-asset-smith/.agents/agents/"
+   ]
+  ]
+ },
+ "s6-new-assets": {
+  "by_class": {
+   "build/test/gate": 150,
+   "text search": 504
+  },
+  "calls": {
+   "build/test/gate": 1,
+   "text search": 1
+  },
+  "worst": [
+   [
+    504,
+    "text search",
+    "Select-String -Path Makefile -Pattern \"fleet-gaps\" -Context 0,5"
+   ],
+   [
+    150,
+    "build/test/gate",
+    "make check-mods MOD=redpower_2 COMPLETE=1"
+   ]
+  ]
+ },
+ "s7-recheck": {
+  "by_class": {
+   "build/test/gate": 113,
+   "other command": 283,
+   "git inspect": 102,
+   "read_file": 13586,
+   "dir listing sweep": 8538
+  },
+  "calls": {
+   "build/test/gate": 1,
+   "other command": 3,
+   "git inspect": 1,
+   "read_file": 7,
+   "dir listing sweep": 3
+  },
+  "worst": [
+   [
+    4427,
+    "dir listing sweep",
+    "Get-ChildItem planning/mods/redpower_2.contract"
+   ],
+   [
+    3934,
+    "dir listing sweep",
+    "Get-ChildItem mods/redpower_2 -Recurse"
+   ],
+   [
+    3124,
+    "read_file",
+    "400 C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s7-recheck/scripts/contrac"
+   ]
+  ]
+ },
+ "s8-harness": {
+  "by_class": {
+   "build/test/gate": 222,
+   "model/system (no tool)": 1138
+  },
+  "calls": {
+   "build/test/gate": 1
+  },
+  "worst": [
+   [
+    222,
+    "build/test/gate",
+    "make e2e-mod MOD=example_mod 2>&1 | Select-Object -Last 60"
+   ]
+  ]
+ },
+ "s8c-live": {
+  "by_class": {
+   "read_file": 23641,
+   "build/test/gate": 1275,
+   "model/system (no tool)": 2110,
+   "other command": 562,
+   "dir listing sweep": 2471
+  },
+  "calls": {
+   "read_file": 6,
+   "build/test/gate": 2,
+   "other command": 1,
+   "dir listing sweep": 1
+  },
+  "worst": [
+   [
+    9954,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s8c-live\\target\\e2e-report\\sum"
+   ],
+   [
+    6483,
+    "read_file",
+    "0 1292 C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s8c-live\\target\\e2e-rep"
+   ],
+   [
+    3980,
+    "read_file",
+    "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s8c-live\\target\\e2e-report\\iso"
+   ]
+  ]
+ },
+ "s9-package": {
+  "by_class": {
+   "build/test/gate": 237
+  },
+  "calls": {
+   "build/test/gate": 1
+  },
+  "worst": [
+   [
+    237,
+    "build/test/gate",
+    "bash -c \"make pack-mods MOD=example_mod 2>&1 | tail -20\""
+   ]
+  ]
+ }
+}

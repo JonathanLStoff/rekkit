@@ -52,29 +52,27 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 
 ## 3. Roster
 
-| Agent | Steps | Model | Reads the Java | Owns (may write) |
+| Agent | Steps | Thinking | Reads the Java | Owns (may write) |
 |---|---|---|---|---|
-| **conductor** | all | `pro` | yes | Beads (the only writer), `planning/fleet-board.md` (`make board`), `planning/priority.md`, `planning/todo.md`, merges |
-| **scout** | context | `flash` | yes | nothing (read-only report) |
-| **spec-writer** | 1 | `flash` | yes | `planning/mods/<id>.md`, `planning/mods/<id>.features.json` |
-| **scaffolder** | 2 | `flash` | after the spec | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
-| **domain-builder** | 3 | `flash` | after the spec | `mods/<id>/src/**` (Standard tier) |
-| **domain-builder-pro** | 3 | `pro` | after the spec | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
-| **hook-engineer** | 3 | `pro` | after the spec | `mods/<id>/native/mixins/<id>/*.rs` |
-| **content-author** | 3 | `flash` | after the spec | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
-| **test-smith** | 3 | `flash` | after the spec | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
-| **parity-critic** | 4, 7 | `pro` | yes | nothing (findings in its report) |
-| **asset-smith** | 5, 6 | `flash` | no need | `assets/extracted/<id>/` (gitignored), `mods/<id>/asset-map.json`, `mods/<id>/art/**`, `content/assets/<id>/{textures,sounds}/**` |
-| **compat-auditor** | 8 | `flash` | no need | nothing (runs the harness, reports) |
-| **release-clerk** | 9 | `flash` | no need | version fields in the 4 lockstep files; local commit; `make pack-mods` |
-| **scribe** | docs | `flash` | no need | `mods/<id>/README.md`, mod table in `README.md` |
-| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths and read guards (no whole decompiled class, the 200k-token task budget); the stop gate; `bd prime` at session start |
+| **conductor** | all | the session | yes | Beads (the only writer), `planning/fleet-board.md` (`make board`), `planning/priority.md`, `planning/todo.md`, merges |
+| **scout** | context | low | yes | nothing (read-only report) |
+| **spec-writer** | 1 | medium | yes | `planning/mods/<id>.md`, `planning/mods/<id>.features.json`, `planning/mods/<id>.parts/`, `planning/mods/<id>.tickets/` |
+| **scaffolder** | 2 | low | after the spec | `mods/<id>/Cargo.toml`, `horizon-registry.toml`, `content/horizon-mod.toml`, `native/horizon-native.json`, `native/mixins/<id>/horizon-mixin.toml` (for `rekkit_core`: `crates/rekkit_core/Cargo.toml` and the `test-mods` Makefile target) |
+| **domain-builder** | 3 | medium | after the spec | `mods/<id>/src/**` (Standard tier) |
+| **domain-builder-pro** | 3 | high | after the spec | `mods/<id>/src/**` (Hard tier, and `crates/rekkit_core/src/**`) |
+| **hook-engineer** | 3 | medium | after the spec | `mods/<id>/native/mixins/<id>/*.rs` |
+| **content-author** | 3 | low | after the spec | `mods/<id>/content/data/**`, `content/assets/<id>/{lang,models,blockstates,items}/**` |
+| **test-smith** | 3 | medium | after the spec | `mods/<id>/tests/**` incl. `tests/e2e_actions.json` (or `crates/rekkit_core/tests/**`) |
+| **parity-critic** | 4, 7 | high | yes | nothing (findings in its report) |
+| **asset-smith** | 5, 6 | low | no need | `assets/extracted/<id>/` (gitignored), `mods/<id>/asset-map.json`, `mods/<id>/art/**`, `content/assets/<id>/{textures,sounds}/**` |
+| **compat-auditor** | 8 | low | no need | nothing (runs the harness, reports) |
+| **release-clerk** | 9 | low | no need | version fields in the 4 lockstep files; local commit; `make pack-mods` |
+| **scribe** | docs | low | no need | `mods/<id>/README.md`, mod table in `README.md` |
+| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths and read guards (no whole decompiled class, no folder sweeps or toolchain reads, nothing read twice; a subagent wraps up at 25 turns, 500k tokens billed or 200k of context); the stop gate; the Beads context (`bd prime`, the resume page) at session start |
 
 "Reads the Java" = may open `assets/decompiled/`. Every role may now, after the spec: the column says who needs it.
 
-Models: `pro` is the tool's strongest model, `flash` its fast one. agy: Gemini 4 Argon and 3.8 Flash (run the conductor at `/effort high`; frontmatter has no effort field, so subagents run their model's default). Claude Code: Opus and Sonnet (`make agents` writes them into `.claude/agents/`). Other tools: whatever you pick for each role.
-
-agy Free/Plus plans have no Argon: set every `pro` to `flash`, then `make agents`.
+Models: every role runs on the model the session is on (the person picks it by starting the session on it); a role sets only its thinking level, `effort:` in its role file (Claude Code: the subagent's `effort`; headless agy and claude runs: `--effort`). Why: planning/token_audit/fix-plan.md.
 
 ---
 
@@ -242,11 +240,11 @@ rekkit/
 - It lets the agent stop when you cancel it (agy `USER_CANCELED`; Claude Code never runs the hook on an interrupt), after `make fleet-stop` (any tool, any terminal), or after 10 turn ends in a row with no change in Beads or the inbox (stuck).
 - Headless runs (`make fleet-next`) relaunch the agent with "continue from step N" whenever it exits early, for any tool, until the mod is finished, `make fleet-stop`, or 3 runs in a row change nothing in Beads.
 - **Checkpoints.** The hooks keep everything a successor needs, whatever kills a session (crash, credits, network): each session's last tool call, a journal of commands, writes and subagent launches (`target/fleet/journal.jsonl`), every subagent's prompt under its bead (`target/fleet/prompts/`), and the subagents' progress notes (`target/fleet/progress/`). `make fleet-resume MOD=<id>` (printed by `make fleet-start`) turns it into what to do next: reports to file, interrupted subagents to restart (a silent session counts as dead after 15 minutes), the last conductor's actions. A restarted subagent's `make fleet-task` shows it its predecessor's notes and files. Feature beads are created 200 per `bd` call, so `make fleet-features` takes seconds and a rerun adds only what is missing. Headless runs wait out a network outage instead of counting it as stalled.
-- **Quotas.** Each headless run uses the first model in `.agents/models.json` that is installed, offered by its CLI (agy: `agy models`) and not resting. A run that ends on a quota, usage or rate limit (`RESOURCE_EXHAUSTED`, 429, "usage limit reached"…) rests that model until the reset its error names (else 30 min, doubling, at most 6 h; a rejected model a day) and the next run continues on the next model, switching tool if needed (agy → claude → codex). Only when every model rests does it wait, for the first reset. Such runs count neither as stalled nor against `--max-runs`. `make fleet-models` shows the chain and the rests; `make fleet-models ARGS=--clear` forgets them. Inside a session the conductor restarts a subagent that hit a limit on another model, or does its role itself.
+- **Quotas.** A headless run (`make fleet-next`, `make fleet-dispatch`) uses the model the tool is on and stops on a quota, usage or rate limit (`RESOURCE_EXHAUSTED`, 429, "usage limit reached"…), saying when that model is back. With `FALLBACK=1` it uses the first model in `.agents/models.json` that is installed, offered by its CLI (agy: `agy models`) and not resting instead: a limit rests that model until the reset its error names (else 30 min, doubling, at most 6 h; a rejected model a day) and the next run continues on the next model, switching tool if needed (agy → claude → codex); only when every model rests does it wait. `make fleet-models` shows the chain and the rests; `make fleet-models ARGS=--clear` forgets them.
 - Tools without hooks only have the instruction in `AGENTS.md`; run them headless to get the relaunching.
 
 **Headless, any tool**
-- `make fleet-next` (the mod in progress, else the next ready, on whichever model has quota), `make fleet-next AGENT=claude MOD=rekkit_core` (claude first, a specific mod), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
+- `make fleet-next` (the mod in progress, else the next ready, on the model the tool is on), `make fleet-next AGENT=claude MOD=rekkit_core` (claude first, a specific mod), or `AGENT_CMD="gemini --approval-mode auto_edit -p" make fleet-next` for any CLI that takes a prompt as its last argument (check that tool's own flags for unattended runs).
 - `/schedule` a nightly `make fleet-next AGENT=…`. It exits early if a run is already going or the mod in progress is waiting on you.
 
 ---

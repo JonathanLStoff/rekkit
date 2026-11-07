@@ -24,7 +24,7 @@ The spec is an **outline**: a map of the original that tells each porting agent 
 
 ## Rules
 
-- Decompile every version (`make decompile JAR=<archive>`, the client build when there is one) and read in pieces: `make java-outline DIR=assets/decompiled/<archive> ARGS=--classes` for the map, `GREP=<name>` for one class, `make java-show ... MEMBER=<Class#method>` for a method. Never a whole class.
+- Decompile every version (`make decompile JAR=<archive>`, the client build when there is one) and read in pieces: `make java-outline DIR=assets/decompiled/<archive> ARGS=--classes` for the map, `GREP=<name>` for one class, `make java-show ... MEMBER=<Class#method>` for a method. Never a whole class, and each method once: the map pass reads only the class outline and the registry; each part's writer reads its part's methods once and writes everything from them.
 - Name the class (and method, where it matters) for everything, so a porting agent can go straight to it.
 - 1.2.5 and 1.4.7 mods use numeric block/item ids and damage values: record the original id:meta next to each registry row.
 - **Several versions: merge, newer wins.** When a mod ships in more than one pack (RedPower 2.0pr5b2 in Tekkit 1.2.5 and 2.0pr6 in Direwolf20 1.4.7), the port is the union of every version: each block, item, recipe and system any version has. Where versions share a feature, the newest version's behaviour, numbers and art win (both have the alarm: the 1.4.7 alarm). A feature only an older version has stays, as that version made it (1.2.5's microblocks stay even if 1.4.7 dropped them). Tag each registry row and system with the version it comes from (`[2.0pr6]`), and add a **Versions** table: feature → versions that have it → version used. One merged mod, never one per version.
@@ -95,7 +95,7 @@ Scenario steps beyond the ones above: `{"ctl": ["inventory"], "expect": "\"damag
 
 ## Tickets
 
-In tickets mode each spec-writer turns its part of the decompiled code (`make fleet-parts MOD=<id>`) into `planning/mods/<id>.tickets/<part>.json`; `make fleet-tickets MOD=<id>` validates every part together and files them in Beads with their order, and the conductor starts one subagent per ready ticket.
+In part mode each spec-writer reads its part of the decompiled code (`make fleet-parts MOD=<id>`) once and writes, in its own files, the part's outline (`planning/mods/<id>.parts/<part>.md`, `###` headings), its blocks' and items' attributes (`planning/mods/<id>.parts/<part>.features.json`) and its tickets (`planning/mods/<id>.tickets/<part>.json`). `make fleet-tickets MOD=<id>` merges the parts into the spec (under "Part details") and the outline, validates every part together and files the tickets in Beads with their order; `make fleet-dispatch` works them. `make fleet-tickets SCHEMA=1` prints the format.
 
 ```json
 {"tickets": [{
@@ -109,7 +109,8 @@ In tickets mode each spec-writer turns its part of the decompiled code (`make fl
 }]}
 ```
 
-- **Size**: `effort_k` at most 200 (thousand tokens: one agent's context, reading included). Bigger work is several tickets in order.
+- **Size**: `effort_k` aimed at 200 at most (thousand tokens: one agent's context, reading included), and at most 6 `files` and 8 `spec` headings plus `java` members. What costs is turns: each file written and each thing read is about one, and every turn re-sends all the context before it, so an agent wraps up at 25 turns or 500k tokens billed. Bigger work is several tickets in order.
+- **Reads**: the ticket's agent gets the text of every spec heading and Java member it names in its brief (`make fleet-task`), so name exactly what it needs: the method, not the class.
 - **Role**: content-author, domain-builder, domain-builder-pro, hook-engineer, test-smith, asset-smith, scaffolder or scribe. The ticket's role writes the contract file of what it covers if nobody has.
 - **Order**: `after` lists the keys that must be closed first. Whatever a ticket uses (the grid, a core type, a block's content before its GUI) comes before it; two tickets editing the same file are ordered (lang, creative tab and tag files excepted). No cycles.
 - **Coverage**: every block, item and subsystem of the outline is in some ticket's `covers`.

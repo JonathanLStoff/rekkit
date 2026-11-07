@@ -57,6 +57,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HORIZON_ROOT = ROOT / "horizon"
 MODS_ROOT = ROOT / "mods"
 REPORT_DIR = ROOT / "target" / "e2e-report"
+FAILURES_SHOWN = 25  # failures a live run prints (the rest are in summary.json)
 E2E_ROOT = ROOT / "target" / "e2e"
 MIXINS_GIT = "https://github.com/horizon-rust/horizon-mixins"
 GAME_VERSION = "26.3"
@@ -1369,6 +1370,14 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
                           "total": len(mine), "failed": sorted(m for m in mine if m in bad)}
     for n, lv in levels.items():
         print(f"[{session_name}] level {n} {lv['name']}: {lv['ok']}/{lv['total']} ok")
+    # The failures themselves, short: what an agent needs without reading summary.json (each line it
+    # reads is paid again on every later turn).
+    for e in errors[:FAILURES_SHOWN]:
+        what = " ".join(f"{k}={e[k]}" for k in ("block", "item", "scenario") if e.get(k))
+        print(f"[{session_name}] FAIL {e.get('stage', '?')} {what}: {str(e.get('error', ''))[:200]}".rstrip(": "))
+    if len(errors) > FAILURES_SHOWN:
+        print(f"[{session_name}] ... {len(errors) - FAILURES_SHOWN} more in {REPORT_DIR / 'summary.json'} "
+              "(search it for one block or scenario; do not read it whole)")
     return {"session": session_name, "mods": [s["id"] for s in specs], "status": status, "blocks": blocks,
             "creative": creative, "levels": levels,
             "steps_executed": executed, "steps_skipped": skipped, "errors": errors, "steps": results}

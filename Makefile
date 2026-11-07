@@ -27,7 +27,8 @@ COMPLETE ?= 0
 export CURSEFORGE_API_KEY
 
 .PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live tickets-live fleet-stop \
-	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull pull
+	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull pull \
+	fleet-dispatch content-gen e2e-gen skill-toc skill-show conductor-step spec-merge token-audit
 
 all: tekkit direwolf20 agrarian
 
@@ -96,7 +97,14 @@ agents-check:
 # The port against its contract (planning/mods/<id>.features.json): shapes, facing, every face's and icon's
 # sprite pixel for pixel, stack sizes and durability. COMPLETE=1 check-mods runs it too.
 contract-check:
-	$(PYTHON) scripts/contract_check.py --mod "$(MOD)"
+	$(PYTHON) scripts/contract_check.py $(if $(filter 1,$(SCHEMA)),--schema,--mod "$(MOD)") $(if $(OWNER),--owner $(OWNER),) $(if $(filter 1,$(VERBOSE)),--limit 0,)
+
+# Content and e2e drafts from a mod's contract (the mechanical files no agent should write by hand).
+content-gen:
+	$(PYTHON) scripts/content_gen.py --mod "$(MOD)" $(if $(NAME),--name "$(NAME)",) $(ARGS)
+
+e2e-gen:
+	$(PYTHON) scripts/e2e_gen.py --mod "$(MOD)" $(ARGS)
 
 # Local models only: how many agents this machine's memory holds on the selected model (1 = no subagents).
 fleet-local:
@@ -109,11 +117,23 @@ fleet-parts:
 # The spec-writers' tickets (planning/mods/<id>.tickets/*.json): CHECK=1 only validates (sizes, roles,
 # order, files two tickets edit at once, coverage); otherwise files them with their order.
 fleet-tickets:
-	$(PYTHON) scripts/fleet/beads.py $(if $(filter 1,$(CHECK)),tickets-check,tickets) $(MOD)
+	$(PYTHON) scripts/fleet/beads.py $(if $(filter 1,$(SCHEMA)),tickets-schema,$(if $(filter 1,$(CHECK)),tickets-check,tickets)) $(MOD)
 
-# Tickets whose predecessors are all closed: one subagent each, all at once.
+# The spec-writers' part outlines and attributes into the spec and outline (fleet-tickets runs it too).
+spec-merge:
+	$(PYTHON) scripts/fleet/spec_merge.py $(MOD)
+
+# Tickets whose predecessors are all closed: one agent each (fleet-dispatch works them).
 fleet-ready:
 	$(PYTHON) scripts/fleet/beads.py ready $(MOD)
+
+# The ticket loop without an LLM: a fresh headless agent per ready ticket, at most MAX at once.
+fleet-dispatch:
+	$(PYTHON) scripts/fleet/dispatch.py $(MOD) $(if $(AGENT),--agent $(AGENT),) $(if $(MAX),--max $(MAX),) $(if $(BUDGET),--budget $(BUDGET),) $(if $(filter 1,$(FALLBACK)),--fallback,) $(if $(filter 1,$(CONDUCTOR)),--conductor,)
+
+# Token audit samples on agy (planning/token_audit/): N runs of each, compared with the baseline.
+token-audit:
+	$(PYTHON) planning/token_audit/harness/audit.py $(if $(SAMPLES),--samples "$(SAMPLES)",) $(if $(N),--n $(N),) $(if $(MODEL),--model "$(MODEL)",) $(ARGS)
 
 # File each contract difference as a bead under the step that owns it.
 fleet-contract:
@@ -123,7 +143,7 @@ agent-gate:
 	$(PYTHON) scripts/fleet/guard.py gate $(if $(MOD),--mod "$(MOD)",)
 
 fleet-next:
-	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(MOD)
+	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(if $(filter 1,$(FALLBACK)),--fallback,) $(MOD)
 
 # agy on this repository with its terminal sandbox off (the port needs the network, Beads and the game).
 agy:
@@ -185,6 +205,16 @@ spec-toc:
 
 spec-show:
 	$(PYTHON) scripts/fleet/spec.py show $(MOD) "$(SECTION)"
+
+# A skill, or the conductor's instructions for one step, a section at a time.
+skill-toc:
+	$(PYTHON) scripts/fleet/spec.py skill-toc $(SKILL)
+
+skill-show:
+	$(PYTHON) scripts/fleet/spec.py skill-show $(SKILL) "$(SECTION)"
+
+conductor-step:
+	$(PYTHON) scripts/fleet/spec.py step $(STEP)
 
 board:
 	$(PYTHON) scripts/fleet/beads.py board
@@ -273,10 +303,13 @@ make integration-test [MOD=a,b] [REV=...] [DRY_RUN=1]
 make agents           Regenerate each agent tool's copy of .agents/ (Claude Code: .claude/); agents-check reports drift
 make agent-gate [MOD=a,b]
                       Tests, check-mods and harness dry run for the mods/crates you changed (what the stop hooks run)
-make fleet-next [AGENT=agy|claude|codex] [MOD=<id>]
+make fleet-next [AGENT=agy|claude|codex] [MOD=<id>] [FALLBACK=1]
                       One headless conductor run on one board row (AGENT_CMD="<cli flags>" for any other agent);
-                      it relaunches the agent until the row is finished, on the next model of
-                      .agents/models.json whenever one hits a quota or rate limit (AGENT= the tool to try first)
+                      it relaunches the agent until the row is finished, on the model the tool is on, and stops
+                      when that model hits a quota or rate limit (FALLBACK=1: on to the next of .agents/models.json)
+make fleet-dispatch MOD=<id> [AGENT=<tool>] [MAX=2] [BUDGET=<tokens>] [FALLBACK=1] [CONDUCTOR=1]
+                      The ticket loop without an LLM: a fresh headless agent per ready ticket (a role's first
+                      alone), reports filed, tokens in target/fleet/usage.jsonl; exits 2 for the conductor, 3 for a person
 make agy [ARGS="--agent conductor"]
                       Start agy here with its terminal sandbox off (the fleet's hooks still guard it)
 make fleet-models [ARGS=--clear]
@@ -285,7 +318,9 @@ make fleet-start MOD=<id>
                       The conductor's first command: claims the mod, creates its Beads stories, checks Horizon
 make fleet-stop       Tell every fleet agent to stop at the end of its current turn
 make fleet-task BEAD=<id> ROLE=<role>
-                      A role subagent's first command; it reports to target/fleet/inbox/<id>.json
+                      A role subagent's first command: its whole brief; it reports to target/fleet/inbox/<id>.json
+make fleet-tickets MOD=<id> [CHECK=1] / fleet-tickets SCHEMA=1 / spec-merge MOD=<id>
+                      File the spec-writers' tickets (CHECK=1: only validate) / their format / merge the part files
 make fleet-inbox      File every subagent report in Beads (the conductor)
 make fleet-features MOD=<id> / fleet-gaps MOD=<id> / fleet-status [MOD=<id>]
                       Features from the spec's list / New-assets features from the completeness check / progress
@@ -313,6 +348,14 @@ make fleet-context MOD=<id>
                       One page: the mod's Beads state, spec, original archives in every pack, decompiled folders
 make spec-toc MOD=<id> / spec-show MOD=<id> SECTION="<heading text>"
                       The spec's headings with line ranges / just the sections you need
+make skill-toc SKILL=<name> / skill-show SKILL=<name> SECTION="<heading>" / conductor-step STEP=<n>
+                      A skill's headings / one section of it / the conductor's instructions for one step
+make content-gen MOD=<id> [NAME=a,b] [ARGS=--check|--force] / e2e-gen MOD=<id>
+                      Blockstates, models, loot tables, lang, creative tab from the contract / a tests/e2e_actions.json draft
+make contract-check MOD=<id> [OWNER=<role>] [VERBOSE=1] / contract-check SCHEMA=1
+                      The port against its contract (40 lines; one role's; all) / the contract file's format
+make token-audit [SAMPLES=s0-start,s3a-full] [N=2] [MODEL=<agy model>]
+                      Token-audit samples on agy, compared with the baseline (planning/token_audit/)
 make art MOD=<id>     mods/<id>/art/*.svg|*.pixels -> PNGs at the original size and palette
 make check-mods MOD=<id> COMPLETE=1
                       Also fail on any asset Minecraft 26.3 needs that the mod lacks

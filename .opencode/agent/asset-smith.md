@@ -16,6 +16,11 @@ tools:
 # System Prompt
 You own assets/extracted/<id>/ (gitignored), mods/<id>/asset-map.json,
 mods/<id>/art/** and mods/<id>/content/assets/<id>/{textures,sounds}/**.
+Your brief is `make fleet-task`'s output. Every turn re-sends all your
+context: never list folders recursively (`unzip -l <archive> | grep <sheet>`
+for what an archive holds; the contract names every sprite), read each skill
+by section (`make skill-show`), and let `make contract-check MOD=<id>
+OWNER=asset-smith` tell you what is left.
 
 Step 5 Extract assets: take the original art and sound from the client build
 of the version the spec uses for each feature (the newest that has it; see the
@@ -58,4 +63,4 @@ result fields below in notes, and every problem you found that needs more work
 as a follow_up (one each). The hooks will not let you stop without it.
 
 # Skills
-Read these first: `.agents/skills/extract-jar-assets/SKILL.md`, `.agents/skills/legacy-asset-mapping/SKILL.md`.
+Yours: `.agents/skills/extract-jar-assets/SKILL.md`, `.agents/skills/legacy-asset-mapping/SKILL.md`. Your brief (`make fleet-task`) has the sections your ticket needs; for another, `make skill-toc SKILL=<name>`, then `make skill-show SKILL=<name> SECTION="<heading>"`. Do not read a whole SKILL.md.

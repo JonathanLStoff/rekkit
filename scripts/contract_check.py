@@ -21,7 +21,9 @@ Static checks (make contract-check, and make check-mods COMPLETE=1):
 The GUI slots and scenarios are checked live by scripts/e2e_harness.py.
 
 Usage:
-  make contract-check MOD=<id>            the problems, one a line
+  make contract-check MOD=<id>            the problems, one a line (at most 40; VERBOSE=1 all)
+  make contract-check MOD=<id> OWNER=<role>   only that role's
+  make contract-check SCHEMA=1            the contract file's format
   python3 scripts/contract_check.py --mod <id> [--json]
 """
 
@@ -490,17 +492,35 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--mod", required=True)
+    parser.add_argument("--mod")
     parser.add_argument("--json", action="store_true", help="The problems as JSON (make fleet-contract files them)")
     parser.add_argument("--contract", type=Path, help="Another contract file (default planning/mods/<id>.features.json)")
+    parser.add_argument("--owner", help="Only the problems this role fixes (content-author, asset-smith, ...)")
+    parser.add_argument("--limit", type=int, default=40, help="Problems printed at most (0: all; default 40)")
+    parser.add_argument("--schema", action="store_true", help="Print the contract file's format and stop")
     args = parser.parse_args()
+    if args.schema:
+        skill = ROOT / ".agents" / "skills" / "mod-spec" / "SKILL.md"
+        text = skill.read_text(encoding="utf-8")
+        start = text.find("## Outline file and contracts")
+        end = text.find("## Tickets")
+        print(text[start:end if end > start else None].strip())
+        return 0
+    if not args.mod:
+        parser.error("--mod is required (or --schema)")
     found = check(args.mod, args.contract)
+    if args.owner:
+        found = [p for p in found if p.get("owner") == args.owner]
     if args.json:
         print(json.dumps(found, indent=1))
     else:
-        for p in found:
+        shown = found if not args.limit else found[:args.limit]
+        for p in shown:
             print(f"{p['for']}: [{p['kind']} -> {p['owner']}] {p['why']}")
-        print(f"{len(found)} contract problem(s) in {args.mod}." if found else f"{args.mod} matches its contract.")
+        if len(shown) < len(found):
+            print(f"... {len(found) - len(shown)} more (VERBOSE=1 shows all; OWNER=<role> shows one role's).")
+        who = f" for {args.owner}" if args.owner else ""
+        print(f"{len(found)} contract problem(s){who} in {args.mod}." if found else f"{args.mod} matches its contract{who}.")
     return 1 if found else 0
 
 

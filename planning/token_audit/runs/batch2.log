@@ -1,0 +1,18 @@
+>> S3a+
+ool": "read_file", "arg": "185", "out_chars": 22}, {"step": 79, "tool": "read_file", "arg": "350", "out_chars": 22}, {"step": 81, "tool": "read_file", "arg": "560", "out_chars": 22}, {"step": 83, "tool": "read_file", "arg": "C:/Users/legoc/Desktop/Code_Projects/rekkit-audit-s3a-full/mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json", "out_chars": 19}], "seconds": 152.9}
+
+>> S3b+
+{"step": 89, "tool": "run_command", "arg": "Select-String -Path scripts\\fleet\\guard.py -Pattern \"def check_gate|def gate\" -Context 0,30", "out_chars": 2793}, {"step": 91, "tool": "read_file", "arg": "600", "out_chars": 22}, {"step": 93, "tool": "run_command", "arg": "Select-String -Path scripts\\fleet\\guard.py -Pattern \"def run_checks\" -Context 0,35", "out_chars": 3287}], "seconds": 240.6}
+
+>> S3c+
+op\\Code_Projects\\rekkit-audit-s3c-full\\mods\\buildcraft\\native\\mixins\\buildcraft\\tick.rs", "out_chars": 0}, {"step": 87, "tool": "run_command", "arg": "python -c \"import sys; from pathlib import Path; from scripts.pack_mod import validate_native_dir; res = validate_native_dir('buildcraft', Path('mods/buildcraft/native'), Path('mods/buildcraft/src'));", "out_chars": 65}], "seconds": 191.8}
+
+>> S3d+
+ring -Path scripts\\e2e_harness.py -Pattern \"e2e_actions|actions.json|stage_3|stage_5\"", "out_chars": 56}, {"step": 98, "tool": "run_command", "arg": "Select-String -Path scripts\\e2e_harness.py -Pattern \"def plan_|def stage_\"", "out_chars": 163}, {"step": 100, "tool": "run_command", "arg": "Select-String -Path scripts\\e2e_harness.py -Pattern \"def \"", "out_chars": 4157}], "seconds": 197.1}
+
+>> C2
+'] for t in data['tickets']]); print([(t['key'], t['after'], t['role']) for t in data['ticket", "out_chars": 438}, {"step": 33, "tool": "run_command", "arg": "python -c \"import json; data=json.load(open('planning/mods/redpower_2.tickets/part03.json')); print([t['key'] for t in data['tickets']]); print([(t['key'], t['after'], t['role']) for t in data['ticket", "out_chars": 319}], "seconds": 95.4}
+
+>> S8c
+ple_mod\\latest.log", "out_chars": 20}, {"step": 22, "tool": "read_file", "arg": "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s8c-live\\target\\e2e-report\\isolated_example_mod\\c.log", "out_chars": 20}, {"step": 24, "tool": "read_file", "arg": "C:\\Users\\legoc\\Desktop\\Code_Projects\\rekkit-audit-s8c-live\\planning\\harness-allowed-warnings.txt", "out_chars": 18}], "seconds": 773.2}
+

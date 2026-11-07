@@ -3,7 +3,7 @@ name: scribe
 description: Updates the current mod's README and the mod table in the root README after it passes the gate.
 mainAgent: false
 subagent: true
-model: flash
+effort: low
 tools:
   - view_file
   - grep_search
