@@ -146,43 +146,41 @@ const prime = () => {
 // One text per session, so the system prompt stays the same from turn to turn (and stays cached).
 const primed = new Map();
 
-// opencode (plugin API 1.x) loads a module's default export: an id and a server function returning hooks.
+// opencode (plugin API 2.x) loads a module's default export: an id and a setup function that gets the
+// context and registers hooks on it. Hooks: ctx.tool.hook (before a tool call), ctx.session.hook
+// ("context" before each model request, "compaction" when a session is compacted).
 export default {
   id: "rekkit-guard",
-  server: async ({ client }) => {
+  async setup(ctx) {
     // A role subagent's session has a parent: it gets no Beads context (its brief is fleet-task's).
-    const isSubagent = async (id) => {
+    const isSubagent = async (sessionID) => {
       try {
-        const r = await client.session.get({ path: { id } });
-        return Boolean((r?.data ?? r)?.parentID);
+        return Boolean((await ctx.session.get({ sessionID }))?.parentID);
       } catch {
         return false;
       }
     };
-    return {
-      // Throwing in a before-hook blocks the tool call and returns the message to the model.
-      "tool.execute.before": async (input, output) => {
-        if (SUBAGENT_TOOLS.has(input.tool) && process.env.REKKIT_ALLOW_SUBAGENTS !== "1")
-          throw new Error("Subagents are off on opencode: do the role yourself, one ticket at a time (AGENTS.md).");
-        const check = CHECKS[input.tool];
-        if (!check) return;
-        const r = guard(check, { session_id: input.sessionID ?? "", tool_name: input.tool, tool_input: output?.args ?? {} });
-        if (r.status === 2) throw new Error((r.stderr || "Blocked by the Rekkit fleet guard").trim());
-      },
-      "experimental.chat.system.transform": async (input, output) => {
-        const id = input?.sessionID;
-        if (!id) return;
-        if (!primed.has(id)) primed.set(id, (await isSubagent(id)) ? "" : prime());
-        const text = primed.get(id);
-        if (text) output.system.push(text);
-      },
-      "experimental.session.compacting": async (input, output) => {
-        if (await isSubagent(input.sessionID)) return;
-        const text = prime();
-        primed.set(input.sessionID, text);
-        if (text) output.context.push(text);
-      },
-    };
+    // Throwing in a before-hook blocks the tool call and returns the message to the model.
+    await ctx.tool.hook("execute.before", async (event) => {
+      if (SUBAGENT_TOOLS.has(event.tool) && process.env.REKKIT_ALLOW_SUBAGENTS !== "1")
+        throw new Error("Subagents are off on opencode: do the role yourself, one ticket at a time (AGENTS.md).");
+      const check = CHECKS[event.tool];
+      if (!check) return;
+      const r = guard(check, { session_id: event.sessionID ?? "", tool_name: event.tool, tool_input: event.input ?? {} });
+      if (r.status === 2) throw new Error((r.stderr || "Blocked by the Rekkit fleet guard").trim());
+    });
+    // The context hook runs before every model request; `system` is the system prompt's text list.
+    await ctx.session.hook("context", async (x) => {
+      const id = x?.sessionID;
+      if (!id || !x.system) return;
+      if (!primed.has(id)) primed.set(id, (await isSubagent(id)) ? "" : prime());
+      const text = primed.get(id);
+      if (text) x.system.push({ type: "text", text });
+    });
+    // After compaction the next request re-reads the Beads context.
+    await ctx.session.hook("compaction", async (x) => {
+      if (x?.sessionID) primed.delete(x.sessionID);
+    });
   },
 };
 """
