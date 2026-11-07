@@ -582,6 +582,10 @@ def inbox() -> str:
     the report counts as filed; one that is not JSON or names no bead is moved to inbox/bad/."""
     done_dir = INBOX / "done"
     done_dir.mkdir(parents=True, exist_ok=True)
+    # Each report's finished steps (comment, follow_up:<n>, status) are recorded here as they happen, so a
+    # run that dies part way is finished by the next one without repeating a comment or a follow-up bead.
+    filing = INBOX / "filing"
+    filing.mkdir(parents=True, exist_ok=True)
     filed, notes = [], []
     stamp = time.strftime("%Y%m%dT%H%M%S")
     for path in sorted(INBOX.glob("*.json")):
@@ -596,43 +600,60 @@ def inbox() -> str:
             path.rename(bad / f"{path.stem}-{stamp}.json")
             notes.append(f"{path.name}: not filed ({str(exc)[:160]}); moved to {bad.relative_to(MAIN)}/ for its role to rewrite")
             continue
-        status = report.get("status", "done")
+        status = report.get("status", "closed")
+        print(f"Processing {bead} with status {status}")
         lines = [f"[{report.get('role', 'subagent')}] {status}: {report.get('summary', '')}".strip()]
+        print(f"  Generating lines for {bead}")
         if report.get("files"):
             lines.append("Files: " + ", ".join(report["files"]))
         if report.get("notes"):
             lines.append(report["notes"])
-        bd("comment", bead, "\n".join(lines), parse=False)
+        progress_path = filing / f"{path.stem}.json"
+        steps = json.loads(progress_path.read_text(encoding="utf-8")) if progress_path.exists() else []
+
+        def mark(step: str) -> None:
+            steps.append(step)
+            progress_path.write_text(json.dumps(steps), encoding="utf-8")
+
+        if "comment" not in steps:
+            bd("comment", bead, "\n".join(lines), parse=False)
+            mark("comment")
         parent = issue.get("parent") if issue["issue_type"] not in ("story", "epic") else bead
         mod = label_value(issue, "mod")
-        for f in report.get("follow_ups", []):
+        for i, f in enumerate(report.get("follow_ups", [])):
+            if f"follow_up:{i}" in steps:
+                continue
             kind = f.get("type", "bug") if f.get("type") in ("bug", "feature", "task") else "bug"
             title = f.get("title", "follow-up")
             if title.lower().startswith(("rekkit_core", "core:", "core-needs")) and mod and mod != CORE:
                 core_need(mod, title.split(":", 1)[1].strip() if ":" in title else title, f.get("why", ""))
             else:
                 create(title, kind, parent=parent, description=f.get("why", ""))
-        try:
-            if status == "done":
-                bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
-            elif status == "blocked":
-                bd("update", bead, "--status", "blocked")
-            elif status == "partial" and "ticket" in (issue.get("labels") or []) and \
-                    (partials_before(bead) >= 1 or not progressed(bead)):
-                # A restart pays the floor and the brief again and stops where the last one did.
-                bd("update", bead, "--status", "open", "--add-label", SPLIT)
-                bd("comment", bead, "Two agents could not finish this ticket (or one finished nothing): split it "
-                                    "into smaller tickets (a spec-writer in split mode), then close this one.",
-                   parse=False)
-                notes.append(f"{bead}: partial again (or no progress); labelled {SPLIT}, not restarted")
-            else:
-                bd("update", bead, "--status", "open")
-        except BeadsError as exc:
-            reason = str(exc).strip().splitlines()[-1][:200]
-            bd("comment", bead, f"Report filed, status not changed to {status}: {reason}. Redo this work when "
-                                "the bead is ready (make fleet-ready).", parse=False)
-            notes.append(f"{bead}: report filed, still {issue['status']} ({reason})")
+            mark(f"follow_up:{i}")
+        if "status" not in steps:
+            try:
+                if status == "done":
+                    bd("close", bead, "--reason", (report.get("summary") or "done")[:200])
+                elif status == "blocked":
+                    bd("update", bead, "--status", "blocked")
+                elif status == "partial" and "ticket" in (issue.get("labels") or []) and \
+                        (partials_before(bead) >= 1 or not progressed(bead)):
+                    # A restart pays the floor and the brief again and stops where the last one did.
+                    bd("update", bead, "--status", "open", "--add-label", SPLIT)
+                    bd("comment", bead, "Two agents could not finish this ticket (or one finished nothing): split it "
+                                        "into smaller tickets (a spec-writer in split mode), then close this one.",
+                       parse=False)
+                    notes.append(f"{bead}: partial again (or no progress); labelled {SPLIT}, not restarted")
+                else:
+                    bd("update", bead, "--status", "open")
+            except BeadsError as exc:
+                reason = str(exc).strip().splitlines()[-1][:200]
+                bd("comment", bead, f"Report filed, status not changed to {status}: {reason}. Redo this work when "
+                                    "the bead is ready (make fleet-ready).", parse=False)
+                notes.append(f"{bead}: report filed, still {issue['status']} ({reason})")
+            mark("status")
         path.rename(done_dir / f"{path.stem}-{stamp}.json")
+        progress_path.unlink(missing_ok=True)
         filed.append(f"{bead} ({status}, {len(report.get('follow_ups', []))} follow-up(s))")
     sync = core_sync() if filed else ""
     if filed:  # the reported work is one version ahead of the last commit (bundled until committed)
