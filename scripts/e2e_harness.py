@@ -5,10 +5,10 @@ End-to-End Horizon Mod Integration & Compatibility Harness (planning/harness.md)
 A live run does every step itself:
   1. Submodule: initialises ./horizon if needed and fetches it, so pinned revisions exist.
      The player's own checkout is never moved.
-  2. Source: unpacks Horizon at the build revision into target/e2e/source/<rev>
+  2. Source: unpacks Horizon at the build revision into target/e2e/source/<rev12>
      (default: the checked-out horizon/ submodule; --horizon-rev pinned|latest|<sha>).
   3. Native mixins: builds horizon-mixins at the mods' pinned revision, applies every selected
-     mod's native/mixins/<id>/ bundle, and stages the result in target/e2e/stage/<rev>.
+     mod's native/mixins/<id>/ bundle, and stages the result in target/e2e/stage/<rev12>.
   4. Build: cargo build --profile fast of horizon-client and horizon-ctl (cached per mod set).
   5. Run: a scratch game home with the selected .hmod files turned on, horizon-ctl launch
      --offscreen, then every step of the 7-stage action plan through horizon-ctl.
@@ -63,7 +63,7 @@ MIXINS_GIT = "https://github.com/horizon-rust/horizon-mixins"
 GAME_VERSION = "26.3"
 EXE = ".exe" if os.name == "nt" else ""
 # Resources carry the data version of the horizon-prepare that made them and the client refuses
-# others, so each build revision gets its own, prepared inside target/e2e/source/<rev>.
+# others, so each build revision gets its own, prepared inside target/e2e/source/<rev12>.
 # Lines in the game log that fail a run: WARN/ERROR/FATAL log levels, panics, and messages that say
 # a mod did not load. Only the patterns a person lists in ALLOWED_WARNINGS are accepted.
 LOG_ERROR = re.compile(
@@ -694,13 +694,13 @@ def build_revision(choice: str, specs: list[dict], sub: dict) -> str:
 # ---------------------------------------------------------------- 2. source
 
 def unpack_source(rev: str) -> Path:
-    """Horizon's tree at `rev`, unpacked once into target/e2e/source/<rev>. Links are dropped:
+    """Horizon's tree at `rev`, unpacked once into target/e2e/source/<rev12>. Links are dropped:
     horizon-mixins refuses them and the build needs none (as the launcher does)."""
-    dest = E2E_ROOT / "source" / rev
+    dest = E2E_ROOT / "source" / rev[:12]
     if (dest / ".horizon-revision").is_file():
         return dest
     print(f"[setup] Unpacking Horizon {rev[:12]} into {dest}")
-    partial = dest.with_name(f".{rev}.partial")
+    partial = dest.with_name(f".{rev[:12]}.partial")
     shutil.rmtree(partial, ignore_errors=True)
     partial.mkdir(parents=True)
     archive = partial.with_suffix(".tar")
@@ -711,7 +711,16 @@ def unpack_source(rev: str) -> Path:
     archive.unlink()
     (partial / ".horizon-revision").write_text(rev, encoding="utf-8")
     shutil.rmtree(dest, ignore_errors=True)
-    partial.rename(dest)
+    # Windows refuses to rename a folder something (the virus scanner, the indexer) is still
+    # reading: retry for a while, then copy it over instead.
+    for attempt in range(10):
+        try:
+            partial.rename(dest)
+            return dest
+        except PermissionError:
+            time.sleep(1 + attempt)
+    shutil.copytree(partial, dest)
+    shutil.rmtree(partial, ignore_errors=True)
     return dest
 
 
@@ -770,9 +779,9 @@ def sync_tree(src: Path, dest: Path) -> None:
 
 
 def stage_source(source: Path, rev: str, specs: list[dict], mixins_rev: str) -> Path:
-    """Apply the selected mods' bundles to `source` and sync the result into target/e2e/stage/<rev>,
+    """Apply the selected mods' bundles to `source` and sync the result into target/e2e/stage/<rev12>,
     copying only changed files so Cargo recompiles only the crates the mods touch."""
-    stage = (E2E_ROOT / "stage" / rev).resolve()
+    stage = (E2E_ROOT / "stage" / rev[:12]).resolve()
     bundles = native_bundles(specs)
     incoming = (E2E_ROOT / "mods.incoming").resolve()
     shutil.rmtree(incoming, ignore_errors=True)
@@ -784,7 +793,7 @@ def stage_source(source: Path, rev: str, specs: list[dict], mixins_rev: str) -> 
         text = manifest.read_text(encoding="utf-8")
         text = re.sub(r'(horizon_revision\s*=\s*")[0-9a-f]+(")', rf"\g<1>{rev}\g<2>", text)
         manifest.write_text(text, encoding="utf-8")
-    fresh = stage.with_name(f"{rev}.new")
+    fresh = stage.with_name(f"{rev[:12]}.new")
     shutil.rmtree(fresh, ignore_errors=True)
     if bundles:
         print(f"[setup] Applying native mixins: {', '.join(m for m, _ in bundles)}")
@@ -1456,7 +1465,7 @@ def main() -> int:
     parser.add_argument("--rebuild", action="store_true", help="Ignore the cached build for this mod set")
     parser.add_argument("--bin-dir", type=Path, help="Prebuilt horizon-client and horizon-ctl (skips steps 1-4)")
     parser.add_argument("--resources", type=Path,
-                        help="Prepared resources (default: target/e2e/source/<rev>/.local/horizon-client/26.3)")
+                        help="Prepared resources (default: target/e2e/source/<rev12>/.local/horizon-client/26.3)")
     parser.add_argument("--prepare", action="store_true",
                         help="Build missing resources from your Minecraft 26.3 install (fetches the pinned server jar)")
     parser.add_argument("--server-jar", help="Minecraft 26.3 server jar (default: HORIZON_SERVER_JAR, else fetched)")
