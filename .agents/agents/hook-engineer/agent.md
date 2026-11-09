@@ -1,7 +1,7 @@
 ---
 name: hook-engineer
 description: Writes the native mixin bundle (native/mixins/<id>/*.rs) that wires a mod into Horizon's native_hooks.rs (API 8-40). Logs missing engine features in planning/horizon-gaps.md instead of editing horizon/.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: medium
 tools:

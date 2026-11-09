@@ -1,7 +1,7 @@
 ---
 name: domain-builder
 description: Implements a Standard-tier mod's pure Rust domain crate (state machines, energy math, HorizonNativeMod impl) in mods/<id>/src from its spec.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: medium
 tools:

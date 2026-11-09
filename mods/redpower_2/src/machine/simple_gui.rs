@@ -43,6 +43,15 @@ pub fn battery_layout() -> Layout {
     }
 }
 
+/// Wind Turbine: rotor slot (80,35); 176x167, inventory at (8,84).
+pub fn turbine_layout() -> Layout {
+    Layout {
+        size: [176.0, 167.0],
+        slots: vec![[80.0, 35.0]],
+        inventory: [8.0, 84.0],
+    }
+}
+
 /// `GuiFilter.a(int,int,int)`: colour square x118..129, y55..66.
 pub fn filter_click(at: [f32; 2], right: bool) -> Option<i32> {
     if (118.0..=129.0).contains(&at[0]) && (55.0..=66.0).contains(&at[1]) {

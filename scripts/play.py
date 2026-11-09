@@ -33,7 +33,7 @@ SHOWCASE_STAGES = {"2_clear_plot", "2_floor_plot", "2_plot_ready", "2_place_mod_
 
 
 def harness_args() -> argparse.Namespace:
-    return argparse.Namespace(bin_dir=None, horizon_rev="pinned", rebuild=False, resources=None, prepare=False,
+    return argparse.Namespace(bin_dir=None, horizon_rev="submodule", rebuild=False, resources=None, prepare=False,
                               minecraft_dir=None, server_jar=None)
 
 

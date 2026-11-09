@@ -1198,6 +1198,42 @@ fn test_native_hooks_api40_lifecycle_and_namespace_isolation() {
     rp.native_menu_button([0, 64, 0], &mut timer_ent, 1);
     assert_eq!(timer_ent.nbt.get("interval").map(String::as_str), Some("6"));
 
+    // IO Expander DIP switch click and menu button toggling
+    let mut io_btn = None;
+    rp.native_screen_click(
+        "redpower_2:io_expander",
+        &[],
+        [18.0, 30.0],
+        false,
+        &mut io_btn,
+    );
+    assert_eq!(io_btn, Some(0)); // DIP switch 0
+
+    let mut io_ent_opt = None;
+    rp.native_block_entity("redpower_2:io_expander", &mut io_ent_opt);
+    let (io_id, io_nbt) = io_ent_opt.expect("io_expander entity");
+    assert_eq!(io_id, "redpower_2:io_expander");
+    assert_eq!(io_nbt.get("rbaddr").map(String::as_str), Some("3"));
+
+    let mut io_ticks = false;
+    rp.native_block_entity_ticks("redpower_2:io_expander", &mut io_ticks);
+    assert!(io_ticks);
+
+    let mut io_screen = None;
+    rp.native_screen("redpower_2:io_expander", &mut io_screen);
+    let ios = io_screen.expect("io_expander screen");
+    assert_eq!(ios.width, 123.0);
+    assert_eq!(ios.height, 81.0);
+
+    let mut io_entity = ModBlockEntity {
+        id: io_id,
+        nbt: io_nbt,
+        items: Vec::new(),
+        data: Vec::new(),
+    };
+    rp.native_menu_button([0, 64, 0], &mut io_entity, 0); // toggle bit 0: 3 -> 2
+    assert_eq!(io_entity.nbt.get("rbaddr").map(String::as_str), Some("2"));
+
     // 11. Network packet handling (Packet 212 keystrokes into ring buffer)
     rp.native_net_from_client("player-1", "horizon:mod_net", &[212, b'O', b'K']);
     assert_eq!(rp.terminal.key_buffer.pop_front(), Some(b'O'));

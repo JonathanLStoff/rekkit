@@ -1,7 +1,7 @@
 ---
 name: compat-auditor
 description: Runs the two-phase integration harness on main after a mod merges and reports isolated and all-mods failures. Never edits files.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

@@ -1,7 +1,7 @@
 ---
 name: domain-builder-pro
 description: Implements Hard-tier domain logic (microblocks, Lua VM, 6502, EMC solver, reactor, genetics, train physics) and the shared crates/rekkit_core library from the spec.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: high
 tools:

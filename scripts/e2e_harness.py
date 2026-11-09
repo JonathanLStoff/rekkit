@@ -6,7 +6,7 @@ A live run does every step itself:
   1. Submodule: initialises ./horizon if needed and fetches it, so pinned revisions exist.
      The player's own checkout is never moved.
   2. Source: unpacks Horizon at the build revision into target/e2e/source/<rev>
-     (default: the revision the mods pin; --horizon-rev submodule|latest|<sha>).
+     (default: the checked-out horizon/ submodule; --horizon-rev pinned|latest|<sha>).
   3. Native mixins: builds horizon-mixins at the mods' pinned revision, applies every selected
      mod's native/mixins/<id>/ bundle, and stages the result in target/e2e/stage/<rev>.
   4. Build: cargo build --profile fast of horizon-client and horizon-ctl (cached per mod set).
@@ -1450,8 +1450,8 @@ def main() -> int:
                         help="Package, audit and print the action plans; no submodule, build or game")
     parser.add_argument("--setup-only", action="store_true",
                         help="Submodule, source, mixins and build only; do not start the game")
-    parser.add_argument("--horizon-rev", default="pinned",
-                        help="Horizon commit to build: pinned (what the mods pin, default), submodule, latest, or a SHA")
+    parser.add_argument("--horizon-rev", default="submodule",
+                        help="Horizon commit to build: submodule (the checked-out horizon/, default), pinned (what the mods pin), latest, or a SHA")
     parser.add_argument("--no-fetch", action="store_true", help="Do not fetch the horizon submodule")
     parser.add_argument("--rebuild", action="store_true", help="Ignore the cached build for this mod set")
     parser.add_argument("--bin-dir", type=Path, help="Prebuilt horizon-client and horizon-ctl (skips steps 1-4)")

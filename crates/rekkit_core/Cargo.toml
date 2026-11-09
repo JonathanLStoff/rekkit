@@ -1,6 +1,6 @@
 [package]
 name = "rekkit_core"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "Shared foundation library for Rekkit mods (energy systems, inventories, fluid tanks, connected grids, side config, multiblocks, frequency keys, and Horizon native hook traits)"
 license = "MIT"

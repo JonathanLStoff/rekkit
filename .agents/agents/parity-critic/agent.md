@@ -1,7 +1,7 @@
 ---
 name: parity-critic
 description: Independent reviewer. Compares the current mod's diff against planning/mods/<id>.md and reports missing registry entries, wrong formulas, missing recipes, unguarded hooks and ownership violations. Never edits files.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: high
 tools:

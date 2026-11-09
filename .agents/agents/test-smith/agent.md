@@ -1,7 +1,7 @@
 ---
 name: test-smith
 description: "Writes and runs a mod's tests: domain unit tests, native hook lifecycle tests, manifest tests, and tests/e2e_actions.json for the 7-stage harness."
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: medium
 tools:

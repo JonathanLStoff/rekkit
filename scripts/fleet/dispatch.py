@@ -42,7 +42,7 @@ from pathlib import Path
 import agy
 import beads
 import models
-from guard import STOP_FILE, TASK_BILLED
+from guard import STOP_FILE, TASK_BILLED, billed_tokens
 
 ROOT = Path(__file__).resolve().parents[2]
 ROLES = ROOT / ".agents" / "agents"
@@ -137,15 +137,15 @@ def read_usage(w: Worker, line: str) -> None:
     su = ev.get("step_update") or {}
     u = su.get("usage") if isinstance(su, dict) else None
     if isinstance(u, dict) and su.get("state") == "DONE":  # agy
-        w.billed += int(u.get("input_tokens") or 0) + int(u.get("cache_read_tokens") or 0)
+        w.billed += billed_tokens(int(u.get("input_tokens") or 0), int(u.get("cache_read_tokens") or 0))
         w.turns += 1
         return
     msg = ev.get("message") if ev.get("type") == "assistant" else None
     if isinstance(msg, dict) and isinstance(msg.get("usage"), dict) and msg.get("id") != w.last_id:  # Claude Code
         u = msg["usage"]
         w.last_id = msg.get("id")
-        w.billed += sum(int(u.get(k) or 0) for k in ("input_tokens", "cache_read_input_tokens",
-                                                      "cache_creation_input_tokens"))
+        w.billed += billed_tokens(int(u.get("input_tokens") or 0) + int(u.get("cache_creation_input_tokens") or 0),
+                                  int(u.get("cache_read_input_tokens") or 0))
         w.turns += 1
 
 
@@ -241,6 +241,10 @@ def main() -> int:
     parser.add_argument("--conductor", action="store_true", default=os.environ.get("CONDUCTOR") == "1")
     args = parser.parse_args()
 
+    import flat
+    if flat.is_flat():
+        print(flat.HOW)
+        return 3
     tool = pick_tool(args.agent)
     if tool == "opencode" and (os.environ.get("REKKIT_ALLOW_SUBAGENTS") != "1" or local_opencode()):
         print("opencode runs no subagents (on a local model never; on a cloud model only with "

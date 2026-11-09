@@ -51,6 +51,7 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 | `make fleet-models [ARGS=--clear]` | The `FALLBACK=1` model chain (`.agents/models.json`) and which models are resting after a limit |
 | `make fleet-start MOD=<id>` / `fleet-stop` | Start a mod (claim, stories, Horizon check) / let every fleet agent stop |
 | `make fleet-task BEAD=<id> ROLE=<role>` / `fleet-inbox` | A subagent takes a bead and gets its whole brief (spec sections, Java members, templates, checks) / the conductor files the reports (a ticket partial twice: labelled needs-split) |
+| `make fleet-flat [MODE=on\|off\|status]` | Flat mode (`REKKIT_FLAT=1` in `.env`): no subagents; the one session does every role itself, ticket by ticket, to save tokens |
 | `make fleet-local [ARGS=...]` | Local models only: how many agents the machine's VRAM (or unified memory, or RAM) holds on the selected model, and the Ollama settings to serve them (`target/fleet/local.json`) |
 | `make fleet-parts MOD=<id>` | The decompiled code in ~200k-token parts, one spec-writer each (lists in `target/fleet/parts/<id>/`) |
 | `make fleet-tickets MOD=<id> [CHECK=1]` / `SCHEMA=1` / `spec-merge MOD=<id>` | Merge the part files, validate the spec-writers' tickets (sizes, files, reads, roles, order, shared files, coverage) and file them with their order / their format / only the merge |

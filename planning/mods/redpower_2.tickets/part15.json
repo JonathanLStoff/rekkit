@@ -421,14 +421,14 @@
       "description": "Implement mechanical items: Voltmeter (measures Blutricity voltage/current/power and pipe pressure on right-click), Sonic Screwdriver (rechargeable screwdriver powered by Blutricity for rotating machines and setting modes), and Wooden Wind Turbine / Windmill items (ItemWindmill types 1 & 2: placing vertical and horizontal wind rotors onto Wind Turbine base blocks). Done: make contract-check MOD=redpower_2 clean for voltmeter, sonic_screwdriver, wood_turbine, and wood_windmill; level 2 scenarios pass."
     },
     {
-      "key": "part15-machine-power-renders",
-      "title": "Custom TESR and block renderers for power generators and transformers",
+      "key": "part15-render-solar-thermopile",
+      "title": "Custom client block and TESR renderers for Solar Panel and Thermopile",
       "role": "asset-smith",
       "step": 3,
-      "effort_k": 110,
+      "effort_k": 60,
       "covers": [],
       "files": [
-        "mods/redpower_2/src/render/machine_power_renders.rs"
+        "mods/redpower_2/src/render/solar_thermopile.rs"
       ],
       "spec": [
         "2.5 Blutricity Power Grid",
@@ -436,14 +436,35 @@
       ],
       "java": [
         "RenderSolarPanel#renderWorldBlock",
-        "RenderThermopile#renderWorldBlock",
-        "RenderTransformer#renderWorldBlock",
-        "RenderWindTurbine#renderWorldBlock"
+        "RenderThermopile#renderWorldBlock"
       ],
       "after": [
         "part15-machine-base"
       ],
-      "description": "Implement custom client block and TESR renderers from RenderSolarPanel.java, RenderThermopile.java, RenderTransformer.java, and RenderWindTurbine.java. Draws accurate quarter-block solar panel shapes, thermopile face gradients, high-voltage transformer coils, and animated wind turbine rotating blades. Done: models and texture coordinates match original decompiled render passes; contract-check model verification clean."
+      "description": "Implement custom client block and TESR renderers for Solar Panel (RenderSolarPanel.java) and Thermopile (RenderThermopile.java). Draws accurate quarter-block solar panel shapes, texture mappings, and thermopile face gradients. Done: models and texture coordinates match original decompiled render passes; contract-check model verification clean."
+    },
+    {
+      "key": "part15-render-transformer-turbine",
+      "title": "Custom client block and TESR renderers for Transformer and Wind Turbine",
+      "role": "asset-smith",
+      "step": 3,
+      "effort_k": 60,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/src/render/transformer_turbine.rs"
+      ],
+      "spec": [
+        "2.5 Blutricity Power Grid",
+        "3.3 Power & Fluid Machines"
+      ],
+      "java": [
+        "RenderTransformer#renderWorldBlock",
+        "RenderWindTurbine#renderWorldBlock"
+      ],
+      "after": [
+        "part15-render-solar-thermopile"
+      ],
+      "description": "Implement custom client block and TESR renderers for Transformer (RenderTransformer.java) and Wind Turbine (RenderWindTurbine.java, TileWindTurbineRenderer.java). Draws high-voltage transformer coils, orientation transforms, and animated rotating wind turbine blades. Done: models, rotations, and texture coordinates match original decompiled render passes; contract-check model verification clean."
     }
   ]
 }

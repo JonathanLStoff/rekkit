@@ -1,7 +1,7 @@
 ---
 name: scribe
 description: Updates the current mod's README and the mod table in the root README after it passes the gate.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

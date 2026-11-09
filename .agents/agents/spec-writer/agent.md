@@ -1,7 +1,7 @@
 ---
 name: spec-writer
 description: Writes or gap-checks planning/mods/<id>.md for one mod (or rekkit_core) from its JAR, configs and known behaviour. Lists every block, item, recipe, formula, GUI, hazard, the Horizon hook APIs needed and what it uses from rekkit_core.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: medium
 tools:

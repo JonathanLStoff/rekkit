@@ -6,6 +6,7 @@
 //! Matches original Java `com.eloraam.redpower.machine.TileRedstoneTube`.
 
 use crate::machine::magtube::TubeItem;
+use crate::machine::tube::TubeAnswer;
 use crate::machine::tube_flow::{FlowContext, Tube};
 use crate::wiring::network::{WireKind, WireNode, CHANNELS};
 use crate::ItemStack;
@@ -76,7 +77,12 @@ impl RedstoneTube {
         REDSTONE_TUBE_EXTENDED_ID
     }
 
-    // --- Pneumatic Tube delegates ---
+    // --- Pneumatic Tube delegates & routing ---
+
+    /// `canRouteItems`: returns true for redstone tubes.
+    pub fn can_route_items(&self) -> bool {
+        true
+    }
 
     /// `tubeWeight(side, state)`: 0 for Redstone Tube (standard routing).
     pub fn tube_weight(&self, _side: u8, _state: u8) -> i32 {
@@ -96,6 +102,21 @@ impl RedstoneTube {
     /// `tubeItemCanEnter`: verifies dye color matching and idle state.
     pub fn tube_item_can_enter(&self, state: u8, ti: &TubeItem) -> bool {
         self.tube.tube_item_can_enter(state, ti)
+    }
+
+    /// `tubeItemCanEnter(side, state, ti)`: checks color filtering and idle state (Java signature).
+    pub fn tube_item_can_enter_side(&self, _side: u8, state: u8, ti: &TubeItem) -> bool {
+        self.tube.tube_item_can_enter(state, ti)
+    }
+
+    /// Returns a [`TubeAnswer`] for routing query integration.
+    pub fn tube_answer(&self, ti: &TubeItem, state: u8) -> TubeAnswer {
+        TubeAnswer {
+            can_enter_state: self.tube_item_can_enter(state, ti),
+            can_enter_idle: self.tube_item_can_enter(0, ti),
+            can_route: self.can_route_items(),
+            weight: self.tube_weight(0, state),
+        }
     }
 
     /// `tubeItemEnter`: enters item if state is 0 and dye colors match.
@@ -258,6 +279,8 @@ impl RedstoneTube {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::machine::tube::{find_route_full, OutRules, Pos};
+    use std::collections::HashMap;
 
     fn dummy_item(count: u32, color: u8) -> TubeItem {
         let mut ti = TubeItem::new(
@@ -278,6 +301,7 @@ mod tests {
         let rt = RedstoneTube::new();
         assert_eq!(rt.extended_id(), 9);
         assert_eq!(rt.tube_weight(0, 0), 0);
+        assert!(rt.can_route_items());
         assert_eq!(rt.get_connect_class(0), 1);
         assert_eq!(rt.get_ext_connection_mask(), 0);
         assert_eq!(rt.get_corner_power_mode(), 0);
@@ -362,6 +386,7 @@ mod tests {
         // Can enter unpainted
         assert!(rt.tube_item_can_enter(0, &uncolored));
         assert!(rt.tube_item_can_enter(0, &yellow));
+        assert!(rt.tube_item_can_enter_side(2, 0, &yellow));
 
         // Paint with yellow (dye 12)
         assert!(rt.try_paint(29, 0, 12));
@@ -373,6 +398,11 @@ mod tests {
         assert!(rt.tube_item_can_enter(0, &uncolored));
         assert!(rt.tube_item_can_enter(0, &yellow));
         assert!(!rt.tube_item_can_enter(0, &red));
+
+        let ans = rt.tube_answer(&yellow, 0);
+        assert!(ans.can_enter_state);
+        assert!(ans.can_route);
+        assert_eq!(ans.weight, 0);
     }
 
     #[test]
@@ -384,5 +414,82 @@ mod tests {
         assert_eq!(node.state[0], 255);
         assert_eq!(node.connect_class(), 1);
         assert_eq!(node.connectable_mask, 63 << 24);
+    }
+
+    #[test]
+    fn test_redstone_tube_flow_simulation() {
+        let mut rt = RedstoneTube::new();
+        let item = dummy_item(4, 0);
+        assert!(rt.tube_item_enter(0, 0, item));
+        assert_eq!(rt.contents.len(), 1);
+
+        struct MockContext;
+        impl FlowContext for MockContext {
+            fn find_route(&mut self, _ti: &TubeItem, _sides: u8, _mode: u8, _last_dir: u8) -> i32 {
+                1
+            }
+            fn pass_to_tube(&mut self, _ti: &TubeItem) -> bool {
+                true
+            }
+            fn add_to_inventory(&mut self, _ti: &TubeItem) -> bool {
+                false
+            }
+            fn eject(&mut self, _item: ItemStack) {}
+        }
+
+        let mut ctx = MockContext;
+        // Run update ticks
+        for _ in 0..16 {
+            rt.update(0b000011, &mut ctx);
+        }
+        // Drops after item added
+        let mut rt2 = RedstoneTube::new();
+        rt2.add_tube_item(dummy_item(10, 0));
+        let drops = rt2.take_all_for_drop();
+        assert_eq!(drops.len(), 1);
+        assert_eq!(drops[0].count, 10);
+    }
+
+    struct MockNet {
+        tubes: HashMap<Pos, RedstoneTube>,
+        chest: Pos,
+        test_item: TubeItem,
+    }
+
+    impl OutRules for MockNet {
+        fn inventory_accepts(&self, pos: Pos, _s: i32) -> bool {
+            pos == self.chest
+        }
+        fn tube_at(&self, pos: Pos, _s: i32) -> Option<TubeAnswer> {
+            self.tubes
+                .get(&pos)
+                .map(|t| t.tube_answer(&self.test_item, crate::machine::tube_flow::MODE_NORMAL))
+        }
+        fn connections(&self, pos: Pos) -> u8 {
+            let mut cons = 0;
+            for s in 0..6 {
+                let p = crate::machine::tube::step(pos, s);
+                if self.tubes.contains_key(&p) || p == self.chest {
+                    cons |= 1 << s;
+                }
+            }
+            cons
+        }
+    }
+
+    #[test]
+    fn test_redstone_tube_dijkstra_routing() {
+        let mut tubes = HashMap::new();
+        tubes.insert((1, 0, 0), RedstoneTube::new());
+        tubes.insert((2, 0, 0), RedstoneTube::new());
+        let net = MockNet {
+            tubes,
+            chest: (3, 0, 0),
+            test_item: dummy_item(1, 0),
+        };
+        let (dir, route) = find_route_full(&net, (0, 0, 0), 1 << 5, 5).unwrap();
+        assert_eq!(dir, 5);
+        assert_eq!(route.pos, (3, 0, 0));
+        assert_eq!(route.weight, 4); // 2 hops * 2
     }
 }

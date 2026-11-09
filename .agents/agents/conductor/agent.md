@@ -82,7 +82,7 @@ The only commands you need (never run `bd ... --help`):
 - Record each decision in Beads when you make it (`bd comment <story>
   "<decision and why>"`): if you die, your successor has only Beads and the
   resume page. Every make target is safe to run again after an interruption.
-- A ticket's limits are its agent's, never yours: an agent wraps up at 25 turns
+- A ticket's limits are its agent's, never yours: an agent wraps up at 60 turns
   or 500k tokens billed, writes its notes and a partial report, and a fresh one
   continues; a ticket partial twice is labelled needs-split and waits for you.
   You keep nothing a ticket needs in your head: its brief is in Beads and the

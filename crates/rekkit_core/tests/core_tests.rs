@@ -37,10 +37,7 @@ fn test_ic2_eu_voltage_tiers_overvoltage_and_cable_loss() {
 
     // Macerator (LV max 32 EU/p) receiving 32 EU packet succeeds
     let mut macerator = EuStorage::new(800.0, EuTier::LV);
-    assert_eq!(
-        macerator.receive_packet(EuPacket::new(32.0, 32)),
-        Ok(32.0)
-    );
+    assert_eq!(macerator.receive_packet(EuPacket::new(32.0, 32)), Ok(32.0));
     assert_eq!(macerator.stored, 32.0);
 
     // Sending 128 EU MV packet into LV Macerator triggers OverVoltageError (explosion!)
@@ -59,7 +56,9 @@ fn test_ic2_eu_voltage_tiers_overvoltage_and_cable_loss() {
 
     // Glass Fibre cable loses 0.025 EU/block (1 EU every 40 blocks) and handles 512 EU/p
     let hv_pkt = EuPacket::new(512.0, 512);
-    let delivered_glass = hv_pkt.after_cable_loss(EuCableKind::GlassFibre, 40).unwrap();
+    let delivered_glass = hv_pkt
+        .after_cable_loss(EuCableKind::GlassFibre, 40)
+        .unwrap();
     assert!((delivered_glass - 511.0).abs() < 1e-6);
 
     // Sending 512 EU packet into Copper cable melts it
@@ -142,10 +141,19 @@ fn test_inventory_slot_rules_and_comparator_signal() {
 #[test]
 fn test_fluid_tank_fill_drain_and_nbt_roundtrip() {
     let mut tank = FluidTank::new(16_000);
-    assert_eq!(tank.fill(FluidStack::new("buildcraft:oil", 5_000), true), 5_000);
+    assert_eq!(
+        tank.fill(FluidStack::new("buildcraft:oil", 5_000), true),
+        5_000
+    );
     // Rejects different fluid while non-empty
-    assert_eq!(tank.fill(FluidStack::new("minecraft:water", 1_000), true), 0);
-    assert_eq!(tank.fill(FluidStack::new("buildcraft:oil", 15_000), true), 11_000);
+    assert_eq!(
+        tank.fill(FluidStack::new("minecraft:water", 1_000), true),
+        0
+    );
+    assert_eq!(
+        tank.fill(FluidStack::new("buildcraft:oil", 15_000), true),
+        11_000
+    );
     assert_eq!(tank.amount_mb(), 16_000);
 
     let mut nbt = HashMap::new();

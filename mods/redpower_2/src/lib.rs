@@ -40,16 +40,32 @@ pub use rekkit_core::{HORIZON_REVISION, MIXINS_REVISION, NATIVE_HOOKS_API};
 
 #[path = "world/athame.rs"]
 pub mod athame;
+pub mod blutricity;
+pub mod compat;
 pub mod control;
 pub mod core;
+#[path = "world/crops.rs"]
+pub mod crops;
+#[path = "world/events.rs"]
+pub mod events;
 #[path = "world/flora.rs"]
 pub mod flora;
 pub mod fluid;
+#[path = "world/gen.rs"]
+pub mod gen;
+pub mod items;
+pub mod lighting;
 pub mod machine;
+pub mod machines;
+#[path = "world/mossifier.rs"]
+pub mod mossifier;
 #[path = "world/ores.rs"]
 pub mod ores;
+pub mod render;
 #[path = "world/stone.rs"]
 pub mod stone;
+#[path = "world/trees.rs"]
+pub mod trees;
 pub mod tubes;
 pub mod wiring;
 #[path = "world/hooks.rs"]
@@ -1069,6 +1085,29 @@ impl BluePowerConductor {
         self.voltage = self.charge / self.capacitance;
     }
 
+    pub fn apply_direct(&mut self, i_in: f64) {
+        self.add_charge(i_in);
+    }
+
+    pub fn draw_power(&mut self, p: f64) {
+        let inv_cap = 1.0 / self.capacitance;
+        let v_sq = self.voltage * self.voltage;
+        let p1 = v_sq - 0.1 * p * inv_cap;
+        let t = if p1 < 0.0 {
+            0.0
+        } else {
+            p1.sqrt() - self.voltage
+        };
+        self.apply_direct(20.0 * t / inv_cap);
+    }
+
+    pub fn apply_power(&mut self, p: f64) {
+        let inv_cap = 1.0 / self.capacitance;
+        let v_sq = self.voltage * self.voltage;
+        let t = (v_sq + 0.1 * p * inv_cap).sqrt() - self.voltage;
+        self.apply_direct(20.0 * t / inv_cap);
+    }
+
     /// Dynamic transfer step between two conductors (`BluePowerConductor.iterate()`, §2.5):
     /// R = R1 + R2,   V = V1 - V2
     /// I_next = I + (V - I * R) * 0.07
@@ -1102,7 +1141,7 @@ impl SolarPanelState {
 
     pub fn tick(&mut self, sees_sky: bool, is_day: bool, is_storm: bool) -> f64 {
         if sees_sky && is_day && !is_storm && self.conductor.voltage <= BLUTRICITY_NOMINAL_VOLTAGE {
-            self.conductor.add_charge(2.0);
+            self.conductor.apply_direct(2.0);
             2.0
         } else {
             0.0
@@ -1243,13 +1282,41 @@ impl ThermopileState {
             rescanned = true;
         }
         let gen = 0.005 * (self.t_hot.min(self.t_cold) as f64);
-        self.conductor.add_charge(gen);
+        self.conductor.apply_direct(gen);
         (gen, rescanned)
     }
 
     /// True when the next `tick` will rescan (so the caller can apply melt/cool effects first).
     pub fn will_rescan(&self) -> bool {
         self.conductor.voltage <= BLUTRICITY_NOMINAL_VOLTAGE && self.tick_counter + 1 > 20
+    }
+
+    /// Restore from a block entity's saved strings (chunk reload).
+    pub fn load(nbt: &HashMap<String, String>) -> Self {
+        let mut s = Self::new();
+        let get = |k: &str| nbt.get(k).and_then(|v| v.parse::<f64>().ok());
+        s.conductor.charge = get("charge").unwrap_or(0.0).max(0.0);
+        s.conductor.current = get("current").unwrap_or(0.0);
+        s.conductor.voltage = s.conductor.charge / s.conductor.capacitance;
+        if let Some(t) = nbt.get("ticks").and_then(|v| v.parse::<u32>().ok()) {
+            s.tick_counter = t;
+        }
+        if let Some(th) = nbt.get("t_hot").and_then(|v| v.parse::<i32>().ok()) {
+            s.t_hot = th;
+        }
+        if let Some(tc) = nbt.get("t_cold").and_then(|v| v.parse::<i32>().ok()) {
+            s.t_cold = tc;
+        }
+        s
+    }
+
+    /// Save into a block entity's strings.
+    pub fn save(&self, nbt: &mut HashMap<String, String>) {
+        nbt.insert("charge".into(), self.conductor.charge.to_string());
+        nbt.insert("current".into(), self.conductor.current.to_string());
+        nbt.insert("ticks".into(), self.tick_counter.to_string());
+        nbt.insert("t_hot".into(), self.t_hot.to_string());
+        nbt.insert("t_cold".into(), self.t_cold.to_string());
     }
 }
 
@@ -1284,9 +1351,7 @@ impl WindTurbineState {
 
         if self.conductor.voltage <= BLUTRICITY_WIND_MAX_VOLTAGE && wind_power_w > 0.0 {
             let power_w = wind_power_w / 5.0;
-            // P = V * I -> I = P / max(V, 1.0)
-            let current = power_w / self.conductor.voltage.max(1.0);
-            self.conductor.add_charge(current);
+            self.conductor.apply_power(power_w);
             power_w
         } else {
             0.0
@@ -1400,21 +1465,23 @@ impl BatteryBoxState {
 
     pub fn tick(&mut self, redstone_powered: bool) {
         self.tick_slots();
-        let v = self.conductor.voltage;
-        if v > 90.0 && self.stored_units < Self::MAX_STORAGE_UNITS {
-            let n = ((v * 10.0 - 900.0) / 10.0).clamp(0.0, 10.0);
-            let draw_w = n * 1_000.0;
-            let current = draw_w / v.max(1.0);
-            self.conductor.add_charge(-current);
-            let units_in = (draw_w / 200.0).min(Self::MAX_STORAGE_UNITS - self.stored_units);
-            self.stored_units += units_in;
-        } else if v < 80.0 && !redstone_powered && self.stored_units > 0.0 {
-            let n = ((800.0 - v * 10.0) / 10.0).clamp(0.0, 10.0);
-            let apply_w = n * 1_000.0;
-            let current = apply_w / v.max(1.0);
-            let units_out = (apply_w / 200.0).min(self.stored_units);
-            self.stored_units -= units_out;
-            self.conductor.add_charge(current);
+        let charge = (self.conductor.voltage * 10.0) as i32;
+        if charge > 900 && self.stored_units < Self::MAX_STORAGE_UNITS {
+            let n = ((charge - 900) / 10)
+                .clamp(0, 10)
+                .min((Self::MAX_STORAGE_UNITS - self.stored_units) as i32);
+            if n > 0 {
+                self.conductor.draw_power(n as f64 * 1000.0);
+                self.stored_units += n as f64;
+            }
+        } else if charge < 800 && !redstone_powered && self.stored_units > 0.0 {
+            let n = ((800 - charge) / 10)
+                .clamp(0, 10)
+                .min(self.stored_units as i32);
+            if n > 0 {
+                self.conductor.apply_power(n as f64 * 1000.0);
+                self.stored_units -= n as f64;
+            }
         }
     }
 }
@@ -1436,6 +1503,8 @@ impl TransformerState {
 
     pub fn step_transform(&mut self) {
         self.high_voltage_conductor.voltage = self.low_voltage_conductor.voltage * 100.0;
+        self.high_voltage_conductor.charge =
+            self.high_voltage_conductor.voltage * self.high_voltage_conductor.capacitance;
         self.high_voltage_conductor.current = self.low_voltage_conductor.current * 100.0;
     }
 }
@@ -2525,6 +2594,10 @@ impl HorizonNativeMod for RedPower2Mod {
         }
         let mut nbt = HashMap::new();
         nbt.insert("facing".into(), "2".into());
+        if block == "redpower_2:io_expander" {
+            let io = control::io_expander::IoExpander::new();
+            io.save_nbt(&mut nbt);
+        }
         *entity = Some((block.to_string(), nbt));
     }
 
@@ -2545,6 +2618,7 @@ impl HorizonNativeMod for RedPower2Mod {
                 | "redpower_2:thermopile"
                 | "redpower_2:wind_turbine"
                 | Self::BLOCK_CPU
+                | "redpower_2:io_expander"
         ) {
             *ticks = true;
         }
@@ -2593,6 +2667,12 @@ impl HorizonNativeMod for RedPower2Mod {
                 c.inputs = vec![0, 1];
                 c.outputs = vec![0, 1];
                 c.faces = std::array::from_fn(|_| vec![0, 1]);
+                *container = Some(c);
+            }
+            "redpower_2:wind_turbine" => {
+                let mut c = make_container(1, "redpower_2:wind_turbine");
+                c.inputs = vec![0];
+                c.outputs = vec![0];
                 *container = Some(c);
             }
             "redpower_2:buffer_chest" => {
@@ -2715,6 +2795,29 @@ impl HorizonNativeMod for RedPower2Mod {
             }
             state.save(&mut entity.nbt);
             entity.data = vec![state.conductor.voltage.round() as i32];
+        } else if entity.id == "redpower_2:thermopile" {
+            let mut state = ThermopileState::load(&entity.nbt);
+            let (th, tc) = (state.t_hot, state.t_cold);
+            state.tick(|| (th, tc));
+            state.save(&mut entity.nbt);
+            entity.data = vec![
+                state.conductor.voltage.round() as i32,
+                state.t_hot,
+                state.t_cold,
+            ];
+        } else if entity.id == "redpower_2:wind_turbine" {
+            let mut state = blutricity::TileWindTurbine::from_nbt(&entity.nbt);
+            state.tick(10000);
+            state.to_nbt(&mut entity.nbt);
+            entity.data = vec![state.cond.voltage.round() as i32, state.power, state.speed];
+        } else if entity.id == "redpower_2:transformer" {
+            let mut state = blutricity::TileTransformer::from_nbt(&entity.nbt);
+            state.tick();
+            state.to_nbt(&mut entity.nbt);
+            entity.data = vec![
+                state.cond.voltage.round() as i32,
+                state.cond2.voltage.round() as i32,
+            ];
         } else if entity.id == Self::BLOCK_CPU {
             let cpu = self.cpus.entry(pos).or_default();
             let _ran = cpu.step_tick(Cpu6502::CYCLES_PER_TICK);
@@ -2741,6 +2844,7 @@ impl HorizonNativeMod for RedPower2Mod {
                 Some(machine::simple_gui::grid9_layout())
             }
             "redpower_2:battery_box" => Some(machine::simple_gui::battery_layout()),
+            "redpower_2:wind_turbine" => Some(machine::simple_gui::turbine_layout()),
             _ => None,
         };
         if let Some(l) = simple {
@@ -2978,6 +3082,19 @@ impl HorizonNativeMod for RedPower2Mod {
             *button = control::cpu_gui::GuiCPU::screen_click_button(at, data);
             return;
         }
+        if block == "redpower_2:io_expander" {
+            if at[1] >= 25.0 && at[1] <= 41.0 {
+                for n in 0..8 {
+                    let min_x = 16.0 + (n as f32) * 12.0;
+                    let max_x = min_x + 8.0;
+                    if at[0] >= min_x && at[0] <= max_x {
+                        *button = Some(n);
+                        return;
+                    }
+                }
+            }
+            return;
+        }
         if at[0] >= 10.0 && at[0] <= 100.0 && at[1] >= 10.0 && at[1] <= 40.0 {
             *button = Some(1);
         }
@@ -2993,6 +3110,16 @@ impl HorizonNativeMod for RedPower2Mod {
             container.apply_menu_button(id, cpu);
             container.write_nbt(&mut entity.nbt);
             entity.data = container.to_data();
+            return;
+        }
+        if entity.id == "redpower_2:io_expander" {
+            let mut io = control::io_expander::IoExpander::default();
+            io.load_nbt(&entity.nbt);
+            if (0..8).contains(&id) {
+                io.toggle_addr_bit(id as usize);
+            }
+            io.save_nbt(&mut entity.nbt);
+            entity.data = io.to_ints().to_vec();
             return;
         }
         if entity.id == machine::project_table::BLOCK_ID {

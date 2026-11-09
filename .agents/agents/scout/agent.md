@@ -1,7 +1,7 @@
 ---
 name: scout
 description: Fast read-only mapper. Finds mod JARs, decompiled sources, configs, specs, call sites in horizon/ and prior art in mods/ for a question from the conductor.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

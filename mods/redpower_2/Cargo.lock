@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "redpower_2"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "rekkit_core",
  "serde",
@@ -43,7 +43,7 @@ dependencies = [
 
 [[package]]
 name = "rekkit_core"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "serde",
  "serde_json",

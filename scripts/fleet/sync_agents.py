@@ -134,7 +134,7 @@ import { fileURLToPath } from "node:url";
 // llama.cpp) most of the time, so opencode's subagent tool is blocked for every model unless the
 // operator sets REKKIT_ALLOW_SUBAGENTS=1 in a session on a cloud model. ("task" is the older name.)
 const SUBAGENT_TOOLS = new Set(["subagent", "task"]);
-const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read" };
+const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read", subagent: "spawn", task: "spawn" };
 const HOOK = fileURLToPath(new URL("../../scripts/fleet/hook.sh", import.meta.url));
 
 const guard = (check, payload) =>
@@ -192,7 +192,7 @@ def opencode_files() -> dict[Path, str]:
     for src in sorted(SOURCE.glob("agents/*/agent.md")):
         meta, body = parse(src)
         name = meta["name"]
-        if meta.get("mainAgent") == "true":
+        if meta.get("subagent") == "false":  # the conductor (roles are also mainAgent, for agy --agent)
             out[OPENCODE / "command" / "conductor.md"] = front({"description": meta["description"]}) + note(src) + (
                 "In opencode you, the main session, are the conductor, on the model opencode has selected. "
                 "\"Invoke `x`\" means start the subagent `x` (.opencode/agent/x.md) with the `subagent` tool; it runs on "
@@ -219,7 +219,7 @@ def claude_files() -> dict[Path, str]:
     for src in sorted(SOURCE.glob("agents/*/agent.md")):
         meta, body = parse(src)
         name = meta["name"]
-        if meta.get("mainAgent") == "true":
+        if meta.get("subagent") == "false":  # the conductor (roles are also mainAgent, for agy --agent)
             out[CLAUDE / "skills" / name / "SKILL.md"] = front({
                 "name": name, "description": meta["description"],
             }) + note(src) + (

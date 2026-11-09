@@ -77,6 +77,7 @@ impl Ore {
             Self::Silver => Some("redpower_2:silver_ingot"),
             Self::Tin => Some("redpower_2:tin_ingot"),
             Self::Copper => Some("redpower_2:copper_ingot"),
+            Self::Tungsten => Some("redpower_2:tungsten_ingot"),
             _ => None,
         }
     }
@@ -124,28 +125,59 @@ impl Ore {
     }
 }
 
-/// The three gem storage blocks of `BlockStorage` (meta 0..=2).
+/// The six mineral and metal storage blocks of `BlockStorage` (meta 0..=5).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum StorageBlock {
     Ruby,
     GreenSapphire,
     Sapphire,
+    Silver,
+    Tin,
+    Copper,
 }
 
+pub const ALL_STORAGE_BLOCKS: [StorageBlock; 6] = [
+    StorageBlock::Ruby,
+    StorageBlock::GreenSapphire,
+    StorageBlock::Sapphire,
+    StorageBlock::Silver,
+    StorageBlock::Tin,
+    StorageBlock::Copper,
+];
+
 impl StorageBlock {
+    pub fn meta(self) -> u8 {
+        self as u8
+    }
+
+    pub fn from_meta(meta: u8) -> Option<Self> {
+        ALL_STORAGE_BLOCKS.get(meta as usize).copied()
+    }
+
     pub fn block_id(self) -> &'static str {
         match self {
             Self::Ruby => "redpower_2:block_ruby",
             Self::GreenSapphire => "redpower_2:block_green_sapphire",
             Self::Sapphire => "redpower_2:block_sapphire",
+            Self::Silver => "redpower_2:block_silver",
+            Self::Tin => "redpower_2:block_tin",
+            Self::Copper => "redpower_2:block_copper",
         }
     }
-    pub fn gem_id(self) -> &'static str {
+
+    pub fn component_id(self) -> &'static str {
         match self {
             Self::Ruby => "redpower_2:ruby",
             Self::GreenSapphire => "redpower_2:green_sapphire",
             Self::Sapphire => "redpower_2:sapphire",
+            Self::Silver => "redpower_2:silver_ingot",
+            Self::Tin => "redpower_2:tin_ingot",
+            Self::Copper => "redpower_2:copper_ingot",
         }
+    }
+
+    pub fn gem_id(self) -> &'static str {
+        self.component_id()
     }
 }
 
@@ -282,5 +314,37 @@ mod tests {
         assert!(v
             .iter()
             .all(|p| p.0.abs() < 20 && p.2.abs() < 20 && (p.1 - 20).abs() < 10));
+    }
+
+    #[test]
+    fn storage_blocks() {
+        for (i, b) in ALL_STORAGE_BLOCKS.iter().enumerate() {
+            assert_eq!(StorageBlock::from_meta(i as u8), Some(*b));
+            assert_eq!(b.meta(), i as u8);
+        }
+        assert_eq!(StorageBlock::from_meta(6), None);
+        assert_eq!(StorageBlock::Ruby.component_id(), "redpower_2:ruby");
+        assert_eq!(
+            StorageBlock::Silver.component_id(),
+            "redpower_2:silver_ingot"
+        );
+        assert_eq!(StorageBlock::Tin.component_id(), "redpower_2:tin_ingot");
+        assert_eq!(
+            StorageBlock::Copper.component_id(),
+            "redpower_2:copper_ingot"
+        );
+    }
+
+    #[test]
+    fn ore_smelting_and_xp() {
+        assert_eq!(Ore::Silver.smelts_to(), Some("redpower_2:silver_ingot"));
+        assert_eq!(Ore::Tin.smelts_to(), Some("redpower_2:tin_ingot"));
+        assert_eq!(Ore::Copper.smelts_to(), Some("redpower_2:copper_ingot"));
+        assert_eq!(Ore::Tungsten.smelts_to(), Some("redpower_2:tungsten_ingot"));
+        assert_eq!(Ore::Ruby.smelts_to(), None);
+
+        assert_eq!(Ore::Ruby.xp_range(), (3, 7));
+        assert_eq!(Ore::Nikolite.xp_range(), (1, 5));
+        assert_eq!(Ore::Copper.xp_range(), (0, 0));
     }
 }

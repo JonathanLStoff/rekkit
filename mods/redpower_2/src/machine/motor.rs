@@ -8,8 +8,8 @@
 //! - IRotatable rotation mechanics (primary 0..=3 face, secondary 0..=5 direction).
 //! - Blutricity consumption and movement state tracking.
 
-use super::base::{SUBID_TILE_MACHINE, Rotatable, FrameSupport};
-use super::frame::{drive_side, MotorEvent, MotorState, MOVE_TICKS, MOTOR_MIN_VOLTS};
+use super::base::{FrameSupport, Rotatable, SUBID_TILE_MACHINE};
+use super::frame::{drive_side, MotorState, MOVE_TICKS};
 use crate::core::foundation::{Packet211TileDesc, PacketError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -162,7 +162,7 @@ impl TileMotor {
     /// Read 4-byte payload from packet buffer.
     pub fn read_from_packet(&mut self, data: &[u8]) -> Result<(), PacketError> {
         if data.len() < 4 {
-            return Err(PacketError::Truncated);
+            return Err(PacketError::NotEnoughData);
         }
         self.rotation = data[0] as i32;
         self.move_dir = data[1] as i32;

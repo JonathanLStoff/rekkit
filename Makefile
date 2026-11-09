@@ -26,7 +26,7 @@ COMPLETE ?= 0
 
 export CURSEFORGE_API_KEY
 
-.PHONY: fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live tickets-live fleet-stop \
+.PHONY: fleet-flat fleet-local contract-check fleet-contract fleet-parts fleet-tickets fleet-ready setup doctor all tekkit direwolf20 agrarian list clean help extract-jar extract-assets test-mods check-mods pack-mods e2e-setup e2e-mod e2e-all-mods integration-test agents agents-check agent-gate fleet-next fleet-models agy fleet-start fleet-resume tasks watch board-html board-live tickets-live fleet-stop \
 	fleet-task fleet-inbox fleet-features fleet-gaps core-need version-sync fleet-status fleet-context spec-toc spec-show board decompile java-outline java-show java-find art play horizon-baseline horizon-status horizon-pull pull \
 	fleet-dispatch content-gen e2e-gen skill-toc skill-show conductor-step spec-merge token-audit
 
@@ -109,6 +109,10 @@ e2e-gen:
 # Local models only: how many agents this machine's memory holds on the selected model (1 = no subagents).
 fleet-local:
 	$(PYTHON) scripts/fleet/local_capacity.py $(ARGS)
+
+# Flat mode: no subagents, one linear session does every role (saves tokens). MODE=on|off|status.
+fleet-flat:
+	$(PYTHON) scripts/fleet/flat.py $(or $(MODE),status)
 
 # Step 1: the decompiled code in parts one spec-writer can read in ~200k tokens (one writer per part).
 fleet-parts:
@@ -292,7 +296,7 @@ make check-mods [MOD=example_mod]
                       Validate .hmod content and .hnmod native manifests/assets
 make pack-mods [MOD=example_mod]
                       Package deterministic .hmod and .hnmod release bundles
-make e2e-setup [MOD=a,b] [REV=pinned|submodule|latest|<sha>]
+make e2e-setup [MOD=a,b] [REV=submodule|pinned|latest|<sha>]
                       Fetch the horizon submodule, apply native mixins, build horizon-client (no game)
 make e2e-mod [MOD=a,b] [REV=...] [DRY_RUN=1]
                       Phase 1: build, boot Horizon with one mod at a time, run all 7 action stages

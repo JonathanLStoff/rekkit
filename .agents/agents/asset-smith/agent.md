@@ -1,7 +1,7 @@
 ---
 name: asset-smith
 description: Extracts textures and sounds from a mod's original JAR and maps legacy sprite sheets to per-block and per-item textures in the content mod.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 // llama.cpp) most of the time, so opencode's subagent tool is blocked for every model unless the
 // operator sets REKKIT_ALLOW_SUBAGENTS=1 in a session on a cloud model. ("task" is the older name.)
 const SUBAGENT_TOOLS = new Set(["subagent", "task"]);
-const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read" };
+const CHECKS = { bash: "shell", edit: "paths", write: "paths", patch: "paths", read: "read", grep: "read", glob: "read", list: "read", subagent: "spawn", task: "spawn" };
 const HOOK = fileURLToPath(new URL("../../scripts/fleet/hook.sh", import.meta.url));
 
 const guard = (check, payload) =>

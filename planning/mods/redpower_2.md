@@ -122,9 +122,9 @@
     * Panel capacitance: $C = 0.25\text{ F}$ (`getInvCap() == 4.0`).
   * Dynamic transfer step (`BluePowerConductor.iterate()`):
     $$R = R_1 + R_2, \qquad V = V_1 - V_2$$
+    $$I_{\text{flow}} = I + V \times 0.5$$
     $$I_{\text{next}} = I + (V - I \cdot R) \times 0.07$$
-    $$I_{\text{flow}} = I_{\text{next}} + V \times 0.5$$
-    Apply $-I_{\text{flow}}$ to local node, $+I_{\text{flow}}$ to neighbor node.
+    Apply $-I_{\text{flow}}$ to local node, $+I_{\text{flow}}$ to neighbor node (using the pre-update current $I$ for parallel flow, followed by updating internal state to $I_{\text{next}}$).
 * **Generation Devices:**
   * **Solar Panel (`TileSolarPanel`):** Generates $2.0\text{ A}$ current when $V \le 100\text{V}$, block can see sky, is daytime, and world has no storm (`applyDirect(2.0)`).
   * **Thermopile (`TileThermopile`):** Scans 6 faces every 20 ticks. Generates $0.005 \times \min(T_{\text{hot}}, T_{\text{cold}})\text{ A}$ when $V \le 100\text{V}$. Temperature ratings: Air (Nether +1, Overworld -1), Torch (+5), Fire (+3), Lava (+100), Burning Furnace (+25), Water (-25), Snow layer (-50), Ice/Snow block (-100).

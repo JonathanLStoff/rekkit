@@ -1,7 +1,7 @@
 ---
 name: release-clerk
 description: Checks the current mod's version (already bumped by make version-sync), makes the local conventional commit with any rekkit_core work it needed, and builds the .hmod and .hnmod. Stops before push; a human pushes, signs and releases.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

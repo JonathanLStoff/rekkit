@@ -208,11 +208,11 @@
       "description": "Implement sub-voxel mesh rendering context (RenderContext), microblock cover rendering (RenderCovers), raycast selection box rendering, and placement preview highlights (RenderHighlight). Computes matrix rotations, face UV alignments, smooth lighting interpolation, and pointer rendering for analog dials. Done: rendering unit tests and mesh generation tests verify exact sub-voxel vertices and UV coordinates matching original RedPower box dimensions."
     },
     {
-      "key": "part03-core-lifecycle",
-      "title": "RedPowerCore module lifecycle, network handling and native hook wiring",
+      "key": "part03-core-lifecycle-init",
+      "title": "RedPowerCore lifecycle registration, subsystem init hooks and crafting callbacks",
       "role": "hook-engineer",
       "step": 3,
-      "effort_k": 90,
+      "effort_k": 50,
       "covers": [],
       "files": [
         "mods/redpower_2/native/mixins/redpower_2/core_init.rs"
@@ -223,7 +223,6 @@
       ],
       "java": [
         "mod_RedPowerCore#initialize",
-        "mod_RedPowerCore#init_guihandler",
         "mod_RedPowerCore#renderWorldBlock",
         "mod_RedPowerCore#takenFromCrafting",
         "mod_RedPowerCore#takenFromFurnace"
@@ -233,32 +232,91 @@
         "part03-wire-pathfinder",
         "part03-tube-flow"
       ],
-      "description": "Implement RedPowerCore lifecycle registration, subsystem initialization hooks, network packet dispatch, and GUI event routing. Binds native hooks for block entity tick loops, block entity descriptions, and crafting callbacks. Done: mixin compilation clean and native hooks initialize core subsystems on mod load."
+      "description": "Implement RedPowerCore lifecycle registration, subsystem initialization hooks, and crafting/smelting callbacks in native mixins. Binds native hooks for block entity tick loops, block entity descriptions, and crafting callbacks. Done: mixin compilation clean and native hooks initialize core subsystems on mod load."
     },
     {
-      "key": "part03-core-scenarios",
-      "title": "Core subsystem integration tests and verification scenarios",
-      "role": "test-smith",
+      "key": "part03-core-net-gui",
+      "title": "RedPowerCore network packet dispatch, terminal sync and GUI event routing",
+      "role": "hook-engineer",
       "step": 3,
-      "effort_k": 100,
+      "effort_k": 50,
       "covers": [],
       "files": [
-        "mods/redpower_2/tests/core_systems.rs"
+        "mods/redpower_2/native/mixins/redpower_2/core_net.rs"
       ],
       "spec": [
-        "2.1 Microblocks & Sub-Voxel System",
-        "2.2 Wiring System",
+        "10. Hooks Needed"
+      ],
+      "java": [
+        "mod_RedPowerCore#init_guihandler"
+      ],
+      "after": [
+        "part03-core-lifecycle-init"
+      ],
+      "description": "Implement network packet dispatch, terminal synchronization, and GUI event routing in native mixins. Handles client/server packet routing for mod network channels and screen opening/interaction. Done: mixin compilation clean and network/GUI dispatch routines handle core packets correctly."
+    },
+    {
+      "key": "part03-test-microblocks",
+      "title": "Automated scenarios validating microblock compound placement and bitmask occupancy",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 40,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/tests/microblock_tests.rs"
+      ],
+      "spec": [
+        "2.1 Microblocks & Sub-Voxel System"
+      ],
+      "java": [
+        "TileCovered#canAddCover"
+      ],
+      "after": [
+        "part03-core-net-gui"
+      ],
+      "description": "Automated scenarios validating microblock compound placement and bitmask occupancy in mods/redpower_2/tests/microblock_tests.rs. Done: all scenarios pass at Level 3 and Level 4 verification."
+    },
+    {
+      "key": "part03-test-tubes",
+      "title": "Automated scenarios validating pneumatic tube Dijkstra routing with restrictor tubes and color tags",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 40,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/tests/tube_routing_tests.rs"
+      ],
+      "spec": [
         "2.4 Pneumatic Tubes & Item Logistics"
       ],
       "java": [
-        "TileCovered#canAddCover",
-        "TubeLib#findRoute",
+        "TubeLib#findRoute"
+      ],
+      "after": [
+        "part03-core-net-gui"
+      ],
+      "description": "Automated scenarios validating pneumatic tube Dijkstra routing with restrictor tubes (+1,000,000 weight) and color tags in mods/redpower_2/tests/tube_routing_tests.rs. Done: all scenarios pass at Level 3 and Level 4 verification."
+    },
+    {
+      "key": "part03-test-wiring",
+      "title": "Automated scenarios validating red alloy wire pathfinding across corner boundaries",
+      "role": "test-smith",
+      "step": 3,
+      "effort_k": 40,
+      "covers": [],
+      "files": [
+        "mods/redpower_2/tests/wire_pathfinding_tests.rs"
+      ],
+      "spec": [
+        "2.2 Wiring System"
+      ],
+      "java": [
         "WirePathfinder#iterate"
       ],
       "after": [
-        "part03-core-lifecycle"
+        "part03-core-net-gui"
       ],
-      "description": "Automated scenario tests validating microblock compound placement, pneumatic tube Dijkstra routing with restrictor tubes (+1,000,000 weight) and color tags, and red alloy wire pathfinding across corner boundaries. Done: all scenarios pass at Level 3 and Level 4 verification."
+      "description": "Automated scenarios validating red alloy wire pathfinding across corner boundaries in mods/redpower_2/tests/wire_pathfinding_tests.rs. Done: all scenarios pass at Level 3 and Level 4 verification."
     }
   ]
 }

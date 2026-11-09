@@ -1,4 +1,18 @@
 {
+  "shape": [
+    4,
+    4,
+    4,
+    12,
+    12,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#22"
+  },
+  "gui": null,
+  "energy": null,
   "scenarios": [
     {
       "name": "combines pneumatic item transport with redstone signal conduction",
@@ -6,6 +20,34 @@
         "redstone_tube"
       ],
       "level": 4,
+      "covers": [
+        "combines pneumatic item transport with redstone signal conduction"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:redstone_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:redstone_tube"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "combines pneumatic item transport with redstone signal conduction",
+      "for": [
+        "redstone_tube"
+      ],
+      "level": 3,
       "covers": [
         "combines pneumatic item transport with redstone signal conduction"
       ],

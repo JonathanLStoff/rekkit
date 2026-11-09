@@ -214,7 +214,10 @@ pub mod energy {
 
         pub fn write_nbt(&self, nbt: &mut HashMap<String, String>) {
             nbt.insert(nbt_keys::EU_STORED.into(), format!("{:.2}", self.stored));
-            nbt.insert(nbt_keys::EU_CAPACITY.into(), format!("{:.2}", self.capacity));
+            nbt.insert(
+                nbt_keys::EU_CAPACITY.into(),
+                format!("{:.2}", self.capacity),
+            );
             nbt.insert(
                 nbt_keys::EU_MAX_TIER.into(),
                 (self.max_tier as u8).to_string(),
@@ -278,7 +281,9 @@ pub mod energy {
         }
 
         pub fn extract(&mut self, max_extract_mj: f64) -> f64 {
-            let extracted = max_extract_mj.min(self.max_out_mj).clamp(0.0, self.stored_mj);
+            let extracted = max_extract_mj
+                .min(self.max_out_mj)
+                .clamp(0.0, self.stored_mj);
             self.stored_mj -= extracted;
             extracted
         }
@@ -619,7 +624,9 @@ pub mod fluid {
         pub fn can_accept(&self, fluid_id: &str) -> bool {
             match &self.contents {
                 None => true,
-                Some(existing) => existing.fluid_id == fluid_id && existing.amount_mb < self.capacity_mb,
+                Some(existing) => {
+                    existing.fluid_id == fluid_id && existing.amount_mb < self.capacity_mb
+                }
             }
         }
 
@@ -892,7 +899,9 @@ pub mod grid {
     use crate::side::Direction;
 
     /// 3D integer block coordinate in world space.
-    #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+    #[derive(
+        Debug, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+    )]
     pub struct BlockPos(pub i32, pub i32, pub i32);
 
     impl BlockPos {
@@ -1040,11 +1049,8 @@ pub mod grid {
         pub fn connected_components(&self) -> Vec<Vec<BlockPos>> {
             let mut positions: Vec<BlockPos> = self.nodes.keys().copied().collect();
             positions.sort();
-            let index_of: HashMap<BlockPos, usize> = positions
-                .iter()
-                .enumerate()
-                .map(|(i, &p)| (p, i))
-                .collect();
+            let index_of: HashMap<BlockPos, usize> =
+                positions.iter().enumerate().map(|(i, &p)| (p, i)).collect();
 
             let mut uf = UnionFind::new(positions.len());
             for (i, &pos) in positions.iter().enumerate() {
@@ -1408,7 +1414,9 @@ pub mod multiblock {
                                     match actual.as_deref() {
                                         None | Some("minecraft:air") => {
                                             if !interior_ids.is_empty()
-                                                && !interior_ids.iter().any(|s| s == "minecraft:air")
+                                                && !interior_ids
+                                                    .iter()
+                                                    .any(|s| s == "minecraft:air")
                                             {
                                                 return false;
                                             }
@@ -1512,11 +1520,7 @@ pub mod hooks {
             let _ = (block, ticks);
         }
 
-        fn native_block_entity_container(
-            &self,
-            block: &str,
-            container: &mut Option<ModContainer>,
-        ) {
+        fn native_block_entity_container(&self, block: &str, container: &mut Option<ModContainer>) {
             let _ = (block, container);
         }
 

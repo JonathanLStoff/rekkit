@@ -1,4 +1,18 @@
 {
+  "shape": [
+    4,
+    4,
+    4,
+    12,
+    12,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#24"
+  },
+  "gui": null,
+  "energy": null,
   "scenarios": [
     {
       "name": "adds 1000000 virtual routing weight to pneumatic path to create overflow priority",
@@ -6,6 +20,34 @@
         "restrictor_tube"
       ],
       "level": 4,
+      "covers": [
+        "adds 1000000 virtual routing weight to pneumatic path to create overflow priority"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:restrictor_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:restrictor_tube"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "adds 1000000 virtual routing weight to pneumatic path to create overflow priority",
+      "for": [
+        "restrictor_tube"
+      ],
+      "level": 3,
       "covers": [
         "adds 1000000 virtual routing weight to pneumatic path to create overflow priority"
       ],

@@ -1,4 +1,18 @@
 {
+  "shape": [
+    4,
+    4,
+    4,
+    12,
+    12,
+    12
+  ],
+  "facing": "none",
+  "faces": {
+    "all": "eloraam/machine/machine1.png#21"
+  },
+  "gui": null,
+  "energy": null,
   "scenarios": [
     {
       "name": "routes items to destinations using Dijkstra shortest-path logic without dropping",
@@ -6,6 +20,34 @@
         "pneumatic_tube"
       ],
       "level": 4,
+      "covers": [
+        "routes items to destinations using Dijkstra shortest-path logic without dropping"
+      ],
+      "steps": [
+        {
+          "setblock": [
+            0,
+            0,
+            0,
+            "redpower_2:pneumatic_tube"
+          ]
+        },
+        {
+          "expect_block": [
+            0,
+            0,
+            0,
+            "redpower_2:pneumatic_tube"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "routes items to destinations using Dijkstra shortest-path logic without dropping",
+      "for": [
+        "pneumatic_tube"
+      ],
+      "level": 3,
       "covers": [
         "routes items to destinations using Dijkstra shortest-path logic without dropping"
       ],

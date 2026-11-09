@@ -33,7 +33,13 @@ def windows_hooks() -> bool:
     src, dst = HOOKS / "hooks.windows.json", HOOKS / "hooks.json"
     if not src.is_file():
         return False
+    # agy does not run hooks from .agents/: `../scripts/...` fails (python exits 2) and agy dies on the
+    # first shell command. The installed copy (never committed) names the scripts by absolute path.
+    scripts = (HOOKS.parent / "scripts").as_posix()
+    # (agy passes quotes through literally, so the path stays unquoted; a path with a space keeps `../`.)
     text = src.read_text(encoding="utf-8")
+    if " " not in scripts:
+        text = text.replace("python ../scripts/", f"python {scripts}/")
     if not dst.is_file() or dst.read_text(encoding="utf-8") != text:
         dst.write_text(text, encoding="utf-8", newline="\n")
     subprocess.run(["git", "update-index", "--skip-worktree", ".agents/hooks.json"],

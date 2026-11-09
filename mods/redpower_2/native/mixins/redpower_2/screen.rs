@@ -25,6 +25,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:blulectric_alloy_furnace" => {
@@ -48,6 +49,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:blulectric_furnace" => {
@@ -59,6 +61,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:project_table" => {
@@ -101,6 +104,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 140.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:buffer_chest" | "redpower_2:buffer" => {
@@ -118,6 +122,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 104.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:manager" => {
@@ -135,6 +140,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 104.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:charging_bench" => {
@@ -152,6 +158,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 104.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:deployer"
@@ -180,6 +187,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:battery_box" => {
@@ -201,6 +209,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 88.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:wind_turbine" => {
@@ -213,6 +222,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 85.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:regulator" => {
@@ -239,6 +249,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 25.0,
                 inventory_y: 85.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:assembler" => {
@@ -261,6 +272,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 113.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:sorting_machine" => {
@@ -278,6 +290,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 140.0,
                 own_labels: false,
+                own_background: false,
             });
         }
         "redpower_2:timer" | "redpower_2:sequencer" | "redpower_2:state_cell" => {
@@ -288,6 +301,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: true,
+                own_background: false,
             });
         }
         "redpower_2:counter" => {
@@ -298,6 +312,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: true,
+                own_background: false,
             });
         }
         "redpower_2:display" | "redpower_2:monitor" => {
@@ -308,6 +323,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 140.0,
                 own_labels: true,
+                own_background: false,
             });
         }
         "redpower_2:cpu" => {
@@ -318,6 +334,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: true,
+                own_background: false,
             });
         }
         "redpower_2:disk_drive" | "redpower_2:io_expander" => {
@@ -328,6 +345,7 @@ fn custom_screen(block: &str, screen: &mut Option<NativeScreen>) {
                 inventory_x: 8.0,
                 inventory_y: 84.0,
                 own_labels: true,
+                own_background: false,
             });
         }
         _ => {}

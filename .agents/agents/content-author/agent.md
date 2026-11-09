@@ -1,7 +1,7 @@
 ---
 name: content-author
 description: "Writes a mod's content data: block, item, mob_effect and creative_tab JSON, recipes (vanilla and custom machine recipe types), loot tables, tags, lang, models, blockstates and item model files."
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

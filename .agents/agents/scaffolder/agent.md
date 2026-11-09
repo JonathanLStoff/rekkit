@@ -1,7 +1,7 @@
 ---
 name: scaffolder
 description: Creates the dual-artifact skeleton for one mod by copying mods/example_mod's layout, or the library skeleton for crates/rekkit_core.
-mainAgent: false
+mainAgent: true
 subagent: true
 effort: low
 tools:

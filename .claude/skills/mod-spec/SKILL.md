@@ -109,7 +109,7 @@ In part mode each spec-writer reads its part of the decompiled code (`make fleet
 }]}
 ```
 
-- **Size**: `effort_k` aimed at 200 at most (thousand tokens: one agent's context, reading included), and at most 6 `files` and 8 `spec` headings plus `java` members. What costs is turns: each file written and each thing read is about one, and every turn re-sends all the context before it, so an agent wraps up at 25 turns or 500k tokens billed. Bigger work is several tickets in order.
+- **Size**: `effort_k` aimed at 200 at most (thousand tokens: one agent's context, reading included), and at most 6 `files` and 8 `spec` headings plus `java` members. What costs is turns: each file written and each thing read is about one, and every turn re-sends all the context before it, so an agent wraps up at 60 turns or 500k tokens billed. Bigger work is several tickets in order.
 - **Reads**: the ticket's agent gets the text of every spec heading and Java member it names in its brief (`make fleet-task`), so name exactly what it needs: the method, not the class.
 - **Role**: content-author, domain-builder, domain-builder-pro, hook-engineer, test-smith, asset-smith, scaffolder or scribe. The ticket's role writes the contract file of what it covers if nobody has.
 - **Order**: `after` lists the keys that must be closed first. Whatever a ticket uses (the grid, a core type, a block's content before its GUI) comes before it; two tickets editing the same file are ordered (lang, creative tab and tag files excepted). No cycles.

@@ -77,7 +77,10 @@ BLOCKED_SHELL = re.compile(
     r"|describe)\b)")
 BEADS_CMD = re.compile(r"(?<![\w./-])bd(?:\s|$)")
 HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$", re.S | re.M)
-FLEET_START = re.compile(r"(?:make\s+fleet-start\s+MOD=|guard\.py\s+claim\s+)['\"]?([a-z0-9_]+)")
+# Commands only the conductor runs: a session resumed after a crash or /clear (fleet-resume) or that
+# dispatches tickets conducts the mod as surely as one that ran fleet-start.
+FLEET_START = re.compile(r"(?:make\s+fleet-(?:start|resume|dispatch)\s+(?:\w+=\S*\s+)*MOD=|guard\.py\s+claim\s+"
+                         r"|resume\.py\s+|dispatch\.py\s+)['\"]?([a-z0-9_]+)")
 FLEET_TASK = re.compile(r"(?:make\s+fleet-task|guard\.py\s+task)\s+(?:BEAD=)?['\"]?([A-Za-z0-9_.-]+)['\"]?"
                         r"(?:\s+(?:ROLE=|--role\s+)['\"]?([a-z-]+))?")
 DECOMPILED = "assets/decompiled"
@@ -224,7 +227,7 @@ TASK_TOKENS = 200_000  # a role subagent's context budget; past it, it reports a
 # What a run costs is every turn's whole context added up, not its peak (planning/token_audit/
 # performance.md: a "200k" ticket billed 1.5M over 46 turns). So a subagent also wraps up past these.
 TASK_BILLED = int(os.environ.get("REKKIT_TASK_BILLED") or 500_000)
-TASK_TURNS = int(os.environ.get("REKKIT_TASK_TURNS") or 25)
+TASK_TURNS = int(os.environ.get("REKKIT_TASK_TURNS") or 60)  # model calls; context (TASK_TOKENS) is what bloats
 # What a subagent over budget may still do: write its progress notes and its report.
 WRAP_UP = re.compile(r"target/fleet/(?:inbox|progress)/")
 
@@ -246,16 +249,27 @@ def transcripts(payload: dict) -> list[Path]:
     return candidates
 
 
-def turn_usage(row: dict) -> tuple[str | None, int] | None:
-    """(the model call's id, its whole input: fresh plus cache) for a transcript row that is one, else None.
-    Claude Code writes one row per content block of a reply, all with the same message id."""
+CACHE_READ_WEIGHT = 0.1  # a cached input token costs about a tenth of a fresh one (Anthropic and Gemini)
+
+
+def billed_tokens(fresh: int, cached: int) -> int:
+    """What a model call costs, in fresh-input tokens: cached reads count at CACHE_READ_WEIGHT. Counting
+    them in full stopped lean agents (50k of context) after 20 calls and made the fleet re-brief them."""
+    return fresh + int(cached * CACHE_READ_WEIGHT)
+
+
+def turn_usage(row: dict) -> tuple[str | None, int, int] | None:
+    """(the model call's id, its whole context: fresh plus cache, what it billed) for a transcript row that
+    is one, else None. Claude Code writes one row per content block of a reply, all with the same id."""
     if "input_tokens" in row:  # agy: one row a turn
-        return None, int(row.get("input_tokens") or 0) + int(row.get("cache_read_tokens") or 0)
+        fresh, cached = int(row.get("input_tokens") or 0), int(row.get("cache_read_tokens") or 0)
+        return None, fresh + cached, billed_tokens(fresh, cached)
     msg = row.get("message") if isinstance(row.get("message"), dict) else None
     usage = (msg or {}).get("usage")
     if usage:
-        return msg.get("id"), sum(int(usage.get(k) or 0) for k in
-                                  ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
+        fresh = int(usage.get("input_tokens") or 0) + int(usage.get("cache_creation_input_tokens") or 0)
+        cached = int(usage.get("cache_read_input_tokens") or 0)
+        return msg.get("id"), fresh + cached, billed_tokens(fresh, cached)
     return None
 
 
@@ -286,7 +300,7 @@ def billed_so_far(payload: dict, session: "Session") -> tuple[int, int] | None:
             got = turn_usage(row) if isinstance(row, dict) else None
             if not got:
                 continue
-            mid, tokens = got
+            mid, _, tokens = got
             if mid is not None and mid == u["last"]:
                 continue
             u["last"] = mid
@@ -524,20 +538,24 @@ def check_shell(payload: dict) -> str | None:
         return ("Blocked by the Rekkit fleet guard: pushing, releasing, signing, submodule changes, "
                 "history rewrites and recursive deletes are for the human. Ask them to run it.")
     session = Session(payload)
-    if budget := over_budget(payload, session, text):
-        return budget
-    if m := FLEET_TASK.search(text):
+    if m := FLEET_START.search(text):
+        if session.fleet != m.group(1):
+            session.fleet, session.idle_stops, session.progress = m.group(1), 0, ""
+        # A conductor is never a role subagent: drop a bead it took by looking at a brief.
+        session.tasks, session.role = [], None
+        session.save()
+    elif (m := FLEET_TASK.search(text)) and not session.fleet and not flat_mode():
+        # A conductor that runs `make fleet-task` is only reading the brief; a subagent takes the bead.
         if m.group(1) not in session.tasks:
             session.tasks.append(m.group(1))
         session.role = m.group(2) or session.role
         session.save()
+    if budget := over_budget(payload, session, text):
+        return budget
     # A session that conducts keeps the conductor's rights even if a subagent shares its id.
     if session.tasks and not session.fleet and BEADS_CMD.search(text):
         return ("Role subagents do not use Beads (not even to read or for --help): your bead and what it needs "
                 f"are in your prompt. Put anything for Beads in your report (follow_ups, notes): {INBOX_HINT}")
-    if m := FLEET_START.search(text):
-        session.fleet, session.idle_stops, session.progress = m.group(1), 0, ""
-        session.save()
     if session.tasks or session.fleet:
         plain = bd_text_removed(text) if commands else text
         if why := waste(plain, session):
@@ -570,8 +588,17 @@ def earlier_work(bead: str, limit: int = 40) -> str:
     return "\n".join(out)
 
 
+def flat_mode() -> bool:
+    """Flat mode: the session does every role itself, so a `make fleet-task` makes it no role subagent."""
+    import flat
+    return flat.is_flat()
+
+
 def check_spawn(payload: dict) -> str | None:
-    """A subagent is being started: keep its prompt under each bead it names, for a restart after a crash."""
+    """A subagent is being started (denied in flat mode, scripts/fleet/flat.py): keep its prompt under each bead it names, for a restart after a crash."""
+    import flat
+    if flat.is_flat():
+        return flat.HOW
     args = tool_input(payload)
     if not isinstance(args, dict):
         return None
@@ -889,12 +916,20 @@ def main() -> int:
         beads.INBOX.mkdir(parents=True, exist_ok=True)
         notes = PROGRESS / f"{args.target}.md"
         rel = notes.relative_to(MAIN).as_posix()
-        print(f"You work {args.target}{' as ' + args.role if args.role else ''}. After each piece of work you finish "
+        import flat
+        if flat.is_flat():  # one linear session: its context is the cost, so keep it small and go on
+            print(f"Flat mode: you work {args.target}{' as ' + args.role if args.role else ''} in this session, "
+                  f"no subagent. Read your role file once. Append a line to {PROGRESS.relative_to(MAIN).as_posix()}/"
+                  f"{args.target}.md per piece finished, write {beads.INBOX / (args.target + '.json')} as "
+                  f"{REPORT_SHAPE} when done, run `make fleet-inbox`, then take the next ticket without "
+                  "stopping. The report goes to the inbox, not to bd by hand.")
+        else:
+          print(f"You work {args.target}{' as ' + args.role if args.role else ''}. After each piece of work you finish "
               f"(a file, a block, a test passing), append one line saying what is done to {rel}: if you are "
               "interrupted, the next agent continues from it. When you finish (or cannot go on), write "
               f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself. This is "
               "one ticket: report everything when it is done and stop; a fresh agent takes the next. "
-              f"Your budget: {TASK_TURNS} turns or {TASK_BILLED:,} tokens billed (every turn's context added up), "
+              f"Your budget: {TASK_TURNS} turns or {TASK_BILLED:,} tokens billed (each call's fresh input, cached reads at a tenth), "
               "whichever comes first; past it the hooks let you only write your notes and a partial report. "
               "Each turn re-sends everything before it, so do the work in few turns: everything your ticket "
               "needs is below. Read nothing else unless a check fails and names the file; never list folders "

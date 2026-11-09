@@ -68,7 +68,7 @@ Only `mods/example_mod` exists (an Ender Chest + Ender Pouch demo). The live `ho
 | **compat-auditor** | 8 | low | no need | nothing (runs the harness, reports) |
 | **release-clerk** | 9 | low | no need | version fields in the 4 lockstep files; local commit; `make pack-mods` |
 | **scribe** | docs | low | no need | `mods/<id>/README.md`, mod table in `README.md` |
-| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths and read guards (no whole decompiled class, no folder sweeps or toolchain reads, nothing read twice; a subagent wraps up at 25 turns, 500k tokens billed or 200k of context); the stop gate; the Beads context (`bd prime`, the resume page) at session start |
+| **Hooks** | all | none | — | `scripts/fleet/guard.py`: shell, paths and read guards (no whole decompiled class, no folder sweeps or toolchain reads, nothing read twice; a subagent wraps up at 60 turns, 500k tokens billed or 200k of context); the stop gate; the Beads context (`bd prime`, the resume page) at session start |
 
 "Reads the Java" = may open `assets/decompiled/`. Every role may now, after the spec: the column says who needs it.
 
