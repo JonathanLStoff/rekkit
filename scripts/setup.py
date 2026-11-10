@@ -390,6 +390,20 @@ def step_mcp_tools(r: Report, check: bool) -> None:
         r.add(".mcp.json", OK, f"written: {', '.join(servers) or 'no MCP servers installed'} (restart your agent)")
 
 
+def step_git_hooks(r: Report, check: bool) -> None:
+    """The repo's .githooks: export the board before each commit, import it (and refresh the MCP
+    tools) after each pull. A clone's local core.hooksPath, so a global one does not hide them."""
+    res = sh(["git", "config", "--local", "--get", "core.hooksPath"], capture_output=True)
+    if res.stdout.strip() == ".githooks":
+        r.add("git hooks", OK, "board and MCP tools sync on commit and pull (.githooks)")
+    elif check:
+        r.add("git hooks", TODO, f"not enabled: {RERUN} sets core.hooksPath to .githooks")
+    else:
+        res = sh(["git", "config", "--local", "core.hooksPath", ".githooks"], capture_output=True)
+        r.add("git hooks", OK if res.returncode == 0 else FAILED,
+              "enabled: board and MCP tools sync on commit and pull" if res.returncode == 0 else tail_of(res, 3))
+
+
 def step_mods(r: Report, check: bool) -> bool:
     if check:
         built = list(ROOT.glob("mods/*/target/horizon-mod/*.hmod"))
@@ -524,8 +538,14 @@ def main() -> int:
     parser.add_argument("--skip-smoke", action="store_true", help="Do not boot the game at the end")
     parser.add_argument("--minecraft-dir", help="Official launcher game directory, if not the default")
     parser.add_argument("--server-jar", help="A 26.3 server jar you already have (else it is fetched)")
+    parser.add_argument("--mcp-only", action="store_true", help="Only install the MCP tools and write .mcp.json "
+                        "(the post-pull git hook runs this)")
     args = parser.parse_args()
 
+    if args.mcp_only:
+        r = Report()
+        step_mcp_tools(r, args.check)
+        return 0 if all(state != FAILED for _, state, _ in r.rows) else 1
     print(f"Rekkit setup in {ROOT}" + (" (check only)" if args.check else ""))
     r = Report()
     tools = check_tools(r)
@@ -538,6 +558,7 @@ def main() -> int:
         step_beads(r, args.check)
         step_port_tools(r, args.check)
         step_mcp_tools(r, args.check)
+        step_git_hooks(r, args.check)
         mods_ok = step_mods(r, args.check)
         step_packs(r, args.check, args.skip_packs)
         built = mods_ok and step_build(r, args.check, args.skip_build)

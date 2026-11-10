@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# A merge commit made by hand after resolving conflicts: import the resolved board.
+git rev-parse -q --verify HEAD^2 >/dev/null || exit 0
+exec "$(dirname "$0")/sync.sh" pulled HEAD^1 HEAD

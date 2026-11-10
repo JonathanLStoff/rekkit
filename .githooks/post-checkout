@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# $3 = 1 for a branch checkout (not a file checkout).
+[ "$3" = 1 ] || exit 0
+exec "$(dirname "$0")/sync.sh" pulled "$1" "$2"

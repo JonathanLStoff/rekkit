@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# A pull or merge without conflicts.
+exec "$(dirname "$0")/sync.sh" pulled ORIG_HEAD HEAD
