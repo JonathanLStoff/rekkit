@@ -59,6 +59,80 @@ For every mod under `./mods/<id>/`, the harness inspects `content/data/<id>/hori
 
 With a contract (`planning/mods/<id>.features.json`, see the mod-spec skill) the harness also checks, per block: **2_shape** (the crosshair meets a full block near its top, and passes over a thin one just above the original's outline); **2_render** (a screenshot of it in the world, `<id>_<block>_world.png`, for the parity-critic's look); **4_gui_layout** (its screen has the original's slots where the original's Container puts them, relative to a screen of the original's size; a stock grid fails) or **4_gui_none** (a block the original gives no GUI opens none); and per mod **10_scenario** (each behaviour scenario on a patch behind the plot: a generator charging, a tool's reading). `make fleet-contract MOD=<id>` files these failures as bugs.
 
+Beyond blocks (scripts/e2e_probes.py), every live run also tests:
+
+| Stage | What | Fails when |
+| :--- | :--- | :--- |
+| **1_item** | every item given one past its stack size; armor equipped (`item replace`) and `/attribute` read; contract `worn`/`held` attributes read while worn or held | the fullest stack is not the original's `max_stack`; worn armor gives no armor (or not the contract's `armor`, `toughness`, `worn`); held values differ |
+| **6_craft** | every `crafting_shaped`, `crafting_shapeless`, `smelting`, `blasting`, `smoking` and `smithing_transform` recipe made in its station (ingredients clicked into the grid, tags resolved through the mods' and vanilla's tags), the result slot read | no menu opens, the result is missing or wrong; other recipe types are listed as skipped until a scenario makes them in their machine |
+| **11_entity** | every `horizon/entity_type`: summoned (mobs without AI), found, screenshot against the empty spot, each attribute of its file or contract (`attributes_values`) read, killed | it does not exist, is invisible or magenta, an attribute differs, a drop its loot table always gives is missing |
+| **12_worldgen** | every feature (placed features through their configured feature; ores buried in a stone patch), structure (`/place structure`) and template (`/place template`, its NBT palette read) | `/place` fails; a mod block it names (or its templates hold) is not found nearby; a feature naming none changes nothing |
+
+The summary lists `items`, `entities`, `worldgen` and `recipes` beside `blocks`, each ok, failed or skipped.
+
+### Scenario steps
+
+A contract scenario (`"steps"`) runs on its own patch of the mod's scenario row (`"area": [w, d]` for a bigger one; a `walk_speed` gets a 48-block runway), starting in creative with an empty inventory and no effects. Positions are `[dx, dy, dz]` from the patch's origin; the player stands at `[0, 0, -1.5]` facing it.
+
+| Step | Does |
+| :--- | :--- |
+| `{"setblock": [dx,dy,dz,block]}`, `{"command": text}`, `{"wait": ticks}`, `{"reload_chunk": true}` | the world; the chunk saved, dropped and read back (level 5) |
+| `{"place": "feature"\|"structure"\|"template", "id": id, "at": [..]}` | worldgen, as `/place` |
+| `{"give": item, "count": n}`, `{"hold": item}`, `{"equip": item, "slot": "head\|chest\|legs\|feet\|offhand\|mainhand"}` | the inventory (an item may carry components: `"ic2:quantum_boots[custom_data={charge:1000000}]"`) |
+| `{"use": item, "on": [..]}`, `{"interact": [..]}`, `{"use_item": seconds}` | right-click a block holding item, empty-handed, or in the air (eat, throw, fire) |
+| `{"key": k, "seconds": s}`, `{"tp": [..]}`, `{"look": [yaw, pitch]}` | hold a key (space to fly a jetpack), move, turn |
+| `{"summon": type, "at": [..], "nbt": "{NoAI:1b}"}`, `{"attack": type}`, `{"interact_entity": type}` | entities (attack replies `value`: the health it took) |
+| `{"insert": [dx,dy,dz,item,n]}`, `{"click_slot": id, "right": true, "shift": true}` | a container's items, the open menu |
+| measurements, each with `"save": "name"`: `{"damage": amount, "type": damage_type}` (health lost, in survival), `{"fall": height}` (fall damage), `{"jump_height": true}` (blocks risen), `{"walk_speed": seconds, "sprint": true}` (blocks a second), `{"attack": type}`, `{"attribute": id, "target": "@s"}`, `{"state": "path.in.reply"}` (`health`, `position.1`, `on_ground`), `{"blocks": [x1,y1,z1,x2,y2,z2, block?]}` (count), and `"save"` on `ctl` / `command` (the number in its reply, or `"save": {"name", "regex"\|"path"}`) | keep a number for `expect_value` |
+| `{"build": {"layers": [...], "key": {...}, "at": [..], "player": "last"\|"all", "rotate": 90}}` (or `{"build": [[dx,dy,dz,block], ...]}`) | a structure of many blocks: layers bottom to top, rows north to south, characters west to east (`" "` air, `"."` untouched); a key value `"mod:x[facing=north]"`, or `{"item": "mod:chalk", "by_player": true}` for a block a player must place (chalk, a ritual's last block, the wither's last skull: `/setblock` never runs placement logic). Cells by `/setblock` first, then by hand with horizon-ctl `place` from a spot in reach |
+| `{"break": [..]}` (a player mines it), `{"remove": [..]}` (`/setblock` air), `{"data": [dx,dy,dz,"Path"], "save": "e"}` / `{"data": {"entity": "@e[type=x,limit=1]", "path": "Health"}, "save": "h"}` | take a structure apart; read a block's or entity's NBT number (energy stored, progress, a mob's health) |
+| `{"expect_value": "$boots >= $bare * 2"}` | arithmetic and comparisons over saved names (`abs`, `min`, `max`, `sqrt`) |
+| `{"expect_item": [item, ">=1"]}`, `{"expect_entity": [type, "==0"], "radius": r}`, `{"expect_container": [dx,dy,dz,item,">=1"]}`, `{"expect_slot": [slot, item_regex, "==1"]}`, `{"expect_blocks": [x1,y1,z1,x2,y2,z2,block,">=3"]}`, `{"expect_effect": regex}` | counts (`5`, `">=3"`, `"<$before"`, `"~2.5"` within 5%) |
+| `{"expect_message": regex}`, `{"expect_block": [dx,dy,dz,regex]}`, `{"expect_data": [dx,dy,dz,regex]}`, `{"ctl": [words], "at": [..], "expect": regex}` | chat, a block's state, its data, any horizon-ctl reply |
+
+### Multiblocks, rituals and networks
+
+A contract's `"multiblocks"` (in the outline or a block's contract file) is a structure and what it does; contract-check and the harness turn each into scenarios (level 4 unless it says, its `covers` counting for each):
+
+- **built**, in every one of its `rotations` (`[0, 90, 180, 270]`: positions, `facing`, wire sides and `axis` all turned): `before` steps, the `build`, its `trigger` (a right-click with the ritual's dagger, a `use`, a `key`; `"player": "last"` makes the last block's placement the trigger), `wait` ticks, then the `formed` checks; then, with `broken`, one block (`"break": [x,y,z]`, default the first) mined by a player and the `broken` checks;
+- **one block missing** (`incomplete`): the same build without one block (`"omit"`, default the first), the same trigger, and the `incomplete` checks: nothing forms, nothing is summoned, no power flows.
+
+```json
+"multiblocks": [{
+  "name": "wither altar", "covers": ["summons the wither"], "rotations": [0, 90],
+  "build": {"layers": [[".S."], ["SSS"], ["KKK"]], "player": "last", "at": [0, 0, 1],
+            "key": {"S": "minecraft:soul_sand", "K": "minecraft:wither_skeleton_skull"}},
+  "before": [{"command": "difficulty normal"}],
+  "formed": [{"expect_entity": ["minecraft:wither", ">=1"]}],
+  "incomplete": [{"expect_entity": ["minecraft:wither", "==0"]}]
+}, {
+  "name": "solar panel powers a machine through wire", "covers": ["powers machines through wire"], "rotations": [0, 90, 180, 270],
+  "build": {"layers": [["CWWM"]], "key": {"C": "redpower_2:solar_panel", "W": "redpower_2:blue_alloy_wire",
+                                          "M": "redpower_2:alloy_furnace[facing=north]"}},
+  "before": [{"command": "time set noon"}], "wait": 200,
+  "formed": [{"data": [3, 0, 0, "Energy"], "save": "e1"}, {"wait": 40}, {"data": [3, 0, 0, "Energy"], "save": "e2"},
+             {"expect_value": "$e2 > $e1"}],
+  "break": [1, 0, 0],
+  "broken": [{"data": [3, 0, 0, "Energy"], "save": "e3"}, {"wait": 40}, {"data": [3, 0, 0, "Energy"], "save": "e4"},
+             {"expect_value": "$e4 <= $e3"}],
+  "incomplete": [{"data": [3, 0, 0, "Energy"], "save": "e"}, {"expect_value": "$e == 0"}]
+}]
+```
+
+A ritual is the same shape: chalk cells `{"item": "mod:white_chalk", "by_player": true}` around a centre, the trigger a `use` of the activating item on the centre (or `"player": "last"`), `formed` an `expect_entity` for the mob it summons (or `expect_effect`, `expect_message`), `incomplete` that nothing came. Each scenario starts on peaceful; set `difficulty` in `before` when the original refuses to summon on peaceful. Whatever it summons is killed before the next scenario.
+
+Measure against the same thing without the item, so the test holds whatever the base values are. Quantum armor, for example:
+
+```json
+{"name": "quantum armor", "for": ["quantum_boots", "quantum_bodyarmor"], "level": 2,
+ "covers": ["jumps higher", "absorbs nearly all damage"], "steps": [
+  {"jump_height": true, "save": "bare"}, {"damage": 10, "save": "hit_bare"},
+  {"equip": "industrialcraft_2:quantum_boots[custom_data={charge:1000000}]", "slot": "feet"},
+  {"jump_height": true, "save": "boots"}, {"expect_value": "$boots >= $bare * 2"},
+  {"equip": "industrialcraft_2:quantum_bodyarmor[custom_data={charge:1000000}]", "slot": "chest"},
+  {"damage": 10, "save": "hit_armored"}, {"expect_value": "$hit_armored <= $hit_bare * 0.2"}]}
+```
+
 ---
 
 ## 4. Phase 1 vs. Phase 2 Execution Flow

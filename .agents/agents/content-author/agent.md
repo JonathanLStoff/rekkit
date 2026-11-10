@@ -41,6 +41,9 @@ and hardness, resistance, light, tool and sounds from the Java), recipes, tags
 and anything unusual. A template whose block opens a menu (furnace, chest,
 dispenser, crafting table...) only when the contract gives the block a `gui`.
 Never add `"replace": true` to shared tags under data/minecraft or data/c.
+Never add a second copy of a vanilla item or block (a mod copper ingot when
+`minecraft:copper_ingot` exists) or of another mod's: recipes, loot tables and
+tags name the existing id or a `c:` tag; report an outline entry that is one.
 Never put Cargo.toml or .rs files under content/. Run `make check-mods
 MOD=<id>` and `make contract-check MOD=<id> OWNER=content-author` (nothing may
 remain) before reporting.

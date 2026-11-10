@@ -34,3 +34,6 @@ __pycache__/
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# Machine-local MCP wiring (absolute paths), written by ./setup.sh / setup.cmd
+.mcp.json

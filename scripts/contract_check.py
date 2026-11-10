@@ -250,6 +250,123 @@ def turns(blockstate: dict) -> bool:
     return any("facing" in json.dumps(p.get("when", {})) for p in blockstate.get("multipart", []))
 
 
+ACTING = ("interact", "use", "command", "wait", "ctl", "reload_chunk", "give", "equip", "hold", "use_item",
+          "key", "tp", "look", "summon", "attack", "interact_entity", "damage", "fall", "jump_height",
+          "walk_speed", "insert", "click_slot", "place", "craft", "smelt", "state", "attribute", "blocks",
+          "build", "break", "remove", "data")
+OBSERVING = ("expect_message", "expect_data", "expect", "expect_value", "expect_item", "expect_entity",
+             "expect_container", "expect_slot", "expect_blocks", "expect_effect")
+
+
+def vanilla_registry() -> dict:
+    """Minecraft 26.3's own ids ({"items": set, "blocks": set, "item_tags": {tag: [ids]}, ...}), read from the
+    prepared game resources on this machine (command-registries.json and data/minecraft/tags), never
+    committed: they are Mojang's. Empty when none are prepared here (./setup.sh makes them)."""
+    return _vanilla_registry()
+
+
+@lru_cache(maxsize=1)
+def _vanilla_registry() -> dict:
+    roots = [ROOT / "horizon" / ".local" / "horizon-client" / "26.3"]
+    roots += sorted((ROOT / "target" / "e2e" / "source").glob("*/.local/horizon-client/26.3"),
+                    key=lambda p: p.stat().st_mtime, reverse=True)
+    for root in roots:
+        reg = root / "command-registries.json"
+        if not reg.is_file():
+            continue
+        try:
+            data = json.loads(reg.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        tags: dict[str, list] = {}
+        for kind in ("item", "block"):
+            for f in (root / "data" / "minecraft" / "tags" / kind).rglob("*.json"):
+                try:
+                    values = json.loads(f.read_text(encoding="utf-8")).get("values", [])
+                except ValueError:
+                    continue
+                rel = f.relative_to(root / "data" / "minecraft" / "tags" / kind).with_suffix("").as_posix()
+                tags.setdefault(f"{kind}:minecraft:{rel}", [v if isinstance(v, str) else v.get("id", "") for v in values])
+        return {"root": str(root), "items": set(data.get("items", [])), "blocks": set(data.get("blocks", {})),
+                "entity_types": set(data.get("entity_types", [])), "attributes": set(data.get("attributes", [])),
+                "tags": tags}
+    return {}
+
+
+# Words a port spells differently from vanilla for the same thing (IC2's "ingotCopper", "oreTin").
+_SPELLINGS = {"ingots": "ingot", "dusts": "dust", "ores": "ore", "nuggets": "nugget", "blocks": "block",
+              "gems": "gem", "planks": "planks", "logs": "log", "wood": "log"}
+
+
+def vanilla_twin(name: str, vanilla: dict) -> str | None:
+    """The vanilla item or block a port's `name` duplicates (copper_ingot, ingot_copper, copperIngot,
+    block_of_copper -> minecraft:copper_ingot / minecraft:copper_block), or None."""
+    if not vanilla:
+        return None
+    snake = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", name).lower().strip("_")
+    words = [_SPELLINGS.get(w, w) for w in snake.split("_") if w and w not in ("of", "the")]
+    known = vanilla.get("items", set()) | vanilla.get("blocks", set())
+    candidates = {"_".join(words), "_".join(reversed(words))}
+    if len(words) == 2:
+        candidates |= {f"{words[1]}_{words[0]}"}
+    for c in sorted(candidates):
+        if f"minecraft:{c}" in known:
+            return f"minecraft:{c}"
+    return None
+
+
+def vacuous_scenario(sc: dict) -> str:
+    """Why a scenario above level 1 proves nothing, or "". Level 1 is placement and may only place.
+
+    A scenario that places the block and expects the block there passes for a block that does nothing
+    (the alloy furnace that never smelts, the machine that ignores the meter). A function, interaction,
+    persistence or sides test must act on the block (interact, use, command, wait, ctl, reload_chunk) and
+    then read something the action changes: a chat line, block data, a ctl reply, or a block state."""
+    if int(sc.get("level") or 0) < 2:
+        return ""
+    steps = sc.get("steps", [])
+    kinds = {k for st in steps for k in st}
+    if not kinds & set(ACTING):
+        return "no step acts on the block (only setblock and expect_block)"
+    state_check = any(isinstance(st.get("expect_block"), list) and len(st["expect_block"]) > 4
+                      or (isinstance(st.get("expect_block"), list) and len(st["expect_block"]) == 4
+                          and "[" in str(st["expect_block"][3])) for st in steps)
+    if not (kinds & set(OBSERVING)) and not state_check:
+        return "nothing it reads (expect_message, expect_data, ctl expect or a block-state expect_block) can change when the block works"
+    for st in steps:
+        for k in ("expect_message", "expect_data"):
+            if st.get(k) in ("", ".*", ".+"):
+                return f"{k} matches anything"
+    # Acting on air: a use or interact on a spot no step put a block on (the floor, dy -1, is stone).
+    placed: set[tuple] = set()
+    anything = False
+    for st in steps:
+        if isinstance(st.get("setblock"), list):
+            placed.add(tuple(st["setblock"][:3]))
+        if "build" in st or "place" in st or re.search(r"\b(?:fill|setblock|place|clone)\b", str(st.get("command", ""))):
+            anything = True
+        target = st.get("on") if "use" in st else st.get("interact")
+        if (isinstance(target, list) and len(target) >= 3 and not anything and tuple(target[:3]) not in placed
+                and target[1] >= 0):
+            return (f"it right-clicks {target}, where no step placed a block: it acts on air, which tests nothing "
+                    f"(setblock what the item works on there first, or aim at the floor, dy -1)")
+    # Its only checks are that the player still holds the item it used: true of an item that does nothing.
+    used = {str(st.get(k)).split("[")[0] for st in steps for k in ("use", "give", "hold", "equip") if st.get(k)}
+    checks = [st for st in steps if set(st) & set(OBSERVING) or (isinstance(st.get("expect_block"), list))]
+
+    def trivial(st: dict) -> bool:
+        if "ctl" in st and [str(w) for w in st["ctl"]][:1] == ["inventory"]:
+            return any(u and u in str(st.get("expect", "")) for u in used) or not st.get("expect")
+        if "expect_item" in st:
+            item, want = (st["expect_item"] + [">=1"])[:2]
+            return str(item).split("[")[0] in used and str(want).replace(" ", "") in (">=1", ">0", "1")
+        return False
+    if checks and all(trivial(st) for st in checks):
+        return (f"its only check is that the player still holds {', '.join(sorted(used))}, which is true when the item "
+                "does nothing: check what using it changes (the block it works on, its durability, a reading, a drop)")
+    return ""
+
+
 def load_contract(mod_id: str, path: Path | None = None) -> dict | None:
     """The spec-writer's outline (planning/mods/<id>.features.json: every block and item, with the
     attributes a player must find) merged with each block's and item's own contract file,
@@ -261,6 +378,7 @@ def load_contract(mod_id: str, path: Path | None = None) -> dict | None:
         return None
     contract = json.loads(path.read_text(encoding="utf-8"))
     contract.setdefault("scenarios", [])
+    multiblocks = [(mb, []) for mb in contract.pop("multiblocks", [])]
     entries = {e["id"]: e for kind in ("blocks", "items") for e in contract.get(kind, []) if isinstance(e, dict)}
     for f in sorted((path.parent / f"{mod_id}.contract").glob("*.json")):
         try:
@@ -271,8 +389,16 @@ def load_contract(mod_id: str, path: Path | None = None) -> dict | None:
         for scenario in data.pop("scenarios", []):
             scenario.setdefault("for", [f.stem])
             contract["scenarios"].append(scenario)
+        multiblocks += [(mb, [f.stem]) for mb in data.pop("multiblocks", [])]
         if f.stem in entries:
             entries[f.stem].update({k: v for k, v in data.items() if k not in ("id", "name", "java")})
+    # A multiblock (ritual, altar, built machine, powered network) is the scenarios that test it.
+    import e2e_probes  # noqa: E402  (it imports this module)
+    for mb, default_for in multiblocks:
+        try:
+            contract["scenarios"] += e2e_probes.expand_multiblock(mb, default_for)
+        except (KeyError, ValueError, TypeError) as exc:
+            contract.setdefault("broken", []).append(f"multiblock {mb.get('name', '?')!r}: {exc}")
     return contract
 
 
@@ -316,6 +442,11 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
                     f"{label} has no test level (\"level\": 1-6: {', '.join(f'{k} {v}' for k, v in LEVELS.items())})")
         if not any(k.startswith("expect") or "expect" in st for st in sc.get("steps", []) for k in st):
             problem(",".join(sc.get("for", [])) or mod_id, "scenario", "content-author", f"{label} checks nothing (no expect step)")
+        vacuous = vacuous_scenario(sc)
+        if vacuous:
+            problem(",".join(sc.get("for", [])) or mod_id, "scenario", "test-smith", f"{label} (level {sc.get('level')}) is "
+                    f"a placeholder: {vacuous}. It passes for a block that does nothing, so it proves nothing about "
+                    f"{'; '.join(sc.get('covers', [])) or 'the attribute'}")
 
     port_blocks = {p.stem for p in (mod.data / "block").glob("*.json")}
     port_items = {p.stem for p in (mod.data / "item").glob("*.json")}
@@ -323,10 +454,44 @@ def check(mod_id: str, path: Path | None = None) -> list[dict]:
         problem(name, "contract", "spec-writer", "a block of the port with no contract entry (or no original)")
     for name in sorted(port_items - set(items)):
         problem(name, "contract", "spec-writer", "an item of the port with no contract entry (or no original)")
-    for name in sorted(set(blocks) - port_blocks):
+    shared = {n for n, e in {**items, **blocks}.items() if e.get("shared_with")}  # another mod's id is used
+    for name in sorted(set(blocks) - port_blocks - shared):
         problem(name, "missing", "content-author", "in the contract, not in the port")
-    for name in sorted(set(items) - port_items):
+    for name in sorted(set(items) - port_items - shared):
         problem(name, "missing", "content-author", "in the contract, not in the port")
+
+    # A second copy of what Minecraft 26.3 already has (copper ingot, copper block, raw copper, amethyst...)
+    # or what another mod already ports (tin ingot in IC2 and Thermal): the port uses the existing one
+    # (recipes name it or a c: tag), unless the entry says why it is a different thing ("not_vanilla": why).
+    vanilla = vanilla_registry()
+    others = {}
+    for f in sorted((ROOT / "planning" / "mods").glob("*.features.json")):
+        other = f.name[: -len(".features.json")]
+        if other == mod_id:
+            continue
+        try:
+            odata = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        for kind in ("blocks", "items"):
+            for e in odata.get(kind, []):
+                if isinstance(e, dict) and "id" in e and not e.get("shared_with"):
+                    others.setdefault(e["id"], other)
+    for name, entry in sorted({**items, **blocks}.items()):
+        twin = vanilla_twin(name, vanilla)
+        if twin and not entry.get("not_vanilla"):
+            problem(name, "duplicate", "spec-writer",
+                    f"Minecraft already has {twin}: drop {name} from the outline and the port, and make every recipe, "
+                    f"loot table and tag use {twin} (or c:ingots/... style tags); if it really is a different thing, "
+                    f'say why in the outline entry ("not_vanilla": "why")')
+        if name in others and not entry.get("shared_with") and not entry.get("not_shared"):
+            problem(name, "duplicate", "spec-writer",
+                    f"{others[name]} already ports {name}: one mod owns it (move it to crates/rekkit_core or keep "
+                    f'it in {others[name]} and mark this entry "shared_with": "{others[name]}", using its id or a c: tag), '
+                    f'or say why it differs ("not_shared": "why")')
+    if not vanilla:
+        print("[WARN] no prepared Minecraft 26.3 resources on this machine (./setup.sh): the port's items and "
+              "blocks were not checked against vanilla's own", file=sys.stderr)
 
     def levels_for(name: str) -> set[int]:
         return {int(sc.get("level") or 0) for sc in scenarios if name in sc.get("for", [])}

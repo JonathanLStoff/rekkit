@@ -51,6 +51,7 @@ import urllib.request
 from pathlib import Path
 
 import contract_check  # noqa: E402
+import e2e_probes as probes
 import pack_mod
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -186,9 +187,21 @@ def discover_mod_spec(mod_dir: Path) -> dict:
     by_name = {c["id"]: c for c in contract.get("blocks", []) if isinstance(c, dict) and "id" in c}
     for b in blocks:
         b["contract"] = by_name.get(b["name"], {})
+    items_by_name = {c["id"]: c for c in contract.get("items", []) if isinstance(c, dict) and "id" in c}
+    for it in items:
+        it["contract"] = items_by_name.get(it["name"], {})
 
     namespaces = [mod_id, *manifest.get("namespaces", [])]
-    return {
+    extra = probes.discover(content_dir, mod_id, namespaces, {b["id"] for b in blocks}, contract)
+    # The test-smith's tests/e2e_actions.json (make e2e-gen drafts it): trigger items, the interactions
+    # that must change a block's property, and the neighbours placed around a block.
+    actions = {}
+    try:
+        actions = json.loads((mod_dir / "tests" / "e2e_actions.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        pass
+    extra["actions"] = actions
+    return {**extra,
         "id": mod_id,
         "version": manifest["version"],
         "namespaces": namespaces,
@@ -275,6 +288,8 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "args": {"command": f"effect clear @s {eff['id']}"},
             }
         )
+    # Every item: stack size, and armor and held attributes (worn armor's protection, a tool's damage).
+    steps += probes.item_steps(spec)
     steps.append({"stage": "1_clear_inventory", "cmd": "command", "args": {"command": "clear"}})
     steps.append({"stage": "1_clear_sync", "cmd": "wait", "args": {"ticks": 2}})
 
@@ -316,6 +331,9 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         elif "sapling" in b["template"] or b["template"] == "minecraft:poppy":
             steps.append({"stage": "2_support_floor", "cmd": "setblock", "args": {"x": bx, "y": base_y - 1, "z": bz, "block": "minecraft:grass_block"}})
         block_to_place = f"{b['id']}[persistent=true]" if "leaves" in b["template"] else b["id"]
+        # The empty spot, seen from where the block will be looked at: the render check compares the two.
+        steps += [{"stage": "2_render_aim_empty", "cmd": "look_at", "args": {"x": bx + 0.5, "y": base_y + 0.5, "z": bz + 0.5}},
+                  {"stage": "2_render_empty", "cmd": "screenshot", "args": {"path": f"{mod_id}_{b['name']}_empty.png"}}]
         steps.append(
             {"stage": "2_place_mod_block", "cmd": "setblock", "args": {"x": bx, "y": base_y, "z": bz, "block": block_to_place}}
         )
@@ -330,7 +348,8 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         )
         contract = b.get("contract", {})
         steps += [{"stage": "2_render_aim", "cmd": "look_at_block", "args": {"x": bx, "y": base_y, "z": bz}},
-                  {"stage": "2_render", "cmd": "screenshot", "args": {"path": f"{mod_id}_{b['name']}_world.png"}}]
+                  {"stage": "2_render", "cmd": "screenshot", "args": {"path": f"{mod_id}_{b['name']}_world.png"},
+                   "render_check": f"{mod_id}_{b['name']}", "block": b["id"]}]
         steps += shape_probe(contract.get("shape"), bx, base_y, bz)
         pz = base_z + 4
         if b["has_item"]:
@@ -367,8 +386,15 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         steps.append(tp_step("2_player_return", bx + 0.5, base_y, bz - 1.5))
         steps.append({"stage": "2_player_returns", "cmd": "wait", "args": {"ticks": 5}})
 
-        # Stage 3: Item-on-Block & Right-Click Interactions
-        for trigger_item in ("minecraft:orange_dye", "minecraft:diamond"):
+        # Stage 3: Item-on-Block & Right-Click Interactions: the stock triggers, then each of
+        # e2e_actions.json's interactions on this block, whose property must change.
+        actions = spec.get("actions") or {}
+        targeted = [(x["item"], x.get("expected_property")) for x in actions.get("stage_3_interactions", [])
+                    if b["id"] in x.get("target_blocks", []) and not x.get("draft")]
+        for trigger_item, prop in [("minecraft:orange_dye", None), ("minecraft:diamond", None), *targeted]:
+            if prop:
+                steps.append({"stage": "3_state_before", "cmd": "block", "args": {"x": bx, "y": base_y, "z": bz},
+                              "save": {"name": f"state_{prop}", "state_prop": prop}})
             steps.append(tp_step("3_player_stand", bx + 0.5, base_y, bz - 1.5))
             steps.append({"stage": "3_player_settle", "cmd": "wait", "args": {"ticks": 2}})
             steps.append({"stage": "3_clear_trigger", "cmd": "command", "args": {"command": "clear"}})
@@ -380,6 +406,10 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
             )
             steps.append({"stage": "3_use_item_on", "cmd": "mouse", "args": {"button": "right", "action": "click"}})
             steps.append({"stage": "3_wait_use", "cmd": "wait", "args": {"ticks": 5}})
+            if prop:
+                steps.append({"stage": "3_state_changed", "cmd": "block", "args": {"x": bx, "y": base_y, "z": bz},
+                              "check": {"type": "prop_changed", "prop": prop},
+                              "what": f"using {trigger_item} on it changes its {prop} (e2e_actions.json)"})
             steps.append({"stage": "3_close_after_use", "cmd": "close", "args": {}})
 
         # Stage 4: Container & Custom GUI Screen Actions
@@ -420,7 +450,20 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
                 "args": {"x": bx, "y": base_y + 1, "z": bz, "block": "minecraft:hopper[facing=down]"},
             }
         )
+        sides = {"top": (0, 1, 0), "bottom": (0, -1, 0), "north": (0, 0, -1), "south": (0, 0, 1),
+                 "east": (1, 0, 0), "west": (-1, 0, 0)}
+        placed = []
+        for n in actions.get("stage_5_neighbors", []):
+            if n.get("center") != b["id"] or n.get("draft"):
+                continue
+            for side, (dx, dy, dz) in sides.items():
+                if n.get(side) and side != "top":
+                    pos = {"x": bx + dx, "y": base_y + dy, "z": bz + dz}
+                    steps.append({"stage": "5_place_neighbor", "cmd": "setblock", "args": {**pos, "block": n[side]}})
+                    placed.append((pos, "minecraft:stone" if side == "bottom" else "minecraft:air"))
         steps.append({"stage": "5_tick_simulation", "cmd": "wait", "args": {"ticks": 20}})
+        for pos, restore in placed:
+            steps.append({"stage": "5_remove_neighbor", "cmd": "setblock", "args": {**pos, "block": restore}})
         steps.append(
             {
                 "stage": "5_remove_hopper",
@@ -430,10 +473,6 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         )
         for step in steps[first:]:
             step["block"] = b["id"]
-
-    # Stage 6: Recipe Verification
-    for r in spec["recipes"]:
-        steps.append({"stage": "6_verify_recipe", "recipe_id": r["id"], "result": r["result"]})
 
     # Stage 7: Survival Block Break & Loot Drop Verification
     steps.append({"stage": "7_clear_inventory", "cmd": "command", "args": {"command": "clear"}})
@@ -465,11 +504,23 @@ def build_action_plan(spec: dict, plot_index: int = 0) -> list[dict]:
         for step in steps[-5:]:
             step["block"] = b["id"]
     steps.append({"stage": "7_restore_creative", "cmd": "command", "args": {"command": "gamemode creative"}})
+    steps.append({"stage": "7_clear_effects", "cmd": "command", "args": {"command": "effect clear @s"}})
+
+    # Stage 6: every crafting, smelting and smithing recipe made in its station, its result checked.
+    steps += probes.recipe_steps(spec, spec.get("all_tags", spec.get("tags", {})), base_x, base_y, base_z)
+
+    # Stage 11: every entity type summoned, drawn, its attributes and drops. Stage 12: every feature,
+    # structure and template placed and its blocks found. Each on its own far-off row.
+    steps += probes.entity_steps(spec, plot_index)
+    steps += probes.worldgen_steps(spec, plot_index)
 
     # Stage 10: the contract's behaviour scenarios (what the original does: a solar panel at noon charges,
-    # a voltmeter reads it), each on its own patch of the row behind the plot.
-    for n, scenario in enumerate(spec.get("scenarios", [])):
-        steps += scenario_steps(scenario, base_x + n * 6, base_y, base_z + 10)
+    # a voltmeter reads it, quantum boots jump higher), each on its own patch of the mod's scenario row.
+    ox = base_x
+    for scenario in spec.get("scenarios", []):
+        width, depth, _ = probes.scenario_area(scenario)
+        steps += scenario_steps(scenario, ox, base_y, 1024 + plot_index * 128, depth)
+        ox += width + 4
     return steps
 
 
@@ -490,7 +541,7 @@ def shape_probe(shape, bx: int, y: int, bz: int) -> list[dict]:
              "what": f"the original's shape is {shape}"}]
 
 
-def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
+def scenario_steps(scenario: dict, ox: int, oy: int, oz: int, depth: int = 6) -> list[dict]:
     """A contract scenario's steps at origin (ox, oy, oz), on a cleared stone patch. Its steps:
     {"setblock": [dx, dy, dz, block]}, {"command": text}, {"wait": ticks},
     {"use": item, "on": [dx, dy, dz]} (right-click the block holding item), {"interact": [dx, dy, dz]},
@@ -498,17 +549,31 @@ def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
     {"expect_data": [dx, dy, dz, regex]} (`data get block`),
     {"ctl": [words...], "at": [dx, dy, dz], "expect": regex} (any horizon-ctl command, "{x}" "{y}" "{z}"
     in its words replaced by the position; the regex is matched against its JSON reply),
-    {"reload_chunk": true} (forget the patch's chunk and load it again from disk: level 5, persistence)."""
+    {"reload_chunk": true} (forget the patch's chunk and load it again from disk: level 5, persistence),
+    and the player, entity, inventory, worldgen and measuring steps of e2e_probes.scenario_step
+    (planning/harness.md, "Scenario steps"). Each scenario starts in creative, with an empty inventory and
+    no effects."""
     name = scenario.get("name", "scenario")
     tag = {"scenario": name, "for": scenario.get("for", []), "what": f"scenario {name!r}"}
-    out = [{"stage": "10_scenario_floor", "cmd": "fill", "args": {"box": [ox - 2, oy - 1, oz - 2, ox + 3, oy - 1, oz + 3], "block": "minecraft:stone"}},
-           {"stage": "10_scenario_clear", "cmd": "fill", "args": {"box": [ox - 2, oy, oz - 2, ox + 3, oy + 4, oz + 3], "block": "minecraft:air"}},
+    far = oz + max(3, depth - 3)
+    width, _, height = probes.scenario_area(scenario)
+    out = [{"stage": "10_scenario_pin", "cmd": "command", "args": {"command": f"forceload add {ox - 2} {oz - 2} {ox + width} {far}"}},
+           tp_step("10_scenario_go", ox + 0.5, oy, oz - 1.5), {"stage": "10_scenario_loads", "cmd": "wait", "args": {"ticks": 40}},
+           {"stage": "10_scenario_reset", "cmd": "command", "args": {"command": "gamemode creative"}},
+           {"stage": "10_scenario_reset", "cmd": "command", "args": {"command": "effect clear @s"}},
+           {"stage": "10_scenario_reset", "cmd": "command", "args": {"command": "clear"}},
+           {"stage": "10_scenario_reset", "cmd": "command", "args": {"command": "difficulty peaceful"}},
+           {"stage": "10_scenario_floor", "cmd": "fill", "args": {"box": [ox - 2, oy - 1, oz - 2, ox + width - 3, oy - 1, far], "block": "minecraft:stone"}},
+           {"stage": "10_scenario_clear", "cmd": "fill", "args": {"box": [ox - 2, oy, oz - 2, ox + width - 3, oy + height, far], "block": "minecraft:air"}},
            tp_step("10_scenario_stand", ox + 0.5, oy, oz - 1.5), {"stage": "10_scenario_settle", "cmd": "wait", "args": {"ticks": 5}}]
+    stand = (ox + 0.5, oy, oz - 1.5)
+    ctx = {"oy": oy, "bounds": (ox - 2, oz - 2, ox + width - 3, far), "occupied": set(), "stand": stand}
 
     def at(rel):
         return {"x": ox + rel[0], "y": oy + rel[1], "z": oz + rel[2]}
     tag["level"] = scenario.get("level")
     for st in scenario.get("steps", []):
+        first = len(out)
         if "ctl" in st:
             pos = at(st.get("at", [0, 0, 0]))
             words = [str(w).format(**pos) if isinstance(w, str) else w for w in st["ctl"]]
@@ -550,7 +615,32 @@ def scenario_steps(scenario: dict, ox: int, oy: int, oz: int) -> list[dict]:
         elif "expect_data" in st:
             out.append({"stage": "10_scenario_expect", "cmd": "command", "args": {"command": "data get block {x} {y} {z}".format(**at(st["expect_data"]))},
                         "expect_match": st["expect_data"][3], **tag})
+        else:
+            try:
+                extra = probes.scenario_step(st, at, stand, ctx)
+            except (KeyError, ValueError, TypeError) as exc:
+                raise HarnessError(f"scenario {name!r}: bad step {json.dumps(st)[:120]}: {exc}") from exc
+            if extra is None:
+                raise HarnessError(f"scenario {name!r}: unknown step {json.dumps(st)[:120]} (planning/harness.md, Scenario steps)")
+            for step in extra:
+                if "check" in step:
+                    step.update(tag)
+            out += extra
+        # "save" on a ctl or command step keeps a number of its reply ("regex" or "path").
+        if isinstance(st.get("save"), (dict, str)) and ("ctl" in st or "command" in st):
+            s = st["save"] if isinstance(st["save"], dict) else {"name": st["save"], "regex": probes.NUMBER}
+            for step in reversed(out[first:]):
+                if step.get("cmd") in ("raw", "command"):
+                    step["save"] = s
+                    break
     out.append({"stage": "10_scenario_close", "cmd": "close", "args": {}, "allow_kinds": ["state"]})
+    # Whatever it summoned (a wither from its altar, a ritual's mob) goes before the next scenario.
+    out.append({"stage": "10_scenario_cleanup", "cmd": "command",
+                "args": {"command": f"kill @e[type=!player,x={ox - 2},y={oy - 2},z={oz - 2},dx={width + 2},dy={height + 8},dz={far - oz + 4}]"},
+                "allow_kinds": ["usage", "state"]})
+    out.append({"stage": "10_scenario_reset", "cmd": "command", "args": {"command": "difficulty peaceful"}})
+    out.append({"stage": "10_scenario_unpin", "cmd": "command", "args": {"command": f"forceload remove {ox - 2} {oz - 2} {ox + width} {far}"},
+                "allow_kinds": ["usage", "state"]})
     for step in out:
         step.setdefault("scenario", name)
         step.setdefault("for", tag["for"])
@@ -931,7 +1021,9 @@ def server_jar(source: Path, mc: Path, explicit: str | None) -> Path | None:
     jar.parent.mkdir(parents=True, exist_ok=True)
     print(f"  $ GET {url}", flush=True)
     try:
-        with urllib.request.urlopen(url, timeout=300) as response, jar.open("wb") as out:
+        import ssl  # certificates unverified: this machine's network re-signs HTTPS
+        unverified = ssl._create_unverified_context()
+        with urllib.request.urlopen(url, timeout=300, context=unverified) as response, jar.open("wb") as out:
             shutil.copyfileobj(response, out)
     except OSError as exc:
         jar.unlink(missing_ok=True)
@@ -1102,6 +1194,41 @@ def creative_check(ctl: "Ctl", spec: dict, shots: Path) -> tuple[list[dict], set
     return errors, seen
 
 
+def render_problem(shots: Path, key: str) -> str | None:
+    """What the screenshot of a placed block shows, against the same view with the spot empty.
+
+    Horizon draws a block with no usable model or texture as the magenta missing texture, or not at
+    all, and logs nothing; the game log cannot find that, the pixels can. Returns the problem, or None."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from art import read_png
+    try:
+        w, h, after = read_png(shots / f"{key}_world.png")
+        w2, h2, before = read_png(shots / f"{key}_empty.png")
+    except (OSError, ValueError) as exc:
+        return f"render check: no screenshot to read ({exc})"
+    if (w, h) != (w2, h2):
+        return f"render check: screenshots differ in size ({w}x{h} against {w2}x{h2})"
+    x0, x1, y0, y1 = w * 3 // 10, w * 7 // 10, h * 3 // 10, h * 7 // 10
+    magenta = changed = total = 0
+    for y in range(y0, y1):
+        row = y * w
+        for x in range(x0, x1):
+            r, g, b, _ = after[row + x]
+            br, bg, bb, _ = before[row + x]
+            total += 1
+            if r > 170 and b > 170 and g < 90:
+                magenta += 1
+            if abs(r - br) + abs(g - bg) + abs(b - bb) > 30:
+                changed += 1
+    if magenta > max(40, total // 4000):
+        return (f"the block is drawn with the magenta missing texture ({magenta} pixels of {total} at its view, "
+                f"{key}_world.png): its blockstate, model or a texture does not resolve in the engine")
+    if changed < max(40, total // 4000):
+        return (f"the block is invisible: the view of it differs from the empty spot in {changed} of {total} pixels "
+                f"({key}_world.png against {key}_empty.png)")
+    return None
+
+
 def step_words(step: dict, shots: Path) -> list:
     a = step["args"]
     cmd = step["cmd"]
@@ -1234,23 +1361,42 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
         plan = []
         for plot_idx, spec in enumerate(specs):
             plan += build_action_plan(spec, plot_index=plot_idx)
+        variables: dict[str, float] = {}  # what scenario steps saved ("save"), per session
+        scenario_vars = None
         for i, step in enumerate(plan):
             if "cmd" not in step:
-                results.append({"i": i, "stage": step["stage"], "skipped": "no horizon-ctl command yet",
+                results.append({"i": i, "stage": step["stage"], "skipped": step.get("skipped_why", "no horizon-ctl command yet"),
                                 "recipe": step.get("recipe_id")})
                 continue
-            words = step_words(step, shots)
-            code, reply = ctl(*words, timeout=180)
+            if step.get("scenario") != scenario_vars:  # each scenario starts with no saved values
+                scenario_vars = step.get("scenario")
+                variables = {k: v for k, v in variables.items() if k.startswith("wg_")}
+            if step["cmd"] in probes.COMPOUND:
+                words = [step["cmd"], json.dumps(step.get("args", {}))]
+                try:
+                    code, reply = probes.run_compound(ctl, step)
+                except (KeyError, ValueError, TypeError) as exc:
+                    code, reply = 1, {"error": f"{step['cmd']}: {exc}", "kind": "harness"}
+            else:
+                words = step_words(step, shots)
+                code, reply = ctl(*words, timeout=180)
             entry = {"i": i, "stage": step["stage"], "cmd": " ".join(map(str, words)), "reply": reply}
-            if step.get("block"):
-                entry["block"] = step["block"]
+            for key in ("block", "item", "entity", "feature", "recipe"):
+                if step.get(key):
+                    entry[key] = step[key]
             if step.get("scenario"):
                 entry["scenario"] = step["scenario"]
                 entry["for"] = step.get("for", [])
                 entry["level"] = step.get("level")
             problem = None
-            if "error" in reply and reply.get("kind") not in step.get("allow_kinds", []):
+            if "error" not in reply and step.get("save"):
+                problem = probes.save(step, reply, variables)
+            if problem:
+                pass
+            elif "error" in reply and reply.get("kind") not in step.get("allow_kinds", []):
                 problem = reply
+            elif step.get("check"):
+                problem = probes.check(step, reply, variables)
             elif step.get("expect_block") and step["expect_block"] not in json.dumps(reply):
                 problem = f"expected block {step['expect_block']}" + (f" ({step['what']})" if step.get("what") else "")
             elif step.get("expect_hit"):
@@ -1303,6 +1449,8 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
                             break
                     if not dropped_found:
                         problem = f"breaking it dropped {got_drops or got_picked or 'nothing'}, expected {exp} (loot table)"
+            if problem is None and step.get("render_check"):
+                problem = render_problem(shots, step["render_check"])
             if problem:
                 entry["error"] = problem
                 errors.append(entry)
@@ -1357,15 +1505,29 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
     status = "ok" if not errors else "horizon" if all(e.get("horizon") for e in errors) else "failed"
     blocks = {b["id"]: "ok" for spec in specs for b in spec["blocks"]}
     creative = {i: "ok" for spec in specs for i in spec["creative_expected"]}
+    # Everything else the plan tests, by what it tests: items (stack, armor, held), entities, worldgen, recipes.
+    subjects: dict[str, dict[str, str]] = {"items": {}, "entities": {}, "worldgen": {}, "recipes": {}}
+    for r in results:
+        for key, group in (("item", "items"), ("entity", "entities"), ("feature", "worldgen"), ("recipe", "recipes")):
+            if r.get(key):
+                subjects[group].setdefault(r[key], "skipped" if "skipped" in r else "ok")
     for e in errors:
         if e.get("block") in blocks:
             blocks[e["block"]] = "failed"
         if e.get("item") in creative:
             creative[e["item"]] = "failed"
+        for key, group in (("item", "items"), ("entity", "entities"), ("feature", "worldgen"), ("recipe", "recipes")):
+            if e.get(key):
+                subjects[group][e[key]] = "failed"
     print(f"[{session_name}] {status.upper()}: {executed} actions run, {skipped} skipped, {len(errors)} error(s), "
           f"{sum(v == 'ok' for v in blocks.values())}/{len(blocks)} blocks ok, {time.time() - started:.0f} s")
     if creative:
         print(f"[{session_name}] creative menu: {sum(v == 'ok' for v in creative.values())}/{len(creative)} items found")
+    for group, status_of in subjects.items():
+        if status_of:
+            skipped_n = sum(v == "skipped" for v in status_of.values())
+            print(f"[{session_name}] {group}: {sum(v == 'ok' for v in status_of.values())}/{len(status_of)} ok"
+                  + (f", {skipped_n} skipped (need a scenario)" if skipped_n else ""))
     # The test levels (planning/harness.md): 1 is every block's placement and outline; 2-6 are the
     # contract's scenarios by their level.
     placed = {b: "failed" if any(e.get("block") == b and str(e.get("stage", "")).startswith("2_") for e in errors)
@@ -1382,13 +1544,13 @@ def run_live_session(session_name: str, specs: list[dict], bins: Path, resources
     # The failures themselves, short: what an agent needs without reading summary.json (each line it
     # reads is paid again on every later turn).
     for e in errors[:FAILURES_SHOWN]:
-        what = " ".join(f"{k}={e[k]}" for k in ("block", "item", "scenario") if e.get(k))
+        what = " ".join(f"{k}={e[k]}" for k in ("block", "item", "entity", "feature", "recipe", "scenario") if e.get(k))
         print(f"[{session_name}] FAIL {e.get('stage', '?')} {what}: {str(e.get('error', ''))[:200]}".rstrip(": "))
     if len(errors) > FAILURES_SHOWN:
         print(f"[{session_name}] ... {len(errors) - FAILURES_SHOWN} more in {REPORT_DIR / 'summary.json'} "
               "(search it for one block or scenario; do not read it whole)")
     return {"session": session_name, "mods": [s["id"] for s in specs], "status": status, "blocks": blocks,
-            "creative": creative, "levels": levels,
+            "creative": creative, "levels": levels, **subjects,
             "steps_executed": executed, "steps_skipped": skipped, "errors": errors, "steps": results}
 
 

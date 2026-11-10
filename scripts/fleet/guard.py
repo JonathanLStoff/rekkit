@@ -650,12 +650,49 @@ def check_paths(payload: dict) -> str | None:
     return None
 
 
+BIG_READ_LINES = 400  # lines of one file a single read may take (a 1,700-line file is ~25k tokens of context)
+
+
+def big_read(payload: dict, paths: list[str]) -> str | None:
+    """A read that pulls hundreds of lines of one file into the context, where it stays for every later
+    turn (and a local model runs out of GPU memory): refused for every agent, with how to find the part."""
+    args = tool_input(payload)
+    if not isinstance(args, dict):
+        return None
+    start, end = read_range(args)
+    candidates = list(paths)
+    for raw in strings_named(args, lambda k: k in ("path", "file_path", "filepath", "file", "absolutepath", "targetfile")):
+        m = re.match(r"(.+?):(\d+)(?:-(\d+))?$", raw)  # omp's "file:1-1887"
+        if m:
+            rel = os.path.relpath(m.group(1), ROOT) if os.path.isabs(m.group(1)) else m.group(1)
+            candidates.append(rel)
+            start, end = int(m.group(2)), int(m.group(3)) if m.group(3) else None
+    for rel in candidates:
+        full = ROOT / rel
+        if not full.is_file() or SPEC_FILE.match(rel) or SKILL_FILE.match(rel) or rel.startswith(DECOMPILED):
+            continue
+        try:
+            n = full.read_text(encoding="utf-8", errors="replace").count("\n") + 1
+        except OSError:
+            continue
+        first, last = int(start or 1), int(end or n)
+        if min(last, n) - first + 1 > BIG_READ_LINES:
+            hint = (f"`grep -n \"^pub \\|^    pub fn\\|^impl\\|^mod \" {rel}` for its map" if rel.endswith(".rs")
+                    else f"`grep -n \"<name>\" {rel}`")
+            return (f"{rel} has {n} lines: do not read {min(last, n) - first + 1} of them at once (they stay in your "
+                    f"context for every later turn). Find what you need first ({hint}, or grep the name you are "
+                    f"after), then read at most {BIG_READ_LINES} lines around it (offset/limit, or {rel}:<from>-<to>).")
+    return None
+
+
 def check_read(payload: dict) -> str | None:
     session = Session(payload)
     paths = repo_paths(payload)
     if budget := over_budget(payload, session, " ".join(paths)):
         return budget
     if why := whole_java_read(payload, paths):
+        return why
+    if why := big_read(payload, paths):
         return why
     if session.tasks or session.fleet:
         if why := read_waste(payload, paths, session):

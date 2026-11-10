@@ -32,9 +32,10 @@ WORLD = "Rekkit test"
 SHOWCASE_STAGES = {"2_clear_plot", "2_floor_plot", "2_plot_ready", "2_place_mod_block", "2_block_lands"}
 
 
-def harness_args() -> argparse.Namespace:
-    return argparse.Namespace(bin_dir=None, horizon_rev="submodule", rebuild=False, resources=None, prepare=False,
-                              minecraft_dir=None, server_jar=None)
+def harness_args(args: argparse.Namespace) -> argparse.Namespace:
+    return argparse.Namespace(bin_dir=args.bin_dir, horizon_rev=args.horizon_rev, rebuild=args.rebuild,
+                              resources=args.resources, prepare=args.prepare, minecraft_dir=args.minecraft_dir,
+                              server_jar=args.server_jar)
 
 
 def main() -> int:
@@ -42,6 +43,15 @@ def main() -> int:
     parser.add_argument("--mod", action="append", help="Mod id(s), comma-separated (default: every mod)")
     parser.add_argument("--fresh", action="store_true", help="Start over with a new game folder and world")
     parser.add_argument("--offscreen", action="store_true", help="No window (for checking this command itself)")
+    parser.add_argument("--prepare", action=argparse.BooleanOptionalAction, default=True,
+                        help="Build missing resources from your Minecraft 26.3 install (default: True)")
+    parser.add_argument("--resources", type=Path,
+                        help="Prepared resources (default: target/e2e/source/<rev12>/.local/horizon-client/26.3)")
+    parser.add_argument("--minecraft-dir", help="Official launcher game directory")
+    parser.add_argument("--server-jar", help="Minecraft 26.3 server jar")
+    parser.add_argument("--bin-dir", type=Path, help="Prebuilt horizon-client and horizon-ctl")
+    parser.add_argument("--horizon-rev", default="submodule", help="Horizon commit to build (default: submodule)")
+    parser.add_argument("--rebuild", action="store_true", help="Ignore the cached build for this mod set")
     args = parser.parse_args()
 
     all_dirs = sorted(p for p in h.MODS_ROOT.iterdir() if p.is_dir() and (p / "Cargo.toml").is_file())
@@ -50,7 +60,7 @@ def main() -> int:
         for d in dirs:
             pack_mod.process_mod(d, pack=True)
         specs = [h.discover_mod_spec(d) for d in dirs]
-        hargs = harness_args()
+        hargs = harness_args(args)
         sub = h.ensure_submodule(fetch=False)
         bins, rev = h.prepare_build(specs, hargs, sub)
         resources = h.resources_for(rev, hargs)

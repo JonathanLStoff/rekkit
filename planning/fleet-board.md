@@ -11,7 +11,7 @@ State: `queued` · `active` · `blocked` · `done`. Steps: `·` todo · `▶` in
 | 1 | rekkit_core | `crates/rekkit_core` | core | Hard | — | growing: 11 for redpower_2 | · | · | · | · | · | · | · | · | · | · | · | shared library complete (`crates/rekkit_core` v0.1.0) | rk-p2g |
 | 2 | rekkit_core | `crates/rekkit_core` | core | Hard | — | growing: 11 for redpower_2 | · | · | · | · | · | · | · | · | · | · | · | rk-p2g | rk-lc52 |
 | 3 | rekkit_core | `crates/rekkit_core` | core | Hard | — | growing: 11 for redpower_2 | · | · | · | · | · | · | · | · | · | · | · | rk-p2g | rk-skdj |
-| 4 | redpower_2 | `mods/redpower_2` | 1 | Hard | rekkit_core | active | ✓ 4/4 | ✓ 2/2 | ✓ 503/503 | ✓ 12/12 | ✓ 225/225 | ✓ 89/89 | ✓ | ✓ 337/337 | ✓ | · | — | domain (`src/lib.rs`) + unit tests (`tests/mod_tests.rs`) written; content subagents authoring 42 blocks, 29 items, 15 recipes | rk-qst |
+| 4 | redpower_2 | `mods/redpower_2` | 1 | Hard | rekkit_core | blocked | ✓ 4/4 | ✓ 2/2 | ✓ 503/503 | ✓ 12/12 | ✓ 225/225 | ✓ 89/89 | ✓ | ✓ 337/337 | ✓ | · | — | domain (`src/lib.rs`) + unit tests (`tests/mod_tests.rs`) written; content subagents authoring 42 blocks, 29 items, 15 recipes | rk-qst |
 | 5 | buildcraft | `mods/buildcraft` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | · | spec exists; gap check | rk-dvp |
 | 6 | industrialcraft_2 | `mods/industrialcraft_2` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | · | spec exists; gap check | rk-x3e |
 | 7 | equivalent_exchange_2 | `mods/equivalent_exchange_2` | 1 | Hard | rekkit_core | queued | · | · | · | · | · | · | · | · | · | · | · | spec exists; gap check. EMC over merged recipes | rk-11a |

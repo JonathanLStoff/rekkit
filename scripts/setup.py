@@ -319,6 +319,77 @@ def step_port_tools(r: Report, check: bool) -> None:
           "SVG art" if shutil.which("rsvg-convert") else f"optional (SVG art; .pixels art works without): {install_hint('rsvg')}")
 
 
+REPOMAPPER_URL = "https://github.com/pdavis68/RepoMapper.git"
+REPOMAPPER_COMMIT = "3ef8914b3a2271695ac9e4b07ce1e8bf5a4c9be6"
+REPOMAPPER_DIR = Path.home() / ".local" / "share" / "repomapper"
+FFF_WINDOWS = "irm https://raw.githubusercontent.com/dmtrKovalenko/fff/main/install-mcp.ps1 | iex"
+
+
+def fff_binary() -> str | None:
+    found = shutil.which("fff-mcp")
+    if found:
+        return found
+    local = Path.home() / ".local" / "bin" / ("fff-mcp.exe" if WINDOWS else "fff-mcp")
+    return str(local) if local.is_file() else None
+
+
+def repomapper_python() -> Path:
+    return REPOMAPPER_DIR / ".venv" / ("Scripts/python.exe" if WINDOWS else "bin/python")
+
+
+def step_mcp_tools(r: Report, check: bool) -> None:
+    """The agents' code-finding MCP servers: fff (file and symbol search) and RepoMapper (ranked repo
+    map). Both are optional; .mcp.json (gitignored, this machine's absolute paths) wires in what is installed."""
+    fff = fff_binary()
+    if not fff and not check and not WINDOWS and shutil.which("brew"):
+        res = sh(["brew", "install", "dmtrKovalenko/fff/fff-mcp"], capture_output=True)
+        fff = fff_binary()
+        if not fff:
+            r.add("tool: fff MCP", FAILED, f"brew install failed:\n{tail_of(res, 5)}")
+    if fff:
+        r.add("tool: fff MCP", OK, "file and symbol search for agents")
+    elif not r.rows or r.rows[-1][0] != "tool: fff MCP":
+        hint = FFF_WINDOWS + "   (in PowerShell)" if WINDOWS else "brew install dmtrKovalenko/fff/fff-mcp"
+        r.add("tool: fff MCP", TODO if check and not WINDOWS else SKIPPED, f"optional: {hint}")
+
+    server = REPOMAPPER_DIR / "repomap_server.py"
+    py = repomapper_python()
+    ready = server.is_file() and py.is_file()
+    if not ready and not check:
+        steps = []
+        if not (REPOMAPPER_DIR / ".git").is_dir():
+            steps.append(["git", "clone", "--quiet", REPOMAPPER_URL, REPOMAPPER_DIR])
+        steps += [["git", "-C", REPOMAPPER_DIR, "checkout", "--quiet", REPOMAPPER_COMMIT],
+                  [sys.executable, "-m", "venv", REPOMAPPER_DIR / ".venv"],
+                  [py, "-m", "pip", "install", "--quiet", "-r", REPOMAPPER_DIR / "requirements.txt"]]
+        for cmd in steps:
+            res = sh(cmd, capture_output=True)
+            if res.returncode:
+                r.add("tool: RepoMapper MCP", FAILED, f"`{' '.join(str(c) for c in cmd[:3])}` failed:\n{tail_of(res, 5)}")
+                break
+        ready = server.is_file() and py.is_file()
+    if ready:
+        r.add("tool: RepoMapper MCP", OK, f"ranked repo map for agents ({REPOMAPPER_DIR})")
+    elif check:
+        r.add("tool: RepoMapper MCP", TODO, f"not installed: {RERUN} clones it to {REPOMAPPER_DIR}")
+
+    servers = {}
+    if fff:
+        servers["fff"] = {"type": "stdio", "command": fff, "args": []}
+    if ready:
+        servers["repomap"] = {"type": "stdio", "command": str(py), "args": [str(server)]}
+    mcp = ROOT / ".mcp.json"
+    text = json.dumps({"mcpServers": servers}, indent=2) + "\n"
+    current = mcp.read_text(encoding="utf-8") if mcp.is_file() else ""
+    if current == text:
+        r.add(".mcp.json", OK, ", ".join(servers) or "no MCP servers installed")
+    elif check:
+        r.add(".mcp.json", TODO, f"{RERUN} writes it for {', '.join(servers) or 'no servers'}")
+    else:
+        mcp.write_text(text, encoding="utf-8")
+        r.add(".mcp.json", OK, f"written: {', '.join(servers) or 'no MCP servers installed'} (restart your agent)")
+
+
 def step_mods(r: Report, check: bool) -> bool:
     if check:
         built = list(ROOT.glob("mods/*/target/horizon-mod/*.hmod"))
@@ -466,6 +537,7 @@ def main() -> int:
         step_agy_hooks(r, args.check)
         step_beads(r, args.check)
         step_port_tools(r, args.check)
+        step_mcp_tools(r, args.check)
         mods_ok = step_mods(r, args.check)
         step_packs(r, args.check, args.skip_packs)
         built = mods_ok and step_build(r, args.check, args.skip_build)

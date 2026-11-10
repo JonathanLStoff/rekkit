@@ -34,7 +34,12 @@ archives, authors, licence), the Systems list (one line each, the class), the
 Complete registry and the Recipes, Hazards and Hooks sections; and
 <id>.features.json with every block, item and subsystem (ids, names, `java`),
 no attributes yet. Merge across versions (newest wins where they share a
-feature, older-only features stay, tagged with their version). For
+feature, older-only features stay, tagged with their version). Leave out what
+Minecraft 26.3 already has (copper ingot, ore and block, nuggets, paper): the
+port's recipes use `minecraft:<id>` or a `c:` tag; mark what another ported mod
+owns `"shared_with": "<mod>"`; a different thing with a vanilla name gets
+`"not_vanilla": "why"` (`make contract-check MOD=<id> OWNER=spec-writer`
+lists both kinds of duplicate). For
 rekkit_core, include a concept only if two or more queued mods need it; name
 those mods.
 

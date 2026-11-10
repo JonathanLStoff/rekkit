@@ -301,7 +301,8 @@ def gaps(mod: str) -> str:
 # Where each kind of difference from the original is fixed: (step, role).
 CONTRACT_OWNERS = {"spec-writer": 1, "asset-smith": 5, "content-author": 3, "domain-builder": 3, "hook-engineer": 3,
                    "test-smith": 3}
-LIVE_CONTRACT_STAGES = ("2_shape", "4_gui", "4_menu_opens", "10_scenario")
+# Live failures that are the whole mod's, not one block's or item's (the game log, a crash, the launch).
+MOD_WIDE_STAGES = ("0_", "8_", "harness", "build")
 
 
 def contract(mod: str) -> str:
@@ -317,15 +318,33 @@ def contract(mod: str) -> str:
         sessions = json.loads(summary.read_text(encoding="utf-8")).get("phases", {}).get("isolated", [])
     except (OSError, ValueError):
         sessions = []
+    # What the last live run of this mod tested: a block or item closes only when it was tested there
+    # and nothing failed (no live run, or a scenario that never ran, is no evidence that it works).
+    tested: set[str] = set()
+    ran_scenarios: set[str] = set()
     for session in sessions:
         if mod not in session.get("mods", []):
             continue
+        for group in ("blocks", "creative", "items"):
+            tested |= {k.split(":", 1)[-1] for k in session.get(group) or {}}
+        ran_scenarios |= {r["scenario"] for r in session.get("steps", []) if r.get("scenario") and "cmd" in r}
         for e in session.get("errors", []):
-            if str(e.get("stage", "")).startswith(LIVE_CONTRACT_STAGES):
-                role = "domain-builder" if e["stage"].startswith(("4_", "10_")) else "content-author"
-                for subject in [e["block"]] if e.get("block") else (e.get("for") or [mod]):
-                    found.append({"for": subject, "kind": "live " + e["stage"], "owner": role,
-                                  "why": str(e.get("error"))})
+            stage = str(e.get("stage", ""))
+            if stage.startswith(MOD_WIDE_STAGES):
+                continue
+            role = ("domain-builder" if stage.startswith(("3_", "4_", "5_", "10_", "11_", "12_"))
+                    else "content-author")
+            subject = e.get("block") or e.get("item") or e.get("entity")
+            for sub in [subject] if subject else (e.get("for") or []):
+                found.append({"for": sub, "kind": "live " + "_".join(stage.split("_")[:2]), "owner": role,
+                              "why": (f"scenario {e['scenario']!r}: " if e.get("scenario") and e.get("scenario") not in str(e.get("error")) else "")
+                              + str(e.get("error"))[:400]})
+    contract_all = contract_check.load_contract(mod) or {}
+    untested: dict[str, str] = {}
+    for sc in contract_all.get("scenarios", []):
+        if sc.get("name") not in ran_scenarios:
+            for sub in sc.get("for", []):
+                untested.setdefault(sub, sc.get("name", "?"))
     grouped: dict[tuple[int, str, str], list[dict]] = {}
     for p in found:
         # The outline is one pass over the mod: one bead for it, not one per block.
@@ -373,6 +392,7 @@ def contract(mod: str) -> str:
     feature = re.compile(rf"{re.escape(mod)}: (?:assets for )?(?:block|item) (\S+)$")
     matching = [i for n in (3, 5) if n in st["stories"] for i in issues("--parent", st["stories"][n]["id"])
                 if i["status"] != "closed" and (m := feature.match(i["title"])) and m.group(1) not in differs
+                and m.group(1) in tested and m.group(1) not in untested
                 and found is not None and not any(p["owner"] == "spec-writer" for p in found)]
     for c in range(0, len(matching), 100):
         bd("close", *[i["id"] for i in matching[c:c + 100]], "--reason",
