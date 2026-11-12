@@ -2,7 +2,7 @@
 // omp (oh-my-pi) loads every .ts in .omp/extensions. The same Rekkit guards as the opencode plugin and the
 // Claude Code and agy hooks (scripts/fleet/hook.sh): no push, sign, release, submodule change, force or
 // recursive delete; nothing under horizon/; no code under mods/<id>/content/; no whole decompiled class; no
-// folder sweeps or toolchain reads by a role subagent. And the Beads context (`bd prime`, and while a mod is
+// folder sweeps or toolchain reads by a role subagent. And the tracker context (its resume page, while a mod is
 // in progress its resume page) in the main session's system prompt, again after compaction.
 // There is no stop gate in omp: `make agent-gate MOD=<id>` before you stop (AGENTS.md), and a mod is
 // finished only when `make contract-check` and the live harness's render, GUI and scenario checks pass.
@@ -44,7 +44,7 @@ export default function rekkitGuard(pi) {
     if (system.includes(primed)) return;
     return { systemPrompt: [...system, primed] };
   });
-  // After compaction the next request re-reads the Beads context.
+  // After compaction the next request re-reads the tracker context.
   pi.on("session_before_compact", async () => {
     primed = null;
   });

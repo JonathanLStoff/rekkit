@@ -56,7 +56,7 @@ The template is [`mods/example_mod/`](../mods/example_mod): `Cargo.toml`, `horiz
 | `make fleet-parts MOD=<id>` | The decompiled code in ~200k-token parts, one spec-writer each (lists in `target/fleet/parts/<id>/`) |
 | `make fleet-tickets MOD=<id> [CHECK=1]` / `SCHEMA=1` / `spec-merge MOD=<id>` | Merge the part files, validate the spec-writers' tickets (sizes, files, reads, roles, order, shared files, coverage) and file them with their order / their format / only the merge |
 | `make fleet-ready MOD=<id>` | Tickets whose predecessors are all closed (not needs-split): one agent each |
-| `make fleet-features MOD=<id>` / `fleet-gaps MOD=<id>` / `fleet-status [MOD=<id>]` / `board` | Beads: features from the spec / from missing assets / progress / regenerate the board |
+| `make fleet-features MOD=<id>` / `fleet-gaps MOD=<id>` / `fleet-status [MOD=<id>]` / `board` | Issue tracker (`issuectl`): features from the spec / from missing assets / progress / regenerate the board |
 | `make tasks [MOD=<id>]` / `watch` / `board-live` / `board-html` | Look at progress: the mod in progress on one screen / redrawn every 30 s / the board in your browser, live or as a file |
 | `make fleet-resume MOD=<id>` | Where a run stands after a crash, lost credits or a network drop: interrupted subagents, waiting reports, the last actions |
 | `make fleet-context MOD=<id>` / `spec-toc` / `spec-show` / `skill-toc` / `skill-show` / `conductor-step` / `java-outline` / `java-show` / `java-find` | Read narrowly: one page per mod, a spec or skill by section, the conductor's step, decompiled Java by member |

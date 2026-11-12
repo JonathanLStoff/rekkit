@@ -5,8 +5,8 @@
 # (horizon/docs/mods.md, "Publish your mod"). A mod that still ships any of the original mod's art or
 # sound is published as a pre-release instead, which the registry skips (.agents/release.md).
 #
-# Only a mod the port process has packaged (its step 9 Package story closed in Beads, read from the
-# committed .beads/issues.jsonl) is considered. Such a mod whose shipped files (content/, native/,
+# Only a mod the port process has packaged (its step 9 Package story closed in the issue tracker, read from
+# the committed issues/) is considered. Such a mod whose shipped files (content/, native/,
 # src/) changed since its last release without a version bump fails the run, on pull requests too
 # (scripts/release_plan.py).
 #
@@ -23,7 +23,7 @@ on:
     branches: [main]
     paths:
       - "mods/**"
-      - ".beads/issues.jsonl"
+      - "issues/**"
       - "minisign.pub"
       - "scripts/pack_mod.py"
       - "scripts/release_plan.py"

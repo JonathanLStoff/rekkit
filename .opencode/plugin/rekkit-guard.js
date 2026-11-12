@@ -2,9 +2,9 @@
 // The Rekkit guards before each tool call, as agy and Claude Code run them (scripts/fleet/hook.sh):
 // no push, sign, release, submodule change, force or recursive delete; nothing under horizon/; no
 // code under mods/<id>/content/; no whole decompiled class; no folder sweeps or toolchain reads by a
-// role subagent; the subagent token budget. And the Beads context (`bd prime` and, while a mod is in
+// role subagent; the subagent token budget. And the tracker context (its resume page, while a mod is in
 // progress, its resume page) in the main session's system prompt, as agy and Claude Code get it at
-// session start, so no agent runs `bd prime` itself; again when a session is compacted.
+// session start, so no agent loads it itself; again when a session is compacted.
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +30,7 @@ const primed = new Map();
 export default {
   id: "rekkit-guard",
   async setup(ctx) {
-    // A role subagent's session has a parent: it gets no Beads context (its brief is fleet-task's).
+    // A role subagent's session has a parent: it gets no tracker context (its brief is fleet-task's).
     const isSubagent = async (sessionID) => {
       try {
         return Boolean((await ctx.session.get({ sessionID }))?.parentID);
@@ -55,7 +55,7 @@ export default {
       const text = primed.get(id);
       if (text) x.system.push({ type: "text", text });
     });
-    // After compaction the next request re-reads the Beads context.
+    // After compaction the next request re-reads the tracker context.
     await ctx.session.hook("compaction", async (x) => {
       if (x?.sessionID) primed.delete(x.sessionID);
     });

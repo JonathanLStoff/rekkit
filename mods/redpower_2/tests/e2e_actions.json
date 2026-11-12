@@ -11,7 +11,56 @@
     "redpower_2:diamond_drawplate",
     "redpower_2:wool_card",
     "minecraft:red_dye",
-    "minecraft:blue_dye"
+    "minecraft:blue_dye",
+    "redpower_2:wire_red_alloy",
+    "redpower_2:wire_insulated",
+    "redpower_2:wire_bundled",
+    "redpower_2:wire_jacketed",
+    "redpower_2:ribbon_cable",
+    "redpower_2:handsaw",
+    "redpower_2:ruby_handsaw",
+    "redpower_2:green_sapphire_handsaw",
+    "redpower_2:sapphire_handsaw",
+    "redpower_2:blank_plan",
+    "redpower_2:plan",
+    "redpower_2:canvas_bag",
+    "redpower_2:ruby_pickaxe",
+    "redpower_2:green_sapphire_pickaxe",
+    "redpower_2:sapphire_pickaxe",
+    "redpower_2:ruby_shovel",
+    "redpower_2:green_sapphire_shovel",
+    "redpower_2:sapphire_shovel",
+    "redpower_2:ruby_axe",
+    "redpower_2:green_sapphire_axe",
+    "redpower_2:sapphire_axe",
+    "redpower_2:ruby_sword",
+    "redpower_2:green_sapphire_sword",
+    "redpower_2:sapphire_sword",
+    "redpower_2:ruby_hoe",
+    "redpower_2:green_sapphire_hoe",
+    "redpower_2:sapphire_hoe",
+    "redpower_2:wood_sickle",
+    "redpower_2:stone_sickle",
+    "redpower_2:iron_sickle",
+    "redpower_2:sickle",
+    "redpower_2:diamond_sickle",
+    "redpower_2:gold_sickle",
+    "redpower_2:ruby_sickle",
+    "redpower_2:green_sapphire_sickle",
+    "redpower_2:sapphire_sickle",
+    "redpower_2:athame",
+    "redpower_2:flax_seeds",
+    "redpower_2:dye_indigo",
+    "redpower_2:paint_can",
+    "redpower_2:battery_powered",
+    "redpower_2:battery",
+    "redpower_2:wood_turbine",
+    "redpower_2:wood_windmill",
+    "redpower_2:blank_disk",
+    "redpower_2:floppy_disk",
+    "redpower_2:forth_boot_disk",
+    "redpower_2:forth_extra_disk",
+    "redpower_2:brass_gear"
   ],
   "custom_recipe_types": [
     "redpower_2:alloy_furnace"
@@ -45,6 +94,31 @@
         "redpower_2:thermopile"
       ],
       "action": "query_potential"
+    },
+    {
+      "item": "redpower_2:forth_boot_disk",
+      "target_blocks": [
+        "redpower_2:disk_drive"
+      ],
+      "action": "use",
+      "draft": true
+    },
+    {
+      "item": "redpower_2:ruby_sickle",
+      "target_blocks": [
+        "minecraft:farmland",
+        "redpower_2:flax_crop"
+      ],
+      "action": "use",
+      "draft": true
+    },
+    {
+      "item": "redpower_2:seed_bag",
+      "target_blocks": [
+        "minecraft:farmland"
+      ],
+      "action": "use",
+      "draft": true
     }
   ],
   "stage_5_neighbors": [
@@ -65,6 +139,41 @@
       "east": "redpower_2:solar_panel",
       "west": "redpower_2:battery_box",
       "purpose": "blutricity_energy_transfer"
+    },
+    {
+      "center": "redpower_2:project_table",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "sided_automation",
+      "draft": true
+    },
+    {
+      "center": "redpower_2:blulectric_furnace",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "sided_automation",
+      "draft": true
+    },
+    {
+      "center": "redpower_2:buffer_chest",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "sided_automation",
+      "draft": true
+    },
+    {
+      "center": "redpower_2:buffer",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "sided_automation",
+      "draft": true
+    },
+    {
+      "center": "redpower_2:blulectric_alloy_furnace",
+      "top": "minecraft:hopper",
+      "bottom": "minecraft:chest",
+      "purpose": "sided_automation",
+      "draft": true
     }
   ]
 }

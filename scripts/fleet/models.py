@@ -25,9 +25,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import beads
+import tracker
 
-ROOT = beads.main_checkout()
+ROOT = tracker.main_checkout()
 CONFIG = ROOT / ".agents" / "models.json"
 STATE = ROOT / "target" / "fleet" / "models.json"
 DEFAULT_REST = 30 * 60

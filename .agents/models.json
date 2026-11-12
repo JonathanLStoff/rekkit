@@ -43,5 +43,10 @@
   "chain": [
    null
   ]
+ },
+ "omp": {
+  "chain": [
+   "ollama/gemma4:26b-mlx"
+  ]
  }
 }

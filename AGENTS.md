@@ -16,4 +16,4 @@ Rekkit ports Java Minecraft mods (Tekkit Classic 1.2.5, Direwolf20 1.4.7, Agrari
 - Never put `Cargo.toml` or `.rs` files under `mods/<id>/content/`. Never edit `horizon/` (a gap is a follow_up `horizon: ...`). Every native hook checks its own namespace (`<id>:`) before acting.
 - **The port is the original.** Each block's and item's contract (`planning/mods/<id>.contract/<name>.json`, from the Java) gives its shape, facing, face sprites, GUI slots, sprite, stack size, durability and a scenario per attribute; a vanilla or swapped texture, one texture on every side, a cube where the original is thin, a stock grid GUI or a machine that does nothing is a bug, never done.
 - Never `git push`, `gh release`, `minisign`, change the submodule, `git reset --hard`, `--force` or `rm -rf`, and never edit a version by hand (`make version-sync` does it). A human does those.
-- Role subagents never run `bd`: put everything for Beads in your report, `target/fleet/inbox/<bead>.json`.
+- Role subagents never run `issuectl` or edit `issues/`: put everything for the issue tracker in your report, `target/fleet/inbox/<bead>.json`.

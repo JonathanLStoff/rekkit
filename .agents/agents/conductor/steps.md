@@ -21,7 +21,7 @@ The spec, in two rounds, each Java method read once:
 
 ## Step 3 Code
 
-The ticket loop (agent.md, *The ticket loop*), also for the tickets of steps 5 and 6. Repeat until no ticket is open and the mod's rekkit_core beads are closed.
+The ticket loop (agent.md, *The ticket loop*), also for the tickets of steps 5 and 6. Repeat until no ticket is open and the mod's rekkit_core tasks are closed.
 
 ## Step 4 Check
 
@@ -45,7 +45,7 @@ The whole gate again, `make check-mods MOD=<id> COMPLETE=1`, `make art MOD=<id> 
 
 ## Step 9 Package
 
-`release-clerk` checks the version (`make version-sync` bumps it as work lands), commits (with any rekkit_core change, and planning/fleet-board.md and .beads/issues.jsonl from `make board`) and packs. Merge port/<id> into main locally. Close the story.
+`release-clerk` checks the version (`make version-sync` bumps it as work lands), commits (with any rekkit_core change, and planning/fleet-board.md from `make board`) and packs. Merge port/<id> into main locally. Close the story.
 
 ## Step 10 Finish
 

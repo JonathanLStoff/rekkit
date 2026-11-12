@@ -121,7 +121,7 @@ fleet-parts:
 # The spec-writers' tickets (planning/mods/<id>.tickets/*.json): CHECK=1 only validates (sizes, roles,
 # order, files two tickets edit at once, coverage); otherwise files them with their order.
 fleet-tickets:
-	$(PYTHON) scripts/fleet/beads.py $(if $(filter 1,$(SCHEMA)),tickets-schema,$(if $(filter 1,$(CHECK)),tickets-check,tickets)) $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py $(if $(filter 1,$(SCHEMA)),tickets-schema,$(if $(filter 1,$(CHECK)),tickets-check,tickets)) $(MOD)
 
 # The spec-writers' part outlines and attributes into the spec and outline (fleet-tickets runs it too).
 spec-merge:
@@ -129,11 +129,16 @@ spec-merge:
 
 # Tickets whose predecessors are all closed: one agent each (fleet-dispatch works them).
 fleet-ready:
-	$(PYTHON) scripts/fleet/beads.py ready $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py ready $(MOD)
 
 # The ticket loop without an LLM: a fresh headless agent per ready ticket, at most MAX at once.
 fleet-dispatch:
 	$(PYTHON) scripts/fleet/dispatch.py $(MOD) $(if $(AGENT),--agent $(AGENT),) $(if $(MAX),--max $(MAX),) $(if $(BUDGET),--budget $(BUDGET),) $(if $(filter 1,$(FALLBACK)),--fallback,) $(if $(filter 1,$(CONDUCTOR)),--conductor,)
+
+# agy picks the next ready ticket, writes its prompt file, and runs it on omp (local gemma4:26b-mlx, thinking off).
+# One ticket per run.
+omp-agy:
+	$(PYTHON) scripts/fleet/omp_agy.py $(MOD)
 
 # Token audit samples on agy (planning/token_audit/): N runs of each, compared with the baseline.
 token-audit:
@@ -141,7 +146,7 @@ token-audit:
 
 # File each contract difference as a bead under the step that owns it.
 fleet-contract:
-	$(PYTHON) scripts/fleet/beads.py contract $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py contract $(MOD)
 
 agent-gate:
 	$(PYTHON) scripts/fleet/guard.py gate $(if $(MOD),--mod "$(MOD)",)
@@ -149,7 +154,7 @@ agent-gate:
 fleet-next:
 	$(PYTHON) scripts/fleet/run_next.py $(if $(AGENT),--agent $(AGENT),) $(if $(filter 1,$(FALLBACK)),--fallback,) $(MOD)
 
-# agy on this repository with its terminal sandbox off (the port needs the network, Beads and the game).
+# agy on this repository with its terminal sandbox off (the port needs the network, the issue tracker and the game).
 agy:
 	$(PYTHON) scripts/fleet/agy.py $(ARGS)
 
@@ -158,10 +163,10 @@ fleet-models:
 	$(PYTHON) scripts/fleet/models.py $(if $(AGENT),--prefer $(AGENT),) $(ARGS)
 
 # The conductor's first command for a mod: claim it (the hooks hold the session until it is
-# finished), create its stories in Beads, and check Horizon itself at the pinned revision.
+# finished), create its stories in the tracker, and check Horizon itself at the pinned revision.
 fleet-start:
 	$(PYTHON) scripts/fleet/guard.py claim $(MOD)
-	$(PYTHON) scripts/fleet/beads.py start $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py start $(MOD)
 	-$(PYTHON) scripts/e2e_harness.py --baseline --no-fetch
 	$(PYTHON) scripts/fleet/resume.py $(MOD)
 
@@ -178,13 +183,13 @@ fleet-task:
 	$(PYTHON) scripts/fleet/guard.py task $(BEAD) $(if $(ROLE),--role $(ROLE),)
 
 fleet-inbox:
-	$(PYTHON) scripts/fleet/beads.py inbox
+	$(PYTHON) scripts/fleet/tracker.py inbox
 
 fleet-features:
-	$(PYTHON) scripts/fleet/beads.py features $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py features $(MOD)
 
 fleet-gaps:
-	$(PYTHON) scripts/fleet/beads.py gaps $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py gaps $(MOD)
 
 # Every changed mod (and rekkit_core) one patch version ahead of its last commit, in lockstep; more work
 # before a commit stays on that version. The stop gate, fleet-inbox and agent-gate run it too.
@@ -193,12 +198,12 @@ version-sync:
 
 # Shared code a mod needs: a bead under rekkit_core (reopened if closed), done within this mod's run.
 core-need:
-	$(PYTHON) scripts/fleet/beads.py core-need $(MOD) --title "$(TITLE)" --why "$(WHY)"
+	$(PYTHON) scripts/fleet/tracker.py core-need $(MOD) --title "$(TITLE)" --why "$(WHY)"
 
 fleet-status:
-	$(PYTHON) scripts/fleet/beads.py status $(MOD)
+	$(PYTHON) scripts/fleet/tracker.py status $(MOD)
 
-# One short page per mod: Beads state, spec, every original archive in every pack, what is decompiled
+# One short page per mod: tracker state, spec, every original archive in every pack, what is decompiled
 # and what the mod folder holds (instead of exploring with ls and find).
 fleet-context:
 	$(PYTHON) scripts/fleet/context.py $(MOD)
@@ -221,9 +226,9 @@ conductor-step:
 	$(PYTHON) scripts/fleet/spec.py step $(STEP)
 
 board:
-	$(PYTHON) scripts/fleet/beads.py board
+	$(PYTHON) scripts/fleet/tracker.py board
 
-# Looking at Beads: the mod in progress on one screen, redrawn every 30 s, or a browser page.
+# Looking at the progress: the mod in progress on one screen, redrawn every 30 s, or a browser page.
 tasks:
 	@$(PYTHON) scripts/fleet/view.py tasks $(MOD)
 
@@ -236,7 +241,7 @@ board-html:
 board-live:
 	$(PYTHON) scripts/fleet/view.py serve
 
-# Every Beads ticket in a web page (filter, search, read the wording), like Jira.
+# Every issue in a web page (filter, search, read the wording), like Jira.
 tickets-live:
 	$(PYTHON) scripts/fleet/view.py tickets-live
 
@@ -319,16 +324,16 @@ make agy [ARGS="--agent conductor"]
 make fleet-models [ARGS=--clear]
                       The model chain and which models are resting after a limit (--clear: none)
 make fleet-start MOD=<id>
-                      The conductor's first command: claims the mod, creates its Beads stories, checks Horizon
+                      The conductor's first command: claims the mod, creates its stories, checks Horizon
 make fleet-stop       Tell every fleet agent to stop at the end of its current turn
 make fleet-task BEAD=<id> ROLE=<role>
                       A role subagent's first command: its whole brief; it reports to target/fleet/inbox/<id>.json
 make fleet-tickets MOD=<id> [CHECK=1] / fleet-tickets SCHEMA=1 / spec-merge MOD=<id>
                       File the spec-writers' tickets (CHECK=1: only validate) / their format / merge the part files
-make fleet-inbox      File every subagent report in Beads (the conductor)
+make fleet-inbox      File every subagent report in the tracker (the conductor)
 make fleet-features MOD=<id> / fleet-gaps MOD=<id> / fleet-status [MOD=<id>]
                       Features from the spec's list / New-assets features from the completeness check / progress
-make board            Regenerate planning/fleet-board.md and .beads/issues.jsonl from Beads
+make board            Regenerate planning/fleet-board.md from issues/
 make decompile JAR=<archive>
                       Original mod -> Java source in assets/decompiled/ (spec-writer and reviewer only)
 make java-outline DIR=<decompiled> [GREP=<regex>] [ARGS=--classes|--consts]
@@ -349,7 +354,7 @@ make tickets-live     Every ticket in a Jira-style page (http://127.0.0.1:8766):
 make fleet-resume MOD=<id>
                       Where the mod's run stands after a crash or lost credits: what to restart, what is waiting
 make fleet-context MOD=<id>
-                      One page: the mod's Beads state, spec, original archives in every pack, decompiled folders
+                      One page: the mod's tracker state, spec, original archives in every pack, decompiled folders
 make spec-toc MOD=<id> / spec-show MOD=<id> SECTION="<heading text>"
                       The spec's headings with line ranges / just the sections you need
 make skill-toc SKILL=<name> / skill-show SKILL=<name> SECTION="<heading>" / conductor-step STEP=<n>

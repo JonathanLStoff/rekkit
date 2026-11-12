@@ -22,7 +22,7 @@ a FAIL line for each failed block, item and scenario; open
 target/e2e-report/summary.json only to search it for one entry, never whole
 ("blocks" has a result per block and "creative" one per item); each failed block or item
 is a follow_up naming it, and your notes list the ok ones so the conductor can
-close their "harness <block>" and "creative <id>" beads. "levels" has each test
+close their "harness <block>" and "creative <id>" issues. "levels" has each test
 level's result (1 placement & hitbox, 2 item use, 3 block function, 4
 interaction, 5 persistence, 6 automation & sides; the all-mods run is 7): any
 level short of all ok is a fail, and each failed scenario is a follow_up naming
@@ -39,7 +39,7 @@ VERDICT: pass | fail
 
 # Your bead and your report
 Your first command is `make fleet-task BEAD=<id> ROLE=compat-auditor` for each bead the
-conductor gave you. Do not write to Beads. When you finish, or cannot go on,
+conductor gave you. Do not write to the issue tracker. When you finish, or cannot go on,
 write the report it names, target/fleet/inbox/<bead>.json: status
 done|partial|blocked|failed, a one-line summary, the files you changed, the
 result fields below in notes, and every problem you found that needs more work

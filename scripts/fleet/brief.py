@@ -15,7 +15,7 @@ each one is a turn. This prints them all at once, bounded (BUDGET_CHARS, about 1
 
 Usage:
   python3 scripts/fleet/brief.py <bead> [--role <role>]          (what fleet-task prints)
-  python3 scripts/fleet/brief.py --mod <id> --key <ticket key> [--role <role>]   (no Beads needed)
+  python3 scripts/fleet/brief.py --mod <id> --key <ticket key> [--role <role>]   (no tracker needed)
 """
 
 from __future__ import annotations
@@ -28,11 +28,11 @@ import re
 import sys
 from pathlib import Path
 
-import beads
+import tracker
 import spec as spec_tool
 
 WORK = Path(__file__).resolve().parents[2]  # this checkout: the planning files an agent writes live here
-MAIN = beads.MAIN  # assets/ (decompiled Java, archives) is the main checkout's
+MAIN = tracker.MAIN  # assets/ (decompiled Java, archives) is the main checkout's
 sys.path.insert(0, str(WORK / "scripts"))
 
 BUDGET_CHARS = 48_000
@@ -226,7 +226,7 @@ def skill_sections(skill: str, headings: list[str]) -> str:
 
 
 def checks(mod: str, role: str | None, covers: list[str]) -> list[str]:
-    crate = "crates/rekkit_core" if mod == beads.CORE else f"mods/{mod}"
+    crate = "crates/rekkit_core" if mod == tracker.CORE else f"mods/{mod}"
     names = f" NAME={','.join(covers)}" if covers else ""
     return [c.format(mod=mod, crate=crate, names=names) for c in CHECKS.get(role or "", [])]
 
@@ -278,17 +278,16 @@ def brief_for(mod: str, ticket: dict | None, role: str | None, title: str = "", 
 
 
 def brief(bead: str, role: str | None) -> str:
-    """The brief for a bead in Beads: its ticket's, or (a story, feature or bug) its title and description."""
+    """The brief for an issue: its ticket's, or (a story, feature or bug) its title and description."""
     try:
-        show = beads.bd("show", bead)
-    except Exception:  # noqa: BLE001 (Beads down: the bead's prompt still says what to do)
+        issue = tracker.show(bead)
+    except Exception:  # noqa: BLE001 (tracker down: the bead's prompt still says what to do)
         return ""
-    issue = show[0] if isinstance(show, list) and show else show if isinstance(show, dict) else {}
-    mod = beads.label_value(issue, "mod")
+    mod = tracker.label_value(issue, "mod")
     if not mod:
         return ""
-    ticket = find_ticket(mod, beads.label_value(issue, "key"))
-    return brief_for(mod, ticket, role or beads.label_value(issue, "role"), issue.get("title", ""),
+    ticket = find_ticket(mod, tracker.label_value(issue, "key"))
+    return brief_for(mod, ticket, role or tracker.label_value(issue, "role"), issue.get("title", ""),
                      issue.get("description", ""))
 
 

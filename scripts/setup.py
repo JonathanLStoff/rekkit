@@ -115,7 +115,7 @@ def install_hint(tool: str) -> str:
                   '"--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive"',
             "cargo": "winget install Rustlang.Rustup   (then open a new terminal)",
             "java": "winget install EclipseAdoptium.Temurin.25.JDK",
-            "bd": "npm install -g @beads/bd",
+            "issuectl": "brew install jarimustonen/issuectl/issuectl   (Homebrew; any install that puts issuectl on PATH)",
         }.get(tool, "")
     mac = sys.platform == "darwin"
     hints = {
@@ -125,7 +125,7 @@ def install_hint(tool: str) -> str:
         "cargo": "curl https://sh.rustup.rs -sSf | sh   (then open a new terminal)",
         "java": "brew install openjdk@25" if mac else "sudo apt install openjdk-25-jdk",
         "linux-libs": "sudo apt install pkg-config libasound2-dev libudev-dev",
-        "bd": "brew install beads" if mac else "brew install beads   (or: npm install -g @beads/bd)",
+        "issuectl": "brew install jarimustonen/issuectl/issuectl" if mac else "brew install jarimustonen/issuectl/issuectl   (Homebrew; any install that puts issuectl on PATH)",
         "rsvg": "brew install librsvg" if mac else "sudo apt install librsvg2-bin",
     }
     return hints.get(tool, "")
@@ -270,34 +270,28 @@ def step_agy_hooks(r: Report, check: bool) -> None:
               "hooks.windows.json installed as hooks.json" if res.returncode == 0 else tail_of(res, 5))
 
 
-def step_beads(r: Report, check: bool) -> None:
-    """Beads (bd), where the port's progress lives: installed, its database present, every mod an epic."""
-    if not shutil.which("bd"):
-        r.add("Beads (bd)", NEEDS_PERSON, f"not installed; it tracks the port's progress: {install_hint('bd')}")
+def step_tracker(r: Report, check: bool) -> None:
+    """The issue tracker (issuectl), where the port's progress lives: installed, issues/ present, every mod an epic."""
+    if not shutil.which("issuectl"):
+        r.add("Issue tracker (issuectl)", NEEDS_PERSON,
+              f"not installed; it tracks the port's progress: {install_hint('issuectl')}")
+        return
+    if not (ROOT / "issues" / ".schema.yaml").is_file():
+        r.add("Issue tracker (issuectl)", FAILED, "issues/.schema.yaml is missing: the tracker's schema is committed "
+                                                  "with the issues; restore it from git")
         return
     sys.path.insert(0, str(ROOT / "scripts" / "fleet"))
-    import beads
-    beads_dir = ROOT / ".beads"
-    if not (beads_dir / "embeddeddolt").is_dir():
-        if check:
-            r.add("Beads (bd)", TODO, "no database yet: ./setup.sh runs bd bootstrap (or bd init on a new repo)")
-            return
-        cmd = ["bd", "bootstrap", "--non-interactive"] if (beads_dir / "metadata.json").is_file() else \
-            ["bd", "init", "--prefix", "rk", "--skip-agents", "--non-interactive", "--role", "maintainer"]
-        res = sh(cmd, capture_output=True)
-        if res.returncode:
-            r.add("Beads (bd)", FAILED, f"`{' '.join(cmd[:2])}` failed:\n{tail_of(res, 6)}")
-            return
+    import tracker
     try:
-        mods = beads.epics()
+        mods = tracker.epics()
         if not mods and not check:
-            sh([sys.executable, ROOT / "scripts" / "fleet" / "beads.py", "seed"], capture_output=True)
-            mods = beads.epics()
-    except beads.BeadsError as exc:
-        r.add("Beads (bd)", FAILED, str(exc))
+            sh([sys.executable, ROOT / "scripts" / "fleet" / "tracker.py", "seed"], capture_output=True)
+            mods = tracker.epics()
+    except tracker.TrackerError as exc:
+        r.add("Issue tracker (issuectl)", FAILED, str(exc))
         return
     active = next((m for m, e in mods.items() if e["status"] == "in_progress"), None)
-    r.add("Beads (bd)", OK if mods else TODO,
+    r.add("Issue tracker (issuectl)", OK if mods else TODO,
           f"{len(mods)} mods tracked" + (f", {active} in progress" if active else "") if mods else "no mods yet: ./setup.sh seeds them")
 
 
@@ -555,7 +549,7 @@ def main() -> int:
         step_env(r, args.check)
         step_agents(r, args.check)
         step_agy_hooks(r, args.check)
-        step_beads(r, args.check)
+        step_tracker(r, args.check)
         step_port_tools(r, args.check)
         step_mcp_tools(r, args.check)
         step_git_hooks(r, args.check)

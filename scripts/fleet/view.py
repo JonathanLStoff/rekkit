@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Look at the port's progress in Beads: in the terminal, or as a page in the browser.
+"""Look at the port's progress in the issue tracker: in the terminal, or as a page in the browser.
 
   tasks [<mod>]   the mod in progress (or <mod>) on one screen: each step's progress, what is being
                   worked, what is open in the current step, open bugs, subagents running or
                   interrupted, and the whole board in one line
   watch [<mod>]   tasks, redrawn every 30 seconds (Ctrl+C stops)
   html            target/fleet/board.html: every mod, and the mod in progress as one column per step
-  serve           that page live at http://127.0.0.1:8765, rebuilt from Beads on every refresh (the page
+  serve           that page live at http://127.0.0.1:8765, rebuilt from the issues on every refresh (the page
                   reloads itself every 30 seconds); opens your browser
-  tickets-live    Jira-style ticket page at http://127.0.0.1:8766: every Beads ticket, filter by mod, step,
+  tickets-live    Jira-style ticket page at http://127.0.0.1:8766: every issue, filter by mod, step,
                   status, type and text; click one to read its wording, parent, blockers and comments
 
 Reads only: safe while agents work.
@@ -30,10 +30,10 @@ import threading
 import time
 import webbrowser
 
-import beads
+import tracker
 import resume
 
-OUT = beads.STATE_DIR / "board.html"
+OUT = tracker.STATE_DIR / "board.html"
 PORT = int(os.environ.get("BOARD_PORT", "8765"))  # BOARD_PORT=<n> make board-live for another port
 DONE = ("closed",)
 ORDER = {"in_progress": 0, "blocked": 1, "open": 2, "deferred": 3, "closed": 4}
@@ -43,10 +43,10 @@ class Snapshot:
     """Every issue once, grouped the way the views need them."""
 
     def __init__(self) -> None:
-        self.all = beads.issues()
+        self.all = tracker.issues()
         self.by_id = {i["id"]: i for i in self.all}
-        self.epics = {beads.label_value(i, "mod"): i for i in self.all
-                      if i["issue_type"] == "epic" and beads.label_value(i, "mod")}
+        self.epics = {tracker.label_value(i, "mod"): i for i in self.all
+                      if i["issue_type"] == "epic" and tracker.label_value(i, "mod")}
 
     def children(self, parent: str) -> list[dict]:
         # The parent field wins over the id: a bead moved to another parent keeps its old id.
@@ -55,7 +55,7 @@ class Snapshot:
     def stories(self, mod: str) -> dict[int, dict]:
         out = {}
         for s in self.children(self.epics[mod]["id"]):
-            step = beads.label_value(s, "step")
+            step = tracker.label_value(s, "step")
             if s["issue_type"] == "story" and step and step.isdigit():
                 out[int(step)] = s
         return out
@@ -81,16 +81,16 @@ def tasks(mod: str | None) -> str:
     snap = Snapshot()
     mod = mod or snap.active()
     counts = {s: sum(e["status"] == s for e in snap.epics.values()) for s in ("closed", "in_progress", "blocked", "open")}
-    ready = beads.next_mod()
+    ready = tracker.next_mod()
     board = (f"Board: {len(snap.epics)} mods: {counts['closed']} done, {counts['in_progress']} in progress, "
              f"{counts['blocked']} blocked, {counts['open']} queued" + (f"; next ready: {ready}" if ready else ""))
     if not mod or mod not in snap.epics:
         return board + ("" if not mod else f"\nNo epic for {mod}.")
     epic = snap.epics[mod]
     st = snap.stories(mod)
-    ms = beads.mod_status(mod)  # the gate's view: a step is done only when nothing under it is open
-    core = ms["core"] if mod != beads.CORE else []
-    pending = [n for n in beads.AGENT_STEPS if ms["next"].startswith(f"step {n} ")]
+    ms = tracker.mod_status(mod)  # the gate's view: a step is done only when nothing under it is open
+    core = ms["core"] if mod != tracker.CORE else []
+    pending = [n for n in tracker.AGENT_STEPS if ms["next"].startswith(f"step {n} ")]
     out = [f"{mod}  ({epic['id']}, {epic['status']})   next: {ms['next']}", ""]
     for n, story in sorted(st.items()):
         status, done, total = step_line(snap, n, story)
@@ -98,7 +98,7 @@ def tasks(mod: str | None) -> str:
             total += len(core)
         open_under = ms["unsettled"].get(n, 0) + (len(core) if n == 3 else 0)
         mark = ("done" if not open_under else "open") if status == "closed" else status
-        out.append(f"  {n:>2} {beads.STEPS[n]:<15} {bar(done, total) if total else bar(status == 'closed', 1)} "
+        out.append(f"  {n:>2} {tracker.STEPS[n]:<15} {bar(done, total) if total else bar(status == 'closed', 1)} "
                    f"{f'{done}/{total}' if total else '':>9}  {mark}")
     family = [i for i in snap.all if i["id"].startswith(epic["id"] + ".")]
     working = [i for i in family if i["status"] == "in_progress" and i["issue_type"] != "story"]
@@ -109,10 +109,10 @@ def tasks(mod: str | None) -> str:
         open_now = sorted((k for k in snap.children(cur["id"]) if k["status"] not in DONE),
                           key=lambda k: (ORDER.get(k["status"], 9), id_key(k["id"])))
         if open_now:
-            out += ["", f"Open in step {pending[0]} {beads.STEPS[pending[0]]} ({len(open_now)}):"]
+            out += ["", f"Open in step {pending[0]} {tracker.STEPS[pending[0]]} ({len(open_now)}):"]
             out += [f"  {k['id']:<14} {k['status']:<11} {k['title'][:80]}" for k in open_now[:15]]
             if len(open_now) > 15:
-                out.append(f"  … {len(open_now) - 15} more (bd children {cur['id']})")
+                out.append(f"  … {len(open_now) - 15} more (issuectl ls --epic {cur['id']} --all)")
     if core:
         out += ["", f"Core work for {mod} (under rekkit_core; part of step 3):"]
         out += [f"  {i['id']:<14} {i['title'][:90]}" for i in core]
@@ -182,11 +182,11 @@ def page(live: bool) -> str:
     for m, e in sorted(snap.epics.items(), key=lambda kv: (ORDER.get(kv[1]["status"], 9) if kv[1]["status"] != "closed"
                                                           else 5, kv[1].get("priority", 9), kv[0])):
         st = snap.stories(m)
-        cells = "".join(f'<i class="{esc(st[n]["status"]) if n in st else ""}" title="{n} {esc(beads.STEPS[n])}"></i>'
-                        for n in beads.AGENT_STEPS)
+        cells = "".join(f'<i class="{esc(st[n]["status"]) if n in st else ""}" title="{n} {esc(tracker.STEPS[n])}"></i>'
+                        for n in tracker.AGENT_STEPS)
         rows.append(f'<tr><td><b>{esc(m)}</b></td><td><span class="pill {esc(e["status"])}">'
                     f'{esc(e["status"].replace("_", " "))}</span></td><td class="muted">'
-                    f'{esc(beads.label_value(e, "wave") or "")}</td><td><div class="steps">{cells}</div></td></tr>')
+                    f'{esc(tracker.label_value(e, "wave") or "")}</td><td><div class="steps">{cells}</div></td></tr>')
     detail = ""
     if mod:
         epic = snap.epics[mod]
@@ -201,7 +201,7 @@ def page(live: bool) -> str:
                     if rest else "")
             if closed:
                 more += f"<details><summary>{len(closed)} done</summary>{''.join(card(k) for k in closed)}</details>"
-            cols.append(f'<div class="col"><h3><span>{n} {esc(beads.STEPS[n])}</span><span class="pill '
+            cols.append(f'<div class="col"><h3><span>{n} {esc(tracker.STEPS[n])}</span><span class="pill '
                         f'{esc(story["status"])}">{done}/{len(kids)}</span></h3><div class="meter"><b style="width:'
                         f'{pct}%"></b></div>{"".join(card(k) for k in shown)}{more}</div>')
         detail = (f'<h2>{esc(mod)} <span class="muted">({esc(epic["id"])})</span></h2>'
@@ -212,17 +212,17 @@ def page(live: bool) -> str:
     refresh = '<meta http-equiv="refresh" content="30">' if live else ""
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
             f'content="width=device-width,initial-scale=1">{refresh}<title>Rekkit board</title><style>{CSS}</style>'
-            f'</head><body><main><h1>Rekkit board</h1><div class="muted">From Beads, '
+            f'</head><body><main><h1>Rekkit board</h1><div class="muted">From the issue tracker, '
             f'{time.strftime("%a %H:%M:%S")}{" · refreshes every 30 s" if live else ""}</div>{detail}'
             f'<h2>Every mod</h2><table><tr><th>Mod</th><th>Status</th><th>Wave</th><th>Steps 1–9</th></tr>'
             f'{"".join(rows)}</table>{hz}</main></body></html>')
 
 
-REBUILD = 15  # seconds between rebuilds of the live page (one takes a few seconds of bd calls)
+REBUILD = 15  # seconds between rebuilds of the live page (one takes a few seconds of tracker reads)
 
 
 def serve(build=None, port: int = PORT, name: str = "board", command: str = "make board-live") -> None:
-    """The page live: a background thread rebuilds it from Beads every REBUILD seconds and requests get
+    """The page live: a background thread rebuilds it from the issues every REBUILD seconds and requests get
     the latest copy at once, so a slow rebuild never keeps the browser waiting (or hanging up)."""
     latest = {"body": b"", "code": 200}
     ready = threading.Event()
@@ -231,8 +231,8 @@ def serve(build=None, port: int = PORT, name: str = "board", command: str = "mak
         while True:
             try:
                 latest["body"], latest["code"] = (build() if build else page(live=True)).encode(), 200
-            except beads.BeadsError as exc:
-                latest["body"], latest["code"] = f"<pre>[beads] {esc(exc)}</pre>".encode(), 500
+            except tracker.TrackerError as exc:
+                latest["body"], latest["code"] = f"<pre>[tracker] {esc(exc)}</pre>".encode(), 500
             except Exception as exc:  # keep serving the last good page; show what broke
                 latest["body"], latest["code"] = f"<pre>{esc(type(exc).__name__)}: {esc(exc)}</pre>".encode(), 500
             ready.set()
@@ -245,7 +245,7 @@ def serve(build=None, port: int = PORT, name: str = "board", command: str = "mak
                 self.end_headers()
                 return
             ready.wait(timeout=60)
-            body = latest["body"] or b"<meta http-equiv='refresh' content='2'>Reading Beads..."
+            body = latest["body"] or b"<meta http-equiv='refresh' content='2'>Reading the issues..."
             try:
                 self.send_response(latest["code"])
                 self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -281,29 +281,15 @@ TICKET_PORT = int(os.environ.get("TICKETS_PORT", "8766"))  # TICKETS_PORT=<n> ma
 
 
 def ticket_data() -> dict:
-    """Every Beads issue with what the ticket page shows. bd export takes seconds; the list view has no text."""
-    fd, name = tempfile.mkstemp(suffix=".jsonl", dir=beads.STATE_DIR)
-    os.close(fd)
-    try:
-        beads.bd("export", "-o", name, parse=False)
-        with open(name, encoding="utf-8") as fh:
-            raw = [json.loads(line) for line in fh if line.strip()]
-    finally:
-        os.unlink(name)
-    issues = []
-    for r in raw:
-        if r.get("_type", "issue") != "issue":
-            continue
-        deps = r.get("dependencies") or []
-        parent = next((d["depends_on_id"] for d in deps if d.get("type") == "parent-child"), None)
-        issues.append({
-            "id": r["id"], "title": r.get("title", ""), "description": r.get("description") or "",
-            "status": r.get("status", ""), "type": r.get("issue_type", ""), "priority": r.get("priority"),
-            "labels": r.get("labels") or [], "parent": parent,
-            "deps": [[d["depends_on_id"], d.get("type", "")] for d in deps if d.get("type") != "parent-child"],
-            "updated": r.get("updated_at", ""), "closeReason": r.get("close_reason") or "",
-            "comments": [c.get("text", "") for c in (r.get("comments") or []) if c.get("text")],
-        })
+    """Every issue with what the ticket page shows, from the tracker's issues in one read. Comments are not
+    shown yet: they sit in each issue's body, and reading every body would make the page slow."""
+    issues = [{
+        "id": i["id"], "title": i["title"], "description": i["description"],
+        "status": i["status"], "type": i["issue_type"], "priority": i["priority"],
+        "labels": i["labels"], "parent": i["parent"],
+        "deps": [[b, "blocks"] for b in i["blocked_by"]],
+        "updated": i["created_at"], "closeReason": "", "comments": [],
+    } for i in tracker.issues()]
     issues.sort(key=lambda i: id_key(i["id"]))
     return {"issues": issues, "generated": time.strftime("%a %H:%M:%S")}
 
@@ -468,7 +454,7 @@ def main() -> int:
         elif cmd == "html":
             OUT.parent.mkdir(parents=True, exist_ok=True)
             OUT.write_text(page(live=False), encoding="utf-8")
-            print(f"Wrote {OUT.relative_to(beads.MAIN).as_posix()}")
+            print(f"Wrote {OUT.relative_to(tracker.MAIN).as_posix()}")
             webbrowser.open(OUT.as_uri())
         elif cmd == "serve":
             serve()
@@ -477,8 +463,8 @@ def main() -> int:
             return 1
     except KeyboardInterrupt:
         return 0
-    except beads.BeadsError as exc:
-        print(f"[beads] {exc}", file=sys.stderr)
+    except tracker.TrackerError as exc:
+        print(f"[tracker] {exc}", file=sys.stderr)
         return 1
     return 0
 

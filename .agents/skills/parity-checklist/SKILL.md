@@ -33,7 +33,7 @@ Compare the diff on `port/<id>` against `planning/mods/<id>.md`, `AGENTS.md` and
 
 ## Hooks
 
-- [ ] Every row of the spec's *Hooks needed* table is implemented or filed as a Beads bug labelled `horizon`.
+- [ ] Every row of the spec's *Hooks needed* table is implemented or filed as a bug labelled `horizon`.
 - [ ] Every hook returns early for ids outside `<id>:` and never clears another mod's out-param.
 
 ## Assets (Recheck)

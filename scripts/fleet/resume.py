@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Where a mod's fleet run stands, rebuilt from what survives any crash: Beads, the hooks' session
+"""Where a mod's fleet run stands, rebuilt from what survives any crash: the tracker, the hooks' session
 states and journal (target/fleet/journal.jsonl), each subagent's saved prompt (target/fleet/prompts/)
 and progress notes (target/fleet/progress/). Nothing depends on the agent saving anything, so it
 holds when an agent dies, runs out of credits or loses the network mid-step.
@@ -19,7 +19,7 @@ import json
 import sys
 import time
 
-import beads
+import tracker
 import guard
 
 
@@ -53,7 +53,7 @@ def clock(ts: float) -> str:
 
 
 def digest(mod: str) -> str:
-    st = beads.mod_status(mod)
+    st = tracker.mod_status(mod)
     epic = st["epic"]
     prefix = epic["id"] + "."
     out = [f"RESUME {mod}: epic {epic['id']} {epic['status']}; next: {st['next']}"]
@@ -61,7 +61,7 @@ def digest(mod: str) -> str:
     for n, story in sorted(st["stories"].items()):
         done, total = st["counts"][n]
         mark = "done" if story["status"] == "closed" else (f"{done}/{total}" if total else story["status"])
-        steps.append(f"{n} {beads.STEPS[n]} {mark}")
+        steps.append(f"{n} {tracker.STEPS[n]} {mark}")
     out.append("Steps: " + "; ".join(steps))
 
     now, entries = time.time(), journal()
@@ -83,9 +83,9 @@ def digest(mod: str) -> str:
             prompt = guard.PROMPTS / f"{bead}.md"
             notes = guard.PROGRESS / f"{bead}.md"
             out.append(f"  {bead} {role}, last active {clock(seen)}; wrote {len(wrote)} file(s)"
-                       + (f"; prompt: {prompt.relative_to(beads.MAIN).as_posix()}" if prompt.is_file() else "")
-                       + (f"; notes: {notes.relative_to(beads.MAIN).as_posix()}" if notes.is_file() else ""))
-    waiting = sorted(p.stem for p in beads.INBOX.glob("*.json")) if beads.INBOX.is_dir() else []
+                       + (f"; prompt: {prompt.relative_to(tracker.MAIN).as_posix()}" if prompt.is_file() else "")
+                       + (f"; notes: {notes.relative_to(tracker.MAIN).as_posix()}" if notes.is_file() else ""))
+    waiting = sorted(p.stem for p in tracker.INBOX.glob("*.json")) if tracker.INBOX.is_dir() else []
     if waiting:
         out.append(f"Unfiled reports: {', '.join(waiting)}. Run `make fleet-inbox` first.")
 
@@ -104,8 +104,8 @@ def main() -> int:
         return 1
     try:
         print(digest(sys.argv[1]))
-    except beads.BeadsError as exc:
-        print(f"[beads] {exc}", file=sys.stderr)
+    except tracker.TrackerError as exc:
+        print(f"[tracker] {exc}", file=sys.stderr)
         return 1
     return 0
 

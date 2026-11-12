@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Start agy on this repository with its terminal sandbox off.
 
-agy runs agent commands in a sandbox that hides the network, ~/.dolt and the Minecraft install, which
-the port needs (cargo downloads, Beads, the harness), and asks a person to approve every command that
+agy runs agent commands in a sandbox that hides the network and the Minecraft install, which
+the port needs (cargo downloads, the issue tracker, the harness), and asks a person to approve every command that
 fails there. agy has no project setting for it, so this passes the session-only setting
 toolPermission=always-proceed: commands run directly, and the fleet's hooks (.agents/hooks.json) still
 block pushing, signing, releasing, submodule changes, force flags and recursive deletes.

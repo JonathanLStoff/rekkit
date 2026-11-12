@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Everything an agent needs to find for one mod, in one short page, so it need not explore with
-ls, find or by reading the big docs: its state in Beads, its spec, every original archive of it in
+ls, find or by reading the big docs: its state in the tracker, its spec, every original archive of it in
 every pack (the port merges them, newest version wins), what is decompiled, and what the mod folder
 already holds.
 
@@ -17,9 +17,9 @@ import sys
 import zipfile
 from pathlib import Path
 
-import beads
+import tracker
 
-ROOT = beads.main_checkout()
+ROOT = tracker.main_checkout()
 PACKS = ("tekkit", "direwolf20", "agrarian")
 # Archive names that do not contain the mod id: regexes on the name lowercased without punctuation.
 ALIASES = {
@@ -91,15 +91,15 @@ def main() -> int:
     spec = spec_path.read_text(encoding="utf-8", errors="replace") if spec_path.is_file() else ""
 
     try:
-        st = beads.mod_status(mod)
+        st = tracker.mod_status(mod)
         e = st["epic"]
         print(f"{mod}: epic {e['id']} {e['status']}; next: {st['next']}")
-        open_stories = [f"{s['id']} {n} {beads.STEPS[n]} ({s['status']}, {st['counts'][n][0]}/{st['counts'][n][1]})"
+        open_stories = [f"{s['id']} {n} {tracker.STEPS[n]} ({s['status']}, {st['counts'][n][0]}/{st['counts'][n][1]})"
                         for n, s in sorted(st["stories"].items()) if s["status"] != "closed"]
         if open_stories:
             print("  open steps: " + "; ".join(open_stories))
-    except beads.BeadsError as exc:
-        print(f"{mod}: not in Beads ({exc})")
+    except tracker.TrackerError as exc:
+        print(f"{mod}: not in the tracker ({exc})")
 
     feats = ROOT / "planning" / "mods" / f"{mod}.features.json"
     print(f"Spec: {spec_path.relative_to(ROOT)} ({lines(spec_path)}); features: {feats.relative_to(ROOT)} "

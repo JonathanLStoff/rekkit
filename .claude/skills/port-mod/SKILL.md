@@ -56,6 +56,6 @@ Use core types (energy units, stacks, tanks, grids, side config, multiblock patt
 
 ## Rules
 
-- Block loot tables use Horizon's form, copied from `mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json`: a pool `"condition": { "type": ... }`, not vanilla's `"conditions": [...]` array, which drops nothing at the pinned Horizon (Beads bug `rk-yls`).
+- Block loot tables use Horizon's form, copied from `mods/example_mod/content/data/example_mod/loot_table/blocks/ender_chest.json`: a pool `"condition": { "type": ... }`, not vanilla's `"conditions": [...]` array, which drops nothing at the pinned Horizon (issue `horizon-vanilla-loot`, formerly Beads `rk-yls`).
 - A missing engine feature is a follow_up in your report titled `horizon: ...`.
 - Start with `make fleet-task BEAD=<id> ROLE=<role>`, end with your report in `target/fleet/inbox/<bead>.json`.

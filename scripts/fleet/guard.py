@@ -5,9 +5,7 @@ Checks a hook runs:
   shell  a shell command an agent is about to run: no publishing, signing, submodule changes, history
          rewrites or recursive deletes (a human does those). It notices `make fleet-start MOD=<id>`
          (this session conducts that mod) and `make fleet-task BEAD=<id> ROLE=<role>` (this session
-         works one bead as that role). A role subagent may not run bd at all (it reports instead).
-         In agy every command also gets DOLT_ROOT_PATH (target/dolt-root), so `bd` also works where
-         ~/.dolt is unreadable (agy's terminal sandbox, if a person turns it back on).
+         works one bead as that role). A role subagent may not run issuectl at all (it reports instead).
          Token waste (planning/token_audit/fix-plan.md): a role subagent may not sweep folders
          (recursive listings, find, tree), run `git status`, `git log -p` or a bare `git diff`, search
          the decompiled Java or the spec with grep/rg (make java-find, spec-show), use more than 2 lines
@@ -26,16 +24,16 @@ Checks a hook runs:
   gate   before an agent (or, in Claude Code, a subagent) stops:
            - a role subagent has written its report for every bead it took (target/fleet/inbox/);
            - the conductor of a fleet run has filed every report (`make fleet-inbox`) and its mod is
-             finished in Beads: stories 1-9 closed, or the epic blocked with a reason;
+             finished in the tracker: steps 1-9 done, or the epic blocked with a reason;
            - outside a fleet run, tests and checks pass for what the session wrote.
          While a conductor's subagents are still working, the gate waits (up to WAIT_FOR_REPORTS) for
          a report instead of sending it straight back to look for work, and those waits do not count
          as idle. The agent may stop when the user cancels it, after `make fleet-stop`, or after
-         MAX_IDLE_STOPS blocked stops in a row with no change in Beads (a stuck agent).
-  prime  the Beads context: `bd prime` (.beads/PRIME.md) and, while a mod is in progress, its resume
+         MAX_IDLE_STOPS blocked stops in a row with no change in issues/ (a stuck agent).
+  prime  the tracker context (tracker.prime_text: the commands, the mod in progress) and, while a mod is in progress, its resume
          page. Run at session start and after compaction (Claude Code's SessionStart covers both; agy's
          SessionStart; opencode's plugin puts it in the main session's system prompt and on compaction),
-         so no agent runs `bd prime` itself and role subagents get none of it.
+         so no agent loads it itself and role subagents get none of it.
 
 Commands for people and agents:
   claim <id>   what `make fleet-start MOD=<id>` runs first: checks the mod and clears a stop request
@@ -60,13 +58,13 @@ import sys
 import time
 from pathlib import Path
 
-import beads
+import tracker
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import version_sync  # noqa: E402 (scripts/, beside this folder)
 
 ROOT = Path(__file__).resolve().parents[2]  # this checkout (a worktree's own files)
-MAIN = beads.MAIN  # the main checkout: shared state, inbox, stop request
+MAIN = tracker.MAIN  # the main checkout: shared state, inbox, stop request
 STATE = MAIN / "target" / "agent-gate"
 STOP_FILE = MAIN / "target" / "fleet.stop"
 ALLOWED_WARNINGS = "planning/harness-allowed-warnings.txt"
@@ -75,7 +73,7 @@ BLOCKED_SHELL = re.compile(
     # Git in the submodule only reads (grep, log, show...); anything else would change it.
     r"|git -C \S*horizon/?\s+(?!(?:grep|log|show|diff|status|rev-parse|ls-files|ls-tree|blame|cat-file|merge-base"
     r"|describe)\b)")
-BEADS_CMD = re.compile(r"(?<![\w./-])bd(?:\s|$)")
+ISSUECTL_CMD = re.compile(r"(?<![\w./-])issuectl(?:\s|$)")
 HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$", re.S | re.M)
 # Commands only the conductor runs: a session resumed after a crash or /clear (fleet-resume) or that
 # dispatches tickets conducts the mod as surely as one that ran fleet-start.
@@ -89,11 +87,10 @@ MAX_JAVA_READ = 200  # lines of decompiled Java one read may take
 MAX_SUBAGENTS = 2  # subagents working tickets at once; the conductor waits for a report before starting more
 WAIT_FOR_REPORTS = 600  # seconds a conductor's turn end waits for running subagents (hook timeout: 900)
 LIVE_WINDOW = 15 * 60  # a session with no tool call for this long is gone (died, out of credits, offline)
-JOURNAL = beads.STATE_DIR / "journal.jsonl"  # every session's commands, writes and subagent launches
-PROMPTS = beads.STATE_DIR / "prompts"  # the prompt each bead's subagent was started with
-PROGRESS = beads.STATE_DIR / "progress"  # each bead's progress notes, one line per finished piece
+JOURNAL = tracker.STATE_DIR / "journal.jsonl"  # every session's commands, writes and subagent launches
+PROMPTS = tracker.STATE_DIR / "prompts"  # the prompt each bead's subagent was started with
+PROGRESS = tracker.STATE_DIR / "progress"  # each bead's progress notes, one line per finished piece
 BEAD_ID = re.compile(r"\b[a-z]{2,}-[a-z0-9]{3,}(?:\.\d+)+\b")
-DOLT_ROOT = MAIN / "target" / "dolt-root"  # dolt's global config, inside the repo so agy's sandbox can read it
 # agy's reasons a run ended that the gate must not override (the user, or agy's own limits).
 AGY_FINAL = {"USER_CANCELED", "MAX_FORCED_INVOCATIONS", "MAX_TOKEN_BUDGET_EXCEEDED", "ERROR"}
 REPORT_SHAPE = ('{"bead": "<id>", "role": "<role>", "status": "done|partial|blocked|failed", "summary": "...", '
@@ -350,9 +347,9 @@ def over_budget(payload: dict, session: "Session", text: str) -> str | None:
             why = f"{turns} turns, of {TASK_TURNS}"
     if not why:
         return None
-    beads_list = ", ".join(session.tasks)
+    task_list = ", ".join(session.tasks)
     return (f"Token budget reached ({why}): stop working now. Append what you finished to "
-            f"target/fleet/progress/<bead>.md, then write your report for {beads_list} with status partial, "
+            f"target/fleet/progress/<bead>.md, then write your report for {task_list} with status partial, "
             "listing exactly what is left; the conductor gives the rest to a fresh agent or splits the ticket.")
 
 
@@ -499,9 +496,9 @@ def remember_reads(payload: dict, paths: list[str], session: "Session") -> None:
 WARNINGS: list[str] = []  # for the conductor: the same advice, not a refusal (it may need to look around)
 
 
-def bd_text_removed(text: str) -> str:
-    """The command with the quoted arguments of `bd` calls emptied: a comment, title or reason that
-    quotes "--force" or "git push" is text for Beads, not a command. Quotes that run something
+def tracker_text_removed(text: str) -> str:
+    """The command with the quoted arguments of `issuectl` calls emptied: a comment, title or reason that
+    quotes "--force" or "git push" is text for the tracker, not a command. Quotes that run something
     ($(...) or backticks) stay."""
     out, i, words, word = [], 0, [], ""
     while i < len(text):
@@ -513,7 +510,7 @@ def bd_text_removed(text: str) -> str:
             quoted = text[i:end + 1]
             runs = c == '"' and ("$(" in quoted or "`" in quoted)
             command = (words + [word])[0] if (words or word) else ""
-            out.append(c + c if command == "bd" and not runs else quoted)
+            out.append(c + c if command == "issuectl" and not runs else quoted)
             word += "q"
             i = end + 1
             continue
@@ -534,7 +531,7 @@ def check_shell(payload: dict) -> str | None:
     commands = strings_named(tool_input(payload), lambda k: k in ("command", "commandline", "cmd"))
     # A heredoc's body is text being written, not commands being run.
     text = HEREDOC.sub("", "\n".join(commands)) if commands else json.dumps(payload)
-    if BLOCKED_SHELL.search(bd_text_removed(text) if commands else text):
+    if BLOCKED_SHELL.search(tracker_text_removed(text) if commands else text):
         return ("Blocked by the Rekkit fleet guard: pushing, releasing, signing, submodule changes, "
                 "history rewrites and recursive deletes are for the human. Ask them to run it.")
     session = Session(payload)
@@ -553,17 +550,17 @@ def check_shell(payload: dict) -> str | None:
     if budget := over_budget(payload, session, text):
         return budget
     # A session that conducts keeps the conductor's rights even if a subagent shares its id.
-    if session.tasks and not session.fleet and BEADS_CMD.search(text):
-        return ("Role subagents do not use Beads (not even to read or for --help): your bead and what it needs "
-                f"are in your prompt. Put anything for Beads in your report (follow_ups, notes): {INBOX_HINT}")
+    if session.tasks and not session.fleet and ISSUECTL_CMD.search(text):
+        return ("Role subagents do not use the issue tracker (not even to read or for --help): your bead and what it needs "
+                f"are in your prompt. Put anything for the tracker in your report (follow_ups, notes): {INBOX_HINT}")
     if session.tasks or session.fleet:
-        plain = bd_text_removed(text) if commands else text
+        plain = tracker_text_removed(text) if commands else text
         if why := waste(plain, session):
             if session.tasks and not session.fleet:
                 return why
             WARNINGS.append(why)
         remember_runs(plain, session)
-    journal(session, "run", re.sub(r"^export DOLT_ROOT_PATH=\S+; ", "", text.strip()))
+    journal(session, "run", text.strip())
     return None
 
 
@@ -618,23 +615,13 @@ def check_spawn(payload: dict) -> str | None:
     return None
 
 
-def agy_env(payload: dict) -> dict:
-    """The `overwrite` that gives an agy command DOLT_ROOT_PATH (see the module docstring)."""
-    args = tool_input(payload)
-    cmd = args.get("CommandLine") if isinstance(args, dict) else None
-    if not isinstance(cmd, str) or os.name == "nt" or "DOLT_ROOT_PATH" in cmd:
-        return {}
-    DOLT_ROOT.mkdir(parents=True, exist_ok=True)
-    return {"CommandLine": f"export DOLT_ROOT_PATH={shlex.quote(DOLT_ROOT.as_posix())}; {cmd}"}
-
-
 def check_paths(payload: dict) -> str | None:
     if budget := over_budget(payload, Session(payload), " ".join(repo_paths(payload))):
         return budget
     units = set()
     for rel in repo_paths(payload):
         if rel == "horizon" or rel.startswith("horizon/"):
-            return "horizon/ is read-only. File the gap as a Beads bug labelled horizon (via your report)."
+            return "horizon/ is read-only. File the gap as a bug labelled horizon (via your report)."
         if re.match(r"mods/[^/]+/content/", rel) and (rel.endswith("Cargo.toml") or rel.endswith(".rs")):
             return "No Cargo.toml or .rs files under mods/<id>/content/."
         if rel == ALLOWED_WARNINGS:
@@ -726,11 +713,11 @@ def whole_java_read(payload: dict, paths: list[str]) -> str | None:
 
 # ---------------------------------------------------------------- gate
 
-INBOX_HINT = f"write your report to {beads.INBOX}/<bead>.json as {REPORT_SHAPE}"
+INBOX_HINT = f"write your report to {tracker.INBOX}/<bead>.json as {REPORT_SHAPE}"
 
 
 def reported(bead: str) -> bool:
-    return (beads.INBOX / f"{bead}.json").is_file() or any((beads.INBOX / "done").glob(f"{bead}-*.json"))
+    return (tracker.INBOX / f"{bead}.json").is_file() or any((tracker.INBOX / "done").glob(f"{bead}-*.json"))
 
 
 def uncommitted() -> set[str]:
@@ -752,7 +739,7 @@ def contract_differences(mod: str) -> int:
         return count
     for session in summary.get("phases", {}).get("isolated", []):
         if mod in session.get("mods", []):
-            count += sum(str(e.get("stage", "")).startswith(beads.LIVE_CONTRACT_STAGES) for e in session.get("errors", []))
+            count += sum(str(e.get("stage", "")).startswith(tracker.LIVE_CONTRACT_STAGES) for e in session.get("errors", []))
     return count
 
 
@@ -796,15 +783,15 @@ def run_checks(units: set[str]) -> tuple[list[str], str]:
 
 
 def progress_mark() -> str:
-    """Changes whenever Beads or the inbox changes, so a working agent is never taken for a stuck one."""
-    newest = max((p.stat().st_mtime_ns for p in (beads.BEADS_DIR / "embeddeddolt").rglob("*") if p.is_file()),
-                 default=0) if (beads.BEADS_DIR / "embeddeddolt").is_dir() else 0
-    reports = sorted(p.name for p in beads.INBOX.rglob("*.json")) if beads.INBOX.is_dir() else []
+    """Changes whenever the issues or the inbox change, so a working agent is never taken for a stuck one."""
+    newest = max((p.stat().st_mtime_ns for p in tracker.ISSUES_DIR.rglob("*") if p.is_file()),
+                 default=0) if tracker.ISSUES_DIR.is_dir() else 0
+    reports = sorted(p.name for p in tracker.INBOX.rglob("*.json")) if tracker.INBOX.is_dir() else []
     return hashlib.sha256(f"{newest}{reports}".encode()).hexdigest()[:16]
 
 
 def running_tasks() -> list[str]:
-    """Beads that subagents took (`make fleet-task`) and have not reported on yet, while they still act."""
+    """Tasks that subagents took (`make fleet-task`) and have not reported on yet, while they still act."""
     now, out = time.time(), []
     for f in STATE.glob("*.json") if STATE.is_dir() else []:
         try:
@@ -817,12 +804,12 @@ def running_tasks() -> list[str]:
 
 
 def wait_for_reports(fully_idle: object) -> list[str]:
-    """Wait while subagents run and none has reported; the beads still running when it stops waiting."""
+    """Wait while subagents run and none has reported; the tasks still running when it stops waiting."""
     end = time.time() + WAIT_FOR_REPORTS
     while True:
         running = running_tasks()
         if not (running or fully_idle is False) or STOP_FILE.is_file() \
-                or (beads.INBOX.is_dir() and any(beads.INBOX.glob("*.json"))):
+                or (tracker.INBOX.is_dir() and any(tracker.INBOX.glob("*.json"))):
             return running
         if time.time() >= end:
             return running or ["background work"]
@@ -850,11 +837,11 @@ def gate(payload: dict, units: set[str] | None) -> str | None:
     if session.fleet:
         # Spend the wait here, not in empty turns: return as soon as a report lands.
         still_running = wait_for_reports(payload.get("fullyIdle"))
-        waiting = sorted(p.stem for p in beads.INBOX.glob("*.json")) if beads.INBOX.is_dir() else []
+        waiting = sorted(p.stem for p in tracker.INBOX.glob("*.json")) if tracker.INBOX.is_dir() else []
         if waiting:
             problems.append(f"Unfiled subagent reports ({', '.join(waiting)}): run `make fleet-inbox`, then act on them.")
         try:
-            st = beads.mod_status(session.fleet)
+            st = tracker.mod_status(session.fleet)
             if not st["finished"]:
                 problems.append(
                     f"{session.fleet} is not finished (next: {st['next']}). Keep working: do not stop to report "
@@ -862,16 +849,16 @@ def gate(payload: dict, units: set[str] | None) -> str | None:
                     "user tells you to, or when only a person can unblock it: then set the epic to blocked with "
                     "the reason as a comment.")
             elif st["epic"]["status"] != "blocked" and (differs := contract_differences(session.fleet)):
-                # Closed in Beads is not done: the port must be the original, block by block.
-                filed = beads.contract(session.fleet)
+                # Closed in the tracker is not done: the port must be the original, block by block.
+                filed = tracker.contract(session.fleet)
                 problems.append(
-                    f"{session.fleet} is closed in Beads but differs from the original in {differs} way(s) "
+                    f"{session.fleet} is closed in the tracker but differs from the original in {differs} way(s) "
                     f"(make contract-check MOD={session.fleet}, and the last harness run's screen, shape and "
-                    f"scenario checks). {filed} Work those beads; do not stop.")
+                    f"scenario checks). {filed} Work those issues; do not stop.")
             else:
                 session.fleet = None
-        except beads.BeadsError as exc:
-            problems.append(f"Could not read {session.fleet} in Beads: {exc}")
+        except tracker.TrackerError as exc:
+            problems.append(f"Could not read {session.fleet} in the tracker: {exc}")
         if still_running and session.fleet and not waiting:
             problems.append(
                 f"Subagents are still working ({', '.join(still_running)}); this stop already waited "
@@ -895,27 +882,27 @@ def gate(payload: dict, units: set[str] | None) -> str | None:
     session.progress = mark
     session.save()
     if session.idle_stops > MAX_IDLE_STOPS:
-        return None  # stuck: nothing changed in Beads or the inbox for MAX_IDLE_STOPS turns
+        return None  # stuck: nothing changed in issues/ or the inbox for MAX_IDLE_STOPS turns
     return "\n\n".join(problems)
 
 
 def prime(fmt: str) -> int:
     text = ""
-    if beads.available():
+    if tracker.available():
         try:
-            text = beads.bd("prime", parse=False).strip()
-        except beads.BeadsError:
+            text = tracker.prime_text().strip()
+        except tracker.TrackerError:
             text = ""
     # A mod in progress: this is a new, cleared or compacted conductor session. Hand it the resume page
     # so it carries on at once, without a person.
     try:
-        mod = beads.active_mod() if beads.available() else None
+        mod = tracker.active_mod() if tracker.available() else None
         if mod:
             import resume  # lazy: resume imports this module
             text += (f"\n\nA mod is in progress: {mod}. You are its conductor; carry on without waiting to be told. "
                      f"`make fleet-resume MOD={mod}` (below) shows what to file and what to restart.\n\n"
                      + resume.digest(mod))
-    except Exception:  # noqa: BLE001 (best effort: Beads may be down)
+    except Exception:  # noqa: BLE001 (best effort: the tracker may be down)
         pass
     if not text:
         return 0
@@ -938,8 +925,8 @@ def main() -> int:
 
     if args.check == "claim":
         try:
-            beads.epic(args.target or "")
-        except beads.BeadsError as exc:
+            tracker.epic(args.target or "")
+        except tracker.TrackerError as exc:
             print(exc, file=sys.stderr)
             return 1
         STOP_FILE.unlink(missing_ok=True)
@@ -950,28 +937,28 @@ def main() -> int:
         if not args.target:
             print("make fleet-task BEAD=<id> ROLE=<role>", file=sys.stderr)
             return 1
-        beads.INBOX.mkdir(parents=True, exist_ok=True)
+        tracker.INBOX.mkdir(parents=True, exist_ok=True)
         notes = PROGRESS / f"{args.target}.md"
         rel = notes.relative_to(MAIN).as_posix()
         import flat
         if flat.is_flat():  # one linear session: its context is the cost, so keep it small and go on
             print(f"Flat mode: you work {args.target}{' as ' + args.role if args.role else ''} in this session, "
                   f"no subagent. Read your role file once. Append a line to {PROGRESS.relative_to(MAIN).as_posix()}/"
-                  f"{args.target}.md per piece finished, write {beads.INBOX / (args.target + '.json')} as "
+                  f"{args.target}.md per piece finished, write {tracker.INBOX / (args.target + '.json')} as "
                   f"{REPORT_SHAPE} when done, run `make fleet-inbox`, then take the next ticket without "
-                  "stopping. The report goes to the inbox, not to bd by hand.")
+                  "stopping. The report goes to the inbox, not to issuectl by hand.")
         else:
           print(f"You work {args.target}{' as ' + args.role if args.role else ''}. After each piece of work you finish "
               f"(a file, a block, a test passing), append one line saying what is done to {rel}: if you are "
               "interrupted, the next agent continues from it. When you finish (or cannot go on), write "
-              f"{beads.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to Beads yourself. This is "
+              f"{tracker.INBOX / (args.target + '.json')} as {REPORT_SHAPE}. Do not write to the tracker yourself. This is "
               "one ticket: report everything when it is done and stop; a fresh agent takes the next. "
               f"Your budget: {TASK_TURNS} turns or {TASK_BILLED:,} tokens billed (each call's fresh input, cached reads at a tenth), "
               "whichever comes first; past it the hooks let you only write your notes and a partial report. "
               "Each turn re-sends everything before it, so do the work in few turns: everything your ticket "
               "needs is below. Read nothing else unless a check fails and names the file; never list folders "
               "or read the scripts.")
-        import brief  # lazy: brief imports beads and the Java outline
+        import brief  # lazy: brief imports tracker and the Java outline
         text = brief.brief(args.target, args.role)
         if text:
             print("\n" + text)
@@ -1019,9 +1006,7 @@ def main() -> int:
         if reason:
             print(json.dumps({"decision": "deny", "reason": reason}))
         else:
-            env = agy_env(payload) if args.check == "shell" else {}
-            print(json.dumps({"decision": "allow", **({"overwrite": env} if env else {}),
-                              **({"reason": warning} if warning else {})}))
+            print(json.dumps({"decision": "allow", **({"reason": warning} if warning else {})}))
         return 0
     if reason:
         print(reason, file=sys.stderr)

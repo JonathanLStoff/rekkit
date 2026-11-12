@@ -24,7 +24,8 @@ On opencode it starts nothing (unless REKKIT_ALLOW_SUBAGENTS=1 on a cloud model)
 model (Ollama, LM Studio or llama.cpp): the one session does each role itself (AGENTS.md).
 
 Usage:
-  make fleet-dispatch MOD=<id> [AGENT=agy|claude|codex|opencode] [MAX=2] [BUDGET=<tokens>] [FALLBACK=1] [CONDUCTOR=1]
+  make fleet-dispatch MOD=<id> [AGENT=agy|claude|codex|opencode|omp] [MAX=2] [BUDGET=<tokens>] [FALLBACK=1] [CONDUCTOR=1]
+  make omp-agy MOD=<id>    (agy picks one ticket and runs it on omp; see scripts/fleet/omp_agy.py)
 """
 
 from __future__ import annotations
@@ -40,20 +41,22 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import agy
-import beads
+import tracker
 import models
 from guard import STOP_FILE, TASK_BILLED, billed_tokens
 
 ROOT = Path(__file__).resolve().parents[2]
 ROLES = ROOT / ".agents" / "agents"
-WORKERS = beads.STATE_DIR / "workers"
-USAGE = beads.STATE_DIR / "usage.jsonl"
+WORKERS = tracker.STATE_DIR / "workers"
+USAGE = tracker.STATE_DIR / "usage.jsonl"
 DEFAULT_BUDGET = 20_000_000  # tokens billed (all agents of this run together) before it asks a person
 CLAUDE_ALLOWED = [
     "Read", "Grep", "Glob", "Edit", "Write",
     *(f"Bash({c}:*)" for c in ("cargo", "make", "python3", "python", "py", "scripts/fleet/python.sh", "rustfmt",
                                "ls", "mkdir", "git diff", "git log", "git show", "git add", "git commit",
                                "git rev-parse", "git ls-files"))]
+# omp (oh-my-pi) runs each ticket headless on this local model, with thinking off (`omp --models`).
+OMP_MODEL = "ollama/gemma4:26b-mlx"
 
 
 @dataclass
@@ -103,8 +106,8 @@ def local_opencode() -> bool:
 def prompt_for(mod: str, bead: str, role: str, title: str, tool: str) -> str:
     text = (f"You are the {role} subagent for the mod {mod}. Your bead: {bead} ({title}). Your first command is "
             f"`make fleet-task BEAD={bead} ROLE={role}`: it prints your whole brief. Do the ticket, then write your "
-            f"report to target/fleet/inbox/{bead}.json and stop. Never run bd, git push or anything a person does.")
-    if tool in ("codex",):  # no roles of its own: the role file is its instructions
+            f"report to target/fleet/inbox/{bead}.json and stop. Never run issuectl, git push or anything a person does.")
+    if tool in ("codex", "omp"):  # no roles of its own: the role file is its instructions
         text += f" Your instructions are .agents/agents/{role}/agent.md (read it once, first)."
     return text
 
@@ -123,6 +126,8 @@ def command(tool: str, model: str | None, role: str, prompt: str, log: Path) -> 
         return ["codex", "exec", "--full-auto", *(["-m", model] if model else []), prompt]
     if tool == "opencode":
         return ["opencode", "run", "--agent", role, *(["-m", model] if model else []), prompt]
+    if tool == "omp":  # headless, one ticket, thinking off; the model is OMP_MODEL unless the chain names one
+        return ["omp", "-p", "--cwd", str(ROOT), "--model", model or OMP_MODEL, "--thinking=off", prompt]
     raise ValueError(tool)
 
 
@@ -165,7 +170,7 @@ def pump(w: Worker) -> bool:
 def start(mod: str, tool: str, model: str | None, issue: dict, solo: bool) -> Worker:
     import queue
     import threading
-    bead, role, title = issue["id"], beads.label_value(issue, "role") or "domain-builder", issue.get("title", "")
+    bead, role, title = issue["id"], tracker.label_value(issue, "role") or "domain-builder", issue.get("title", "")
     WORKERS.mkdir(parents=True, exist_ok=True)
     log = WORKERS / f"{bead}.jsonl"
     log.unlink(missing_ok=True)
@@ -187,8 +192,8 @@ def start(mod: str, tool: str, model: str | None, issue: dict, solo: bool) -> Wo
 
 def report_status(bead: str) -> str | None:
     """The status of the bead's last report, waiting or filed."""
-    waiting = beads.INBOX / f"{bead}.json"
-    files = [waiting] if waiting.is_file() else sorted((beads.INBOX / "done").glob(f"{bead}-*.json"))
+    waiting = tracker.INBOX / f"{bead}.json"
+    files = [waiting] if waiting.is_file() else sorted((tracker.INBOX / "done").glob(f"{bead}-*.json"))
     for f in reversed(files):
         try:
             return json.loads(f.read_text(encoding="utf-8")).get("status") or "done"
@@ -208,10 +213,10 @@ def record(mod: str, tool: str, w: Worker, status: str | None) -> None:
 def proven_roles(mod: str) -> set[str]:
     """Roles with a closed ticket in this mod: their first ticket went well."""
     try:
-        done = beads.issues("--label", "ticket", "--label", f"mod:{mod}", "--status", "closed")
-    except beads.BeadsError:
+        done = tracker.issues("--label", "ticket", "--label", f"mod:{mod}", "--status", "closed")
+    except tracker.TrackerError:
         return set()
-    return {r for i in done if (r := beads.label_value(i, "role"))}
+    return {r for i in done if (r := tracker.label_value(i, "role"))}
 
 
 def conductor_run(mod: str, tool: str, model: str | None, needs: list[str]) -> None:
@@ -224,7 +229,7 @@ def conductor_run(mod: str, tool: str, model: str | None, needs: list[str]) -> N
                 "with `make fleet-inbox`. Do not start ticket subagents yourself and do not run fleet-dispatch: "
                 "stop when these are handled. Never push.")
     cand = models.Candidate(tool, model)
-    log = beads.STATE_DIR / "agent-tool.log"
+    log = tracker.STATE_DIR / "agent-tool.log"
     cmd = run_next.agent_command(cand, [cand], prompt, log)
     print(f"[dispatch] conductor run for {len(needs)} item(s)", flush=True)
     with (ROOT / "target" / f"fleet-{mod}.log").open("a", encoding="utf-8") as f:
@@ -297,10 +302,10 @@ def main() -> int:
             elif status == "partial":
                 started.discard(bead)  # a fresh agent goes on from its notes (fleet-inbox labels it needs-split
                 # instead when two could not finish it, and then it is not ready)
-        if beads.INBOX.is_dir() and any(beads.INBOX.glob("*.json")):
-            filed = beads.inbox()
+        if tracker.INBOX.is_dir() and any(tracker.INBOX.glob("*.json")):
+            filed = tracker.inbox()
             print("[dispatch] " + filed.replace("\n", "\n[dispatch] "), flush=True)
-            needs += [ln.split("Note: ", 1)[1] for ln in filed.splitlines() if "Note: " in ln and beads.SPLIT in ln]
+            needs += [ln.split("Note: ", 1)[1] for ln in filed.splitlines() if "Note: " in ln and tracker.SPLIT in ln]
         stopping = bool(needs or person) or STOP_FILE.is_file() or billed_total >= args.budget
         if billed_total >= args.budget and not any("budget" in p for p in person):
             person.append(f"the agents of this run billed {billed_total:,} tokens, past BUDGET={args.budget:,}")
@@ -315,9 +320,9 @@ def main() -> int:
                 continue
             break
         try:
-            ready = [i for i in beads.ready(args.mod) if i["id"] not in started and i["id"] not in running]
-        except beads.BeadsError as exc:
-            person.append(f"Beads: {exc}")
+            ready = [i for i in tracker.ready(args.mod) if i["id"] not in started and i["id"] not in running]
+        except tracker.TrackerError as exc:
+            person.append(f"tracker: {exc}")
             break
         if not ready and not running:
             print(f"[dispatch] No ticket of {args.mod} is ready; the conductor's next step.", flush=True)
@@ -326,7 +331,7 @@ def main() -> int:
         for issue in ready:
             if solo_running or len(running) >= args.max:
                 break
-            role = beads.label_value(issue, "role") or "domain-builder"
+            role = tracker.label_value(issue, "role") or "domain-builder"
             if role not in proven:
                 if running:
                     continue  # its role's first ticket runs alone: wait for the others to finish

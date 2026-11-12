@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Headless: run the conductor on exactly ONE mod with any agent CLI until it is finished.
 
-Takes the mod given, else the one in progress, else the next ready epic in Beads (`bd ready`). When
+Takes the mod given, else the one in progress, else the next ready epic in the tracker (`issuectl dag`). When
 the agent exits before the mod is finished (step 9 Package closed, or the epic blocked), it is
 started again to continue, so the run never ends early whatever the tool does at a turn end. It
 ends when the mod is finished, after `make fleet-stop`, or when MAX_STALLED runs in a row change
-nothing in Beads (stuck). A lock (target/fleet.lock) stops two runs overlapping; the output also
+nothing in the tracker (stuck). A lock (target/fleet.lock) stops two runs overlapping; the output also
 goes to target/fleet-<id>.log.
 
-Checkpoints: everything a relaunched conductor needs survives the crash (Beads, the hooks' journal,
+Checkpoints: everything a relaunched conductor needs survives the crash (the tracker, the hooks' journal,
 saved subagent prompts, progress notes): `make fleet-start` prints it (scripts/fleet/resume.py). When
 the network drops, the run waits for it to return instead of counting stalled runs.
 
@@ -48,7 +48,7 @@ import time
 from pathlib import Path
 
 import agy
-import beads
+import tracker
 import models
 from guard import STOP_FILE, progress_mark
 
@@ -65,10 +65,10 @@ CLAUDE_ALLOWED = [
 
 
 def pick(wanted: str | None) -> str | None:
-    active = beads.active_mod()
+    active = tracker.active_mod()
     if active and wanted and wanted != active:
         sys.exit(f"{active} is still in progress. Finish it (or block its epic) before starting {wanted}.")
-    return wanted or active or beads.next_mod()
+    return wanted or active or tracker.next_mod()
 
 
 def agent_command(c: models.Candidate, chain: list[models.Candidate], prompt: str, tool_log: Path) -> list[str]:
@@ -131,13 +131,13 @@ def main() -> int:
     try:
         mod = pick(args.mod)
         if not mod:
-            print("Nothing to run: no mod in progress and no ready epic in Beads.")
+            print("Nothing to run: no mod in progress and no ready epic in the tracker.")
             return 0
-        if beads.mod_status(mod)["finished"]:
+        if tracker.mod_status(mod)["finished"]:
             print(f"{mod} is finished; nothing for an agent to do (the human's review and push are next).")
             return 0
-    except beads.BeadsError as exc:
-        sys.exit(f"[beads] {exc}")
+    except tracker.TrackerError as exc:
+        sys.exit(f"[tracker] {exc}")
     custom = models.Candidate(args.agent_cmd, None) if args.agent_cmd else None
     if custom:
         chain = [custom]
@@ -171,15 +171,15 @@ def main() -> int:
                 run += 1
                 launches += 1
                 # Follow the mod in progress: a rekkit_core bump the conductor started runs first.
-                mod = beads.active_mod() or mod
-                step = beads.mod_status(mod)["next"] if beads.epic(mod)["status"] != "open" else "step 1 Spec"
+                mod = tracker.active_mod() or mod
+                step = tracker.mod_status(mod)["next"] if tracker.epic(mod)["status"] != "open" else "step 1 Spec"
                 prompt = (
                     f"Follow AGENTS.md. Act as the conductor (.agents/agents/conductor/agent.md) for the mod "
                     f"'{mod}' only. First run `make fleet-start MOD={mod}`. "
                     + ("" if launches == 1 else f"An earlier run ended before the mod was finished (perhaps on another "
                        f"model, out of credits or offline); continue from {step}. `make fleet-start` prints where it "
-                       "stopped: file waiting reports and restart interrupted subagents on their beads. ")
-                    + "Do not stop until it is finished: step 9 Package closed in Beads, or its epic blocked with the "
+                       "stopped: file waiting reports and restart interrupted subagents on their tracker. ")
+                    + "Do not stop until it is finished: step 9 Package closed in the tracker, or its epic blocked with the "
                       "reason as a comment if only a person can unblock it. Never push.")
                 before = progress_mark()
                 print(f"\n=== Fleet run {run}: {mod}, {step} ({cand.key})", flush=True)
@@ -207,7 +207,7 @@ def main() -> int:
                 if STOP_FILE.is_file():
                     print("Stopped by `make fleet-stop`.")
                     return code
-                st = beads.mod_status(mod)
+                st = tracker.mod_status(mod)
                 if st["finished"]:
                     print(f"{mod} is finished ({st['epic']['status']}; next: {st['next']}).")
                     return 0
@@ -231,7 +231,7 @@ def main() -> int:
                 limited = 0
                 stalled = stalled + 1 if progress_mark() == before else 0
                 if stalled >= MAX_STALLED:
-                    print(f"{MAX_STALLED} runs in a row changed nothing in Beads; stopping. See target/fleet-{mod}.log.")
+                    print(f"{MAX_STALLED} runs in a row changed nothing in issues/; stopping. See target/fleet-{mod}.log.")
                     return 1
                 if code:
                     time.sleep(min(60 * stalled, 300))  # an agent error (network, crash): back off

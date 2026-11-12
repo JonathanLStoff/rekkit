@@ -55,7 +55,7 @@ Source: `planning/workflow.md` §1. If this table and `native_hooks.rs` disagree
 
 ## Logging an engine gap
 
-Never edit `horizon/`. An engine gap is a Beads bug labelled `horizon` (`bd list --label horizon` lists them). A role subagent puts it in its report as a follow_up; the conductor files it:
+Never edit `horizon/`. An engine gap is a bug labelled `horizon` (`issuectl ls "label:horizon" --all` lists them). A role subagent puts it in its report as a follow_up; the conductor files it:
 
 ```json
 {"title": "horizon: <feature> for <id>", "type": "bug",

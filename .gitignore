@@ -28,12 +28,10 @@ rustc-ice-*.txt
 .mypy_cache/
 __pycache__/
 
-# Beads / Dolt files (added by bd init)
-.dolt/
 *.db
-.beads-credential-key
-.beads/proxieddb/
-*.gate.lock*
 
 # Machine-local MCP wiring (absolute paths), written by ./setup.sh / setup.cmd
 .mcp.json
+
+# issuectl runtime lock (not tracked)
+.issuectl/write.lock

@@ -32,7 +32,7 @@ The spec is an **outline**: a map of the original that tells each porting agent 
 
 ## Outline file and contracts
 
-End step 1 with `planning/mods/<id>.features.json`, the outline the conductor makes beads from (`make fleet-features MOD=<id>`): every block, item and subsystem, and for each block and item its **attributes**, the things a player must find it doing (`"generates power in daylight"`, `"stores energy"`, `"opens a 3x3 crafting GUI"`, `"reads voltage on right-click"`). Every attribute is a blocker until a scenario tests it.
+End step 1 with `planning/mods/<id>.features.json`, the outline the conductor makes issues from (`make fleet-features MOD=<id>`): every block, item and subsystem, and for each block and item its **attributes**, the things a player must find it doing (`"generates power in daylight"`, `"stores energy"`, `"opens a 3x3 crafting GUI"`, `"reads voltage on right-click"`). Every attribute is a blocker until a scenario tests it.
 
 The agent porting a block or item writes its **contract file**, `planning/mods/<id>.contract/<name>.json`, from the Java before it builds anything: what the original is, so a port that only places, opens a stock grid and drops cannot pass. One file per block or item, so parallel agents never edit the same file; its fields are merged over the outline's entry. `make contract-check MOD=<id>` (and `check-mods COMPLETE=1`) compares the port's models and textures with it pixel for pixel and fails on any untested attribute; the live harness checks its GUI, shape and scenarios. Outline, then contract fields, shown merged:
 
@@ -100,7 +100,7 @@ Scenario steps beyond the ones above: `{"ctl": ["inventory"], "expect": "\"damag
 
 ## Tickets
 
-In part mode each spec-writer reads its part of the decompiled code (`make fleet-parts MOD=<id>`) once and writes, in its own files, the part's outline (`planning/mods/<id>.parts/<part>.md`, `###` headings), its blocks' and items' attributes (`planning/mods/<id>.parts/<part>.features.json`) and its tickets (`planning/mods/<id>.tickets/<part>.json`). `make fleet-tickets MOD=<id>` merges the parts into the spec (under "Part details") and the outline, validates every part together and files the tickets in Beads with their order; `make fleet-dispatch` works them. `make fleet-tickets SCHEMA=1` prints the format.
+In part mode each spec-writer reads its part of the decompiled code (`make fleet-parts MOD=<id>`) once and writes, in its own files, the part's outline (`planning/mods/<id>.parts/<part>.md`, `###` headings), its blocks' and items' attributes (`planning/mods/<id>.parts/<part>.features.json`) and its tickets (`planning/mods/<id>.tickets/<part>.json`). `make fleet-tickets MOD=<id>` merges the parts into the spec (under "Part details") and the outline, validates every part together and files the tickets in the issue tracker with their order; `make fleet-dispatch` works them. `make fleet-tickets SCHEMA=1` prints the format.
 
 ```json
 {"tickets": [{

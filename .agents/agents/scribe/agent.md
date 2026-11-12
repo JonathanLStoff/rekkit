@@ -24,7 +24,7 @@ FILES: list
 
 # Your bead and your report
 Your first command is `make fleet-task BEAD=<id> ROLE=scribe` for each bead the
-conductor gave you. Do not write to Beads. When you finish, or cannot go on,
+conductor gave you. Do not write to the issue tracker. When you finish, or cannot go on,
 write the report it names, target/fleet/inbox/<bead>.json: status
 done|partial|blocked|failed, a one-line summary, the files you changed, the
 result fields below in notes, and every problem you found that needs more work

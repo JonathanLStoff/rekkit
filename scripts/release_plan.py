@@ -12,7 +12,7 @@ For every mod under mods/ (but --exclude):
   - no tag for its version, but an earlier release has a newer or equal version: error.
 
 A mod is considered only once the port process has packaged it: its step 9 Package story is closed
-in Beads (read from the committed export, .beads/issues.jsonl). A mod still in progress is neither
+in the tracker (read from the committed issues/). A mod still in progress is neither
 released nor held to the version check.
 
 A mod that still ships any of the original mod's art or sound (asset-map.json origin "original", or
@@ -92,19 +92,37 @@ def shipped_changed(mod_id: str, tag: str) -> bool:
     return subprocess.run(["git", "-C", str(ROOT), "diff", "--quiet", tag, "HEAD", "--", *paths]).returncode != 0
 
 
+CLOSING_STATUSES = {"done", "fixed", "wontfix", "duplicate", "cannot-reproduce", "obsolete"}
+
+
+def frontmatter(path: Path) -> dict:
+    """The frontmatter of an issues/<slug>/item.md: `key: value` lines and `- item` lists. Read directly (no
+    issuectl needed), so CI can run this."""
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return {}
+    out: dict = {}
+    key = None
+    for line in text.split("\n---", 1)[0].split("\n")[1:]:
+        if line.startswith("- ") and key is not None and isinstance(out.get(key), list):
+            out[key].append(line[2:].strip().strip("\"'"))
+        elif ":" in line and not line.startswith(" "):
+            k, _, v = line.partition(":")
+            key, v = k.strip(), v.strip()
+            out[key] = [] if v == "" else v.strip("\"'")
+    return out
+
+
 def packaged_mods() -> set[str] | None:
-    """Mods whose step 9 Package story is closed in Beads; None without a Beads export."""
-    export = ROOT / ".beads" / "issues.jsonl"
-    if not export.is_file():
+    """Mods whose step 9 Package story is closed in the tracker (issues/); None without an issues/ folder."""
+    root = ROOT / "issues"
+    if not root.is_dir():
         return None
     done = set()
-    for line in export.read_text(encoding="utf-8").splitlines():
-        try:
-            issue = json.loads(line)
-        except ValueError:
-            continue
-        labels = issue.get("labels") or []
-        if issue.get("issue_type") == "story" and "step:9" in labels and issue.get("status") == "closed":
+    for item in root.rglob("item.md"):
+        fm = frontmatter(item)
+        labels = fm.get("labels") or []
+        if "story" in labels and "step:9" in labels and fm.get("status") in CLOSING_STATUSES:
             done |= {l.split(":", 1)[1] for l in labels if l.startswith("mod:")}
     return done
 
@@ -114,7 +132,7 @@ def plan(mod_dirs: list[Path], tags: list[str], packaged: set[str] | None = None
     for mod_dir in mod_dirs:
         mod_id = mod_dir.name
         if packaged is not None and mod_id not in packaged:
-            print(f"  ~ {mod_id}: in progress (step 9 Package not closed in Beads); not released")
+            print(f"  ~ {mod_id}: in progress (step 9 Package not closed in the tracker); not released")
             continue
         manifest = mod_dir / "content" / "horizon-mod.toml"
         if not manifest.is_file():

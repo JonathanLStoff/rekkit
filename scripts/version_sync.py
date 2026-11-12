@@ -108,7 +108,7 @@ def sync(unit: Path, check: bool) -> str | None:
 
 
 def sync_units(names: list[str] | None = None, check: bool = False) -> list[str]:
-    """For the given mod ids / crate names (or every unit); used by the guard and beads.py too."""
+    """For the given mod ids / crate names (or every unit); used by the guard and tracker.py too."""
     picked = [u for u in units() if names is None or u.name in names]
     return [n for u in picked if (n := sync(u, check))]
 
